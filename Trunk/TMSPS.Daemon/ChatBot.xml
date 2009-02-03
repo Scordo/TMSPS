@@ -1,0 +1,12 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Settings>
+	<Botname>$w$f00[Scordo's Bot] $z</Botname>
+	<Phrases>
+		<Phrase values="test|dev" answer="Don't bother me"/>
+		<Phrase values="unix" answer="I hate this fucking operating system"/>
+		<Phrase values="scordo|tst|sco" answer="Yepp that's my master!"/>
+		<Phrase values="lunasei" answer="Who is it?"/>
+		<Phrase values="brb" answer="Looser!!!!"/>
+		<Phrase values="^^" answer="See above!"/>
+	</Phrases>
+</Settings>
