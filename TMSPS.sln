@@ -1,0 +1,47 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual Studio 2008
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TMSPS.Daemon", "TMSPS.Daemon\TMSPS.Daemon.csproj", "{F20F9943-0645-409D-88A8-E606A9FDC0B1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TMSPS.Core", "TMSPS.Common\TMSPS.Core.csproj", "{07AB0407-3EB7-4DA1-B3C6-DE074A7760C7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TMSPS.TestClient", "TMSPS.TestClient\TMSPS.TestClient.csproj", "{D4484EE3-0BE1-4A2A-BC05-9F63170E0B3F}"
+EndProject
+Global
+	GlobalSection(TeamFoundationVersionControl) = preSolution
+		SccNumberOfProjects = 4
+		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
+		SccTeamFoundationServer = https://tfs09.codeplex.com/
+		SccLocalPath0 = .
+		SccProjectUniqueName1 = TMSPS.Common\\TMSPS.Core.csproj
+		SccProjectName1 = TMSPS.Common
+		SccLocalPath1 = TMSPS.Common
+		SccProjectUniqueName2 = TMSPS.Daemon\\TMSPS.Daemon.csproj
+		SccProjectName2 = TMSPS.Daemon
+		SccLocalPath2 = TMSPS.Daemon
+		SccProjectUniqueName3 = TMSPS.TestClient\\TMSPS.TestClient.csproj
+		SccProjectName3 = TMSPS.TestClient
+		SccLocalPath3 = TMSPS.TestClient
+	EndGlobalSection
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{F20F9943-0645-409D-88A8-E606A9FDC0B1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F20F9943-0645-409D-88A8-E606A9FDC0B1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F20F9943-0645-409D-88A8-E606A9FDC0B1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F20F9943-0645-409D-88A8-E606A9FDC0B1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{07AB0407-3EB7-4DA1-B3C6-DE074A7760C7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{07AB0407-3EB7-4DA1-B3C6-DE074A7760C7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{07AB0407-3EB7-4DA1-B3C6-DE074A7760C7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{07AB0407-3EB7-4DA1-B3C6-DE074A7760C7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D4484EE3-0BE1-4A2A-BC05-9F63170E0B3F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D4484EE3-0BE1-4A2A-BC05-9F63170E0B3F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D4484EE3-0BE1-4A2A-BC05-9F63170E0B3F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D4484EE3-0BE1-4A2A-BC05-9F63170E0B3F}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

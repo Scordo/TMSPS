@@ -1,0 +1,181 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="3.5" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.30729</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{07AB0407-3EB7-4DA1-B3C6-DE074A7760C7}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>TMSPS.Core</RootNamespace>
+    <AssemblyName>TMSPS.Core</AssemblyName>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="CookComputing.XmlRpcV2, Version=2.4.0.0, Culture=neutral, PublicKeyToken=a7d6e17aa302004d, processorArchitecture=MSIL" />
+    <Reference Include="log4net, Version=1.2.10.0, Culture=neutral, PublicKeyToken=1b44e1d426115821, processorArchitecture=MSIL" />
+    <Reference Include="System" />
+    <Reference Include="System.configuration" />
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml.Linq">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data.DataSetExtensions">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Logging\ConsoleUILogger.cs" />
+    <Compile Include="Logging\CoreLogger.cs" />
+    <Compile Include="Common\IDump.cs" />
+    <Compile Include="Logging\ILogger.cs" />
+    <Compile Include="Logging\IUILogger.cs" />
+    <Compile Include="Common\Util.cs" />
+    <Compile Include="Communication\AsyncSocketMethodHelper.cs" />
+    <Compile Include="Communication\Callbacks.cs" />
+    <Compile Include="Communication\EventArguments\Callbacks\BeginRaceEventArgs.cs" />
+    <Compile Include="Communication\EventArguments\Callbacks\BillUpdatedEventArgs.cs" />
+    <Compile Include="Communication\EventArguments\Callbacks\ChallengeListModifiedeventArgs.cs" />
+    <Compile Include="Communication\EventArguments\Callbacks\EchoEventArgs.cs" />
+    <Compile Include="Communication\EventArguments\Callbacks\EndRaceEventArgs.cs" />
+    <Compile Include="Communication\EventArguments\Callbacks\ManualFlowControlTransitionEventArgs.cs" />
+    <Compile Include="Communication\EventArguments\Callbacks\PlayerChatEventArgs.cs" />
+    <Compile Include="Communication\EventArguments\Callbacks\PlayerCheckpointEventArgs.cs" />
+    <Compile Include="Communication\EventArguments\Callbacks\PlayerConnectEventArgs.cs" />
+    <Compile Include="Communication\EventArguments\Callbacks\PlayerDisconnectEventArgs.cs" />
+    <Compile Include="Communication\EventArguments\Callbacks\PlayerFinishEventArgs.cs" />
+    <Compile Include="Communication\EventArguments\Callbacks\PlayerIncoherenceEventArgs.cs" />
+    <Compile Include="Communication\EventArguments\Callbacks\PlayerInfoChangedEventArgs.cs" />
+    <Compile Include="Communication\EventArguments\Callbacks\PlayerManialinkPageAnswerEventArgs.cs" />
+    <Compile Include="Communication\EventArguments\Callbacks\StatusChangedEventArgs.cs" />
+    <Compile Include="Communication\EventArguments\Callbacks\TunnelDataReceivedEventArgs.cs" />
+    <Compile Include="Communication\EventArguments\EventArgsBase.cs" />
+    <Compile Include="Communication\EventArguments\FaultResponseEventArgs.cs" />
+    <Compile Include="Communication\ProxyTypes\Avatar.cs" />
+    <Compile Include="Communication\ProxyTypes\BanEntry.cs" />
+    <Compile Include="Communication\ProxyTypes\BillState.cs" />
+    <Compile Include="Communication\ProxyTypes\CallVote.cs" />
+    <Compile Include="Communication\ProxyTypes\CallVoteRatio.cs" />
+    <Compile Include="Communication\ProxyTypes\ChallengeInfo.cs" />
+    <Compile Include="Communication\ProxyTypes\ChallengeListSingleInfo.cs" />
+    <Compile Include="Communication\ProxyTypes\CNPair.cs" />
+    <Compile Include="Communication\ProxyTypes\DetailedPlayerInfo.cs" />
+    <Compile Include="Communication\ProxyTypes\ForcedMod.cs" />
+    <Compile Include="Communication\ProxyTypes\ForcedMusic.cs" />
+    <Compile Include="Communication\ProxyTypes\ForcedSkin.cs" />
+    <Compile Include="Communication\ProxyTypes\GameInfo.cs" />
+    <Compile Include="Communication\ProxyTypes\GameInfos.cs" />
+    <Compile Include="Communication\ResponseHandling\GenericListResponse.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Communication\ResponseHandling\GenericResponse.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Communication\ProxyTypes\LanguageDependentText.cs" />
+    <Compile Include="Communication\ProxyTypes\Login.cs" />
+    <Compile Include="Communication\ProxyTypes\ManiaLinkAnswer.cs" />
+    <Compile Include="Communication\ProxyTypes\Mod.cs" />
+    <Compile Include="Communication\ProxyTypes\NetworkStatus.cs" />
+    <Compile Include="Communication\ProxyTypes\PlayerNetInfo.cs" />
+    <Compile Include="Communication\ProxyTypes\PlayerRank.cs" />
+    <Compile Include="Communication\ProxyTypes\ForcedScore.cs" />
+    <Compile Include="Communication\ProxyTypes\ServerOptions.cs" />
+    <Compile Include="Communication\ProxyTypes\LadderStats.cs" />
+    <Compile Include="Communication\ProxyTypes\PlayerInfoBase.cs" />
+    <Compile Include="Communication\ProxyTypes\PlayerInfo.cs" />
+    <Compile Include="Communication\ProxyTypes\PlayerRanking.cs" />
+    <Compile Include="Communication\ProxyTypes\ServerStatus.cs" />
+    <Compile Include="Communication\ProxyTypes\Skin.cs" />
+    <Compile Include="Communication\ProxyTypes\SkinDetails.cs" />
+    <Compile Include="Communication\ProxyTypes\SystemInfo.cs" />
+    <Compile Include="Communication\ProxyTypes\Version.cs" />
+    <Compile Include="Communication\EventArguments\SocketErrorEventArgs.cs" />
+    <Compile Include="Communication\Methods.cs" />
+    <Compile Include="Communication\ResponseHandling\ResponseBase.cs" />
+    <Compile Include="Communication\ResponseHandling\FaultResponse.cs" />
+    <Compile Include="Communication\ResponseHandling\RPCParamAttribute.cs" />
+    <Compile Include="Communication\ResponseHandling\RPCParamInfo.cs" />
+    <Compile Include="Communication\RPCCommand.cs" />
+    <Compile Include="Communication\SocketAsyncEventArgsUserToken.cs" />
+    <Compile Include="Communication\TrackManiaCallback.cs" />
+    <Compile Include="Communication\TrackManiaMethod.cs" />
+    <Compile Include="Communication\TrackManiaRPCClient.cs" />
+    <Compile Include="Logging\LogMode.cs" />
+    <Compile Include="PluginSystem\ConfigSettingsConfigurationSection.cs" />
+    <Compile Include="PluginSystem\ConfigurationElementCollection.cs" />
+    <Compile Include="PluginSystem\Configuration\Credentials.cs" />
+    <Compile Include="PluginSystem\Configuration\CredentialsReader.cs" />
+    <Compile Include="Common\Instancer.cs" />
+    <Compile Include="PluginSystem\ITMSPSPlugin.cs" />
+    <Compile Include="PluginSystem\PluginConfigSettings.cs" />
+    <Compile Include="PluginSystem\PluginConfigSettingsCollection.cs" />
+    <Compile Include="PluginSystem\PluginHostContext.cs" />
+    <Compile Include="PluginSystem\Plugins\ChatBotPlugin.cs" />
+    <Compile Include="PluginSystem\Plugins\Dedimania\Communication\AliasTextTool.cs" />
+    <Compile Include="PluginSystem\Plugins\Dedimania\Communication\AuthenticateParameters.cs" />
+    <Compile Include="PluginSystem\Plugins\Dedimania\Communication\DedimaniaChallengeRaceTimesReply.cs" />
+    <Compile Include="PluginSystem\Plugins\Dedimania\Communication\DedimaniaClient.cs" />
+    <Compile Include="PluginSystem\Plugins\Dedimania\Communication\DedimaniaCurrentChallengeReply.cs" />
+    <Compile Include="PluginSystem\Plugins\Dedimania\Communication\DedimaniaPlayerArriveReply.cs" />
+    <Compile Include="PluginSystem\Plugins\Dedimania\Communication\DedimaniaPlayerInfo.cs" />
+    <Compile Include="PluginSystem\Plugins\Dedimania\Communication\DedimaniaPlayerLeaveReply.cs" />
+    <Compile Include="PluginSystem\Plugins\Dedimania\Communication\DedimaniaRecord.cs" />
+    <Compile Include="PluginSystem\Plugins\Dedimania\Communication\DedimaniaRecordNew.cs" />
+    <Compile Include="PluginSystem\Plugins\Dedimania\Communication\DedimaniaServerInfo.cs" />
+    <Compile Include="PluginSystem\Plugins\Dedimania\Communication\DedimaniaTime.cs" />
+    <Compile Include="PluginSystem\Plugins\Dedimania\Communication\DedimaniaVersionInfoReply.cs" />
+    <Compile Include="PluginSystem\Plugins\Dedimania\Communication\DedimaniaWarningsAndTTRElement.cs" />
+    <Compile Include="PluginSystem\Plugins\Dedimania\Communication\DedimaniaWarningsAndTTRReply.cs" />
+    <Compile Include="PluginSystem\Plugins\Dedimania\Communication\FaultInfo.cs" />
+    <Compile Include="PluginSystem\Plugins\Dedimania\Communication\MultiCallResult.cs" />
+    <Compile Include="PluginSystem\Plugins\Dedimania\Communication\OptionValueTool.cs" />
+    <Compile Include="PluginSystem\Plugins\Dedimania\Communication\PlayerArriveParameters.cs" />
+    <Compile Include="PluginSystem\Plugins\Dedimania\DedimaniaPlugin.cs" />
+    <Compile Include="PluginSystem\Plugins\SaveClanTagPlugin.cs" />
+    <Compile Include="PluginSystem\ServerInfo.cs" />
+    <Compile Include="PluginSystem\TMSPSPluginBase.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TypeExtensions\ExtensionMethods.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Components\CookComputing.XmlRpcV2.dll" />
+    <Content Include="Components\log4net.dll" />
+    <Content Include="Components\log4net.xml" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

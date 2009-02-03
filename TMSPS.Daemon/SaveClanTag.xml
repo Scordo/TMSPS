@@ -1,0 +1,9 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Settings clanTagPattern=".*?e.*?x.*?c.*?l.*?u.*?s.*?i.*?v.*?e" kickReason="Dont use exclusive clan tag!!! Your not a member of exclusive!" publicKickReason="[ClanTagSaveBot] {0} got kick due to name infringement">
+	<Members>
+		<Login>lunasei</Login>
+		<Login>t.homaz</Login>
+		<Login>blacksilver93</Login>
+		<Login>scordo</Login>
+	</Members>
+</Settings>
