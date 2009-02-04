@@ -34,10 +34,9 @@ namespace TMSPS.Core.Communication
             foreach (object parameter in parameters)
             {
                 XElement paramElement = new XElement("param");
-                paramsElement.Add(paramElement);
+				paramElement.Add(GetValueElement(parameter));
 
-                XElement valueElement = new XElement("value", GetValueElement(parameter));
-                paramElement.Add(valueElement);
+				paramsElement.Add(paramElement);
             }
 
             return methodCallElement;
@@ -46,38 +45,36 @@ namespace TMSPS.Core.Communication
         public static XElement GetValueElement(object value)
         {
             if (value is int || value is uint || value is short | value is ushort || value is byte || value is sbyte || value is long || value is ulong)
-                return new XElement("int", value);
+                return new XElement("value", new XElement("int", value));
 
             if (value is float || value is double || value is decimal)
-                return new XElement("double", value);
+                return new XElement("value", new XElement("double", value));
 
             if (value is bool)
-                return new XElement("boolean", (bool)value ? "1" : "0");
+                return new XElement("value", new XElement("boolean", (bool)value ? "1" : "0"));
 
             if (value == null || value is string)
-                return new XElement("string", value);
+                return new XElement("value", new XElement("string", value));
 
             if (value is byte[])
-                return new XElement("base64", Convert.ToBase64String(value as byte[]));
+                return new XElement("value", new XElement("base64", Convert.ToBase64String(value as byte[])));
 
             if (value is IEnumerable)
             {
                 XElement arrayElement = new XElement("array");
                 XElement dataElement = new XElement("data");
-				XElement valueElement = new XElement("value");
-				dataElement.Add(valueElement);
 				arrayElement.Add(dataElement);
 
                 foreach (object childValue in (value as IEnumerable))
                 {
-					valueElement.Add(GetValueElement(childValue));
+					dataElement.Add((GetValueElement(childValue)));
                 }
 
             	return arrayElement;
             }
 
             if (value is DateTime)
-                return new XElement("dateTime.iso8601", ((DateTime)value).ToString("yyyyMMddThh:mm:ss"));
+                return new XElement("value", new XElement("dateTime.iso8601", ((DateTime)value).ToString("yyyyMMddThh:mm:ss")));
 
 			if (value == null)
 				throw new InvalidOperationException("Null values are not supported");
@@ -91,10 +88,7 @@ namespace TMSPS.Core.Communication
 				foreach (RPCParamInfo member in members)
 				{
 					XElement memberElement = new XElement("member", new XElement("name", member.MemberName));
-					XElement valueElement = new XElement("value");
-					valueElement.Add(member.PropertyInfo.GetValue(value, null));
-
-					memberElement.Add(valueElement);
+					memberElement.Add(GetValueElement(member.PropertyInfo.GetValue(value, null)));
 
 					result.Add(memberElement);
 				}
@@ -113,8 +107,6 @@ namespace TMSPS.Core.Communication
         #endregion
 
         #region Non Public Methods
-
-        
 
         private static object GetInstance(Type type, XContainer paramsMessageElement)
         {

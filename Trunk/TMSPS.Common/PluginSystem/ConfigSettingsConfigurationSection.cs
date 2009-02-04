@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.IO;
+using System.Reflection;
 using log4net;
 using TMSPS.Core.Common;
 
@@ -73,14 +75,15 @@ namespace TMSPS.Core.PluginSystem
         {
             List<ITMSPSPlugin> result = new List<ITMSPSPlugin>();
 
+			string pluginDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+
             foreach (PluginConfigSettings pluginConfigSettings in AllPluginSettings)
             {
                 if (!pluginConfigSettings.Enabled)
                     continue;
 
                 _log.Debug(string.Format("Instantiating ITMSPSPlugin {0}", pluginConfigSettings.PluginClass));
-
-                result.Add(Instancer.GetInstanceOfInterface<ITMSPSPlugin>(pluginConfigSettings.AssemblyName, pluginConfigSettings.PluginClass));
+                result.Add(Instancer.GetInstanceOfInterface<ITMSPSPlugin>(Path.Combine(pluginDirectory, pluginConfigSettings.AssemblyName), pluginConfigSettings.PluginClass));
             }
 
             return result;
