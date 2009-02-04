@@ -9,6 +9,12 @@ namespace TMSPS.Core.Common
 
         public static T GetInstanceOfInterface<T>(string assemblyFullName, string tyepNameToInstantiate)
         {
+			if (assemblyFullName == null)
+				throw new ArgumentNullException("assemblyFullName");
+
+			if (!assemblyFullName.EndsWith(".dll", StringComparison.InvariantCultureIgnoreCase))
+				assemblyFullName += ".dll";
+
             if (!typeof(T).IsInterface)
                 throw new ArgumentException("Generic type parameter <T> is not an interface.");
 
@@ -16,7 +22,7 @@ namespace TMSPS.Core.Common
 
             try
             {
-                assembly = Assembly.Load(new AssemblyName(assemblyFullName));
+				assembly = Assembly.LoadFile(assemblyFullName);
             }
             catch (Exception ex)
             {
@@ -31,11 +37,11 @@ namespace TMSPS.Core.Common
             }
             catch (Exception ex)
             {
-                throw new ArgumentException("Could not create instance of " + tyepNameToInstantiate, ex);
+                throw new InvalidOperationException("Could not create instance of " + tyepNameToInstantiate, ex);
             }
 
             if (providerInstance == null)
-                throw new ArgumentException("Could not create instance of " + tyepNameToInstantiate);
+				throw new InvalidOperationException("Could not create instance of " + tyepNameToInstantiate);
 
             if (!(providerInstance is T))
                 throw new ArgumentException(string.Format("Class '{0}' does not implement {1}.", providerInstance.GetType().FullName, typeof(T).FullName));
