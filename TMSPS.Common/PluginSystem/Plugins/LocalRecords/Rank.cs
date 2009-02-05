@@ -9,6 +9,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
 		public int ID { get; private set; }
 		public DateTime Created { get; private set; }
 		public DateTime LastChanged { get; private set; }
+		public int PlayerID { get; set; }
 		public double AveragePosition { get; set; }
 		public double AverageRecord { get; set; }
 

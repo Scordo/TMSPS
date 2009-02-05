@@ -8,6 +8,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
 
 		public int ID { get; private set; }
 		public DateTime Created { get; private set; }
+		public int PlayerID { get; set; }
 		public int ChallengeID { get; set; }
 		public int OwnPosition { get; set; }
 		public int MaxPosition { get; set; }
