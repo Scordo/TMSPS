@@ -159,6 +159,13 @@
     <Compile Include="PluginSystem\Plugins\Dedimania\Communication\OptionValueTool.cs" />
     <Compile Include="PluginSystem\Plugins\Dedimania\Communication\PlayerArriveParameters.cs" />
     <Compile Include="PluginSystem\Plugins\Dedimania\DedimaniaPlugin.cs" />
+    <Compile Include="PluginSystem\Plugins\LocalRecords\Challenge.cs" />
+    <Compile Include="PluginSystem\Plugins\LocalRecords\Player.cs" />
+    <Compile Include="PluginSystem\Plugins\LocalRecords\Position.cs" />
+    <Compile Include="PluginSystem\Plugins\LocalRecords\Rank.cs" />
+    <Compile Include="PluginSystem\Plugins\LocalRecords\Rating.cs" />
+    <Compile Include="PluginSystem\Plugins\LocalRecords\Record.cs" />
+    <Compile Include="PluginSystem\Plugins\LocalRecords\Session.cs" />
     <Compile Include="PluginSystem\Plugins\SaveClanTagPlugin.cs" />
     <Compile Include="PluginSystem\ServerInfo.cs" />
     <Compile Include="PluginSystem\TMSPSPluginBase.cs" />
