@@ -53,6 +53,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Common\ParameterlessMethodDelegate.cs" />
     <Compile Include="Logging\ConsoleUILogger.cs" />
     <Compile Include="Logging\CoreLogger.cs" />
     <Compile Include="Common\IDump.cs" />
@@ -170,6 +171,8 @@
     <Compile Include="PluginSystem\ServerInfo.cs" />
     <Compile Include="PluginSystem\TMSPSPluginBase.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SQL\ConnectionManager.cs" />
+    <Compile Include="SQL\SqlHelper.cs" />
     <Compile Include="TypeExtensions\ExtensionMethods.cs" />
   </ItemGroup>
   <ItemGroup>
