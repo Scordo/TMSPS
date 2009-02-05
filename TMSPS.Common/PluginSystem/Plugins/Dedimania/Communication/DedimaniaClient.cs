@@ -23,6 +23,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.Dedimania.Communication
             Proxy.UserAgent = "TMSPS";
             Proxy.Url = url;
             Proxy.EnableCompression = true;
+            Proxy.KeepAlive = true;
         }
 
         public DedimaniaVersionInfoReply GetVersion()
