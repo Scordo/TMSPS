@@ -6,7 +6,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
 	{
 		#region Properties
 
-		public int ID { get; private set; }
+		public int? ID { get; private set; }
 		public DateTime Created { get; private set; }
 		public DateTime LastChanged { get; private set; }
 		public string UniqueID { get; set; }
@@ -19,7 +19,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
 
 		#region IChallengeSerializable Members
 
-		int IChallengeSerializable.ID
+        int? IChallengeSerializable.ID
 		{
 			get { return ID; }
 			set { ID = value; }
@@ -42,7 +42,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
 
 	public interface IChallengeSerializable
 	{
-		int ID { get; set; }
+        int? ID { get; set; }
 		DateTime Created { get; set; }
 		DateTime LastChanged { get; set; }
 	}

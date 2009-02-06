@@ -6,9 +6,9 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
 	{
 		#region Properties
 
-		public int ID { get; private set; }
+        public int? ID { get; private set; }
 		public DateTime Created { get; private set; }
-		public DateTime LastChanged { get; private set; }
+		public DateTime? LastChanged { get; private set; }
 		public int ChallengeID { get; set; }
 		public int PlayerID { get; set; }
 		public int TimeOrScore { get; set; }
@@ -17,7 +17,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
 
 		#region IRecordSerializable Members
 
-		int IRecordSerializable.ID
+        int? IRecordSerializable.ID
 		{
 			get { return ID; }
 			set { ID = value; }
@@ -29,7 +29,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
 			set { Created = value; }
 		}
 
-		DateTime IRecordSerializable.LastChanged
+		DateTime? IRecordSerializable.LastChanged
 		{
 			get { return LastChanged; }
 			set { LastChanged = value; }
@@ -40,8 +40,8 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
 
 	public interface IRecordSerializable
 	{
-		int ID { get; set; }
+        int? ID { get; set; }
 		DateTime Created { get; set; }
-		DateTime LastChanged { get; set; }
+		DateTime? LastChanged { get; set; }
 	}
 }

@@ -6,7 +6,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
 	{
 		#region Properties
 
-		public int ID { get; private set; }
+        public int? ID { get; private set; }
 		public DateTime Created { get; private set; }
 		public int ChallengeID { get; set; }
 		public int PlayerID { get; set; }
@@ -16,7 +16,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
 
 		#region ISessionSerializable Members
 
-		int ISessionSerializable.ID
+		int? ISessionSerializable.ID
 		{
 			get { return ID; }
 			set { ID = value; }
@@ -33,7 +33,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
 
 	public interface ISessionSerializable
 	{
-		int ID { get; set; }
+        int? ID { get; set; }
 		DateTime Created { get; set; }
 	}
 }
