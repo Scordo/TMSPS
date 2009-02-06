@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Reflection;
 
 namespace TMSPS.Core.Common
 {
@@ -31,6 +32,19 @@ namespace TMSPS.Core.Common
                 return false;
             }
         }
+
+		public static string GetCalculatedPath(string filename)
+		{
+			if (filename == null)
+				throw new ArgumentNullException("filename");
+
+			if (Path.IsPathRooted(filename))
+				return filename;
+
+			string binaryDicrectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+
+			return Path.Combine(binaryDicrectory, filename);
+		}
 
         public static string GetCountryShortCut(string countryName)
         {

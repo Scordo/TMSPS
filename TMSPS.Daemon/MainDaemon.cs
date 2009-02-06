@@ -8,6 +8,7 @@ using TMSPS.Core.Communication.ResponseHandling;
 using TMSPS.Core.Logging;
 using TMSPS.Core.PluginSystem;
 using TMSPS.Core.PluginSystem.Configuration;
+using TMSPS.Core.PluginSystem.Plugins.LocalRecords;
 using Version=TMSPS.Core.Communication.ProxyTypes.Version;
 
 namespace TMSPS.Daemon

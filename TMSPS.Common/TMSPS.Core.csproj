@@ -171,6 +171,7 @@
     <Compile Include="PluginSystem\Plugins\LocalRecords\IRatingAdapter.cs" />
     <Compile Include="PluginSystem\Plugins\LocalRecords\IRecordAdapter.cs" />
     <Compile Include="PluginSystem\Plugins\LocalRecords\ISessionAdapter.cs" />
+    <Compile Include="PluginSystem\Plugins\LocalRecords\LocalRecordsPlugin.cs" />
     <Compile Include="PluginSystem\Plugins\LocalRecords\SQL\AdapterProvider.cs" />
     <Compile Include="PluginSystem\Plugins\LocalRecords\Player.cs" />
     <Compile Include="PluginSystem\Plugins\LocalRecords\Position.cs" />
@@ -198,6 +199,17 @@
     <Content Include="Components\CookComputing.XmlRpcV2.dll" />
     <Content Include="Components\log4net.dll" />
     <Content Include="Components\log4net.xml" />
+    <Content Include="Resources\SQLScripts\Structure\CreationOrder.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\SQLScripts\StoredProcedures\Challenge\Challenge_Create.sql" />
+    <None Include="Resources\SQLScripts\StoredProcedures\Challenge\Challenge_Deserialize_ByID.sql" />
+    <None Include="Resources\SQLScripts\StoredProcedures\Challenge\Challenge_Deserialize_ByUniqueID.sql" />
+    <None Include="Resources\SQLScripts\StoredProcedures\Challenge\Challenge_IncreaseRaces_ByChallenge.sql" />
+    <None Include="Resources\SQLScripts\StoredProcedures\Challenge\Challenge_IncreaseRaces_ByID.sql" />
+    <None Include="Resources\SQLScripts\StoredProcedures\Challenge\Challenge_IncreaseRaces_ByUniqueID.sql" />
+    <None Include="Resources\SQLScripts\Structure\Challenge.sql" />
+    <None Include="Resources\SQLScripts\Structure\Player.sql" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
