@@ -8,7 +8,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
 
 		public int? ID { get; private set; }
 		public DateTime Created { get; private set; }
-		public DateTime LastChanged { get; private set; }
+		public DateTime? LastChanged { get; private set; }
 		public string UniqueID { get; set; }
 		public string Name { get; set; }
 		public string Author { get; set; }
@@ -17,9 +17,26 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
 
 		#endregion
 
+		#region Constructors
+
+		public Challenge()
+		{
+			
+		}
+
+		public Challenge(string uniqueID, string name, string author, string environment)
+		{
+			UniqueID = uniqueID;
+			Name = name;
+			Author = author;
+			Environment = environment;
+		}
+
+		#endregion
+
 		#region IChallengeSerializable Members
 
-        int? IChallengeSerializable.ID
+		int? IChallengeSerializable.ID
 		{
 			get { return ID; }
 			set { ID = value; }
@@ -31,7 +48,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
 			set { Created = value; }
 		}
 
-		DateTime IChallengeSerializable.LastChanged
+		DateTime? IChallengeSerializable.LastChanged
 		{
 			get { return LastChanged; }
 			set { LastChanged = value; }
@@ -42,8 +59,8 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
 
 	public interface IChallengeSerializable
 	{
-        int? ID { get; set; }
+		int? ID { get; set; }
 		DateTime Created { get; set; }
-		DateTime LastChanged { get; set; }
+		DateTime? LastChanged { get; set; }
 	}
 }
