@@ -6,11 +6,11 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
 	{
 		#region Properties
 
-		public int ID { get; private set; }
+        public int? ID { get; private set; }
 		public string Login { get; set; }
 		public string Nickname { get; set; }
 		public DateTime Created { get; private set; }
-		public DateTime LastChanged { get; private set; }
+		public DateTime? LastChanged { get; private set; }
 		public DateTime LastTimePlayedChanged { get; private set; }
 		public int Wins { get; set; }
 		public long TimePlayed { get; set; }
@@ -19,7 +19,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
 
 		#region IPlayerSerializable Members
 
-		int IPlayerSerializable.ID
+        int? IPlayerSerializable.ID
 		{
 			get { return ID; }
 			set { ID = value; }
@@ -31,7 +31,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
 			set { Created = value; }
 		}
 
-		DateTime IPlayerSerializable.LastChanged
+		DateTime? IPlayerSerializable.LastChanged
 		{
 			get { return LastChanged; }
 			set { LastChanged = value; }
@@ -48,9 +48,9 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
 
 	public interface IPlayerSerializable
 	{
-		int ID { get; set; }
+        int? ID { get; set; }
 		DateTime Created { get; set; }
-		DateTime LastChanged { get; set; }
+		DateTime? LastChanged { get; set; }
 		DateTime LastTimePlayedChanged { get; set; }
 	}
 }
