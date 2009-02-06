@@ -77,7 +77,7 @@ namespace TMSPS.Core.SQL
         /// <returns></returns>
         public object ExecuteScalar(string storedProcedureName)
         {
-            return ExecuteScalar(storedProcedureName, (List<KeyValuePair<string, object>>) null);
+            return ExecuteScalar(storedProcedureName, (Dictionary<string, object>) null);
         }
 
         /// <summary>
@@ -97,10 +97,10 @@ namespace TMSPS.Core.SQL
         /// <param name="storedProcedureName">Name of the stored procedure.</param>
         /// <param name="parameters">The parameters.</param>
         /// <returns></returns>
-        public object ExecuteScalar(string storedProcedureName, List<KeyValuePair<string, object>> parameters)
+        public object ExecuteScalar(string storedProcedureName, Dictionary<string, object> parameters)
         {
             if (parameters == null)
-                parameters = new List<KeyValuePair<string, object>>();
+                parameters = new Dictionary<string, object>();
 
             SqlCommand command = GenerateCommand(storedProcedureName, parameters);
             object result = command.ExecuteScalar();
@@ -136,7 +136,7 @@ namespace TMSPS.Core.SQL
         /// <param name="storedProcedureName">Name of the stored procedure.</param>
         /// <param name="parameters">The parameters.</param>
         /// <returns></returns>
-        public int ExecuteScalarReturnInteger(string storedProcedureName, List<KeyValuePair<string, object>> parameters)
+        public int ExecuteScalarReturnInteger(string storedProcedureName, Dictionary<string, object> parameters)
         {
             return Convert.ToInt32(ExecuteScalar(storedProcedureName, parameters));
         }
@@ -149,7 +149,7 @@ namespace TMSPS.Core.SQL
         /// <returns></returns>
         public TReturnType ExecuteScalar<TReturnType>(string storedProcedureName)
         {
-            return ExecuteScalar<TReturnType>(storedProcedureName, (List<KeyValuePair<string, object>>) null);
+            return ExecuteScalar<TReturnType>(storedProcedureName, (Dictionary<string, object>) null);
         }
 
         /// <summary>
@@ -171,7 +171,7 @@ namespace TMSPS.Core.SQL
         /// <param name="storedProcedureName">Name of the stored procedure.</param>
         /// <param name="parameters">The parameters.</param>
         /// <returns></returns>
-        public TReturnType ExecuteScalar<TReturnType>(string storedProcedureName, List<KeyValuePair<string, object>> parameters)
+        public TReturnType ExecuteScalar<TReturnType>(string storedProcedureName, Dictionary<string, object> parameters)
         {
             object result = ExecuteScalar(storedProcedureName, parameters);
 
@@ -205,7 +205,7 @@ namespace TMSPS.Core.SQL
         /// <param name="storedProcedureName">Name of the stored procedure.</param>
         /// <param name="parameters">The parameters.</param>
         /// <returns></returns>
-        public bool ExecuteScalarReturnBool(string storedProcedureName, List<KeyValuePair<string, object>> parameters)
+        public bool ExecuteScalarReturnBool(string storedProcedureName, Dictionary<string, object> parameters)
         {
             return ExecuteScalarReturnInteger(storedProcedureName, parameters) != 0;
         }
@@ -237,10 +237,10 @@ namespace TMSPS.Core.SQL
         /// <param name="storedProcedureName">Name of the stored procedure.</param>
         /// <param name="parameters">The parameters.</param>
         /// <returns></returns>
-        public int ExecuteNonQuery(string storedProcedureName, List<KeyValuePair<string, object>> parameters)
+        public int ExecuteNonQuery(string storedProcedureName, Dictionary<string, object> parameters)
         {
             if (parameters == null)
-                parameters = new List<KeyValuePair<string, object>>();
+                parameters = new Dictionary<string, object>();
 
             SqlCommand command = GenerateCommand(storedProcedureName, parameters);
             int result = command.ExecuteNonQuery();
@@ -276,7 +276,7 @@ namespace TMSPS.Core.SQL
         /// <param name="storedProcedureName">Name of the stored procedure.</param>
         /// <param name="parameters">The parameters.</param>
         /// <returns></returns>
-        public DataTable ExecuteDataTable(string storedProcedureName, List<KeyValuePair<string, object>> parameters)
+        public DataTable ExecuteDataTable(string storedProcedureName, Dictionary<string, object> parameters)
         {
             SqlDataAdapter adapter = new SqlDataAdapter(GenerateCommand(storedProcedureName, parameters));
             DataSet dataSet = new DataSet();
@@ -313,7 +313,7 @@ namespace TMSPS.Core.SQL
         /// <param name="storedProcedureName">Name of the stored procedure.</param>
         /// <param name="parameters">The parameters.</param>
         /// <returns></returns>
-        public SqlDataReader ExecuteReader(string storedProcedureName, List<KeyValuePair<string, object>> parameters)
+        public SqlDataReader ExecuteReader(string storedProcedureName, Dictionary<string, object> parameters)
         {
             return GenerateCommand(storedProcedureName, parameters).ExecuteReader();
         }
@@ -345,7 +345,7 @@ namespace TMSPS.Core.SQL
         /// <param name="storedProcedureName">Name of the stored procedure.</param>
         /// <param name="parameters">The parameters.</param>
         /// <returns></returns>
-        public XmlReader ExecuteXMLReader(string storedProcedureName, List<KeyValuePair<string, object>> parameters)
+        public XmlReader ExecuteXMLReader(string storedProcedureName, Dictionary<string, object> parameters)
         {
             return GenerateCommand(storedProcedureName, parameters).ExecuteXmlReader();
         }
@@ -383,10 +383,10 @@ namespace TMSPS.Core.SQL
         /// <param name="generateMethod">The method expecting a DataRow and return an instance of the passed generic type.</param>
         /// <param name="parameters">The parameters.</param>
         /// <returns>An instance of the passed generic type</returns>
-        public ClassName ExecuteClassQuery<ClassName>(string storedProcedureName, ObjectFromDataReaderHandler<ClassName> generateMethod, List<KeyValuePair<string, object>> parameters)
+        public ClassName ExecuteClassQuery<ClassName>(string storedProcedureName, ObjectFromDataReaderHandler<ClassName> generateMethod, Dictionary<string, object> parameters)
         {
             if (parameters == null)
-                parameters = new List<KeyValuePair<string, object>>();
+                parameters = new Dictionary<string, object>();
 
             SqlDataReader reader = ExecuteReader(storedProcedureName, parameters);
 
@@ -436,10 +436,10 @@ namespace TMSPS.Core.SQL
         /// <param name="filterParameters">The filter parameters.</param>
         /// <param name="parameters">The parameters.</param>
         /// <returns>An instance of the passed generic type</returns>
-        public ClassName ExecuteClassQuery<ClassName>(string storedProcedureName, ObjectFromParameterizedDataReaderHandler<ClassName> generateMethod, object[] filterParameters, List<KeyValuePair<string, object>> parameters)
+        public ClassName ExecuteClassQuery<ClassName>(string storedProcedureName, ObjectFromParameterizedDataReaderHandler<ClassName> generateMethod, object[] filterParameters, Dictionary<string, object> parameters)
         {
             if (parameters == null)
-                parameters = new List<KeyValuePair<string, object>>();
+                parameters = new Dictionary<string, object>();
 
             SqlDataReader reader = ExecuteReader(storedProcedureName, parameters);
 
@@ -463,10 +463,10 @@ namespace TMSPS.Core.SQL
             return ExecuteClassQuery(storedProcedureName, generateMethod, GetParametersFromObjectArray(parameters));
         }
 
-        public ClassName ExecuteClassQuery<ClassName>(string storedProcedureName, ObjectFromDataRowHandler<ClassName> generateMethod, List<KeyValuePair<string, object>> parameters)
+        public ClassName ExecuteClassQuery<ClassName>(string storedProcedureName, ObjectFromDataRowHandler<ClassName> generateMethod, Dictionary<string, object> parameters)
         {
             if (parameters == null)
-                parameters = new List<KeyValuePair<string, object>>();
+                parameters = new Dictionary<string, object>();
 
             DataTable table = ExecuteDataTable(storedProcedureName, parameters);
             DoPostCommandProcessing();
@@ -487,10 +487,10 @@ namespace TMSPS.Core.SQL
             return ExecuteClassQuery(storedProcedureName, generateMethod, filterParameters, GetParametersFromObjectArray(parameters));
         }
 
-        public ClassName ExecuteClassQuery<ClassName>(string storedProcedureName, ObjectFromParameterizedDataRowHandler<ClassName> generateMethod, object[] filterParameters, List<KeyValuePair<string, object>> parameters)
+        public ClassName ExecuteClassQuery<ClassName>(string storedProcedureName, ObjectFromParameterizedDataRowHandler<ClassName> generateMethod, object[] filterParameters, Dictionary<string, object> parameters)
         {
             if (parameters == null)
-                parameters = new List<KeyValuePair<string, object>>();
+                parameters = new Dictionary<string, object>();
 
             DataTable table = ExecuteDataTable(storedProcedureName, parameters);
             DoPostCommandProcessing();
@@ -511,10 +511,10 @@ namespace TMSPS.Core.SQL
             return ExecuteClassListQuery(storedProcedureName, generateMethod, GetParametersFromObjectArray(parameters));
         }
 
-        public List<ClassName> ExecuteClassListQuery<ClassName>(string storedProcedureName, ObjectFromDataReaderHandler<ClassName> generateMethod, List<KeyValuePair<string, object>> parameters)
+        public List<ClassName> ExecuteClassListQuery<ClassName>(string storedProcedureName, ObjectFromDataReaderHandler<ClassName> generateMethod, Dictionary<string, object> parameters)
         {
             if (parameters == null)
-                parameters = new List<KeyValuePair<string, object>>();
+                parameters = new Dictionary<string, object>();
 
             SqlDataReader reader = ExecuteReader(storedProcedureName, parameters);
             List<ClassName> result = new List<ClassName>();
@@ -539,10 +539,10 @@ namespace TMSPS.Core.SQL
             return ExecuteClassListQuery(storedProcedureName, generateMethod, filterParameters, GetParametersFromObjectArray(parameters));
         }
 
-        public List<ClassName> ExecuteClassListQuery<ClassName>(string storedProcedureName, ObjectFromParameterizedDataReaderHandler<ClassName> generateMethod, object[] filterParameters, List<KeyValuePair<string, object>> parameters)
+        public List<ClassName> ExecuteClassListQuery<ClassName>(string storedProcedureName, ObjectFromParameterizedDataReaderHandler<ClassName> generateMethod, object[] filterParameters, Dictionary<string, object> parameters)
         {
             if (parameters == null)
-                parameters = new List<KeyValuePair<string, object>>();
+                parameters = new Dictionary<string, object>();
 
             SqlDataReader reader = ExecuteReader(storedProcedureName, parameters);
             List<ClassName> result = new List<ClassName>();
@@ -567,10 +567,10 @@ namespace TMSPS.Core.SQL
             return ExecuteClassListQuery(storedProcedureName, generateMethod, GetParametersFromObjectArray(parameters));
         }
 
-        public List<ClassName> ExecuteClassListQuery<ClassName>(string storedProcedureName, ObjectFromDataRowHandler<ClassName> generateMethod, List<KeyValuePair<string, object>> parameters)
+        public List<ClassName> ExecuteClassListQuery<ClassName>(string storedProcedureName, ObjectFromDataRowHandler<ClassName> generateMethod, Dictionary<string, object> parameters)
         {
             if (parameters == null)
-                parameters = new List<KeyValuePair<string, object>>();
+                parameters = new Dictionary<string, object>();
 
             DataTable table = ExecuteDataTable(storedProcedureName, parameters);
             List<ClassName> result = new List<ClassName>();
@@ -595,10 +595,10 @@ namespace TMSPS.Core.SQL
             return ExecuteClassListQuery(storedProcedureName, generateMethod, filterParameters, GetParametersFromObjectArray(parameters));
         }
 
-        public List<ClassName> ExecuteClassListQuery<ClassName>(string storedProcedureName, ObjectFromParameterizedDataRowHandler<ClassName> generateMethod, object[] filterParameters, List<KeyValuePair<string, object>> parameters)
+        public List<ClassName> ExecuteClassListQuery<ClassName>(string storedProcedureName, ObjectFromParameterizedDataRowHandler<ClassName> generateMethod, object[] filterParameters, Dictionary<string, object> parameters)
         {
             if (parameters == null)
-                parameters = new List<KeyValuePair<string, object>>();
+                parameters = new Dictionary<string, object>();
 
             DataTable table = ExecuteDataTable(storedProcedureName, parameters);
             List<ClassName> result = new List<ClassName>();
@@ -658,15 +658,15 @@ namespace TMSPS.Core.SQL
         /// </summary>
         /// <param name="parameters">The parameters.</param>
         /// <returns></returns>
-        private static List<KeyValuePair<string, object>> GetParametersFromObjectArray(object[] parameters)
+        private static Dictionary<string, object> GetParametersFromObjectArray(object[] parameters)
         {
             if (parameters == null || parameters.Length == 0)
-                return new List<KeyValuePair<string, object>>();
+                return new Dictionary<string, object>();
 
             if (parameters.Length % 2 != 0)
                 throw new ArgumentException("Parameters must be provided as pairs, the amount of parameters provided is not even.");
 
-             List<KeyValuePair<string, object>> result = new List<KeyValuePair<string, object>>();
+            Dictionary<string, object> result = new Dictionary<string, object>();
 
             for (int i = 0; i < parameters.Length; i += 2)
             {
@@ -679,7 +679,7 @@ namespace TMSPS.Core.SQL
                 string parameterName = Convert.ToString(parameters[i]);
                 object parameterValue = parameters[i + 1];
 
-                result.Add(new KeyValuePair<string, object>(parameterName, parameterValue));
+                result.Add(parameterName, parameterValue);
             }
 
             return result;
