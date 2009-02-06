@@ -28,6 +28,7 @@ namespace TMSPS.Core.Communication
 
         #region Non Public Members
 
+		private readonly object _readLock = new object();
         private readonly object _sendLock = new object();
         private readonly Callbacks _callBacks;
         private readonly Methods _methods;
@@ -196,11 +197,15 @@ namespace TMSPS.Core.Communication
         {
             TrackManiaRPCClient client = (TrackManiaRPCClient) state;
 
+			if (client == null)
+				throw new InvalidOperationException("Client is null!");
+
             while (true)
             {
-                if (client.MessageQueue.Count > 0 && client.MessageQueue.Peek().IndexOf("<methodCall>", StringComparison.OrdinalIgnoreCase) != -1)
+				string message = client.MessageQueue.Dequeue(msg => msg == null || msg.IndexOf("<methodCall>", StringComparison.OrdinalIgnoreCase) != -1, client._readLock);
+                
+				if (message != null)
                 {
-                    string message = client.MessageQueue.Dequeue();
                     XElement messageElement = TryParseXElement(message);
 
                     if (messageElement != null)
@@ -224,8 +229,10 @@ namespace TMSPS.Core.Communication
         {
             while (true)
             {
-                if (MessageQueue.Count > 0 && MessageQueue.Peek().IndexOf("<methodResponse>", StringComparison.OrdinalIgnoreCase) != -1)
-                    return MessageQueue.Dequeue();
+				string message = MessageQueue.Dequeue(msg => msg == null || msg.IndexOf("<methodResponse>", StringComparison.OrdinalIgnoreCase) != -1, _readLock);
+
+				if (message != null)
+					return message;
 
                 Thread.Sleep(20);
             }
