@@ -12,45 +12,74 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
 		public DateTime Created { get; private set; }
 		public DateTime? LastChanged { get; private set; }
 		public DateTime LastTimePlayedChanged { get; private set; }
-		public int Wins { get; set; }
-		public long TimePlayed { get; set; }
+		public uint Wins { get; private set; }
+		public TimeSpan TimePlayed { get; private set; }
 
 		#endregion
 
-		#region IPlayerSerializable Members
+	    #region Constructors
 
-        int? IPlayerSerializable.ID
-		{
-			get { return ID; }
-			set { ID = value; }
-		}
+        public Player() : this(null, null)
+        {
+            
+        }
 
-		DateTime IPlayerSerializable.Created
-		{
-			get { return Created; }
-			set { Created = value; }
-		}
+        public Player(string login, string nickname)
+        {
+            Login = login;
+            Nickname = nickname;
+        }
 
-		DateTime? IPlayerSerializable.LastChanged
-		{
-			get { return LastChanged; }
-			set { LastChanged = value; }
-		}
+	    #endregion
 
-		DateTime IPlayerSerializable.LastTimePlayedChanged
-		{
-			get { return LastTimePlayedChanged; }
-			set { LastTimePlayedChanged = value; }
-		}
+	    #region IPlayerSerializable Members
 
-		#endregion
+	    int? IPlayerSerializable.ID
+	    {
+	        get { return ID; }
+	        set { ID = value; }
+	    }
+
+	    DateTime IPlayerSerializable.Created
+	    {
+	        get { return Created; }
+	        set { Created = value; }
+	    }
+
+	    DateTime? IPlayerSerializable.LastChanged
+	    {
+	        get { return LastChanged; }
+	        set { LastChanged = value; }
+	    }
+
+	    DateTime IPlayerSerializable.LastTimePlayedChanged
+	    {
+	        get { return LastTimePlayedChanged; }
+	        set { LastTimePlayedChanged = value; }
+	    }
+
+	    uint IPlayerSerializable.Wins
+	    {
+	        get { return Wins; }
+	        set { Wins = value; }
+	    }
+
+	    TimeSpan IPlayerSerializable.TimePlayed
+	    {
+	        get { return TimePlayed; }
+	        set { TimePlayed = value; }
+	    }
+
+	    #endregion
 	}
 
-	public interface IPlayerSerializable
-	{
+    public interface IPlayerSerializable
+    {
         int? ID { get; set; }
-		DateTime Created { get; set; }
-		DateTime? LastChanged { get; set; }
-		DateTime LastTimePlayedChanged { get; set; }
-	}
+        DateTime Created { get; set; }
+        DateTime? LastChanged { get; set; }
+        DateTime LastTimePlayedChanged { get; set; }
+        uint Wins { get; set; }
+        TimeSpan TimePlayed { get; set; }
+    }
 }

@@ -8,7 +8,6 @@ using TMSPS.Core.Communication.ResponseHandling;
 using TMSPS.Core.Logging;
 using TMSPS.Core.PluginSystem;
 using TMSPS.Core.PluginSystem.Configuration;
-using TMSPS.Core.PluginSystem.Plugins.LocalRecords;
 using Version=TMSPS.Core.Communication.ProxyTypes.Version;
 
 namespace TMSPS.Daemon
@@ -83,8 +82,6 @@ namespace TMSPS.Daemon
             _client.Connect();
         }
 
-        
-
         public void Stop()
         {
             DisposePlugins();
@@ -98,13 +95,13 @@ namespace TMSPS.Daemon
 
         private void ReReadConfig()
         {
-			Stop();
-			Start();
+            Stop();
+            Start();
         }
 
         private void SocketError(object sender, Core.Communication.EventArguments.SocketErrorEventArgs e)
         {
-			Log.ErrorToUI("Socket Error occured!");
+            Log.ErrorToUI("Socket Error occured!");
             Log.Error(string.Format("Connection Error: {0}.", e.SocketError));
             DisposePlugins();
             _client.Connect();
@@ -131,12 +128,12 @@ namespace TMSPS.Daemon
             Plugins = ConfigSettings.GetPlugins();
             HostContext = GetHostContext();
 
-			if (HostContext == null)
-				return;
+            if (HostContext == null)
+                return;
 
             foreach (ITMSPSPlugin plugin in Plugins)
             {
-				plugin.InitPlugin(HostContext, new ConsoleUILogger("TMSPS", plugin.ShortNameForLogging));
+                plugin.InitPlugin(HostContext, new ConsoleUILogger("TMSPS", plugin.ShortNameForLogging));
             }
         }
 
@@ -170,7 +167,7 @@ namespace TMSPS.Daemon
             if (packMaskResponse.Erroneous)
             {
                 Log.WarnToUI("Error retrieving ServerPackMask: " + packMaskResponse.Fault.FaultMessage);
-				Log.WarnToUI("Plugins initialization skipped!");
+                Log.WarnToUI("Plugins initialization skipped!");
                 return null;
             }
 
@@ -178,8 +175,8 @@ namespace TMSPS.Daemon
 
             if (versionResponse.Erroneous)
             {
-				Log.WarnToUI("Error retrieving VersionInfo: " + packMaskResponse.Fault.FaultMessage);
-				Log.WarnToUI("Plugins initialization skipped!");
+                Log.WarnToUI("Error retrieving VersionInfo: " + packMaskResponse.Fault.FaultMessage);
+                Log.WarnToUI("Plugins initialization skipped!");
                 return null;
             }
 
@@ -194,12 +191,12 @@ namespace TMSPS.Daemon
             ConfigSettings = ConfigSettingsConfigurationSection.GetFromConfig("ConfigSettings");
         }
 
-		private static string GetFullFilePath(string filename)
-		{
-			string directory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+        private static string GetFullFilePath(string filename)
+        {
+            string directory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
 
-			return Path.Combine(directory, filename);
-		}
+            return Path.Combine(directory, filename);
+        }
 
         #endregion
     }
