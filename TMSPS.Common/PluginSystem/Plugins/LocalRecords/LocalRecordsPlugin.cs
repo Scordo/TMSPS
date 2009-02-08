@@ -143,6 +143,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
             UpdateTimePlayedForAllCurrentPlayers();
 
 			Context.RPCClient.Callbacks.BeginRace -= Callbacks_BeginRace;
+            Context.RPCClient.Callbacks.EndRace -= Callbacks_EndRace;
             Context.RPCClient.Callbacks.PlayerConnect -= Callbacks_PlayerConnect;
             Context.RPCClient.Callbacks.PlayerDisconnect -= Callbacks_PlayerDisconnect;
 		}
