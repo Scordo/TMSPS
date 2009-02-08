@@ -103,6 +103,17 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
                 case "-+":
                     averageVote = RatingAdapter.Vote(e.Login, CurrentChallengeID, 4);
                     break;
+                case "+0":
+                case "+1":
+                case "+2":
+                case "+3":
+                case "+4":
+                case "+5":
+                case "+6":
+                case "+7":
+                case "+8":
+                    averageVote = RatingAdapter.Vote(e.Login, CurrentChallengeID, Convert.ToUInt16(message.Substring(1)));
+                    break;
             }
 
             if (averageVote.HasValue)
