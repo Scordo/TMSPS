@@ -1,4 +1,6 @@
-﻿using TMSPS.Core.SQL;
+﻿using System;
+using System.Collections.Generic;
+using TMSPS.Core.SQL;
 
 namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords.SQL
 {
@@ -22,5 +24,28 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords.SQL
         }
 
         #endregion
+
+        #region Public Methods
+
+        public double? Vote(string login, int challengeID, ushort rating)
+        {
+            if (rating > 8)
+                rating = 8;
+
+             if (login.IsNullOrTimmedEmpty())
+                throw new ArgumentException("Login is null or empty.");
+
+            Dictionary<string, object> parameters = new Dictionary<string, object>
+            {
+                {"Login", login.Trim()},
+                {"ChallengeID", challengeID},
+                {"Rating", Convert.ToInt16(rating)}
+            };
+
+            return SqlHelper.ExecuteScalar<double?>("Rating_Vote", parameters);
+        }
+
+        #endregion
+
     }
 }

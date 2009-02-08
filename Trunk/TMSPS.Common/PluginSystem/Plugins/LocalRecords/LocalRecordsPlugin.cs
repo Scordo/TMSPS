@@ -26,6 +26,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
 	    private IPlayerAdapter PlayerAdapter { get; set; }
 	    private IPositionAdapter PositionAdapter { get; set; }
 	    private IRecordAdapter RecordAdapter { get; set; }
+        private IRatingAdapter RatingAdapter { get; set; }
 	    private int CurrentChallengeID { get; set; }
 	    private Timer TimePlayedTimer { get; set; }
 	    private Dictionary<string, PlayerInfo> PlayerInfoCache { get; set; }
@@ -37,13 +38,15 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
 	    protected override void Init()
 	    {
 	        PlayerInfoCache = new Dictionary<string, PlayerInfo>();
-	        try
+	        
+            try
 	        {
 	            AdapterProvider = AdapterProviderFactory.GetAdapterProvider(Util.GetCalculatedPath("LocalRecords.xml"));
 	            ChallengeAdapter = AdapterProvider.GetChallengeAdapter();
 	            PlayerAdapter = AdapterProvider.GetPlayerAdapter();
 	            PositionAdapter = AdapterProvider.GetPositionAdapter();
 	            RecordAdapter = AdapterProvider.GetRecordAdapter();
+	            RatingAdapter = AdapterProvider.GetRatingAdapter();
 	        }
 	        catch (Exception ex)
 	        {
@@ -76,7 +79,35 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
 	        Context.RPCClient.Callbacks.PlayerConnect += Callbacks_PlayerConnect;
 	        Context.RPCClient.Callbacks.PlayerDisconnect += Callbacks_PlayerDisconnect;
 	        Context.RPCClient.Callbacks.PlayerFinish += Callbacks_PlayerFinish;
+            Context.RPCClient.Callbacks.PlayerChat += Callbacks_PlayerChat;
 	    }
+
+        private void Callbacks_PlayerChat(object sender, PlayerChatEventArgs e)
+        {
+            if (e.Erroneous || e.IsServerMessage || e.Text.IsNullOrTimmedEmpty() || e.IsRegisteredCommand)
+    			return;
+
+            string message = e.Text.Trim();
+
+            double? averageVote = null;
+
+            switch (message)
+            {
+                case "++":
+                    averageVote = RatingAdapter.Vote(e.Login, CurrentChallengeID, 8);
+                    break;
+                case "--":
+                    averageVote = RatingAdapter.Vote(e.Login, CurrentChallengeID, 0);
+                    break;
+                case "+-":
+                case "-+":
+                    averageVote = RatingAdapter.Vote(e.Login, CurrentChallengeID, 4);
+                    break;
+            }
+
+            if (averageVote.HasValue)
+                Context.RPCClient.Methods.SendServerMessageToLogin(string.Format("Vote accepted! Average vote is: {0}", averageVote.Value.ToString("F")), e.Login);
+        }
 
 	    private void Callbacks_PlayerFinish(object sender, PlayerFinishEventArgs e)
 	    {
