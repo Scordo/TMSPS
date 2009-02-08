@@ -8,6 +8,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
 
         public int? ID { get; private set; }
 		public DateTime Created { get; private set; }
+        public DateTime? LastChanged { get; private set; }
 		public ushort Value { get; set; }
 		public int PlayerID { get; set; }
 		public int ChallengeID { get; set; }
@@ -28,6 +29,12 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
 			set { Created = value; }
 		}
 
+        DateTime? IRatingSerializable.LastChanged
+        {
+            get { return LastChanged; }
+            set { LastChanged = value; }
+        }
+
 		#endregion
 	}
 
@@ -35,5 +42,6 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
 	{
         int? ID { get; set; }
 		DateTime Created { get; set; }
+        DateTime? LastChanged { get; set; }
 	}
 }
