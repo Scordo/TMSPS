@@ -27,6 +27,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
 	    private IPositionAdapter PositionAdapter { get; set; }
 	    private IRecordAdapter RecordAdapter { get; set; }
         private IRatingAdapter RatingAdapter { get; set; }
+        private ISessionAdapter SessionAdapter { get; set; }
 	    private int CurrentChallengeID { get; set; }
 	    private Timer TimePlayedTimer { get; set; }
 	    private Dictionary<string, PlayerInfo> PlayerInfoCache { get; set; }
@@ -47,6 +48,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
 	            PositionAdapter = AdapterProvider.GetPositionAdapter();
 	            RecordAdapter = AdapterProvider.GetRecordAdapter();
 	            RatingAdapter = AdapterProvider.GetRatingAdapter();
+	            SessionAdapter = AdapterProvider.GetSessionAdapter();
 	        }
 	        catch (Exception ex)
 	        {
@@ -142,6 +144,8 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
 	                        Context.RPCClient.Methods.SendNotice(string.Format("{0}$z improved his/her local rank: $w$s$0f0{1}$z!", playerInfo.NickName, newPosition));
 	                }
 	            }
+
+                SessionAdapter.AddSession(e.Login, CurrentChallengeID, e.TimeOrScore);
 	        }
 	    }
 
