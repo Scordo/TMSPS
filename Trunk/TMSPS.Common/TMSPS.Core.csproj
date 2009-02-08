@@ -211,8 +211,12 @@
     <None Include="Resources\SQLScripts\StoredProcedures\Player\Player_CreateOrUpdate.sql" />
     <None Include="Resources\SQLScripts\StoredProcedures\Player\Player_IncreaseWins.sql" />
     <None Include="Resources\SQLScripts\StoredProcedures\Player\Player_UpdateTimePlayed.sql" />
+    <None Include="Resources\SQLScripts\StoredProcedures\Position\Position_Add.sql" />
+    <None Include="Resources\SQLScripts\StoredProcedures\Record\Record_TryInsertOrUpdate.sql" />
     <None Include="Resources\SQLScripts\Structure\Challenge.sql" />
     <None Include="Resources\SQLScripts\Structure\Player.sql" />
+    <None Include="Resources\SQLScripts\Structure\Position.sql" />
+    <None Include="Resources\SQLScripts\Structure\Record.sql" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
