@@ -208,6 +208,9 @@
     <None Include="Resources\SQLScripts\StoredProcedures\Challenge\Challenge_IncreaseRaces_ByChallenge.sql" />
     <None Include="Resources\SQLScripts\StoredProcedures\Challenge\Challenge_IncreaseRaces_ByID.sql" />
     <None Include="Resources\SQLScripts\StoredProcedures\Challenge\Challenge_IncreaseRaces_ByUniqueID.sql" />
+    <None Include="Resources\SQLScripts\StoredProcedures\Player\Player_CreateOrUpdate.sql" />
+    <None Include="Resources\SQLScripts\StoredProcedures\Player\Player_IncreaseWins.sql" />
+    <None Include="Resources\SQLScripts\StoredProcedures\Player\Player_UpdateTimePlayed.sql" />
     <None Include="Resources\SQLScripts\Structure\Challenge.sql" />
     <None Include="Resources\SQLScripts\Structure\Player.sql" />
   </ItemGroup>

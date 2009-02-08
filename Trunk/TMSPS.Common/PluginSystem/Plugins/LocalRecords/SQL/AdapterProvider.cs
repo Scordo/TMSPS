@@ -43,7 +43,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords.SQL
 
         public IPlayerAdapter GetPlayerAdapter()
         {
-            throw new NotImplementedException();
+            return new PlayerAdapter(_connectionManager);
         }
 
         public IPlayerAdapter GetPlayerAdapter(IBaseAdapter adapterToCopyContextFrom)
@@ -56,7 +56,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords.SQL
 
         public IPositionAdapter GetPositionAdapter()
         {
-            throw new NotImplementedException();
+            return new PositionAdapter(_connectionManager);
         }
 
         public IPositionAdapter GetPositionAdapter(IBaseAdapter adapterToCopyContextFrom)
@@ -69,7 +69,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords.SQL
 
         public IRankAdapter GetRankAdapter()
         {
-            throw new NotImplementedException();
+            return new RankAdapter(_connectionManager);
         }
 
         public IRankAdapter GetRankAdapter(IBaseAdapter adapterToCopyContextFrom)
@@ -82,7 +82,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords.SQL
 
         public IRatingAdapter GetRatingAdapter()
         {
-            throw new NotImplementedException();
+            return new RatingAdapter(_connectionManager);
         }
 
         public IRatingAdapter GetRatingAdapter(IBaseAdapter adapterToCopyContextFrom)
@@ -95,7 +95,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords.SQL
 
         public IRecordAdapter GetRecordAdapter()
         {
-            throw new NotImplementedException();
+            return new RecordAdapter(_connectionManager);
         }
 
         public IRecordAdapter GetRecordAdapter(IBaseAdapter adapterToCopyContextFrom)
@@ -108,7 +108,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords.SQL
 
         public ISessionAdapter GetSessionAdapter()
         {
-            throw new NotImplementedException();
+            return new SessionAdapter(_connectionManager);
         }
 
         public ISessionAdapter GetSessionAdapter(IBaseAdapter adapterToCopyContextFrom)
@@ -119,10 +119,6 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords.SQL
             return adapter;
         }
 
-        #endregion
-
-        #region IAdapterProvider Members
-
         void IAdapterProvider.Init(string parameter)
         {
             // parameter is the connectionstring
@@ -131,7 +127,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords.SQL
                 throw new ArgumentNullException();
 
             _connectionManager = new ConnectionManager(parameter);
-            
+
         }
 
         #endregion
