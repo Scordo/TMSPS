@@ -1,4 +1,6 @@
-﻿using TMSPS.Core.SQL;
+﻿using System;
+using System.Collections.Generic;
+using TMSPS.Core.SQL;
 
 namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords.SQL
 {
@@ -19,6 +21,25 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords.SQL
         /// <param name="connectionManager">The connection manager.</param>
         public SessionAdapter(ConnectionManager connectionManager): base(connectionManager)
         {
+        }
+
+        #endregion
+
+        #region Public Methods
+
+        public void AddSession(string login, int challengeID, int timeOrScore)
+        {
+            if (login.IsNullOrTimmedEmpty())
+                throw new ArgumentException("Login is null or empty.");
+
+            Dictionary<string, object> parameters = new Dictionary<string, object>
+            {
+                {"Login", login.Trim()},
+                {"ChallengeID", challengeID},
+                {"TimeOrScore", timeOrScore}
+            };
+
+            SqlHelper.ExecuteNonQuery("Session_Add", parameters);
         }
 
         #endregion

@@ -6,13 +6,13 @@
 AS
 BEGIN
 	declare @PlayerID int
-	set @PlayerID = (Select ID FROM dbo.Player WHERE Login = @Login)
+	set @PlayerID = (Select ID FROM dbo.Player with(nolock) WHERE Login = @Login)
 	
 	if @PlayerID is null
 		return
 		
 	declare @ChallengeID int
-	set @ChallengeID = (Select ID FROM dbo.Challenge WHERE UniqueID = @UniqueChallengeID)
+	set @ChallengeID = (Select ID FROM dbo.Challenge with(nolock) WHERE UniqueID = @UniqueChallengeID)
 	
 	if @PlayerID is null
 		return

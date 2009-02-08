@@ -7,7 +7,7 @@
 AS
 BEGIN
 	declare @ID int
-	set @ID = (Select ID FROM dbo.Challenge WHERE UniqueID = @UniqueID)
+	set @ID = (Select ID FROM dbo.Challenge with(nolock) WHERE UniqueID = @UniqueID)
 	
 	if @ID is null
 	BEGIN

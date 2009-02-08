@@ -4,7 +4,7 @@
 AS
 BEGIN
 	declare @ID int
-	set @ID = (Select ID FROM dbo.Player WHERE Login = @Login)
+	set @ID = (Select ID FROM dbo.Player with(nolock) WHERE Login = @Login)
 	
 	declare @currentDate datetime
 	SET @currentDate = getdate()
