@@ -174,8 +174,17 @@ namespace TMSPS.Core.SQL
         public TReturnType ExecuteScalar<TReturnType>(string storedProcedureName, Dictionary<string, object> parameters)
         {
             object result = ExecuteScalar(storedProcedureName, parameters);
+            Type convertToType = typeof (TReturnType);
 
-            return (TReturnType)Convert.ChangeType(result, typeof(TReturnType));
+            if (typeof(TReturnType).IsGenericType && typeof(TReturnType).GetGenericTypeDefinition() == typeof(Nullable<>).GetGenericTypeDefinition())
+            {
+                if (result == null)
+                    return default(TReturnType);
+
+                convertToType = typeof (TReturnType).GetGenericArguments()[0];
+            }
+
+            return (TReturnType)Convert.ChangeType(result, convertToType);
         }
 
         /// <summary>
