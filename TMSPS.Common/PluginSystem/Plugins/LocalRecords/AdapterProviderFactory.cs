@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Configuration;
 using System.Reflection;
-using System.Xml.Linq;
 
 namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
 {
@@ -19,17 +17,17 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
 
     	#region Public Methods
 
-		public static IAdapterProvider GetAdapterProvider(string xmlConfigurationFile)
+		public static IAdapterProvider GetAdapterProvider(LocalRecordsSettings settings)
 		{
-			if (xmlConfigurationFile == null)
-				throw new ArgumentNullException("xmlConfigurationFile");
+			if (settings == null)
+				throw new ArgumentNullException("settings");
 
 			if (_instance == null)
 			{
 				lock (_padlock)
 				{
 					if (_instance == null)
-						_instance = GetConfiguredProviderInstance(xmlConfigurationFile);
+						_instance = GetConfiguredProviderInstance(settings);
 				}
 			}
 
@@ -41,43 +39,12 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
 
     	#region Non Public Methods
 
-		private static IAdapterProvider GetConfiguredProviderInstance(string xmlConfigurationFile)
+		private static IAdapterProvider GetConfiguredProviderInstance(LocalRecordsSettings settings)
     	{
-			XDocument configDocument = XDocument.Load(xmlConfigurationFile);
+			if (settings == null)
+				throw new ArgumentNullException("settings");
 
-			if (configDocument.Root == null)
-				throw new ConfigurationErrorsException("Could not find root node in file: " + xmlConfigurationFile);
-
-			XElement providerSettingsElement = configDocument.Root.Element("ProviderSettings");
-
-			if (providerSettingsElement == null)
-				throw new ConfigurationErrorsException("Could not find ProviderSettings node in file: " + xmlConfigurationFile);
-
-			XElement assemblyElement = providerSettingsElement.Element("Assembly");
-
-			if (assemblyElement == null)
-				throw new ConfigurationErrorsException("Could not find Assembly node in file: " + xmlConfigurationFile);
-
-			if (assemblyElement.Value.IsNullOrTimmedEmpty())
-				throw new ConfigurationErrorsException("Assembly node is empty in file: " + xmlConfigurationFile);
-
-			XElement providerElement = providerSettingsElement.Element("Provider");
-
-			if (providerElement == null)
-				throw new ConfigurationErrorsException("Could not find Provider node in file: " + xmlConfigurationFile);
-
-			if (providerElement.Value.IsNullOrTimmedEmpty())
-				throw new ConfigurationErrorsException("Provider node is empty in file: " + xmlConfigurationFile);
-
-			XElement parameterElement = providerSettingsElement.Element("Parameter");
-
-			if (parameterElement == null)
-				throw new ConfigurationErrorsException("Could not find Parameter node in file: " + xmlConfigurationFile);
-
-
-			string assemblyLocation = assemblyElement.Value.Trim();
-			string adapterProviderClass = providerElement.Value.Trim();
-			string parameter = parameterElement.Value.Trim();
+			string assemblyLocation = settings.ProviderAssemblyLocation;
 
 			if (!assemblyLocation.EndsWith(".dll", StringComparison.InvariantCultureIgnoreCase))
 				assemblyLocation += ".dll";
@@ -97,21 +64,21 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
 
     		try
     		{
-    			providerInstance = assembly.CreateInstance(adapterProviderClass);
+				providerInstance = assembly.CreateInstance(settings.ProviderClass);
     		}
     		catch (Exception ex)
     		{
-    			throw new ArgumentException("Could not create instance of " + adapterProviderClass, ex);
+				throw new ArgumentException("Could not create instance of " + settings.ProviderClass, ex);
     		}
 
     		if (providerInstance == null)
-    			throw new ArgumentException("Could not create instance of " + adapterProviderClass);
+				throw new ArgumentException("Could not create instance of " + settings.ProviderClass);
 
     		if (!(providerInstance is IAdapterProvider))
     			throw new ArgumentException(string.Format("Class '{0}' does not implement IAdapterProvider.", providerInstance.GetType().FullName));
 
     		IAdapterProvider provider = (IAdapterProvider) providerInstance;
-    		provider.Init(parameter);
+    		provider.Init(settings.ProviderParameter);
 
     		return provider;
     	}

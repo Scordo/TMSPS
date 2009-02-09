@@ -28,6 +28,7 @@ namespace TMSPS.Core.SQL
         #region Non Public Members
 
         private readonly ConnectionManager _connectionManager;
+    	private bool _closeConnectionAfterCommandProcessing;
 
         #endregion
 
@@ -49,21 +50,23 @@ namespace TMSPS.Core.SQL
         /// <summary>
         /// Initializes a new instance of the <see cref="SqlHelper"/> class.
         /// </summary>
-        public SqlHelper() : this(ConnectionManager.NewInstance)
+        public SqlHelper() : this(ConnectionManager.NewInstance, true)
         {
 
         }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="SqlHelper"/> class.
-        /// </summary>
-        /// <param name="connectionManager">The connection manager.</param>
-        public SqlHelper(ConnectionManager connectionManager)
+		/// <summary>
+		/// Initializes a new instance of the <see cref="SqlHelper"/> class.
+		/// </summary>
+		/// <param name="connectionManager">The connection manager.</param>
+		/// <param name="closeConnectionAfterCommandProcessing">if set to <c>true</c> the connection is closed after command processing.</param>
+        public SqlHelper(ConnectionManager connectionManager, bool closeConnectionAfterCommandProcessing)
         {
             if (connectionManager == null)
                 throw new ArgumentNullException("connectionManager");
 
             _connectionManager = connectionManager;
+        	_closeConnectionAfterCommandProcessing = closeConnectionAfterCommandProcessing;
         }
 
         #endregion
@@ -658,7 +661,7 @@ namespace TMSPS.Core.SQL
         /// </summary>
         private void DoPostCommandProcessing()
         {
-            if (!ConnectionManager.OpenTransactionExists)
+			if (!ConnectionManager.OpenTransactionExists && _closeConnectionAfterCommandProcessing)
                 ConnectionManager.CloseConnection();
         }
 

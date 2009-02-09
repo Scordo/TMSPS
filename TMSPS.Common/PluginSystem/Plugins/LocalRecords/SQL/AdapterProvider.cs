@@ -126,8 +126,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords.SQL
             if (parameter == null)
                 throw new ArgumentNullException();
 
-            _connectionManager = new ConnectionManager(parameter);
-
+            _connectionManager = new ConnectionManager(parameter, false);
         }
 
         #endregion

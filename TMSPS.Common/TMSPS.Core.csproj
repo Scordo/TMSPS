@@ -172,6 +172,7 @@
     <Compile Include="PluginSystem\Plugins\LocalRecords\IRecordAdapter.cs" />
     <Compile Include="PluginSystem\Plugins\LocalRecords\ISessionAdapter.cs" />
     <Compile Include="PluginSystem\Plugins\LocalRecords\LocalRecordsPlugin.cs" />
+    <Compile Include="PluginSystem\Plugins\LocalRecords\LocalRecordsSettings.cs" />
     <Compile Include="PluginSystem\Plugins\LocalRecords\SQL\AdapterProvider.cs" />
     <Compile Include="PluginSystem\Plugins\LocalRecords\Player.cs" />
     <Compile Include="PluginSystem\Plugins\LocalRecords\Position.cs" />
