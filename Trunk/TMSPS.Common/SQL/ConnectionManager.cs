@@ -17,6 +17,7 @@ namespace TMSPS.Core.SQL
         private SqlConnection _connection;
         private SqlTransaction _transaction;
         private SqlHelper _sqlHelper;
+    	private readonly bool _closeConnectionAfterCommandProcessing;
 
         #endregion
 
@@ -35,7 +36,7 @@ namespace TMSPS.Core.SQL
         /// </summary>
         public static ConnectionManager NewInstance
         {
-            get { return new ConnectionManager(ConfigurationManager.ConnectionStrings["Default"].ConnectionString); }
+            get { return new ConnectionManager(); }
         }
 
         /// <summary>
@@ -88,7 +89,7 @@ namespace TMSPS.Core.SQL
             get
             {
                 if (_sqlHelper == null)
-                    _sqlHelper = new SqlHelper(this);
+                    _sqlHelper = new SqlHelper(this, _closeConnectionAfterCommandProcessing);
 
                 return _sqlHelper;
             }
@@ -101,18 +102,20 @@ namespace TMSPS.Core.SQL
         /// <summary>
         /// Initializes a new instance of the <see cref="ConnectionManager"/> class.
         /// </summary>
-        public ConnectionManager() : this(ConfigurationManager.ConnectionStrings["Default"].ConnectionString)
+        public ConnectionManager() : this(ConfigurationManager.ConnectionStrings["Default"].ConnectionString, true)
         {
 
         }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ConnectionManager"/> class.
-        /// </summary>
-        /// <param name="connectionString">The connection string.</param>
-        public ConnectionManager(string connectionString)
+		/// <summary>
+		/// Initializes a new instance of the <see cref="ConnectionManager"/> class.
+		/// </summary>
+		/// <param name="connectionString">The connection string.</param>
+		/// <param name="closeConnectionAfterCommandProcessing">if set to <c>true</c> the connection is closed after command processing.</param>
+        public ConnectionManager(string connectionString, bool closeConnectionAfterCommandProcessing)
         {
             _connectionString = connectionString;
+        	_closeConnectionAfterCommandProcessing = closeConnectionAfterCommandProcessing;
         }
 
         #endregion

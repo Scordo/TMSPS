@@ -1,6 +1,10 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
-<ProviderSettings>
-	<Assembly>TMSPS.Core</Assembly>
-	<Provider>TMSPS.Core.PluginSystem.Plugins.LocalRecords.SQL.AdapterProvider</Provider>
-	<Parameter>server=sqlserver;database=database;uid=login;pwd=password;MultipleActiveResultSets=True;</Parameter>
-</ProviderSettings>
+<Settings>
+	<ProviderSettings>
+		<Assembly>TMSPS.Core</Assembly>
+		<Provider>TMSPS.Core.PluginSystem.Plugins.LocalRecords.SQL.AdapterProvider</Provider>
+		<Parameter>server=sqlserver;database=database;uid=login;pwd=password;MultipleActiveResultSets=True;</Parameter>
+	</ProviderSettings>
+
+	<ShowMessages>true</ShowMessages>
+</Settings>

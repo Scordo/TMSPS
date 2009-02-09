@@ -27,10 +27,6 @@ GO
 ALTER TABLE [dbo].[Player] ADD  CONSTRAINT [DF_Player_LastTimePlayedChanged]  DEFAULT (getdate()) FOR [LastTimePlayedChanged]
 GO
 
-USE [TMSPS_DEV]
-GO
-
-
 CREATE UNIQUE NONCLUSTERED INDEX [IX_UniqueLogin] ON [dbo].[Player] 
 (
 	[Login] ASC

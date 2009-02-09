@@ -31,6 +31,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
 	    private int CurrentChallengeID { get; set; }
 	    private Timer TimePlayedTimer { get; set; }
 	    private Dictionary<string, PlayerInfo> PlayerInfoCache { get; set; }
+		private LocalRecordsSettings Settings { get; set; }
 
 	    #endregion
 
@@ -38,11 +39,13 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
 
 	    protected override void Init()
 	    {
+			Logger.InfoToUI("Started initialziation of " + ShortNameForLogging);
 	        PlayerInfoCache = new Dictionary<string, PlayerInfo>();
-	        
+	    	
             try
 	        {
-	            AdapterProvider = AdapterProviderFactory.GetAdapterProvider(Util.GetCalculatedPath("LocalRecords.xml"));
+				Settings = LocalRecordsSettings.ReadFromFile(Util.GetCalculatedPath("LocalRecords.xml"));
+				AdapterProvider = AdapterProviderFactory.GetAdapterProvider(Settings);
 	            ChallengeAdapter = AdapterProvider.GetChallengeAdapter();
 	            PlayerAdapter = AdapterProvider.GetPlayerAdapter();
 	            PositionAdapter = AdapterProvider.GetPositionAdapter();
@@ -75,13 +78,15 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
 	        TimePlayedTimer = new Timer(30000);
 	        TimePlayedTimer.Elapsed += TimePlayedTimer_Elapsed;
 	        TimePlayedTimer.Start();
-			
+
 	        Context.RPCClient.Callbacks.BeginRace += Callbacks_BeginRace;
 	        Context.RPCClient.Callbacks.EndRace += Callbacks_EndRace;
 	        Context.RPCClient.Callbacks.PlayerConnect += Callbacks_PlayerConnect;
 	        Context.RPCClient.Callbacks.PlayerDisconnect += Callbacks_PlayerDisconnect;
 	        Context.RPCClient.Callbacks.PlayerFinish += Callbacks_PlayerFinish;
             Context.RPCClient.Callbacks.PlayerChat += Callbacks_PlayerChat;
+
+			Logger.InfoToUI("Finished initialization of " + ShortNameForLogging);
 	    }
 
         private void Callbacks_PlayerChat(object sender, PlayerChatEventArgs e)
@@ -118,7 +123,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
                     break;
             }
 
-            if (averageVote.HasValue)
+            if (averageVote.HasValue && Settings.ShowMessages)
                 Context.RPCClient.Methods.SendServerMessageToLogin(string.Format("Vote accepted! Average vote is: {0}", averageVote.Value.ToString("F")), e.Login);
         }
 
@@ -136,12 +141,21 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
 
 	                if (playerInfo != null)
 	                {
-	                    if (oldPosition == null)
-	                        Context.RPCClient.Methods.SendNotice(string.Format("{0}$z got his first local rank: $w$s$0f0{1}$z!", playerInfo.NickName, newPosition));
-	                    else if (newPosition > oldPosition)
-	                        Context.RPCClient.Methods.SendNotice(string.Format("{0}$z achieved local rank: $w$s$0f0{1}$z. Old rank: $w$s{2}", playerInfo.NickName, newPosition, oldPosition));
-	                    else
-	                        Context.RPCClient.Methods.SendNotice(string.Format("{0}$z improved his/her local rank: $w$s$0f0{1}$z!", playerInfo.NickName, newPosition));
+						if (oldPosition == null)
+						{
+							if (Settings.ShowMessages)
+								Context.RPCClient.Methods.SendNotice(string.Format("{0}$z got his first local rank: $w$s$0f0{1}$z!", playerInfo.NickName, newPosition));
+						}
+						else if (newPosition > oldPosition)
+						{
+							if (Settings.ShowMessages)
+								Context.RPCClient.Methods.SendNotice(string.Format("{0}$z achieved local rank: $w$s$0f0{1}$z. Old rank: $w$s{2}", playerInfo.NickName, newPosition, oldPosition));
+						}
+						else
+						{
+							if (Settings.ShowMessages)
+								Context.RPCClient.Methods.SendNotice(string.Format("{0}$z improved his/her local rank: $w$s$0f0{1}$z!", playerInfo.NickName, newPosition));
+						}
 	                }
 	            }
 

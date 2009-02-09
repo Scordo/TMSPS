@@ -1,4 +1,4 @@
-﻿ALTER PROCEDURE dbo.Player_IncreaseWins
+﻿CREATE PROCEDURE dbo.Player_IncreaseWins
 	@Login nvarchar(50)
 AS
 BEGIN
