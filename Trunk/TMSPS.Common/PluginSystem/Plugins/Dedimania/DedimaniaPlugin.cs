@@ -96,137 +96,145 @@ namespace TMSPS.Core.PluginSystem.Plugins.Dedimania
 
         private static void UpdateServerPlayers(object state)
         {
-            DedimaniaPlugin plugin = (DedimaniaPlugin) state;
-
-            GenericResponse<ServerOptions> serverOptionsResponse = plugin.Context.RPCClient.Methods.GetServerOptions();
-
-            if (serverOptionsResponse.Erroneous)
-            {
-				plugin.Logger.WarnToUI("Error while retrieving server options:"+serverOptionsResponse.Fault.FaultMessage);
-                return;
-            }
-
-			GenericResponse<int> currentGameModeResponse = plugin.Context.RPCClient.Methods.GetGameMode();
-
-			if (currentGameModeResponse.Erroneous)
+			DedimaniaPlugin plugin = (DedimaniaPlugin) state;
+			RunCatchLog(()=>
 			{
-				plugin.Logger.WarnToUI("Error while retrieving current game mode:" + currentGameModeResponse.Fault.FaultMessage);
-				return;
-			}
+				GenericResponse<ServerOptions> serverOptionsResponse = plugin.Context.RPCClient.Methods.GetServerOptions();
 
-            GenericListResponse<PlayerInfo> playersResponse = plugin.Context.RPCClient.Methods.GetPlayerList();
+				if (serverOptionsResponse.Erroneous)
+				{
+					plugin.Logger.WarnToUI("Error while retrieving server options:"+serverOptionsResponse.Fault.FaultMessage);
+					return;
+				}
 
-            if (playersResponse.Erroneous)
-            {
-				plugin.Logger.WarnToUI("Error while retrieving player list:" + playersResponse.Fault.FaultMessage);
-                return;
-            }
+				GenericResponse<int> currentGameModeResponse = plugin.Context.RPCClient.Methods.GetGameMode();
 
-            ServerOptions serverOptions = serverOptionsResponse.Value;
-            List<PlayerInfo> currentPlayers = playersResponse.Value;
+				if (currentGameModeResponse.Erroneous)
+				{
+					plugin.Logger.WarnToUI("Error while retrieving current game mode:" + currentGameModeResponse.Fault.FaultMessage);
+					return;
+				}
 
-            List<PlayerInfo> nonSpectators = currentPlayers.FindAll(player => !player.IsSpectator);
-            List<DedimaniaPlayerInfo> playersToReport = new List<DedimaniaPlayerInfo>();
+				GenericListResponse<PlayerInfo> playersResponse = plugin.Context.RPCClient.Methods.GetPlayerList();
 
-            foreach (PlayerInfo player in nonSpectators)
-            {
-                playersToReport.Add(new DedimaniaPlayerInfo(player.Login, string.Empty, string.Empty, player.TeamId, player.IsSpectator, player.LadderRanking, player.IsInOfficialMode));
-            }
+				if (playersResponse.Erroneous)
+				{
+					plugin.Logger.WarnToUI("Error while retrieving player list:" + playersResponse.Fault.FaultMessage);
+					return;
+				}
 
-            int playersCount = playersToReport.Count;
-            int spectatorsCount = currentPlayers.Count - playersCount;
-            DedimaniaServerInfo serverInfo = new DedimaniaServerInfo(serverOptions.Name, serverOptions.Comment, serverOptions.Password.Length > 0, string.Empty, 0, plugin.Context.ServerInfo.ServerXMLRpcPort, playersCount, serverOptions.CurrentMaxPlayers, spectatorsCount, serverOptions.CurrentMaxSpectators, serverOptions.CurrentLadderMode, string.Empty);
+				ServerOptions serverOptions = serverOptionsResponse.Value;
+				List<PlayerInfo> currentPlayers = playersResponse.Value;
 
-			if (!plugin.DedimaniaClient.UpdateServerPlayers(plugin.Context.ServerInfo.Version.GetShortName(), currentGameModeResponse.Value, serverInfo, playersToReport.ToArray()))
-                plugin.Logger.WarnToUI("Error while calling UpdateServerPlayers!");
+				List<PlayerInfo> nonSpectators = currentPlayers.FindAll(player => !player.IsSpectator);
+				List<DedimaniaPlayerInfo> playersToReport = new List<DedimaniaPlayerInfo>();
+
+				foreach (PlayerInfo player in nonSpectators)
+				{
+					playersToReport.Add(new DedimaniaPlayerInfo(player.Login, string.Empty, string.Empty, player.TeamId, player.IsSpectator, player.LadderRanking, player.IsInOfficialMode));
+				}
+
+				int playersCount = playersToReport.Count;
+				int spectatorsCount = currentPlayers.Count - playersCount;
+				DedimaniaServerInfo serverInfo = new DedimaniaServerInfo(serverOptions.Name, serverOptions.Comment, serverOptions.Password.Length > 0, string.Empty, 0, plugin.Context.ServerInfo.ServerXMLRpcPort, playersCount, serverOptions.CurrentMaxPlayers, spectatorsCount, serverOptions.CurrentMaxSpectators, serverOptions.CurrentLadderMode, string.Empty);
+
+				if (!plugin.DedimaniaClient.UpdateServerPlayers(plugin.Context.ServerInfo.Version.GetShortName(), currentGameModeResponse.Value, serverInfo, playersToReport.ToArray()))
+					plugin.Logger.WarnToUI("Error while calling UpdateServerPlayers!");
+			}, "Error in Callbacks_BeginRace Method.", true, plugin.Logger);
         }
 
         private void Callbacks_BeginRace(object sender, BeginRaceEventArgs e)
         {
-            ResetUpdateServerPlayersTimer();
+			RunCatchLog(()=>
+			{
+				ResetUpdateServerPlayersTimer();
 
-            GenericResponse<ServerOptions> serverOptionsResponse = Context.RPCClient.Methods.GetServerOptions();
+				GenericResponse<ServerOptions> serverOptionsResponse = Context.RPCClient.Methods.GetServerOptions();
 
-            if (serverOptionsResponse.Erroneous)
-            {
-				Logger.WarnToUI("Error while retrieving server options:" + serverOptionsResponse.Fault.FaultMessage);
-                return;
-            }
+				if (serverOptionsResponse.Erroneous)
+				{
+					Logger.WarnToUI("Error while retrieving server options:" + serverOptionsResponse.Fault.FaultMessage);
+					return;
+				}
 
-			GenericResponse<int> currentGameModeResponse = Context.RPCClient.Methods.GetGameMode();
+				GenericResponse<int> currentGameModeResponse = Context.RPCClient.Methods.GetGameMode();
 
-			if (currentGameModeResponse.Erroneous)
-            {
-				Logger.WarnToUI("Error while retrieving current game mode:" + currentGameModeResponse.Fault.FaultMessage);
-                return;
-            }
+				if (currentGameModeResponse.Erroneous)
+				{
+					Logger.WarnToUI("Error while retrieving current game mode:" + currentGameModeResponse.Fault.FaultMessage);
+					return;
+				}
 
-            GenericListResponse<PlayerInfo> playersResponse = Context.RPCClient.Methods.GetPlayerList();
+				GenericListResponse<PlayerInfo> playersResponse = Context.RPCClient.Methods.GetPlayerList();
 
-            if (playersResponse.Erroneous)
-            {
-				Logger.WarnToUI("Error while retrieving player list:" + playersResponse.Fault.FaultMessage);
-                return;
-            }
+				if (playersResponse.Erroneous)
+				{
+					Logger.WarnToUI("Error while retrieving player list:" + playersResponse.Fault.FaultMessage);
+					return;
+				}
 
-            ServerOptions serverOptions = serverOptionsResponse.Value;
-            List<PlayerInfo> currentPlayers = playersResponse.Value;
+				ServerOptions serverOptions = serverOptionsResponse.Value;
+				List<PlayerInfo> currentPlayers = playersResponse.Value;
 
-            List<PlayerInfo> nonSpectators = currentPlayers.FindAll(player => !player.IsSpectator);
-            List<DedimaniaPlayerInfo> playersToReport = new List<DedimaniaPlayerInfo>();
+				List<PlayerInfo> nonSpectators = currentPlayers.FindAll(player => !player.IsSpectator);
+				List<DedimaniaPlayerInfo> playersToReport = new List<DedimaniaPlayerInfo>();
 
-            foreach (PlayerInfo player in nonSpectators)
-            {
-                playersToReport.Add(new DedimaniaPlayerInfo(player.Login, string.Empty, string.Empty, player.TeamId, player.IsSpectator, player.LadderRanking, player.IsInOfficialMode));
-            }
+				foreach (PlayerInfo player in nonSpectators)
+				{
+					playersToReport.Add(new DedimaniaPlayerInfo(player.Login, string.Empty, string.Empty, player.TeamId, player.IsSpectator, player.LadderRanking, player.IsInOfficialMode));
+				}
 
-            int playersCount = playersToReport.Count;
-            int spectatorsCount = currentPlayers.Count - playersCount;
-            DedimaniaServerInfo serverInfo = new DedimaniaServerInfo(serverOptions.Name, serverOptions.Comment, serverOptions.Password.Length > 0, string.Empty, 0, Context.ServerInfo.ServerXMLRpcPort, playersCount, serverOptions.CurrentMaxPlayers, spectatorsCount, serverOptions.CurrentMaxSpectators, serverOptions.CurrentLadderMode, string.Empty);
+				int playersCount = playersToReport.Count;
+				int spectatorsCount = currentPlayers.Count - playersCount;
+				DedimaniaServerInfo serverInfo = new DedimaniaServerInfo(serverOptions.Name, serverOptions.Comment, serverOptions.Password.Length > 0, string.Empty, 0, Context.ServerInfo.ServerXMLRpcPort, playersCount, serverOptions.CurrentMaxPlayers, spectatorsCount, serverOptions.CurrentMaxSpectators, serverOptions.CurrentLadderMode, string.Empty);
 
-            DedimaniaCurrentChallengeReply currentChallengeReply = DedimaniaClient.CurrentChallenge(e.ChallengeInfo.UId, e.ChallengeInfo.Name, e.ChallengeInfo.Environnement, e.ChallengeInfo.Author, Context.ServerInfo.Version.GetShortName(), currentGameModeResponse.Value, serverInfo, MAX_AMOUNT_OF_RECORDS_TO_RECEIVE, playersToReport.ToArray());
+				DedimaniaCurrentChallengeReply currentChallengeReply = DedimaniaClient.CurrentChallenge(e.ChallengeInfo.UId, e.ChallengeInfo.Name, e.ChallengeInfo.Environnement, e.ChallengeInfo.Author, Context.ServerInfo.Version.GetShortName(), currentGameModeResponse.Value, serverInfo, MAX_AMOUNT_OF_RECORDS_TO_RECEIVE, playersToReport.ToArray());
 
-            if (currentChallengeReply == null)
-				Logger.WarnToUI("Error while calling CurrentChallenge!");
+				if (currentChallengeReply == null)
+					Logger.WarnToUI("Error while calling CurrentChallenge!");
+			}, "Error in Callbacks_BeginRace Method.", true);
         }
 
         private void Callbacks_EndRace(object sender, EndRaceEventArgs e)
         {
-            if (e.Rankings.Count == 0 || !e.Rankings.Exists(ranking => ranking.BestTime != -1))
-                return;
-
-            int maxCheckPointAmount = 0;
-
-            foreach (PlayerRank ranking in e.Rankings)
-            {
-                if (ranking.BestCheckpoints.Count > maxCheckPointAmount)
-                    maxCheckPointAmount = ranking.BestCheckpoints.Count;
-            }
-
-            List<DedimaniaTime> times = new List<DedimaniaTime>();
-            
-            foreach (PlayerRank ranking in e.Rankings)
-            {
-                if (ranking.BestTime >= 6 * 1000)
-                    times.Add(new DedimaniaTime(ranking.Login, ranking.BestTime, ranking.BestCheckpoints));
-            }
-
-            if (times.Count == 0)
-                return;
-
-			GenericResponse<int> currentGameModeResponse = Context.RPCClient.Methods.GetGameMode();
-
-			if (currentGameModeResponse.Erroneous)
+			RunCatchLog(()=>
 			{
-				Logger.WarnToUI("Error while retrieving current game mode:" + currentGameModeResponse.Fault.FaultMessage);
-				return;
-			}
+				if (e.Rankings.Count == 0 || !e.Rankings.Exists(ranking => ranking.BestTime != -1))
+					return;
 
-            ResetUpdateServerPlayersTimer();
-			DedimaniaChallengeRaceTimesReply challengeRaceTimesReply = DedimaniaClient.ChallengeRaceTimes(e.Challenge.UId, e.Challenge.Name, e.Challenge.Environnement, e.Challenge.Author, Context.ServerInfo.Version.GetShortName(), currentGameModeResponse.Value, maxCheckPointAmount, MAX_AMOUNT_OF_RECORDS_TO_RECEIVE, times.ToArray());
+				int maxCheckPointAmount = 0;
 
-            if (challengeRaceTimesReply == null)
-				Logger.WarnToUI("Error while calling ChallengeRaceTimes!");
+				foreach (PlayerRank ranking in e.Rankings)
+				{
+					if (ranking.BestCheckpoints.Count > maxCheckPointAmount)
+						maxCheckPointAmount = ranking.BestCheckpoints.Count;
+				}
+
+				List<DedimaniaTime> times = new List<DedimaniaTime>();
+	            
+				foreach (PlayerRank ranking in e.Rankings)
+				{
+					if (ranking.BestTime >= 6 * 1000)
+						times.Add(new DedimaniaTime(ranking.Login, ranking.BestTime, ranking.BestCheckpoints));
+				}
+
+				if (times.Count == 0)
+					return;
+
+				GenericResponse<int> currentGameModeResponse = Context.RPCClient.Methods.GetGameMode();
+
+				if (currentGameModeResponse.Erroneous)
+				{
+					Logger.WarnToUI("Error while retrieving current game mode:" + currentGameModeResponse.Fault.FaultMessage);
+					return;
+				}
+
+				ResetUpdateServerPlayersTimer();
+				DedimaniaChallengeRaceTimesReply challengeRaceTimesReply = DedimaniaClient.ChallengeRaceTimes(e.Challenge.UId, e.Challenge.Name, e.Challenge.Environnement, e.Challenge.Author, Context.ServerInfo.Version.GetShortName(), currentGameModeResponse.Value, maxCheckPointAmount, MAX_AMOUNT_OF_RECORDS_TO_RECEIVE, times.ToArray());
+
+				if (challengeRaceTimesReply == null)
+					Logger.WarnToUI("Error while calling ChallengeRaceTimes!");
+			}, "Error in Callbacks_EndRace Method.", true);
         }
 
         private void ResetUpdateServerPlayersTimer()
