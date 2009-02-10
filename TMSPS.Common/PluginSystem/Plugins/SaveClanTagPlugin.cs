@@ -72,24 +72,27 @@ namespace TMSPS.Core.PluginSystem.Plugins
 
     	private void Callbacks_PlayerConnect(object sender, PlayerConnectEventArgs e)
     	{
-    		if (!ClanMembers.Contains(e.Login.ToLower()))
-    		{
-    			GenericResponse<PlayerInfo> playerInfoResponse =  Context.RPCClient.Methods.GetPlayerInfo(e.Login);
-
-    			if (playerInfoResponse != null && !playerInfoResponse.Erroneous)
+			RunCatchLog(()=>
+			{
+    			if (!ClanMembers.Contains(e.Login.ToLower()))
     			{
-    				if (!Regex.IsMatch(playerInfoResponse.Value.NickName, Pattern, RegexOptions.Singleline | RegexOptions.IgnoreCase | RegexOptions.Compiled))
-    					return;
+    				GenericResponse<PlayerInfo> playerInfoResponse =  Context.RPCClient.Methods.GetPlayerInfo(e.Login);
 
-    				GenericResponse<bool> kickResponse = Context.RPCClient.Methods.Kick(playerInfoResponse.Value.Login, KickReason);
-
-    				if (kickResponse == null || kickResponse.Value)
+    				if (playerInfoResponse != null && !playerInfoResponse.Erroneous)
     				{
-    					Logger.InfoToUI(string.Format("Login {0} with player name {1} was kicked due to name abuse!", e.Login, playerInfoResponse.Value.NickName));
-    					Context.RPCClient.Methods.SendServerMessage(string.Format(PublicKickReason, playerInfoResponse.Value.NickName));
+    					if (!Regex.IsMatch(playerInfoResponse.Value.NickName, Pattern, RegexOptions.Singleline | RegexOptions.IgnoreCase | RegexOptions.Compiled))
+    						return;
+
+    					GenericResponse<bool> kickResponse = Context.RPCClient.Methods.Kick(playerInfoResponse.Value.Login, KickReason);
+
+    					if (kickResponse == null || kickResponse.Value)
+    					{
+    						Logger.InfoToUI(string.Format("Login {0} with player name {1} was kicked due to name abuse!", e.Login, playerInfoResponse.Value.NickName));
+    						Context.RPCClient.Methods.SendServerMessage(string.Format(PublicKickReason, playerInfoResponse.Value.NickName));
+    					}
     				}
     			}
-    		}
+			}, "Error in Callbacks_PlayerConnect Method.", true);
     	}
 
     	protected override void Dispose()

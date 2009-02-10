@@ -40,178 +40,190 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
 	    protected override void Init()
 	    {
 			Logger.InfoToUI("Started initialziation of " + ShortNameForLogging);
-	        PlayerInfoCache = new Dictionary<string, PlayerInfo>();
+			PlayerInfoCache = new Dictionary<string, PlayerInfo>();
 	    	
-            try
-	        {
+			try
+			{
 				Settings = LocalRecordsSettings.ReadFromFile(Util.GetCalculatedPath("LocalRecords.xml"));
 				AdapterProvider = AdapterProviderFactory.GetAdapterProvider(Settings);
-	            ChallengeAdapter = AdapterProvider.GetChallengeAdapter();
-	            PlayerAdapter = AdapterProvider.GetPlayerAdapter();
-	            PositionAdapter = AdapterProvider.GetPositionAdapter();
-	            RecordAdapter = AdapterProvider.GetRecordAdapter();
-	            RatingAdapter = AdapterProvider.GetRatingAdapter();
-	            SessionAdapter = AdapterProvider.GetSessionAdapter();
-	        }
-	        catch (Exception ex)
-	        {
-	            Logger.Error("Error initializing AdapterProvider for local records.", ex);
-	            Logger.ErrorToUI(string.Format("An error occured. {0} not started!", Name));
-	            return;
-	        }
+				ChallengeAdapter = AdapterProvider.GetChallengeAdapter();
+				PlayerAdapter = AdapterProvider.GetPlayerAdapter();
+				PositionAdapter = AdapterProvider.GetPositionAdapter();
+				RecordAdapter = AdapterProvider.GetRecordAdapter();
+				RatingAdapter = AdapterProvider.GetRatingAdapter();
+				SessionAdapter = AdapterProvider.GetSessionAdapter();
+			}
+			catch (Exception ex)
+			{
+				Logger.Error("Error initializing AdapterProvider for local records.", ex);
+				Logger.ErrorToUI(string.Format("An error occured. {0} not started!", Name));
+				return;
+			}
 
-	        List<PlayerInfo> players = GetPlayerList();
-	        if (players == null)
-	            return;
+			List<PlayerInfo> players = GetPlayerList();
+			if (players == null)
+				return;
 
-	        foreach (PlayerInfo playerInfo in players)
-	        {
-	            PlayerAdapter.CreateOrUpdate(new Player(playerInfo.Login, playerInfo.NickName));
-	        }
+			foreach (PlayerInfo playerInfo in players)
+			{
+				PlayerAdapter.CreateOrUpdate(new Player(playerInfo.Login, playerInfo.NickName));
+			}
 
-	        ChallengeInfo currentChallengeInfo = GetCurrentChallengeInfo();
-	        if (currentChallengeInfo == null)
-	            return;
+			ChallengeInfo currentChallengeInfo = GetCurrentChallengeInfo();
+			if (currentChallengeInfo == null)
+				return;
 
-	        EnsureChallengeExistsInStorage(currentChallengeInfo);
+			EnsureChallengeExistsInStorage(currentChallengeInfo);
 
-	        TimePlayedTimer = new Timer(30000);
-	        TimePlayedTimer.Elapsed += TimePlayedTimer_Elapsed;
-	        TimePlayedTimer.Start();
+			TimePlayedTimer = new Timer(30000);
+			TimePlayedTimer.Elapsed += TimePlayedTimer_Elapsed;
+			TimePlayedTimer.Start();
 
-	        Context.RPCClient.Callbacks.BeginRace += Callbacks_BeginRace;
-	        Context.RPCClient.Callbacks.EndRace += Callbacks_EndRace;
-	        Context.RPCClient.Callbacks.PlayerConnect += Callbacks_PlayerConnect;
-	        Context.RPCClient.Callbacks.PlayerDisconnect += Callbacks_PlayerDisconnect;
-	        Context.RPCClient.Callbacks.PlayerFinish += Callbacks_PlayerFinish;
-            Context.RPCClient.Callbacks.PlayerChat += Callbacks_PlayerChat;
+			Context.RPCClient.Callbacks.BeginRace += Callbacks_BeginRace;
+			Context.RPCClient.Callbacks.EndRace += Callbacks_EndRace;
+			Context.RPCClient.Callbacks.PlayerConnect += Callbacks_PlayerConnect;
+			Context.RPCClient.Callbacks.PlayerDisconnect += Callbacks_PlayerDisconnect;
+			Context.RPCClient.Callbacks.PlayerFinish += Callbacks_PlayerFinish;
+			Context.RPCClient.Callbacks.PlayerChat += Callbacks_PlayerChat;
 
 			Logger.InfoToUI("Finished initialization of " + ShortNameForLogging);
 	    }
 
         private void Callbacks_PlayerChat(object sender, PlayerChatEventArgs e)
         {
-            if (e.Erroneous || e.IsServerMessage || e.Text.IsNullOrTimmedEmpty() || e.IsRegisteredCommand)
-    			return;
+			RunCatchLog(()=>
+			{
+				if (e.Erroneous || e.IsServerMessage || e.Text.IsNullOrTimmedEmpty() || e.IsRegisteredCommand)
+    				return;
 
-            string message = e.Text.Trim();
+				string message = e.Text.Trim();
 
-            double? averageVote = null;
+				double? averageVote = null;
 
-            switch (message)
-            {
-                case "++":
-                    averageVote = RatingAdapter.Vote(e.Login, CurrentChallengeID, 8);
-                    break;
-                case "--":
-                    averageVote = RatingAdapter.Vote(e.Login, CurrentChallengeID, 0);
-                    break;
-                case "+-":
-                case "-+":
-                    averageVote = RatingAdapter.Vote(e.Login, CurrentChallengeID, 4);
-                    break;
-                case "+0":
-                case "+1":
-                case "+2":
-                case "+3":
-                case "+4":
-                case "+5":
-                case "+6":
-                case "+7":
-                case "+8":
-                    averageVote = RatingAdapter.Vote(e.Login, CurrentChallengeID, Convert.ToUInt16(message.Substring(1)));
-                    break;
-            }
+				switch (message)
+				{
+					case "++":
+						averageVote = RatingAdapter.Vote(e.Login, CurrentChallengeID, 8);
+						break;
+					case "--":
+						averageVote = RatingAdapter.Vote(e.Login, CurrentChallengeID, 0);
+						break;
+					case "+-":
+					case "-+":
+						averageVote = RatingAdapter.Vote(e.Login, CurrentChallengeID, 4);
+						break;
+					case "+0":
+					case "+1":
+					case "+2":
+					case "+3":
+					case "+4":
+					case "+5":
+					case "+6":
+					case "+7":
+					case "+8":
+						averageVote = RatingAdapter.Vote(e.Login, CurrentChallengeID, Convert.ToUInt16(message.Substring(1)));
+						break;
+				}
 
-            if (averageVote.HasValue && Settings.ShowMessages)
-                Context.RPCClient.Methods.SendServerMessageToLogin(string.Format("Vote accepted! Average vote is: {0}", averageVote.Value.ToString("F")), e.Login);
+				if (averageVote.HasValue && Settings.ShowMessages)
+					Context.RPCClient.Methods.SendServerMessageToLogin(string.Format("Vote accepted! Average vote is: {0}", averageVote.Value.ToString("F")), e.Login);
+			}, "Error in Callbacks_PlayerChat Method.", true);
         }
 
 	    private void Callbacks_PlayerFinish(object sender, PlayerFinishEventArgs e)
 	    {
-	        if (e.TimeOrScore > 0)
-	        {
-	            uint? oldPosition, newPosition;
-	            bool newBest;
-	            RecordAdapter.CheckAndWriteNewRecord(e.Login, CurrentChallengeID, e.TimeOrScore, out oldPosition, out newPosition, out newBest);
+			RunCatchLog(()=>
+			{
+				if (e.TimeOrScore > 0)
+				{
+					uint? oldPosition, newPosition;
+					bool newBest;
+					RecordAdapter.CheckAndWriteNewRecord(e.Login, CurrentChallengeID, e.TimeOrScore, out oldPosition, out newPosition, out newBest);
 
-	            if (newBest)
-	            {
-	                PlayerInfo playerInfo = GetPlayerInfo(e.Login, true);
+					if (newBest)
+					{
+						PlayerInfo playerInfo = GetPlayerInfo(e.Login, true);
 
-	                if (playerInfo != null)
-	                {
-						if (oldPosition == null)
+						if (playerInfo != null)
 						{
-							if (Settings.ShowMessages)
-								Context.RPCClient.Methods.SendNotice(string.Format("{0}$z got his first local rank: $w$s$0f0{1}$z!", playerInfo.NickName, newPosition));
+							if (oldPosition == null)
+							{
+								if (Settings.ShowMessages)
+									Context.RPCClient.Methods.SendNotice(string.Format("{0}$z got his first local rank: $w$s$0f0{1}$z!", playerInfo.NickName, newPosition));
+							}
+							else if (newPosition > oldPosition)
+							{
+								if (Settings.ShowMessages)
+									Context.RPCClient.Methods.SendNotice(string.Format("{0}$z achieved local rank: $w$s$0f0{1}$z. Old rank: $w$s{2}", playerInfo.NickName, newPosition, oldPosition));
+							}
+							else
+							{
+								if (Settings.ShowMessages)
+									Context.RPCClient.Methods.SendNotice(string.Format("{0}$z improved his/her local rank: $w$s$0f0{1}$z!", playerInfo.NickName, newPosition));
+							}
 						}
-						else if (newPosition > oldPosition)
-						{
-							if (Settings.ShowMessages)
-								Context.RPCClient.Methods.SendNotice(string.Format("{0}$z achieved local rank: $w$s$0f0{1}$z. Old rank: $w$s{2}", playerInfo.NickName, newPosition, oldPosition));
-						}
-						else
-						{
-							if (Settings.ShowMessages)
-								Context.RPCClient.Methods.SendNotice(string.Format("{0}$z improved his/her local rank: $w$s$0f0{1}$z!", playerInfo.NickName, newPosition));
-						}
-	                }
-	            }
+					}
 
-                SessionAdapter.AddSession(e.Login, CurrentChallengeID, e.TimeOrScore);
-	        }
+					SessionAdapter.AddSession(e.Login, CurrentChallengeID, e.TimeOrScore);
+				}
+			}, "Error in Callbacks_PlayerFinish Method.", true);
 	    }
 
 	    private void Callbacks_EndRace(object sender, EndRaceEventArgs e)
 	    {
-	        if (e.Rankings.Count > 1)
-	        {
-	            // there must be at least 2 players to increase the wins for the first player
-	            if (e.Rankings[0].BestTime > 0)
-	            {
-	                PlayerAdapter.IncreaseWins(e.Rankings[0].Login);
+			RunCatchLog(()=>
+			{
+				if (e.Rankings.Count > 1)
+				{
+					// there must be at least 2 players to increase the wins for the first player
+					if (e.Rankings[0].BestTime > 0)
+					{
+						PlayerAdapter.IncreaseWins(e.Rankings[0].Login);
 
-	                int maxRank = e.Rankings.Max(playerRank => playerRank.Rank);
+						int maxRank = e.Rankings.Max(playerRank => playerRank.Rank);
 
-	                foreach (PlayerRank playerRank in e.Rankings)
-	                {
-	                    PositionAdapter.AddPosition(playerRank.Login, e.Challenge.UId, Convert.ToUInt16(playerRank.Rank), Convert.ToUInt16(maxRank));
-	                }
-	            }
-	        }
+						foreach (PlayerRank playerRank in e.Rankings)
+						{
+							PositionAdapter.AddPosition(playerRank.Login, e.Challenge.UId, Convert.ToUInt16(playerRank.Rank), Convert.ToUInt16(maxRank));
+						}
+					}
+				}
+			}, "Error in Callbacks_EndRace Method.", true);
 	    }
 
 	    private void TimePlayedTimer_Elapsed(object sender, ElapsedEventArgs e)
 	    {
-	        UpdateTimePlayedForAllCurrentPlayers();
+			RunCatchLog(UpdateTimePlayedForAllCurrentPlayers, "Error in TimePlayedTimer_Elapsed Method.", true);
 	    }
 
 	    private void Callbacks_PlayerDisconnect(object sender,PlayerDisconnectEventArgs e)
 	    {
-	        PlayerAdapter.UpdateTimePlayed(e.Login);
+			RunCatchLog(() => PlayerAdapter.UpdateTimePlayed(e.Login), "Error in Callbacks_PlayerDisconnect Method.", true);
 	    }
 
 	    private void Callbacks_PlayerConnect(object sender, PlayerConnectEventArgs e)
 	    {
-	        PlayerInfo playerInfo = GetPlayerInfo(e.Login);
+			RunCatchLog(()=>
+			{
+				PlayerInfo playerInfo = GetPlayerInfo(e.Login);
 
-	        if (playerInfo == null)
-	            return;
+				if (playerInfo == null)
+					return;
 
-	        PlayerAdapter.CreateOrUpdate(new Player(playerInfo.Login, playerInfo.NickName));
+				PlayerAdapter.CreateOrUpdate(new Player(playerInfo.Login, playerInfo.NickName));
+			}, "Error in Callbacks_PlayerConnect Method.", true);
 	    }
 
 	    private void Callbacks_BeginRace(object sender, BeginRaceEventArgs e)
 	    {
-	        EnsureChallengeExistsInStorage(e.ChallengeInfo);
+			RunCatchLog(() => EnsureChallengeExistsInStorage(e.ChallengeInfo), "Error in Callbacks_BeginRace Method.", true);
 	    }
 
 	    private void EnsureChallengeExistsInStorage(ChallengeListSingleInfo challengeInfo)
 	    {
-	        Challenge challenge = new Challenge(challengeInfo.UId, challengeInfo.Name, challengeInfo.Author, challengeInfo.Environnement);
-	        ChallengeAdapter.IncreaseRaces(challenge);
-	        CurrentChallengeID = challenge.ID.Value;
+			Challenge challenge = new Challenge(challengeInfo.UId, challengeInfo.Name, challengeInfo.Author, challengeInfo.Environnement);
+			ChallengeAdapter.IncreaseRaces(challenge);
+			CurrentChallengeID = challenge.ID.Value;
 	    }
 
 	    private PlayerInfo GetPlayerInfo(string login, bool allowCached)

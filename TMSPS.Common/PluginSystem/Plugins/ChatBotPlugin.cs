@@ -77,25 +77,28 @@ namespace TMSPS.Core.PluginSystem.Plugins
 
     	private void Callbacks_PlayerChat(object sender, PlayerChatEventArgs e)
     	{
-    		if (e.Erroneous || e.IsServerMessage || e.Text.IsNullOrTimmedEmpty())
-    			return;
+			RunCatchLog(()=>
+			{
+    			if (e.Erroneous || e.IsServerMessage || e.Text.IsNullOrTimmedEmpty())
+    				return;
 
-    		if (e.IsRegisteredCommand)
-    		{
-    			CheckForReadSettingsCommand(e);
-    			return;
-    		}
-
-    		foreach (string phrase in Phrases)
-    		{
-    			string regexPattern = @"\b" + Regex.Escape(phrase) + @"\b";
-
-    			if (Regex.IsMatch(e.Text, regexPattern, RegexOptions.Singleline | RegexOptions.IgnoreCase))
+    			if (e.IsRegisteredCommand)
     			{
-    				Context.RPCClient.Methods.SendServerMessage(string.Format("{0}{1}", Botname, Answers[phrase]));
-    				break;
+    				CheckForReadSettingsCommand(e);
+    				return;
     			}
-    		}
+
+    			foreach (string phrase in Phrases)
+    			{
+    				string regexPattern = @"\b" + Regex.Escape(phrase) + @"\b";
+
+    				if (Regex.IsMatch(e.Text, regexPattern, RegexOptions.Singleline | RegexOptions.IgnoreCase))
+    				{
+    					Context.RPCClient.Methods.SendServerMessage(string.Format("{0}{1}", Botname, Answers[phrase]));
+    					break;
+    				}
+    			}
+			}, "Error in Callbacks_PlayerChat Method.", true);
     	}
 
     	private bool CheckForReadSettingsCommand(PlayerChatEventArgs e)
