@@ -5,6 +5,7 @@ using System.IO;
 using System.Reflection;
 using log4net;
 using TMSPS.Core.Common;
+using TMSPS.Core.PluginSystem.Configuration;
 
 namespace TMSPS.Core.PluginSystem
 {
@@ -17,13 +18,6 @@ namespace TMSPS.Core.PluginSystem
         #endregion
 
         #region Config Properties
-
-        [ConfigurationProperty("Plugins", IsRequired = true)]
-        [ConfigurationCollection(typeof(PluginConfigSettingsCollection), AddItemName = "Plugin")]
-        protected PluginConfigSettingsCollection AllPluginSettings
-        {
-            get { return (PluginConfigSettingsCollection)base["Plugins"]; }
-        }
 
         [ConfigurationProperty("isDev", IsRequired = false, DefaultValue = false)]
         public bool IsDev
@@ -73,17 +67,15 @@ namespace TMSPS.Core.PluginSystem
 
         public List<ITMSPSPlugin> GetPlugins()
         {
+        	string mainDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+			string pluginsSettingsFile = Path.Combine(mainDirectory, @"Plugins\Settings.xml");
+			
             List<ITMSPSPlugin> result = new List<ITMSPSPlugin>();
 
-			string pluginDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-
-            foreach (PluginConfigSettings pluginConfigSettings in AllPluginSettings)
+			foreach (PluginConfigEntry pluginConfigEntry in PluginUtil.GetEnabledPlugins(pluginsSettingsFile))
             {
-                if (!pluginConfigSettings.Enabled)
-                    continue;
-
-                _log.Debug(string.Format("Instantiating ITMSPSPlugin {0}", pluginConfigSettings.PluginClass));
-                result.Add(Instancer.GetInstanceOfInterface<ITMSPSPlugin>(Path.Combine(pluginDirectory, pluginConfigSettings.AssemblyName), pluginConfigSettings.PluginClass));
+                _log.Debug(string.Format("Instantiating ITMSPSPlugin {0}", pluginConfigEntry.PluginClass));
+                result.Add(Instancer.GetInstanceOfInterface<ITMSPSPlugin>(pluginConfigEntry.AssemblyName, pluginConfigEntry.PluginClass));
             }
 
             return result;
@@ -115,9 +107,6 @@ namespace TMSPS.Core.PluginSystem
 
         protected override void PostDeserialize()
         {
-            if (!AllPluginSettings.Deserialized)
-                throw new ConfigurationErrorsException("Missing Plugins Section in config.");
-
             if (ServerAddress.IsNullOrTimmedEmpty())
                 throw new InvalidOperationException("Please add a non empty server address for attribute 'serverAddress'.");
 

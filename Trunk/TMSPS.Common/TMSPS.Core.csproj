@@ -55,6 +55,7 @@
   <ItemGroup>
     <Compile Include="Common\IBaseAdapter.cs" />
     <Compile Include="Common\ParameterlessMethodDelegate.cs" />
+    <Compile Include="Communication\ProxyTypes\GameMode.cs" />
     <Compile Include="Logging\ConsoleUILogger.cs" />
     <Compile Include="Logging\CoreLogger.cs" />
     <Compile Include="Common\IDump.cs" />
@@ -136,9 +137,11 @@
     <Compile Include="PluginSystem\Configuration\Credentials.cs" />
     <Compile Include="PluginSystem\Configuration\CredentialsReader.cs" />
     <Compile Include="Common\Instancer.cs" />
+    <Compile Include="PluginSystem\Configuration\PluginConfigEntry.cs" />
+    <Compile Include="PluginSystem\Configuration\PluginConfigEntryCollection.cs" />
     <Compile Include="PluginSystem\ITMSPSPlugin.cs" />
-    <Compile Include="PluginSystem\PluginConfigSettings.cs" />
-    <Compile Include="PluginSystem\PluginConfigSettingsCollection.cs" />
+    <Compile Include="PluginSystem\ITMSPSPluginBase.cs" />
+    <Compile Include="PluginSystem\ITMSPSPluginPlugin.cs" />
     <Compile Include="PluginSystem\PluginHostContext.cs" />
     <Compile Include="PluginSystem\Plugins\ChatBotPlugin.cs" />
     <Compile Include="PluginSystem\Plugins\Dedimania\Communication\AliasTextTool.cs" />
@@ -161,6 +164,8 @@
     <Compile Include="PluginSystem\Plugins\Dedimania\Communication\OptionValueTool.cs" />
     <Compile Include="PluginSystem\Plugins\Dedimania\Communication\PlayerArriveParameters.cs" />
     <Compile Include="PluginSystem\Plugins\Dedimania\DedimaniaPlugin.cs" />
+    <Compile Include="PluginSystem\Plugins\LocalRecords\ILocalRecordsPluginPlugin.cs" />
+    <Compile Include="PluginSystem\Plugins\LocalRecords\LocalRecordsPluginPlugin.cs" />
     <Compile Include="PluginSystem\Plugins\SpectatorsPlugin.cs" />
     <Compile Include="PluginSystem\Plugins\LocalRecords\AdapterProviderFactory.cs" />
     <Compile Include="PluginSystem\Plugins\LocalRecords\Challenge.cs" />
@@ -189,8 +194,11 @@
     <Compile Include="PluginSystem\Plugins\LocalRecords\SQL\RecordAdapter.cs" />
     <Compile Include="PluginSystem\Plugins\LocalRecords\SQL\SessionAdapter.cs" />
     <Compile Include="PluginSystem\Plugins\NameProtectionBotPlugin.cs" />
+    <Compile Include="PluginSystem\PluginUtil.cs" />
     <Compile Include="PluginSystem\ServerInfo.cs" />
+    <Compile Include="PluginSystem\TMSPSPlugin.cs" />
     <Compile Include="PluginSystem\TMSPSPluginBase.cs" />
+    <Compile Include="PluginSystem\TMSPSPluginPlugin.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SQL\SQLBaseAdapter.cs" />
     <Compile Include="SQL\ConnectionManager.cs" />

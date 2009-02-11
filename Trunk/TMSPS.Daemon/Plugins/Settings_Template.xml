@@ -1,0 +1,10 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Settings>
+	<Plugins>
+		<Plugin enabled="true" assemblyName="TMSPS.Core" pluginClass="TMSPS.Core.PluginSystem.Plugins.ChatBotPlugin" />
+		<Plugin enabled="true" assemblyName="TMSPS.Core" pluginClass="TMSPS.Core.PluginSystem.Plugins.SpectatorsPlugin" />
+		<Plugin enabled="true" assemblyName="TMSPS.Core" pluginClass="TMSPS.Core.PluginSystem.Plugins.NameProtectionBotPlugin" />
+		<Plugin enabled="true" assemblyName="TMSPS.Core" pluginClass="TMSPS.Core.PluginSystem.Plugins.Dedimania.DedimaniaPlugin" />
+		<Plugin enabled="true" assemblyName="TMSPS.Core" pluginClass="TMSPS.Core.PluginSystem.Plugins.LocalRecords.LocalRecordsPlugin" />
+	</Plugins>
+</Settings>

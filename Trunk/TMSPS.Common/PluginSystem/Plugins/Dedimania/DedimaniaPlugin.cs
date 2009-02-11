@@ -10,7 +10,7 @@ using Version=System.Version;
 
 namespace TMSPS.Core.PluginSystem.Plugins.Dedimania
 {
-    public class DedimaniaPlugin : TMSPSPluginBase
+    public class DedimaniaPlugin : TMSPSPlugin
     {
         #region Constants
 

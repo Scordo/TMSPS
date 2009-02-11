@@ -4,13 +4,14 @@ using System.Timers;
 using TMSPS.Core.Communication.EventArguments.Callbacks;
 using TMSPS.Core.Communication.ProxyTypes;
 using TMSPS.Core.Communication.ResponseHandling;
+using TMSPS.Core.Logging;
 using Version=System.Version;
 using System.Linq;
 using PlayerInfo=TMSPS.Core.Communication.ProxyTypes.PlayerInfo;
 
 namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
 {
-	public class LocalRecordsPlugin : TMSPSPluginBase
+	public class LocalRecordsPlugin : TMSPSPlugin
 	{
 	    #region Properties
 
@@ -20,17 +21,18 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
 	    public override string Description { get { return "Saves records and statistics in a local database."; } }
 	    public override string ShortName { get { return "LocalRecords"; } }
 
-	    private IAdapterProvider AdapterProvider { get; set; }
-	    private IChallengeAdapter ChallengeAdapter { get; set;}
-	    private IPlayerAdapter PlayerAdapter { get; set; }
-	    private IPositionAdapter PositionAdapter { get; set; }
-	    private IRecordAdapter RecordAdapter { get; set; }
-        private IRatingAdapter RatingAdapter { get; set; }
-        private ISessionAdapter SessionAdapter { get; set; }
-	    private int CurrentChallengeID { get; set; }
-	    private Timer TimePlayedTimer { get; set; }
-	    private Dictionary<string, PlayerInfo> PlayerInfoCache { get; set; }
-		private LocalRecordsSettings Settings { get; set; }
+		public IAdapterProvider AdapterProvider { get; protected set; }
+		public IChallengeAdapter ChallengeAdapter { get; protected set; }
+		public IPlayerAdapter PlayerAdapter { get; protected set; }
+		public IPositionAdapter PositionAdapter { get; protected set; }
+		public IRecordAdapter RecordAdapter { get; protected set; }
+		public IRatingAdapter RatingAdapter { get; protected set; }
+		public ISessionAdapter SessionAdapter { get; protected set; }
+		public int CurrentChallengeID { get; protected set; }
+		public Timer TimePlayedTimer { get; set; }
+		public Dictionary<string, PlayerInfo> PlayerInfoCache { get; protected set; }
+		public LocalRecordsSettings Settings { get; protected set; }
+		protected List<ILocalRecordsPluginPlugin> Plugins {get; private set;}
 
 	    #endregion
 
@@ -41,9 +43,12 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
 			Logger.InfoToUI("Started initialziation of " + ShortName);
 			PlayerInfoCache = new Dictionary<string, PlayerInfo>();
 	    	
+			Settings = LocalRecordsSettings.ReadFromFile(PluginSettingsFilePath);
+	    	InitializePlugins();
+
 			try
 			{
-				Settings = LocalRecordsSettings.ReadFromFile(PluginSettingsFilePath);
+				
 				AdapterProvider = AdapterProviderFactory.GetAdapterProvider(Settings);
 				ChallengeAdapter = AdapterProvider.GetChallengeAdapter();
 				PlayerAdapter = AdapterProvider.GetPlayerAdapter();
@@ -330,10 +335,30 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
 	        }
 	    }
 
+		private void InitializePlugins()
+		{
+			Plugins = Settings.GetPlugins(Logger);
+
+			foreach (ILocalRecordsPluginPlugin plugin in Plugins)
+			{
+				plugin.ProvideHostPlugin(this);
+				plugin.InitPlugin(Context, new ConsoleUILogger("TMSPS", string.Format(" - [{0}]", plugin.ShortName)));
+			}
+		}
+
+		private void DisposePlugins()
+		{
+			foreach (ILocalRecordsPluginPlugin plugin in Plugins)
+			{
+				plugin.DisposePlugin();
+			}
+		}
+
 	    protected override void Dispose()
 	    {
 	        TimePlayedTimer.Stop();
 	        UpdateTimePlayedForAllCurrentPlayers();
+			DisposePlugins();
 
 	        Context.RPCClient.Callbacks.BeginRace -= Callbacks_BeginRace;
 	        Context.RPCClient.Callbacks.EndRace -= Callbacks_EndRace;

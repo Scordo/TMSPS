@@ -1,6 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Reflection;
 using System.Xml.Linq;
 using System.Configuration;
+using TMSPS.Core.Common;
+using TMSPS.Core.Logging;
+using TMSPS.Core.PluginSystem.Configuration;
 
 namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
 {
@@ -12,6 +18,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
 		public string ProviderClass { get; private set; }
 		public string ProviderParameter { get; private set; }
 		public bool ShowMessages { get; private set; }
+		private PluginConfigEntryCollection Plugins { get; set; }
 
 		#endregion
 
@@ -74,6 +81,22 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
 				showMessages = string.Compare(showMessagesElement.Value.Trim(), "true", StringComparison.InvariantCultureIgnoreCase) == 0;
 
 			result.ShowMessages = showMessages;
+			result.Plugins = PluginConfigEntryCollection.ReadFromXElement(configDocument.Root.Element("Plugins"));
+
+			return result;
+		}
+
+		public List<ILocalRecordsPluginPlugin> GetPlugins(IUILogger logger)
+		{
+			List<ILocalRecordsPluginPlugin> result = new List<ILocalRecordsPluginPlugin>();
+
+			foreach (PluginConfigEntry pluginConfigEntry in Plugins.GetEnabledPlugins())
+			{
+				if (logger != null)
+					logger.Debug(string.Format("Instantiating ILocalRecordsPluginPlugin {0}", pluginConfigEntry.PluginClass));
+
+				result.Add(Instancer.GetInstanceOfInterface<ILocalRecordsPluginPlugin>(pluginConfigEntry.AssemblyName, pluginConfigEntry.PluginClass));
+			}
 
 			return result;
 		}

@@ -92,6 +92,8 @@
     <Content Include="Plugins\LocalRecords\Settings_Template.xml" />
     <Content Include="Plugins\NameProtectionBot\Settings.xml" />
     <Content Include="Plugins\NameProtectionBot\Settings_Template.xml" />
+    <Content Include="Plugins\Settings.xml" />
+    <Content Include="Plugins\Settings_Template.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

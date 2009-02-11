@@ -11,7 +11,7 @@ using PlayerInfo=TMSPS.Core.Communication.ProxyTypes.PlayerInfo;
 
 namespace TMSPS.Core.PluginSystem.Plugins
 {
-    public class NameProtectionBotPlugin : TMSPSPluginBase
+    public class NameProtectionBotPlugin : TMSPSPlugin
     {
     	#region Properties
 

@@ -7,7 +7,7 @@ using PlayerInfo=TMSPS.Core.Communication.ProxyTypes.PlayerInfo;
 
 namespace TMSPS.Core.PluginSystem.Plugins
 {
-    public class SpectatorsPlugin : TMSPSPluginBase
+    public class SpectatorsPlugin : TMSPSPlugin
     {
         #region Constants
 
