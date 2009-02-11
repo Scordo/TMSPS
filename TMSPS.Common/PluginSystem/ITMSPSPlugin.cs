@@ -9,7 +9,7 @@ namespace TMSPS.Core.PluginSystem
         string Author { get; }
         string Name { get; }
         string Description { get; }
-		string ShortNameForLogging { get; }
+		string ShortName { get; }
 
         void InitPlugin(PluginHostContext context, IUILogger logger);
         void DisposePlugin();

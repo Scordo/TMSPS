@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Timers;
-using TMSPS.Core.Common;
 using TMSPS.Core.Communication.EventArguments.Callbacks;
 using TMSPS.Core.Communication.ProxyTypes;
 using TMSPS.Core.Communication.ResponseHandling;
@@ -19,7 +18,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
 	    public override string Author { get { return "Jens Hofmann"; } }
 	    public override string Name{ get { return "Local Records Plugin"; } }
 	    public override string Description { get { return "Saves records and statistics in a local database."; } }
-	    public override string ShortNameForLogging { get { return "LocalRecords"; } }
+	    public override string ShortName { get { return "LocalRecords"; } }
 
 	    private IAdapterProvider AdapterProvider { get; set; }
 	    private IChallengeAdapter ChallengeAdapter { get; set;}
@@ -39,12 +38,12 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
 
 	    protected override void Init()
 	    {
-			Logger.InfoToUI("Started initialziation of " + ShortNameForLogging);
+			Logger.InfoToUI("Started initialziation of " + ShortName);
 			PlayerInfoCache = new Dictionary<string, PlayerInfo>();
 	    	
 			try
 			{
-				Settings = LocalRecordsSettings.ReadFromFile(Util.GetCalculatedPath("LocalRecords.xml"));
+				Settings = LocalRecordsSettings.ReadFromFile(PluginSettingsFilePath);
 				AdapterProvider = AdapterProviderFactory.GetAdapterProvider(Settings);
 				ChallengeAdapter = AdapterProvider.GetChallengeAdapter();
 				PlayerAdapter = AdapterProvider.GetPlayerAdapter();
@@ -86,7 +85,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
 			Context.RPCClient.Callbacks.PlayerFinish += Callbacks_PlayerFinish;
 			Context.RPCClient.Callbacks.PlayerChat += Callbacks_PlayerChat;
 
-			Logger.InfoToUI("Finished initialization of " + ShortNameForLogging);
+			Logger.InfoToUI("Finished initialization of " + ShortName);
 	    }
 
         private void Callbacks_PlayerChat(object sender, PlayerChatEventArgs e)

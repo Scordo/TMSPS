@@ -20,10 +20,13 @@ namespace TMSPS.Core.PluginSystem
     	public abstract string Author { get; }
     	public abstract string Name { get; }
     	public abstract string Description { get; }
-    	public abstract string ShortNameForLogging { get; }
+    	public abstract string ShortName { get; }
     	public IUILogger Logger { get; private set; }
     	public PluginHostContext Context { get { return _context; } }
     	protected static  string ApplicationDirectory { get { return Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location); } }
+        protected static string PluginsDirectory { get { return Path.Combine(ApplicationDirectory, "Plugins"); } }
+        protected string PluginDirectory { get { return Path.Combine(PluginsDirectory, ShortName); } }
+        protected string PluginSettingsFilePath { get { return Path.Combine(PluginDirectory, "Settings.xml"); } }
 
     	#endregion
 
@@ -52,9 +55,9 @@ namespace TMSPS.Core.PluginSystem
     	protected abstract void Init();
     	protected abstract void Dispose();
 
-    	protected virtual string GetConfigFilePath(string configFileName)
+    	protected virtual string GetPluginConfigFilePath(string configFileName)
     	{
-    		return Path.Combine(ApplicationDirectory, configFileName);
+    		return Path.Combine(PluginDirectory, configFileName);
     	}
 
     	protected void RunCatchLog(ParameterlessMethodDelegate logic)

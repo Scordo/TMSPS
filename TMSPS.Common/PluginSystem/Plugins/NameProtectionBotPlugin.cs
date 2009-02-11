@@ -11,7 +11,7 @@ using PlayerInfo=TMSPS.Core.Communication.ProxyTypes.PlayerInfo;
 
 namespace TMSPS.Core.PluginSystem.Plugins
 {
-    public class SaveClanTagPlugin : TMSPSPluginBase
+    public class NameProtectionBotPlugin : TMSPSPluginBase
     {
     	#region Properties
 
@@ -27,17 +27,17 @@ namespace TMSPS.Core.PluginSystem.Plugins
 
     	public override string Name
     	{
-    		get { return "SaveClanTagPlugin"; }
+            get { return "NameProtectionBotPlugin"; }
     	}
 
     	public override string Description
     	{
-    		get { return "Checks for registered clan members and kicks every player misusing the clantag."; }
+    		get { return "Checks for registered clan members and kicks every player missusing the clantag."; }
     	}
 
-    	public override string ShortNameForLogging
+    	public override string ShortName
     	{
-    		get { return "TagProtectionPlugin"; }
+            get { return "NameProtectionBot"; }
     	}
 
     	private HashSet<string> ClanMembers
@@ -102,17 +102,16 @@ namespace TMSPS.Core.PluginSystem.Plugins
 
     	private void ReadConfigValues()
     	{
-    		string configFilePath = GetConfigFilePath("SaveClanTag.xml");
-    		if (!File.Exists(configFilePath))
+            if (!File.Exists(PluginSettingsFilePath))
     		{
     			const string message = "SaveClanTag.xml not found.";
-    			FileNotFoundException ex = new FileNotFoundException(message, configFilePath);
+                FileNotFoundException ex = new FileNotFoundException(message, PluginSettingsFilePath);
     			Logger.FatalToUI("SaveClanTag.xml not found.", ex);
     			throw ex;
     		}
 
-    		Util.WaitUntilReadable(configFilePath, 10000);
-    		XDocument doc = XDocument.Load(configFilePath);
+            Util.WaitUntilReadable(PluginSettingsFilePath, 10000);
+            XDocument doc = XDocument.Load(PluginSettingsFilePath);
 
     		if (doc.Root == null || doc.Root.Name != "Settings")
     		{

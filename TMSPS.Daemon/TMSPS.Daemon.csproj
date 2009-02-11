@@ -46,6 +46,8 @@
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml.Linq">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
@@ -70,6 +72,7 @@
   <ItemGroup>
     <None Include="App.config" />
     <None Include="App_Template.config" />
+    <None Include="Postbuild.targets" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\TMSPS.Common\TMSPS.Core.csproj">
@@ -78,19 +81,17 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="ChatBot.xml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="LocalRecords_Template.xml" />
     <Content Include="Credentials.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="LocalRecords.xml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="SaveClanTag.xml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
+    <Content Include="Plugins\ChatBot\Settings.xml" />
+    <Content Include="Plugins\ChatBot\Settings_Template.xml" />
+    <Content Include="Plugins\Dedimania\Settings_Template.xml" />
+    <Content Include="Plugins\Dedimania\Settings.xml" />
+    <Content Include="Plugins\LocalRecords\Settings.xml" />
+    <Content Include="Plugins\LocalRecords\Settings_Template.xml" />
+    <Content Include="Plugins\NameProtectionBot\Settings.xml" />
+    <Content Include="Plugins\NameProtectionBot\Settings_Template.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
@@ -100,4 +101,5 @@
   <Target Name="AfterBuild">
   </Target>
   -->
+  <Import Project="$(MSBuildProjectDirectory)\PostBuild.targets" />
 </Project>

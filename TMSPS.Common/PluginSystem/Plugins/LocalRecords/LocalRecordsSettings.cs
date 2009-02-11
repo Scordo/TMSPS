@@ -68,7 +68,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
 
 
 			bool showMessages = true;
-			XElement showMessagesElement = providerSettingsElement.Element("ShowMessages");
+            XElement showMessagesElement = configDocument.Root.Element("ShowMessages");
 
 			if (showMessagesElement != null)
 				showMessages = string.Compare(showMessagesElement.Value.Trim(), "true", StringComparison.InvariantCultureIgnoreCase) == 0;

@@ -133,7 +133,7 @@ namespace TMSPS.Daemon
 
             foreach (ITMSPSPlugin plugin in Plugins)
             {
-                plugin.InitPlugin(HostContext, new ConsoleUILogger("TMSPS", string.Format(" - [{0}]",plugin.ShortNameForLogging)));
+                plugin.InitPlugin(HostContext, new ConsoleUILogger("TMSPS", string.Format(" - [{0}]",plugin.ShortName)));
             }
         }
 
