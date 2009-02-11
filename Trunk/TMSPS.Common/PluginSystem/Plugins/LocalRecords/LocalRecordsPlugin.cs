@@ -90,9 +90,15 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
 
         private void Callbacks_PlayerChat(object sender, PlayerChatEventArgs e)
         {
+            if (e.Erroneous)
+            {
+                Logger.Error(string.Format("[Callbacks_PlayerChat] Invalid Response: {0}[{1}]", e.Fault.FaultMessage, e.Fault.FaultCode));
+                return;
+            }
+
 			RunCatchLog(()=>
 			{
-				if (e.Erroneous || e.IsServerMessage || e.Text.IsNullOrTimmedEmpty() || e.IsRegisteredCommand)
+				if (e.IsServerMessage || e.Text.IsNullOrTimmedEmpty() || e.IsRegisteredCommand)
     				return;
 
 				string message = e.Text.Trim();
@@ -131,6 +137,12 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
 
 	    private void Callbacks_PlayerFinish(object sender, PlayerFinishEventArgs e)
 	    {
+            if (e.Erroneous)
+            {
+                Logger.Error(string.Format("[Callbacks_PlayerFinish] Invalid Response: {0}[{1}]", e.Fault.FaultMessage, e.Fault.FaultCode));
+                return;
+            }
+
 			RunCatchLog(()=>
 			{
 				if (e.TimeOrScore > 0)
@@ -170,6 +182,12 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
 
 	    private void Callbacks_EndRace(object sender, EndRaceEventArgs e)
 	    {
+            if (e.Erroneous)
+            {
+                Logger.Error(string.Format("[Callbacks_EndRace] Invalid Response: {0}[{1}]", e.Fault.FaultMessage, e.Fault.FaultCode));
+                return;
+            }
+
 			RunCatchLog(()=>
 			{
 				if (e.Rankings.Count > 1)
@@ -197,11 +215,23 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
 
 	    private void Callbacks_PlayerDisconnect(object sender,PlayerDisconnectEventArgs e)
 	    {
+            if (e.Erroneous)
+            {
+                Logger.Error(string.Format("[Callbacks_PlayerDisconnect] Invalid Response: {0}[{1}]", e.Fault.FaultMessage, e.Fault.FaultCode));
+                return;
+            }
+
 			RunCatchLog(() => PlayerAdapter.UpdateTimePlayed(e.Login), "Error in Callbacks_PlayerDisconnect Method.", true);
 	    }
 
 	    private void Callbacks_PlayerConnect(object sender, PlayerConnectEventArgs e)
 	    {
+            if (e.Erroneous)
+            {
+                Logger.Error(string.Format("[Callbacks_PlayerConnect] Invalid Response: {0}[{1}]", e.Fault.FaultMessage, e.Fault.FaultCode));
+                return;
+            }
+
 			RunCatchLog(()=>
 			{
 				PlayerInfo playerInfo = GetPlayerInfo(e.Login);
@@ -215,6 +245,12 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
 
 	    private void Callbacks_BeginRace(object sender, BeginRaceEventArgs e)
 	    {
+            if (e.Erroneous)
+            {
+                Logger.Error(string.Format("[Callbacks_BeginRace] Invalid Response: {0}[{1}]", e.Fault.FaultMessage, e.Fault.FaultCode));
+                return;
+            }
+
 			RunCatchLog(() => EnsureChallengeExistsInStorage(e.ChallengeInfo), "Error in Callbacks_BeginRace Method.", true);
 	    }
 

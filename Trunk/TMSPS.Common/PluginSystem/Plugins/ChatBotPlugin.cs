@@ -77,9 +77,15 @@ namespace TMSPS.Core.PluginSystem.Plugins
 
     	private void Callbacks_PlayerChat(object sender, PlayerChatEventArgs e)
     	{
+            if (e.Erroneous)
+            {
+                Logger.Error(string.Format("[Callbacks_PlayerChat] Invalid Response: {0}[{1}]", e.Fault.FaultMessage, e.Fault.FaultCode));
+                return;
+            }
+
 			RunCatchLog(()=>
 			{
-    			if (e.Erroneous || e.IsServerMessage || e.Text.IsNullOrTimmedEmpty())
+    			if (e.IsServerMessage || e.Text.IsNullOrTimmedEmpty())
     				return;
 
     			if (e.IsRegisteredCommand)

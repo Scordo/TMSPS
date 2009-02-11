@@ -5,6 +5,7 @@ using System.Reflection;
 using System.Text;
 using System.Xml.Linq;
 using TMSPS.Core.Common;
+using TMSPS.Core.Logging;
 
 namespace TMSPS.Core.Communication.ResponseHandling
 {
@@ -19,7 +20,6 @@ namespace TMSPS.Core.Communication.ResponseHandling
 
         #region Public Methods
 
-
         public static T Parse(XElement messageElement)
         {
             T result;
@@ -30,6 +30,7 @@ namespace TMSPS.Core.Communication.ResponseHandling
             {
                 result = (T)Activator.CreateInstance(typeof(T));
                 result.Fault = FaultResponse.GetFromXml(faultElement);
+                CoreLogger.UniqueInstance.Debug(string.Format("Fault element detected: \nFaultMessage: {0}\nFaultCode: {1}\nRawXML: {2}", result.Fault.FaultMessage, result.Fault.FaultCode, messageElement));
             }
             else
             {

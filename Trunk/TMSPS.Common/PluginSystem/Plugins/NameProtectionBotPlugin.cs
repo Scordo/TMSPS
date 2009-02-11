@@ -72,6 +72,12 @@ namespace TMSPS.Core.PluginSystem.Plugins
 
     	private void Callbacks_PlayerConnect(object sender, PlayerConnectEventArgs e)
     	{
+            if (e.Erroneous)
+            {
+                Logger.Error(string.Format("[Callbacks_PlayerConnect] Invalid Response: {0}[{1}]", e.Fault.FaultMessage, e.Fault.FaultCode));
+                return;
+            }
+
 			RunCatchLog(()=>
 			{
     			if (!ClanMembers.Contains(e.Login.ToLower()))
