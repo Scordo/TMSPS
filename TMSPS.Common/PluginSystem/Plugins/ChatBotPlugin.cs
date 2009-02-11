@@ -9,7 +9,7 @@ using TMSPS.Core.Communication.EventArguments.Callbacks;
 
 namespace TMSPS.Core.PluginSystem.Plugins
 {
-    public class ChatBotPlugin : TMSPSPluginBase
+    public class ChatBotPlugin : TMSPSPlugin
     {
     	#region Constants
 

@@ -6,5 +6,9 @@
 		<Parameter>server=sqlserver;database=database;uid=login;pwd=password;MultipleActiveResultSets=True;</Parameter>
 	</ProviderSettings>
 
+	<Plugins>
+		<Plugin enabled="false" assemblyName="TMSPS.Core" pluginClass="PluginClassHere" />
+	</Plugins>
+	
 	<ShowMessages>true</ShowMessages>
 </Settings>
