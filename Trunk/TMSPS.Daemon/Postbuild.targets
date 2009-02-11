@@ -1,0 +1,22 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+	<PropertyGroup>
+		<BuildDependsOn>$(BuildDependsOn);DoDeployment</BuildDependsOn>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<PluginResources Include="$(MSBuildProjectDirectory)\Plugins\**" Exclude="**\Settings_Template.xml"/>
+	</ItemGroup>
+
+	<Target Name="DoDeployment">
+		<Message Text=" " Importance="high" />
+		<Message Text=" " Importance="high" />
+		<Message Text="---------------------------------" Importance="high" />
+		<Message Text="| Deploying Configs and so on.. |" Importance="high" />
+		<Message Text="---------------------------------" Importance="high" />
+		<Message Text=" " Importance="high" />
+		<Message Text=" " Importance="high" />
+
+		<Copy SourceFiles="@(PluginResources)" DestinationFolder="$(MSBuildProjectDirectory)\bin\debug\Plugins\%(RecursiveDir)"/>
+	</Target>
+</Project>

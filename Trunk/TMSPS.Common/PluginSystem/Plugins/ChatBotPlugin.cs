@@ -40,9 +40,9 @@ namespace TMSPS.Core.PluginSystem.Plugins
     		get { return "Checks for registered phrases and answers to them."; }
     	}
 
-    	public override string ShortNameForLogging
+    	public override string ShortName
     	{
-    		get { return "ChatBotPlugin"; }
+    		get { return "ChatBot"; }
     	}
 
     	private string Botname
@@ -135,15 +135,13 @@ namespace TMSPS.Core.PluginSystem.Plugins
 
     	private bool ReadSettings()
     	{
-    		string configFilePath = GetConfigFilePath("ChatBot.xml");
-
     		try
     		{
-    			if (!File.Exists(configFilePath))
-    				throw new FileNotFoundException("ChatBot.xml not found.", configFilePath);
+    			if (!File.Exists(PluginSettingsFilePath))
+                    throw new FileNotFoundException("ChatBot.xml not found.", PluginSettingsFilePath);
 
-    			Util.WaitUntilReadable(configFilePath, 10000);
-    			XDocument doc = XDocument.Load(configFilePath);
+                Util.WaitUntilReadable(PluginSettingsFilePath, 10000);
+                XDocument doc = XDocument.Load(PluginSettingsFilePath);
 
 				if (doc.Root == null || doc.Root.Name != "Settings")
     				throw new InvalidOperationException("Could not find settings-root-node in ChatBot.xml.");

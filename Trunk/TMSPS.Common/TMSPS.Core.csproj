@@ -161,6 +161,7 @@
     <Compile Include="PluginSystem\Plugins\Dedimania\Communication\OptionValueTool.cs" />
     <Compile Include="PluginSystem\Plugins\Dedimania\Communication\PlayerArriveParameters.cs" />
     <Compile Include="PluginSystem\Plugins\Dedimania\DedimaniaPlugin.cs" />
+    <Compile Include="PluginSystem\Plugins\SpectatorsPlugin.cs" />
     <Compile Include="PluginSystem\Plugins\LocalRecords\AdapterProviderFactory.cs" />
     <Compile Include="PluginSystem\Plugins\LocalRecords\Challenge.cs" />
     <Compile Include="PluginSystem\Plugins\LocalRecords\IAdapterProvider.cs" />
@@ -187,7 +188,7 @@
     <Compile Include="PluginSystem\Plugins\LocalRecords\SQL\RatingAdapter.cs" />
     <Compile Include="PluginSystem\Plugins\LocalRecords\SQL\RecordAdapter.cs" />
     <Compile Include="PluginSystem\Plugins\LocalRecords\SQL\SessionAdapter.cs" />
-    <Compile Include="PluginSystem\Plugins\SaveClanTagPlugin.cs" />
+    <Compile Include="PluginSystem\Plugins\NameProtectionBotPlugin.cs" />
     <Compile Include="PluginSystem\ServerInfo.cs" />
     <Compile Include="PluginSystem\TMSPSPluginBase.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

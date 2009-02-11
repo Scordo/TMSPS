@@ -51,9 +51,9 @@ namespace TMSPS.Core.PluginSystem.Plugins.Dedimania
             get { return "Saves records in dedimania database."; }
         }
 
-		public override string ShortNameForLogging
+		public override string ShortName
 		{
-			get { return "DedimaniaPlugin"; }
+			get { return "Dedimania"; }
 		}
 
         #endregion
