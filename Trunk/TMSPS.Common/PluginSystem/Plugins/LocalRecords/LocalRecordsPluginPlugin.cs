@@ -1,7 +1,7 @@
 ﻿namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
 {
-	public abstract class LocalRecordsPluginPlugin : TMSPSPluginPlugin<ILocalRecordsPluginPlugin>
+    public abstract class LocalRecordsPluginPlugin : TMSPSPluginPlugin<LocalRecordsPlugin>, ILocalRecordsPluginPlugin
 	{
-
+        
 	}
 }

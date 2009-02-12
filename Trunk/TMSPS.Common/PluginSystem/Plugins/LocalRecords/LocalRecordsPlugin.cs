@@ -36,234 +36,235 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
 
 	    #endregion
 
+	    #region Events
+
+	    public event EventHandler<PlayerVoteEventArgs> PlayerVoted;
+	    public event EventHandler<PlayerNewRecordEventArgs> PlayerNewRecord;
+	    public event EventHandler<PlayerWinEventArgs> PlayerWins;
+	    public event EventHandler<PlayerCreatedOrUpdatedEventArgs> PlayerCreatedOrUpdated;
+        public event EventHandler<ChallengeCreatedOrUpdatedEventArgs> ChallengeCreatedOrUpdated;
+
+	    #endregion
+
 	    #region Methods
 
 	    protected override void Init()
 	    {
-			Logger.InfoToUI("Started initialziation of " + ShortName);
-			PlayerInfoCache = new Dictionary<string, PlayerInfo>();
+	        Logger.InfoToUI("Started initialziation of " + ShortName);
+	        PlayerInfoCache = new Dictionary<string, PlayerInfo>();
 	    	
-			Settings = LocalRecordsSettings.ReadFromFile(PluginSettingsFilePath);
-	    	InitializePlugins();
+	        Settings = LocalRecordsSettings.ReadFromFile(PluginSettingsFilePath);
+	        InitializePlugins();
 
-			try
-			{
-				
-				AdapterProvider = AdapterProviderFactory.GetAdapterProvider(Settings);
-				ChallengeAdapter = AdapterProvider.GetChallengeAdapter();
-				PlayerAdapter = AdapterProvider.GetPlayerAdapter();
-				PositionAdapter = AdapterProvider.GetPositionAdapter();
-				RecordAdapter = AdapterProvider.GetRecordAdapter();
-				RatingAdapter = AdapterProvider.GetRatingAdapter();
-				SessionAdapter = AdapterProvider.GetSessionAdapter();
-			}
-			catch (Exception ex)
-			{
-				Logger.Error("Error initializing AdapterProvider for local records.", ex);
-				Logger.ErrorToUI(string.Format("An error occured. {0} not started!", Name));
-				return;
-			}
+	        try
+	        {
+	            AdapterProvider = AdapterProviderFactory.GetAdapterProvider(Settings);
+	            ChallengeAdapter = AdapterProvider.GetChallengeAdapter();
+	            PlayerAdapter = AdapterProvider.GetPlayerAdapter();
+	            PositionAdapter = AdapterProvider.GetPositionAdapter();
+	            RecordAdapter = AdapterProvider.GetRecordAdapter();
+	            RatingAdapter = AdapterProvider.GetRatingAdapter();
+	            SessionAdapter = AdapterProvider.GetSessionAdapter();
+	        }
+	        catch (Exception ex)
+	        {
+	            Logger.Error("Error initializing AdapterProvider for local records.", ex);
+	            Logger.ErrorToUI(string.Format("An error occured. {0} not started!", Name));
+	            return;
+	        }
 
-			List<PlayerInfo> players = GetPlayerList();
-			if (players == null)
-				return;
+	        List<PlayerInfo> players = GetPlayerList();
+	        if (players == null)
+	            return;
 
-			foreach (PlayerInfo playerInfo in players)
-			{
-				PlayerAdapter.CreateOrUpdate(new Player(playerInfo.Login, playerInfo.NickName));
-			}
+	        foreach (PlayerInfo playerInfo in players)
+	        {
+	            PlayerAdapter.CreateOrUpdate(new Player(playerInfo.Login, playerInfo.NickName));
+	        }
 
-			ChallengeInfo currentChallengeInfo = GetCurrentChallengeInfo();
-			if (currentChallengeInfo == null)
-				return;
+	        ChallengeInfo currentChallengeInfo = GetCurrentChallengeInfo();
+	        if (currentChallengeInfo == null)
+	            return;
 
-			EnsureChallengeExistsInStorage(currentChallengeInfo);
+	        EnsureChallengeExistsInStorage(currentChallengeInfo);
 
-			TimePlayedTimer = new Timer(30000);
-			TimePlayedTimer.Elapsed += TimePlayedTimer_Elapsed;
-			TimePlayedTimer.Start();
+	        TimePlayedTimer = new Timer(30000);
+	        TimePlayedTimer.Elapsed += TimePlayedTimer_Elapsed;
+	        TimePlayedTimer.Start();
 
-			Context.RPCClient.Callbacks.BeginRace += Callbacks_BeginRace;
-			Context.RPCClient.Callbacks.EndRace += Callbacks_EndRace;
-			Context.RPCClient.Callbacks.PlayerConnect += Callbacks_PlayerConnect;
-			Context.RPCClient.Callbacks.PlayerDisconnect += Callbacks_PlayerDisconnect;
-			Context.RPCClient.Callbacks.PlayerFinish += Callbacks_PlayerFinish;
-			Context.RPCClient.Callbacks.PlayerChat += Callbacks_PlayerChat;
+	        Context.RPCClient.Callbacks.BeginRace += Callbacks_BeginRace;
+	        Context.RPCClient.Callbacks.EndRace += Callbacks_EndRace;
+	        Context.RPCClient.Callbacks.PlayerConnect += Callbacks_PlayerConnect;
+	        Context.RPCClient.Callbacks.PlayerDisconnect += Callbacks_PlayerDisconnect;
+	        Context.RPCClient.Callbacks.PlayerFinish += Callbacks_PlayerFinish;
+	        Context.RPCClient.Callbacks.PlayerChat += Callbacks_PlayerChat;
 
-			Logger.InfoToUI("Finished initialization of " + ShortName);
+	        Logger.InfoToUI("Finished initialization of " + ShortName);
 	    }
 
-        private void Callbacks_PlayerChat(object sender, PlayerChatEventArgs e)
-        {
-            if (e.Erroneous)
+	    private void Callbacks_PlayerChat(object sender, PlayerChatEventArgs e)
+	    {
+	        if (e.Erroneous)
+	        {
+	            Logger.Error(string.Format("[Callbacks_PlayerChat] Invalid Response: {0}[{1}]", e.Fault.FaultMessage, e.Fault.FaultCode));
+	            return;
+	        }
+
+	        RunCatchLog(()=>
             {
-                Logger.Error(string.Format("[Callbacks_PlayerChat] Invalid Response: {0}[{1}]", e.Fault.FaultMessage, e.Fault.FaultCode));
-                return;
-            }
+                if (e.IsServerMessage || e.Text.IsNullOrTimmedEmpty() || e.IsRegisteredCommand)
+                    return;
 
-			RunCatchLog(()=>
-			{
-				if (e.IsServerMessage || e.Text.IsNullOrTimmedEmpty() || e.IsRegisteredCommand)
-    				return;
+                string message = e.Text.Trim();
+                ushort? voteValue = null;
 
-				string message = e.Text.Trim();
+                switch (message)
+                {
+                    case "++":
+                        voteValue = 8;
+                        break;
+                    case "--":
+                        voteValue = 0;
+                        break;
+                    case "+-":
+                    case "-+":
+                        voteValue = 4;
+                        break;
+                    case "+0":
+                    case "+1":
+                    case "+2":
+                    case "+3":
+                    case "+4":
+                    case "+5":
+                    case "+6":
+                    case "+7":
+                    case "+8":
+                        voteValue = Convert.ToUInt16(message.Substring(1));
+                        break;
+                }
 
-				double? averageVote = null;
+                if (voteValue.HasValue)
+                {
+                    double? averageVote = RatingAdapter.Vote(e.Login, CurrentChallengeID, voteValue.Value);
 
-				switch (message)
-				{
-					case "++":
-						averageVote = RatingAdapter.Vote(e.Login, CurrentChallengeID, 8);
-						break;
-					case "--":
-						averageVote = RatingAdapter.Vote(e.Login, CurrentChallengeID, 0);
-						break;
-					case "+-":
-					case "-+":
-						averageVote = RatingAdapter.Vote(e.Login, CurrentChallengeID, 4);
-						break;
-					case "+0":
-					case "+1":
-					case "+2":
-					case "+3":
-					case "+4":
-					case "+5":
-					case "+6":
-					case "+7":
-					case "+8":
-						averageVote = RatingAdapter.Vote(e.Login, CurrentChallengeID, Convert.ToUInt16(message.Substring(1)));
-						break;
-				}
-
-				if (averageVote.HasValue && Settings.ShowMessages)
-					Context.RPCClient.Methods.SendServerMessageToLogin(string.Format("Vote accepted! Average vote is: {0}", averageVote.Value.ToString("F")), e.Login);
-			}, "Error in Callbacks_PlayerChat Method.", true);
-        }
+                    if (averageVote.HasValue)
+                        OnPlayerVoted(e.Login, CurrentChallengeID, voteValue.Value, averageVote.Value);
+                }
+            }, "Error in Callbacks_PlayerChat Method.", true);
+	    }
 
 	    private void Callbacks_PlayerFinish(object sender, PlayerFinishEventArgs e)
 	    {
-            if (e.Erroneous)
+	        if (e.Erroneous)
+	        {
+	            Logger.Error(string.Format("[Callbacks_PlayerFinish] Invalid Response: {0}[{1}]", e.Fault.FaultMessage, e.Fault.FaultCode));
+	            return;
+	        }
+
+	        RunCatchLog(()=>
             {
-                Logger.Error(string.Format("[Callbacks_PlayerFinish] Invalid Response: {0}[{1}]", e.Fault.FaultMessage, e.Fault.FaultCode));
-                return;
-            }
+                if (e.TimeOrScore > 0)
+                {
+                    uint? oldPosition, newPosition;
+                    bool newBest;
+                    RecordAdapter.CheckAndWriteNewRecord(e.Login, CurrentChallengeID, e.TimeOrScore, out oldPosition, out newPosition, out newBest);
 
-			RunCatchLog(()=>
-			{
-				if (e.TimeOrScore > 0)
-				{
-					uint? oldPosition, newPosition;
-					bool newBest;
-					RecordAdapter.CheckAndWriteNewRecord(e.Login, CurrentChallengeID, e.TimeOrScore, out oldPosition, out newPosition, out newBest);
+                    if (newBest)
+                    {
+                        PlayerInfo playerInfo = GetPlayerInfo(e.Login, true);
 
-					if (newBest)
-					{
-						PlayerInfo playerInfo = GetPlayerInfo(e.Login, true);
+                        if (playerInfo != null && newPosition <= Settings.MaxRecordsToReport)
+                            OnPlayerNewRecord(playerInfo, e.TimeOrScore, oldPosition, newPosition);
+                    }
 
-						if (playerInfo != null)
-						{
-							if (oldPosition == null)
-							{
-								if (Settings.ShowMessages)
-									Context.RPCClient.Methods.SendNotice(string.Format("{0}$z got his first local rank: $w$s$0f0{1}$z!", playerInfo.NickName, newPosition));
-							}
-							else if (newPosition > oldPosition)
-							{
-								if (Settings.ShowMessages)
-									Context.RPCClient.Methods.SendNotice(string.Format("{0}$z achieved local rank: $w$s$0f0{1}$z. Old rank: $w$s{2}", playerInfo.NickName, newPosition, oldPosition));
-							}
-							else
-							{
-								if (Settings.ShowMessages)
-									Context.RPCClient.Methods.SendNotice(string.Format("{0}$z improved his/her local rank: $w$s$0f0{1}$z!", playerInfo.NickName, newPosition));
-							}
-						}
-					}
-
-					SessionAdapter.AddSession(e.Login, CurrentChallengeID, e.TimeOrScore);
-				}
-			}, "Error in Callbacks_PlayerFinish Method.", true);
+                    SessionAdapter.AddSession(e.Login, CurrentChallengeID, e.TimeOrScore);
+                }
+            }, "Error in Callbacks_PlayerFinish Method.", true);
 	    }
 
 	    private void Callbacks_EndRace(object sender, EndRaceEventArgs e)
 	    {
-            if (e.Erroneous)
+	        if (e.Erroneous)
+	        {
+	            Logger.Error(string.Format("[Callbacks_EndRace] Invalid Response: {0}[{1}]", e.Fault.FaultMessage, e.Fault.FaultCode));
+	            return;
+	        }
+
+	        RunCatchLog(()=>
             {
-                Logger.Error(string.Format("[Callbacks_EndRace] Invalid Response: {0}[{1}]", e.Fault.FaultMessage, e.Fault.FaultCode));
-                return;
-            }
+                if (e.Rankings.Count > 1)
+                {
+                    // there must be at least 2 players to increase the wins for the first player
+                    if (e.Rankings[0].BestTime > 0)
+                    {
+                        uint wins = PlayerAdapter.IncreaseWins(e.Rankings[0].Login);
+                        OnPlayerWins(e.Rankings[0], wins);
+                        int maxRank = e.Rankings.Max(playerRank => playerRank.Rank);
 
-			RunCatchLog(()=>
-			{
-				if (e.Rankings.Count > 1)
-				{
-					// there must be at least 2 players to increase the wins for the first player
-					if (e.Rankings[0].BestTime > 0)
-					{
-						PlayerAdapter.IncreaseWins(e.Rankings[0].Login);
-
-						int maxRank = e.Rankings.Max(playerRank => playerRank.Rank);
-
-						foreach (PlayerRank playerRank in e.Rankings)
-						{
-							PositionAdapter.AddPosition(playerRank.Login, e.Challenge.UId, Convert.ToUInt16(playerRank.Rank), Convert.ToUInt16(maxRank));
-						}
-					}
-				}
-			}, "Error in Callbacks_EndRace Method.", true);
+                        foreach (PlayerRank playerRank in e.Rankings)
+                        {
+                            PositionAdapter.AddPosition(playerRank.Login, e.Challenge.UId, Convert.ToUInt16(playerRank.Rank), Convert.ToUInt16(maxRank));
+                        }
+                    }
+                }
+            }, "Error in Callbacks_EndRace Method.", true);
 	    }
 
 	    private void TimePlayedTimer_Elapsed(object sender, ElapsedEventArgs e)
 	    {
-			RunCatchLog(UpdateTimePlayedForAllCurrentPlayers, "Error in TimePlayedTimer_Elapsed Method.", true);
+	        RunCatchLog(UpdateTimePlayedForAllCurrentPlayers, "Error in TimePlayedTimer_Elapsed Method.", true);
 	    }
 
 	    private void Callbacks_PlayerDisconnect(object sender,PlayerDisconnectEventArgs e)
 	    {
-            if (e.Erroneous)
-            {
-                Logger.Error(string.Format("[Callbacks_PlayerDisconnect] Invalid Response: {0}[{1}]", e.Fault.FaultMessage, e.Fault.FaultCode));
-                return;
-            }
+	        if (e.Erroneous)
+	        {
+	            Logger.Error(string.Format("[Callbacks_PlayerDisconnect] Invalid Response: {0}[{1}]", e.Fault.FaultMessage, e.Fault.FaultCode));
+	            return;
+	        }
 
-			RunCatchLog(() => PlayerAdapter.UpdateTimePlayed(e.Login), "Error in Callbacks_PlayerDisconnect Method.", true);
+	        RunCatchLog(() => PlayerAdapter.UpdateTimePlayed(e.Login), "Error in Callbacks_PlayerDisconnect Method.", true);
 	    }
 
 	    private void Callbacks_PlayerConnect(object sender, PlayerConnectEventArgs e)
 	    {
-            if (e.Erroneous)
+	        if (e.Erroneous)
+	        {
+	            Logger.Error(string.Format("[Callbacks_PlayerConnect] Invalid Response: {0}[{1}]", e.Fault.FaultMessage, e.Fault.FaultCode));
+	            return;
+	        }
+
+	        RunCatchLog(()=>
             {
-                Logger.Error(string.Format("[Callbacks_PlayerConnect] Invalid Response: {0}[{1}]", e.Fault.FaultMessage, e.Fault.FaultCode));
-                return;
-            }
+                PlayerInfo playerInfo = GetPlayerInfo(e.Login);
 
-			RunCatchLog(()=>
-			{
-				PlayerInfo playerInfo = GetPlayerInfo(e.Login);
+                if (playerInfo == null)
+                    return;
 
-				if (playerInfo == null)
-					return;
-
-				PlayerAdapter.CreateOrUpdate(new Player(playerInfo.Login, playerInfo.NickName));
-			}, "Error in Callbacks_PlayerConnect Method.", true);
+                Player player = new Player(playerInfo.Login, playerInfo.NickName);
+                PlayerAdapter.CreateOrUpdate(player);
+                OnPlayerCreatedOrUpdated(player, playerInfo);
+            }, "Error in Callbacks_PlayerConnect Method.", true);
 	    }
 
 	    private void Callbacks_BeginRace(object sender, BeginRaceEventArgs e)
 	    {
-            if (e.Erroneous)
-            {
-                Logger.Error(string.Format("[Callbacks_BeginRace] Invalid Response: {0}[{1}]", e.Fault.FaultMessage, e.Fault.FaultCode));
-                return;
-            }
+	        if (e.Erroneous)
+	        {
+	            Logger.Error(string.Format("[Callbacks_BeginRace] Invalid Response: {0}[{1}]", e.Fault.FaultMessage, e.Fault.FaultCode));
+	            return;
+	        }
 
-			RunCatchLog(() => EnsureChallengeExistsInStorage(e.ChallengeInfo), "Error in Callbacks_BeginRace Method.", true);
+	        RunCatchLog(() => EnsureChallengeExistsInStorage(e.ChallengeInfo), "Error in Callbacks_BeginRace Method.", true);
 	    }
 
 	    private void EnsureChallengeExistsInStorage(ChallengeListSingleInfo challengeInfo)
 	    {
-			Challenge challenge = new Challenge(challengeInfo.UId, challengeInfo.Name, challengeInfo.Author, challengeInfo.Environnement);
-			ChallengeAdapter.IncreaseRaces(challenge);
-			CurrentChallengeID = challenge.ID.Value;
+	        Challenge challenge = new Challenge(challengeInfo.UId, challengeInfo.Name, challengeInfo.Author, challengeInfo.Environnement);
+	        ChallengeAdapter.IncreaseRaces(challenge);
+	        CurrentChallengeID = challenge.ID.Value;
+
+	        OnChallengeCreatedOrUpdated(challengeInfo, challenge);
 	    }
 
 	    private PlayerInfo GetPlayerInfo(string login, bool allowCached)
@@ -335,30 +336,30 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
 	        }
 	    }
 
-		private void InitializePlugins()
-		{
-			Plugins = Settings.GetPlugins(Logger);
+	    private void InitializePlugins()
+	    {
+	        Plugins = Settings.GetPlugins(Logger);
 
-			foreach (ILocalRecordsPluginPlugin plugin in Plugins)
-			{
-				plugin.ProvideHostPlugin(this);
-				plugin.InitPlugin(Context, new ConsoleUILogger("TMSPS", string.Format(" - [{0}]", plugin.ShortName)));
-			}
-		}
+	        foreach (ILocalRecordsPluginPlugin plugin in Plugins)
+	        {
+	            plugin.ProvideHostPlugin(this);
+	            plugin.InitPlugin(Context, new ConsoleUILogger("TMSPS", string.Format(" - [{0}]", plugin.ShortName)));
+	        }
+	    }
 
-		private void DisposePlugins()
-		{
-			foreach (ILocalRecordsPluginPlugin plugin in Plugins)
-			{
-				plugin.DisposePlugin();
-			}
-		}
+	    private void DisposePlugins()
+	    {
+	        foreach (ILocalRecordsPluginPlugin plugin in Plugins)
+	        {
+	            plugin.DisposePlugin();
+	        }
+	    }
 
 	    protected override void Dispose()
 	    {
 	        TimePlayedTimer.Stop();
 	        UpdateTimePlayedForAllCurrentPlayers();
-			DisposePlugins();
+	        DisposePlugins();
 
 	        Context.RPCClient.Callbacks.BeginRace -= Callbacks_BeginRace;
 	        Context.RPCClient.Callbacks.EndRace -= Callbacks_EndRace;
@@ -367,6 +368,144 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
 	        Context.RPCClient.Callbacks.PlayerFinish -= Callbacks_PlayerFinish;
 	    }
 
+        protected void OnPlayerVoted(string login, int challengeID, ushort voteValue, double averageVoteValue)
+        {
+            if (PlayerVoted != null)
+                PlayerVoted(this, new PlayerVoteEventArgs(login, challengeID, voteValue, averageVoteValue));
+        }
+
+        protected void OnPlayerNewRecord(PlayerInfo playerInfo, int timeOrScore, uint? oldPosition, uint? newPosition)
+        {
+            if (PlayerNewRecord != null)
+                PlayerNewRecord(this, new PlayerNewRecordEventArgs(playerInfo, timeOrScore, oldPosition, newPosition) );
+        }
+
+        protected void OnPlayerWins(PlayerRank rankingInfo, uint wins)
+        {
+            if (PlayerWins != null)
+                PlayerWins(this, new PlayerWinEventArgs(rankingInfo, wins));
+        }
+
+        protected void OnPlayerCreatedOrUpdated(Player player, PlayerInfo playerInfo)
+        {
+            if (PlayerCreatedOrUpdated != null)
+                PlayerCreatedOrUpdated(this, new PlayerCreatedOrUpdatedEventArgs(player, playerInfo));
+        }
+
+        protected void OnChallengeCreatedOrUpdated(ChallengeListSingleInfo challengeInfo, Challenge challenge)
+        {
+            if (ChallengeCreatedOrUpdated != null)
+                ChallengeCreatedOrUpdated(this, new ChallengeCreatedOrUpdatedEventArgs(challengeInfo, challenge));
+        }
+
 	    #endregion
 	}
+
+    public class PlayerVoteEventArgs : EventArgs
+    {
+        #region Properties
+
+        public string Login { get; private set; }
+        public int ChallengeID { get; private set; }
+        public ushort VoteValue { get; private set; }
+        public double AverageVoteValue { get; private set; }
+
+        #endregion
+
+        #region Constructor
+
+        public PlayerVoteEventArgs(string login, int challengeID, ushort voteValue, double averageVoteValue)
+        {
+            Login = login;
+            ChallengeID = challengeID;
+            VoteValue = voteValue;
+            AverageVoteValue = averageVoteValue;
+        }
+
+        #endregion
+    }
+
+    public class PlayerNewRecordEventArgs: EventArgs
+    {
+        #region Properties
+
+        public PlayerInfo PlayerInfo { get; private set; }
+        public int TimeOrScore { get; private set; }
+        public uint? OldPosition { get; private set; }
+        public uint? NewPosition { get; private set; }
+
+        #endregion
+
+        #region Constructor
+
+        public PlayerNewRecordEventArgs(PlayerInfo playerInfo, int timeOrScore, uint? oldPosition, uint? newPosition)
+        {
+            PlayerInfo = playerInfo;
+            TimeOrScore = timeOrScore;
+            OldPosition = oldPosition;
+            NewPosition = newPosition;
+        }
+
+        #endregion
+    }
+
+    public class PlayerWinEventArgs : EventArgs
+    {
+        #region Properties
+
+        public PlayerRank RankingInfo { get; private set; }
+        public uint Wins { get; private set; }
+
+        #endregion
+
+        #region Constructor
+
+        public PlayerWinEventArgs(PlayerRank rankingInfo, uint wins)
+        {
+            RankingInfo = rankingInfo;
+            Wins = wins;
+        }
+
+        #endregion
+    }
+
+    public class PlayerCreatedOrUpdatedEventArgs : EventArgs
+    {
+        #region Properties
+
+        public Player Player { get; private set; }
+        public PlayerInfo PlayerInfo { get; private set; }
+
+        #endregion
+
+        #region Constructor
+
+        public PlayerCreatedOrUpdatedEventArgs(Player player, PlayerInfo playerInfo)
+        {
+            Player = player;
+            PlayerInfo = playerInfo;
+        }
+
+        #endregion
+    }
+
+    public class ChallengeCreatedOrUpdatedEventArgs : EventArgs
+    {
+        #region Properties
+
+        public ChallengeListSingleInfo ChallengeInfo { get; private set; }
+        public Challenge Challenge { get; private set; }
+
+        #endregion
+
+        #region Constructor
+
+        public ChallengeCreatedOrUpdatedEventArgs(ChallengeListSingleInfo challengeInfo, Challenge challenge)
+        {
+            ChallengeInfo = challengeInfo;
+            Challenge = challenge;
+        }
+
+        #endregion
+    }
 }

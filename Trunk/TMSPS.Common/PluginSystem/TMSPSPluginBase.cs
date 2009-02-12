@@ -23,8 +23,10 @@ namespace TMSPS.Core.PluginSystem
 		public abstract string ShortName { get; }
 		public IUILogger Logger { get; private set; }
 		public PluginHostContext Context { get { return _context; } }
-		protected static string ApplicationDirectory { get { return Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location); } }
-		protected static string PluginsDirectory { get { return Path.Combine(ApplicationDirectory, "Plugins"); } }
+		public static string ApplicationDirectory { get { return Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location); } }
+        public static string PluginsDirectory { get { return Path.Combine(ApplicationDirectory, "Plugins"); } }
+        public virtual string PluginDirectory { get { return Path.Combine(PluginsDirectory, ShortName); } }
+        public string PluginSettingsFilePath { get { return Path.Combine(PluginDirectory, "Settings.xml"); } }
 
 		#endregion
 

@@ -7,8 +7,8 @@
 	</ProviderSettings>
 
 	<Plugins>
-		<Plugin enabled="false" assemblyName="TMSPS.Core" pluginClass="PluginClassHere" />
+		<Plugin enabled="true" assemblyName="TMSPS.Core" pluginClass="TMSPS.Core.PluginSystem.Plugins.LocalRecords.LocalRecordsUIPlugin" />
 	</Plugins>
-	
-	<ShowMessages>true</ShowMessages>
+
+	<MaxRecordsToReport>50</MaxRecordsToReport>
 </Settings>

@@ -88,6 +88,8 @@
     <Content Include="Plugins\ChatBot\Settings_Template.xml" />
     <Content Include="Plugins\Dedimania\Settings_Template.xml" />
     <Content Include="Plugins\Dedimania\Settings.xml" />
+    <Content Include="Plugins\LocalRecords\LocalRecordsUI\Settings.xml" />
+    <Content Include="Plugins\LocalRecords\LocalRecordsUI\Settings_Template.xml" />
     <Content Include="Plugins\LocalRecords\Settings.xml" />
     <Content Include="Plugins\LocalRecords\Settings_Template.xml" />
     <Content Include="Plugins\NameProtectionBot\Settings.xml" />

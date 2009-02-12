@@ -103,13 +103,13 @@ namespace TMSPS.Core.PluginSystem.Plugins
                             .ToList();
 
                         if (spectators.Count > 0)
-                            Context.RPCClient.Methods.SendToLogin(string.Format("{0} spectator(s): {1}", spectators.Count, string.Join(", ", spectators.ToArray())), e.Login);
+                            Context.RPCClient.Methods.ChatSendToLogin(string.Format("{0} spectator(s): {1}", spectators.Count, string.Join(", ", spectators.ToArray())), e.Login);
                         else
-                            Context.RPCClient.Methods.SendToLogin("Currently no spectators!", e.Login);
+                            Context.RPCClient.Methods.ChatSendToLogin("Currently no spectators!", e.Login);
                     }
                     else
                     {
-                        Context.RPCClient.Methods.SendToLogin("You do not have permissions to execute this command!", e.Login);
+                        Context.RPCClient.Methods.ChatSendToLogin("You do not have permissions to execute this command!", e.Login);
                     }
 
                     return true;
@@ -143,17 +143,17 @@ namespace TMSPS.Core.PluginSystem.Plugins
                         foreach (PlayerInfo playerInfo in logins)
                         {
                             Context.RPCClient.Methods.Kick(playerInfo.Login, "Kicked for spectating without asking.");
-                            Context.RPCClient.Methods.SendServerMessage(string.Format("[SpectatorBot] {0} got kicked for spectating without asking.", playerInfo.NickName));
+                            Context.RPCClient.Methods.ChatSendServerMessage(string.Format("[SpectatorBot] {0} got kicked for spectating without asking.", playerInfo.NickName));
                         }
 
                         if (logins.Count == 0)
-                            Context.RPCClient.Methods.SendServerMessageToLogin("No one is spectating!", e.Login);
+                            Context.RPCClient.Methods.ChatSendServerMessageToLogin("No one is spectating!", e.Login);
                         else
-                            Context.RPCClient.Methods.SendServerMessageToLogin(string.Format("Kicked {0} players for spectating without asking.", logins.Count), e.Login);
+                            Context.RPCClient.Methods.ChatSendServerMessageToLogin(string.Format("Kicked {0} players for spectating without asking.", logins.Count), e.Login);
                     }
                     else
                     {
-                        Context.RPCClient.Methods.SendServerMessageToLogin("You do not have permissions to execute this command.", e.Login);
+                        Context.RPCClient.Methods.ChatSendServerMessageToLogin("You do not have permissions to execute this command.", e.Login);
                     }
 
                     return true;

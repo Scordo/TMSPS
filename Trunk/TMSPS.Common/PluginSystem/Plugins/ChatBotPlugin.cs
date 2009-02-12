@@ -100,7 +100,7 @@ namespace TMSPS.Core.PluginSystem.Plugins
 
     				if (Regex.IsMatch(e.Text, regexPattern, RegexOptions.Singleline | RegexOptions.IgnoreCase))
     				{
-    					Context.RPCClient.Methods.SendServerMessage(string.Format("{0}{1}", Botname, Answers[phrase]));
+    					Context.RPCClient.Methods.ChatSendServerMessage(string.Format("{0}{1}", Botname, Answers[phrase]));
     					break;
     				}
     			}
@@ -118,13 +118,13 @@ namespace TMSPS.Core.PluginSystem.Plugins
     				if (Context.Credentials.UserHasRight(e.Login, command))
     				{
     					if (ReadSettings())
-    						Context.RPCClient.Methods.SendToLogin(string.Format("{0}ChatBot-Settings successfully read!", Botname), e.Login);
+    						Context.RPCClient.Methods.ChatSendToLogin(string.Format("{0}ChatBot-Settings successfully read!", Botname), e.Login);
     					else
-                            Context.RPCClient.Methods.SendToLogin(string.Format("{0}Error while reading ChatBot-Settings. See log for deailed error description", Botname), e.Login);
+                            Context.RPCClient.Methods.ChatSendToLogin(string.Format("{0}Error while reading ChatBot-Settings. See log for deailed error description", Botname), e.Login);
     				}
     				else
     				{
-                        Context.RPCClient.Methods.SendToLogin(string.Format("{0}You do not have permissions to execute this command!", Botname), e.Login);
+                        Context.RPCClient.Methods.ChatSendToLogin(string.Format("{0}You do not have permissions to execute this command!", Botname), e.Login);
     				}
 
     				return true;
