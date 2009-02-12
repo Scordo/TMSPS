@@ -94,7 +94,7 @@ namespace TMSPS.Core.PluginSystem.Plugins
     					if (kickResponse == null || kickResponse.Value)
     					{
     						Logger.InfoToUI(string.Format("Login {0} with player name {1} was kicked due to name abuse!", e.Login, playerInfoResponse.Value.NickName));
-    						Context.RPCClient.Methods.SendServerMessage(string.Format(PublicKickReason, playerInfoResponse.Value.NickName));
+    						Context.RPCClient.Methods.ChatSendServerMessage(string.Format(PublicKickReason, playerInfoResponse.Value.NickName));
     					}
     				}
     			}
