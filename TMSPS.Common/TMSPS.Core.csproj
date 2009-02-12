@@ -55,6 +55,7 @@
   <ItemGroup>
     <Compile Include="Common\IBaseAdapter.cs" />
     <Compile Include="Common\ParameterlessMethodDelegate.cs" />
+    <Compile Include="Common\SettingsBase.cs" />
     <Compile Include="Communication\ProxyTypes\GameMode.cs" />
     <Compile Include="Logging\ConsoleUILogger.cs" />
     <Compile Include="Logging\CoreLogger.cs" />
@@ -166,6 +167,8 @@
     <Compile Include="PluginSystem\Plugins\Dedimania\DedimaniaPlugin.cs" />
     <Compile Include="PluginSystem\Plugins\LocalRecords\ILocalRecordsPluginPlugin.cs" />
     <Compile Include="PluginSystem\Plugins\LocalRecords\LocalRecordsPluginPlugin.cs" />
+    <Compile Include="PluginSystem\Plugins\LocalRecords\LocalRecordsUIPlugin.cs" />
+    <Compile Include="PluginSystem\Plugins\LocalRecords\LocalRecordsUISettings.cs" />
     <Compile Include="PluginSystem\Plugins\SpectatorsPlugin.cs" />
     <Compile Include="PluginSystem\Plugins\LocalRecords\AdapterProviderFactory.cs" />
     <Compile Include="PluginSystem\Plugins\LocalRecords\Challenge.cs" />

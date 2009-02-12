@@ -1493,7 +1493,7 @@ namespace TMSPS.Core.Communication
         /// Send a text message to all clients. Only available to Admin.
         /// </summary>
         /// <param name="message"></param>
-        public GenericResponse<bool> Send(string message)
+        public GenericResponse<bool> ChatSend(string message)
         {
             return (GenericResponse<bool>)_client.SendMethod<GenericResponse<bool>>(TrackManiaMethod.ChatSend.ToString(), message);
         }
@@ -1503,7 +1503,7 @@ namespace TMSPS.Core.Communication
         /// </summary>
         /// <param name="login"></param>
         /// <param name="message"></param>
-        public GenericResponse<bool> SendToLogin(string message, string login)
+        public GenericResponse<bool> ChatSendToLogin(string message, string login)
         {
             return (GenericResponse<bool>)_client.SendMethod<GenericResponse<bool>>(TrackManiaMethod.ChatSendToLogin.ToString(), message, login);
         }
@@ -1513,7 +1513,7 @@ namespace TMSPS.Core.Communication
         /// </summary>
         /// <param name="playerID"></param>
         /// <param name="message"></param>
-        public GenericResponse<bool> SendToID(string message, int playerID)
+        public GenericResponse<bool> ChatSendToID(string message, int playerID)
         {
             return (GenericResponse<bool>)_client.SendMethod<GenericResponse<bool>>(TrackManiaMethod.ChatSendToId.ToString(), message, playerID);
         }
@@ -1522,7 +1522,7 @@ namespace TMSPS.Core.Communication
         /// Send a text message to all clients without the server login. Only available to Admin.
         /// </summary>
         /// <param name="message"></param>
-        public GenericResponse<bool> SendServerMessage(string message)
+        public GenericResponse<bool> ChatSendServerMessage(string message)
         {
             return (GenericResponse<bool>)_client.SendMethod<GenericResponse<bool>>(TrackManiaMethod.ChatSendServerMessage.ToString(), message);
         }
@@ -1532,7 +1532,7 @@ namespace TMSPS.Core.Communication
         /// </summary>
         /// <param name="login"></param>
         /// <param name="message"></param>
-        public GenericResponse<bool> SendServerMessageToLogin(string message, string login)
+        public GenericResponse<bool> ChatSendServerMessageToLogin(string message, string login)
         {
             return (GenericResponse<bool>)_client.SendMethod<GenericResponse<bool>>(TrackManiaMethod.ChatSendServerMessageToLogin.ToString(), message, login);
         }
@@ -1542,7 +1542,7 @@ namespace TMSPS.Core.Communication
         /// </summary>
         /// <param name="playerID"></param>
         /// <param name="message"></param>
-        public GenericResponse<bool> SendServerMessageToId(string message, int playerID)
+        public GenericResponse<bool> ChatSendServerMessageToId(string message, int playerID)
         {
             return (GenericResponse<bool>)_client.SendMethod<GenericResponse<bool>>(TrackManiaMethod.ChatSendServerMessageToId.ToString(), message, playerID);
         }
