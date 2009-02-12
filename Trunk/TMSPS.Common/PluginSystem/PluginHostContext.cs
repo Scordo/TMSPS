@@ -9,6 +9,7 @@ namespace TMSPS.Core.PluginSystem
 		public Credentials Credentials { get; internal set; } 
         public TrackManiaRPCClient RPCClient { get; private set; }
         public ServerInfo ServerInfo { get; internal set; }
+        public ValueStore ValueStore { get; private set; }
 
         public PluginHostContext(TrackManiaRPCClient client, ServerInfo serverInfo, Credentials credentials)
         {
@@ -18,11 +19,10 @@ namespace TMSPS.Core.PluginSystem
             if (serverInfo == null)
                 throw new ArgumentNullException("serverInfo");
 
-
             RPCClient = client;
             ServerInfo = serverInfo;
         	Credentials = credentials;
-
+            ValueStore = new ValueStore();
         }
     }
 }

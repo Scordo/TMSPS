@@ -3,6 +3,8 @@
 	<ShowMessages>true</ShowMessages>
 	<MaxRecordsToShow>20</MaxRecordsToShow>
 	<NoticeDelayInSeconds>2</NoticeDelayInSeconds>
+	<ShowPBUI>true</ShowPBUI>
+	<ShowLRUI>true</ShowLRUI>
 	<VoteAcceptedMessage>$zHey, $zVote accepted! Average vote is: {[AverageVote]}</VoteAcceptedMessage>
 	<FirstLocalRankMessage>$zHey, {[Nickname]}$z got his first local rank: $w$s$0f0{[Rank]}$z!</FirstLocalRankMessage>
 	<NewLocalRankMessage>$zHey, {[Nickname]}$z achieved local rank: $w$s$0f0{[NewRank]}$z. Old rank: $w$s{[OldRank]}</NewLocalRankMessage>
