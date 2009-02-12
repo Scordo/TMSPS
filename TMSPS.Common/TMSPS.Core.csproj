@@ -53,6 +53,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Common\EventArgs.cs" />
+    <Compile Include="Common\GlobalConstants.cs" />
     <Compile Include="Common\IBaseAdapter.cs" />
     <Compile Include="Common\ParameterlessMethodDelegate.cs" />
     <Compile Include="Common\SettingsBase.cs" />
@@ -169,6 +171,12 @@
     <Compile Include="PluginSystem\Plugins\LocalRecords\LocalRecordsPluginPlugin.cs" />
     <Compile Include="PluginSystem\Plugins\LocalRecords\LocalRecordsUIPlugin.cs" />
     <Compile Include="PluginSystem\Plugins\LocalRecords\LocalRecordsUISettings.cs" />
+    <Compile Include="PluginSystem\Plugins\LocalRecords\RankEntry.cs" />
+    <Compile Include="PluginSystem\Plugins\LocalRecords\UITemplates.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>UITemplates.resx</DependentUpon>
+    </Compile>
     <Compile Include="PluginSystem\Plugins\SpectatorsPlugin.cs" />
     <Compile Include="PluginSystem\Plugins\LocalRecords\AdapterProviderFactory.cs" />
     <Compile Include="PluginSystem\Plugins\LocalRecords\Challenge.cs" />
@@ -202,6 +210,7 @@
     <Compile Include="PluginSystem\TMSPSPlugin.cs" />
     <Compile Include="PluginSystem\TMSPSPluginBase.cs" />
     <Compile Include="PluginSystem\TMSPSPluginPlugin.cs" />
+    <Compile Include="PluginSystem\ValueStore.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SQL\SQLBaseAdapter.cs" />
     <Compile Include="SQL\ConnectionManager.cs" />
@@ -226,6 +235,8 @@
     <None Include="Resources\SQLScripts\StoredProcedures\Player\Player_UpdateTimePlayed.sql" />
     <None Include="Resources\SQLScripts\StoredProcedures\Position\Position_Add.sql" />
     <None Include="Resources\SQLScripts\StoredProcedures\Rating\Rating_Vote.sql" />
+    <None Include="Resources\SQLScripts\StoredProcedures\Record\Record_GetBest.sql" />
+    <None Include="Resources\SQLScripts\StoredProcedures\Record\Record_GetTopRecords.sql" />
     <None Include="Resources\SQLScripts\StoredProcedures\Record\Record_TryInsertOrUpdate.sql" />
     <None Include="Resources\SQLScripts\StoredProcedures\Session\Session_Add.sql" />
     <None Include="Resources\SQLScripts\Structure\Challenge.sql" />
@@ -234,6 +245,12 @@
     <None Include="Resources\SQLScripts\Structure\Rating.sql" />
     <None Include="Resources\SQLScripts\Structure\Record.sql" />
     <None Include="Resources\SQLScripts\Structure\Session.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="PluginSystem\Plugins\LocalRecords\UITemplates.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>UITemplates.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
