@@ -27,7 +27,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords.SQL
 
         #region Public Methods
 
-        public void AddSession(string login, int challengeID, int timeOrScore)
+        public void AddSession(string login, int challengeID, uint timeOrScore)
         {
             if (login.IsNullOrTimmedEmpty())
                 throw new ArgumentException("Login is null or empty.");
@@ -36,7 +36,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords.SQL
             {
                 {"Login", login.Trim()},
                 {"ChallengeID", challengeID},
-                {"TimeOrScore", timeOrScore}
+                {"TimeOrScore", Convert.ToInt32(timeOrScore)}
             };
 
             SqlHelper.ExecuteNonQuery("Session_Add", parameters);

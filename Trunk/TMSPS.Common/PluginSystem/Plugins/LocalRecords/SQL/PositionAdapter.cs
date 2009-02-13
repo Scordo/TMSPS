@@ -36,7 +36,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords.SQL
                 throw new ArgumentException("UniqueChallengeID is null or empty.");
 
             if (position == 0 || position > maxPosition)
-                throw new ArgumentOutOfRangeException("position");
+                throw new ArgumentOutOfRangeException("position", position, "Position has an invalid value of " + position);
 
             Dictionary<string, object> parameters = new Dictionary<string, object>
             {
