@@ -22,7 +22,6 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
 	    public string ProviderAssemblyLocation { get; private set; }
 	    public string ProviderClass { get; private set; }
 	    public string ProviderParameter { get; private set; }
-	    private PluginConfigEntryCollection Plugins { get; set; }
         public uint MaxRecordsToReport { get; private set; }
 
 	    #endregion

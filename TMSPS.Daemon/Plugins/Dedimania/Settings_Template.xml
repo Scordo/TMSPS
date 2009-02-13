@@ -1,4 +1,10 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <Settings>
+	<Plugins>
 
+	</Plugins>
+
+	<AuthUrl>http://dedimania.net/RPC4/server.php</AuthUrl>
+	<ReportUrl>http://dedimania.net:8015/Dedimania</ReportUrl>
+	<MaxRecordsToReport>30</MaxRecordsToReport>
 </Settings>
