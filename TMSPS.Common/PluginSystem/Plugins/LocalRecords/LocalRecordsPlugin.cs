@@ -184,7 +184,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
                             OnPlayerNewRecord(playerInfo, e.TimeOrScore, oldPosition, newPosition);
                     }
 
-                    SessionAdapter.AddSession(e.Login, CurrentChallengeID, e.TimeOrScore);
+                    SessionAdapter.AddSession(e.Login, CurrentChallengeID, Convert.ToUInt32(e.TimeOrScore));
                 }
             }, "Error in Callbacks_PlayerFinish Method.", true);
 	    }
@@ -210,6 +210,9 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
 
                         foreach (PlayerRank playerRank in e.Rankings)
                         {
+                            if (playerRank.Rank <= 0)
+                                continue;
+
                             PositionAdapter.AddPosition(playerRank.Login, e.Challenge.UId, Convert.ToUInt16(playerRank.Rank), Convert.ToUInt16(maxRank));
                         }
                     }
