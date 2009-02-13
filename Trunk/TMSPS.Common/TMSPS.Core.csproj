@@ -167,6 +167,7 @@
     <Compile Include="PluginSystem\Plugins\Dedimania\Communication\OptionValueTool.cs" />
     <Compile Include="PluginSystem\Plugins\Dedimania\Communication\PlayerArriveParameters.cs" />
     <Compile Include="PluginSystem\Plugins\Dedimania\DedimaniaPlugin.cs" />
+    <Compile Include="PluginSystem\Plugins\Dedimania\DedimaniaSettings.cs" />
     <Compile Include="PluginSystem\Plugins\LocalRecords\ILocalRecordsPluginPlugin.cs" />
     <Compile Include="PluginSystem\Plugins\LocalRecords\LocalRecordsPluginPlugin.cs" />
     <Compile Include="PluginSystem\Plugins\LocalRecords\LocalRecordsUIPlugin.cs" />

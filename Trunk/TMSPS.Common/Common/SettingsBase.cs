@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Configuration;
 using System.Xml.Linq;
+using TMSPS.Core.PluginSystem.Configuration;
 
 namespace TMSPS.Core.Common
 {
     public class SettingsBase
     {
+        protected PluginConfigEntryCollection Plugins { get; set; }
+
         public static string ReadConfigString(XContainer parentElement, string elementName, string configFile)
         {
             return ReadConfigString(parentElement, elementName, null, configFile);

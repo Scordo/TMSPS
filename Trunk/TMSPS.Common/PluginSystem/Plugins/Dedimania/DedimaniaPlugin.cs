@@ -15,9 +15,6 @@ namespace TMSPS.Core.PluginSystem.Plugins.Dedimania
         #region Constants
 
         private const int UPDATE_SERVER_PLAYERS_INTERVAL_IN_MINUTES = 4;
-        private const int MAX_AMOUNT_OF_RECORDS_TO_RECEIVE = 30;
-        private const string FIRST_AUTH_URL = "http://dedimania.net/RPC4/server.php";
-        private const string COMMANDS_URL = "http://dedimania.net:8015/Dedimania";
         private const string TOOL_NAME = "TMSPS";
 
         #endregion
@@ -56,12 +53,16 @@ namespace TMSPS.Core.PluginSystem.Plugins.Dedimania
 			get { return "Dedimania"; }
 		}
 
+        public DedimaniaSettings Settings { get; private set; }
+
         #endregion
 
         #region Methods
 
         protected override void Init()
         {
+            Settings = DedimaniaSettings.ReadFromFile(PluginSettingsFilePath);
+
             AuthenticateParameters authParams = new AuthenticateParameters
             {
                 Game = Context.ServerInfo.Version.GetShortName(),
@@ -73,7 +74,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.Dedimania
                 Version = Version.ToString(2)
             };
 
-            DedimaniaClient = new DedimaniaClient(FIRST_AUTH_URL, authParams);
+            DedimaniaClient = new DedimaniaClient(Settings.AuthUrl, authParams);
 
             if (!DedimaniaClient.Authenticate())
             {
@@ -81,7 +82,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.Dedimania
                 return;
             }
 
-            DedimaniaClient.Url = COMMANDS_URL;
+            DedimaniaClient.Url = Settings.ReportUrl;
             Context.RPCClient.Callbacks.BeginRace += Callbacks_BeginRace;
             Context.RPCClient.Callbacks.EndRace += Callbacks_EndRace;
 
@@ -178,7 +179,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.Dedimania
             int spectatorsCount = currentPlayers.Count - playersCount;
             DedimaniaServerInfo serverInfo = new DedimaniaServerInfo(serverOptions.Name, serverOptions.Comment, serverOptions.Password.Length > 0, string.Empty, 0, Context.ServerInfo.ServerXMLRpcPort, playersCount, serverOptions.CurrentMaxPlayers, spectatorsCount, serverOptions.CurrentMaxSpectators, serverOptions.CurrentLadderMode, string.Empty);
 
-            DedimaniaCurrentChallengeReply currentChallengeReply = DedimaniaClient.CurrentChallenge(currentChallenge.UId, currentChallenge.Name, currentChallenge.Environnement, currentChallenge.Author, Context.ServerInfo.Version.GetShortName(), currentGameMode.Value, serverInfo, MAX_AMOUNT_OF_RECORDS_TO_RECEIVE, playersToReport.ToArray());
+            DedimaniaCurrentChallengeReply currentChallengeReply = DedimaniaClient.CurrentChallenge(currentChallenge.UId, currentChallenge.Name, currentChallenge.Environnement, currentChallenge.Author, Context.ServerInfo.Version.GetShortName(), currentGameMode.Value, serverInfo, Convert.ToInt32(Settings.MaxRecordsToReport), playersToReport.ToArray());
 
             if (currentChallengeReply == null)
                 Logger.WarnToUI("Error while calling CurrentChallenge!");
@@ -221,14 +222,14 @@ namespace TMSPS.Core.PluginSystem.Plugins.Dedimania
                     return;
 
 				ResetUpdateServerPlayersTimer();
-				DedimaniaChallengeRaceTimesReply challengeRaceTimesReply = DedimaniaClient.ChallengeRaceTimes(e.Challenge.UId, e.Challenge.Name, e.Challenge.Environnement, e.Challenge.Author, Context.ServerInfo.Version.GetShortName(), currentGameMode.Value, maxCheckPointAmount, MAX_AMOUNT_OF_RECORDS_TO_RECEIVE, times.ToArray());
+                DedimaniaChallengeRaceTimesReply challengeRaceTimesReply = DedimaniaClient.ChallengeRaceTimes(e.Challenge.UId, e.Challenge.Name, e.Challenge.Environnement, e.Challenge.Author, Context.ServerInfo.Version.GetShortName(), currentGameMode.Value, maxCheckPointAmount, Convert.ToInt32(Settings.MaxRecordsToReport), times.ToArray());
 
 				if (challengeRaceTimesReply == null)
 					Logger.WarnToUI("Error while calling ChallengeRaceTimes!");
 			}, "Error in Callbacks_EndRace Method.", true);
         }
 
-        private static List<PlayerInfo> GetPlayerList(DedimaniaPlugin plugin)
+        private static List<PlayerInfo> GetPlayerList(TMSPSPluginBase plugin)
         {
             GenericListResponse<PlayerInfo> playersResponse = plugin.Context.RPCClient.Methods.GetPlayerList();
 
@@ -256,7 +257,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.Dedimania
             return currentChallengeInfoResponse.Value;
         }
 
-        private static ServerOptions GetServerOptions(DedimaniaPlugin plugin)
+        private static ServerOptions GetServerOptions(TMSPSPluginBase plugin)
         {
             GenericResponse<ServerOptions> serverOptionsResponse = plugin.Context.RPCClient.Methods.GetServerOptions();
 
@@ -270,7 +271,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.Dedimania
             return serverOptionsResponse.Value;
         }
 
-        private static int? GetCurrentGameMode(DedimaniaPlugin plugin)
+        private static int? GetCurrentGameMode(TMSPSPluginBase plugin)
         {
             GenericResponse<int> currentGameModeResponse = plugin.Context.RPCClient.Methods.GetGameMode();
 
