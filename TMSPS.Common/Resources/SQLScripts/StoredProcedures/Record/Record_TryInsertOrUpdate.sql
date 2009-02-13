@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE dbo.Record_TryInsertOrUpdate
+﻿ALTER PROCEDURE [dbo].[Record_TryInsertOrUpdate]
 	@Login nvarchar(50),
 	@ChallengeID int,
 	@TimeOrScore int
@@ -19,6 +19,8 @@ BEGIN
 				ROW_NUMBER() OVER (order by TimeOrScore asc, LastChanged asc) RowNr, *
 			FROM
 				dbo.Record with (nolock)
+			WHERE
+				ChallengeID = @ChallengeID
 		)
 		
 		Select  
@@ -64,6 +66,8 @@ BEGIN
 				ROW_NUMBER() OVER (order by TimeOrScore asc, LastChanged asc) RowNr, *
 			FROM
 				dbo.Record with (nolock)
+			WHERE
+				ChallengeID = @ChallengeID
 		)
 		
 		Select  
