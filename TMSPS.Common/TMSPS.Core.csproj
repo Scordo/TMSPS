@@ -53,6 +53,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Common\ComparerFactory.cs" />
     <Compile Include="Common\EventArgs.cs" />
     <Compile Include="Common\GlobalConstants.cs" />
     <Compile Include="Common\IBaseAdapter.cs" />
@@ -167,7 +168,17 @@
     <Compile Include="PluginSystem\Plugins\Dedimania\Communication\OptionValueTool.cs" />
     <Compile Include="PluginSystem\Plugins\Dedimania\Communication\PlayerArriveParameters.cs" />
     <Compile Include="PluginSystem\Plugins\Dedimania\DedimaniaPlugin.cs" />
+    <Compile Include="PluginSystem\Plugins\Dedimania\DedimaniaPluginPlugin.cs" />
+    <Compile Include="PluginSystem\Plugins\Dedimania\DedimaniaRanking.cs" />
     <Compile Include="PluginSystem\Plugins\Dedimania\DedimaniaSettings.cs" />
+    <Compile Include="PluginSystem\Plugins\Dedimania\DedimaniaUIPlugin.cs" />
+    <Compile Include="PluginSystem\Plugins\Dedimania\DedimaniaUISettings.cs" />
+    <Compile Include="PluginSystem\Plugins\Dedimania\IDedimaniaPluginPlugin.cs" />
+    <Compile Include="PluginSystem\Plugins\Dedimania\UITemplates.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>UITemplates.resx</DependentUpon>
+    </Compile>
     <Compile Include="PluginSystem\Plugins\LocalRecords\ILocalRecordsPluginPlugin.cs" />
     <Compile Include="PluginSystem\Plugins\LocalRecords\LocalRecordsPluginPlugin.cs" />
     <Compile Include="PluginSystem\Plugins\LocalRecords\LocalRecordsUIPlugin.cs" />
@@ -248,6 +259,10 @@
     <None Include="Resources\SQLScripts\Structure\Session.sql" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="PluginSystem\Plugins\Dedimania\UITemplates.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>UITemplates.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
     <EmbeddedResource Include="PluginSystem\Plugins\LocalRecords\UITemplates.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>UITemplates.Designer.cs</LastGenOutput>

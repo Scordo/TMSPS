@@ -1,5 +1,8 @@
-﻿using System.Configuration;
+﻿using System.Collections.Generic;
+using System.Configuration;
 using System.Xml.Linq;
+using TMSPS.Core.Common;
+using TMSPS.Core.Logging;
 using TMSPS.Core.PluginSystem.Configuration;
 using SettingsBase=TMSPS.Core.Common.SettingsBase;
 
@@ -37,6 +40,21 @@ namespace TMSPS.Core.PluginSystem.Plugins.Dedimania
             result.ReportUrl = ReadConfigString(configDocument.Root, "ReportUrl", REPORT_URL, xmlConfigurationFile);
             result.MaxRecordsToReport = ReadConfigUInt(configDocument.Root, "MaxRecordsToReport", MAX_RECORDS_TO_REPORT, xmlConfigurationFile);
             result.Plugins = PluginConfigEntryCollection.ReadFromXElement(configDocument.Root.Element("Plugins"));
+
+            return result;
+        }
+
+        public List<IDedimaniaPluginPlugin> GetPlugins(IUILogger logger)
+        {
+            List<IDedimaniaPluginPlugin> result = new List<IDedimaniaPluginPlugin>();
+
+            foreach (PluginConfigEntry pluginConfigEntry in Plugins.GetEnabledPlugins())
+            {
+                if (logger != null)
+                    logger.Debug(string.Format("Instantiating IDedimaniaPluginPlugin {0}", pluginConfigEntry.PluginClass));
+
+                result.Add(Instancer.GetInstanceOfInterface<IDedimaniaPluginPlugin>(pluginConfigEntry.AssemblyName, pluginConfigEntry.PluginClass));
+            }
 
             return result;
         }
