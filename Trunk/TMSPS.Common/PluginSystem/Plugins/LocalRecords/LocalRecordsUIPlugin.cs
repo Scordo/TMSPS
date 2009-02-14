@@ -96,7 +96,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
             if (personalBestTimeOrScore.HasValue)
             {
                 TimeSpan pbTime = TimeSpan.FromMilliseconds(personalBestTimeOrScore.Value);
-                pbValue = string.Format("{0}:{1}.{2}", pbTime.Minutes, pbTime.Seconds, pbTime.Milliseconds / 10);
+                pbValue = string.Format("{0}:{1}.{2}", pbTime.Minutes, pbTime.Seconds.ToString("00"), (pbTime.Milliseconds / 10).ToString("00"));
             }
 
             maniaLinkPage.Replace("{[PB]}", pbValue);
@@ -123,7 +123,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
             if (LocalBestTimeOrScore.HasValue)
             {
                 TimeSpan time = TimeSpan.FromMilliseconds(LocalBestTimeOrScore.Value);
-                timeString = string.Format("{0}:{1}.{2}", time.Minutes, time.Seconds, time.Milliseconds / 10);
+                timeString = string.Format("{0}:{1}.{2}", time.Minutes, time.Seconds.ToString("00"), (time.Milliseconds / 10).ToString("00"));
             }
 
             maniaLinkPage.Replace("{[LCL]}", timeString);
