@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using TMSPS.Core.Communication;
 using TMSPS.Core.PluginSystem.Configuration;
 
@@ -10,6 +11,7 @@ namespace TMSPS.Core.PluginSystem
         public TrackManiaRPCClient RPCClient { get; private set; }
         public ServerInfo ServerInfo { get; internal set; }
         public ValueStore ValueStore { get; private set; }
+        public CultureInfo Culture { get; private set; }
 
         public PluginHostContext(TrackManiaRPCClient client, ServerInfo serverInfo, Credentials credentials)
         {
@@ -23,6 +25,7 @@ namespace TMSPS.Core.PluginSystem
             ServerInfo = serverInfo;
         	Credentials = credentials;
             ValueStore = new ValueStore();
+            Culture = new CultureInfo("en-us");
         }
     }
 }

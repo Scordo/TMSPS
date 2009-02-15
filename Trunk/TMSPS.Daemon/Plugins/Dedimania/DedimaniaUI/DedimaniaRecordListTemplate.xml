@@ -1,0 +1,54 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Settings>
+	<PlayerStartMargin>0.0</PlayerStartMargin>
+	<Top3Gap>0.6</Top3Gap>
+	<PlayerRecordHeight>1.5</PlayerRecordHeight>
+	<PlayerEndMargin>0.0</PlayerEndMargin>
+	
+	<Templates>
+		<MainTemplate>
+			<manialink id="{[ManiaLinkID]}">
+				<frame posn="-64.7 25 0">
+					<quad sizen="11.5 2.5" posn="-1 0 0" halign="left" valign="top" style="BgsPlayerCard" substyle="BgActivePlayerName"/>
+					<format textsize="1"/>
+					<label posn="1.3 -0.5 2" halign="left" text="Dedimania"/>
+
+					<quad sizen="16.7 6" posn="-1 -2.2 0" halign="left" valign="top" style="Bgs1" substyle="BgList"/>
+					<quad sizen="17 {[ContainerHeight}}" posn="-1 -2.2 0" halign="left" valign="top" style="BgsPlayerCard" substyle="BgActivePlayerName"/>
+
+					<RankingPlaceHolder />
+				</frame>
+			</manialink>
+		</MainTemplate>
+
+		<Top3RecordTemplate>
+			<frame posn="0 {[Y]} 0">
+				<format textsize="1"/>
+				<label sizen="30 2" halign="right" posn="2.5 0 0.1" text="{[Rank]}" textcolor="FFFF"/>
+				<label sizen="30 2" halign="left" posn="2.8 0 0.1" text="{[TimeOrScore]}" textcolor="DD0F"/>
+				<label sizen="8 2" posn="7.2 0 0.1" text="{[Nickname]}" textcolor="FFFF"/>
+			</frame>
+		</Top3RecordTemplate>
+
+		<RecordTemplate>
+			<frame posn="0 {[Y]} 0">
+				<format textsize="1"/>
+				<label sizen="30 2" halign="right" posn="2.5 0 0.1" text="{[Rank]}" textcolor="FFFF"/>
+				<label sizen="30 2" halign="left" posn="2.8 0 0.1" text="{[TimeOrScore]}" textcolor="5AFF"/>
+				<label sizen="8 2" posn="7.2 0 0.1" text="{[Nickname]}" textcolor="FFFF"/>
+			</frame>
+		</RecordTemplate>
+
+		<RecordHighlightTemplate>
+			<frame posn="0 {[Y]} 0">
+				<quad sizen="1.6 1.6" posn="15.5 0 0.3" style="Icons64x64_1" substyle="LvlGreen"/>
+				<format textsize="1" />
+				<label sizen="30 2" halign="right" posn="2.5 0 0.1" text="{[Rank]}" textcolor="FFFF"/>
+				<label sizen="30 2" halign="left" posn="2.8 0 0.1" text="{[TimeOrScore]}" textcolor="0D0F"/>
+				<label sizen="8 2" posn="7.2 0 0.1" text="{[Nickname]}" textcolor="FFFF"/>
+			</frame>
+		</RecordHighlightTemplate>
+
+	</Templates>
+</Settings>
+

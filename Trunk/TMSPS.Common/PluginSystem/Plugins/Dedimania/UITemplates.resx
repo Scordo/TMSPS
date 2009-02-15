@@ -130,4 +130,48 @@
   <data name="LowerRightDediRecordPanelInActive" xml:space="preserve">
     <value>&lt;manialink id="{[ManiaLinkID]}"&gt;&lt;/manialink&gt;</value>
   </data>
+  <data name="RecordListMainTemplate" xml:space="preserve">
+    <value>&lt;manialink id="{[ManiaLinkID]}"&gt;
+	&lt;frame posn="-64.7 25 0"&gt;
+		&lt;!-- Start: Dedimania Header --&gt;
+		&lt;quad sizen="11.5 2.5" posn="-1 0 0" halign="left" valign="top" style="BgsPlayerCard" substyle="BgActivePlayerName"/&gt;
+		&lt;format textsize="1"/&gt;
+		&lt;label posn="1.3 -0.5 2" halign="left" text="Dedimania"/&gt;
+		&lt;!-- End: Dedimania Header --&gt;
+
+		&lt;!-- Top 3 Container --&gt;
+		&lt;quad sizen="16.7 6" posn="-1 -2.2 0" halign="left" valign="top" style="Bgs1" substyle="BgList"/&gt;
+		
+		&lt;!-- Container for Records --&gt;
+		&lt;quad sizen="17 {[ContainerHeight}}" posn="-1 -2.2 0" halign="left" valign="top" style="BgsPlayerCard" substyle="BgActivePlayerName"/&gt;
+
+		&lt;RankingPlaceHolder /&gt;
+	&lt;/frame&gt;
+&lt;/manialink&gt;</value>
+  </data>
+  <data name="RecordListRecordHighlightTemplate" xml:space="preserve">
+    <value>&lt;frame posn="0 {[Y]} 0"&gt;
+				&lt;quad sizen="1.6 1.6" posn="15.5 0 0.3" style="Icons64x64_1" substyle="LvlGreen"/&gt;
+				&lt;format textsize="1" /&gt;
+				&lt;label sizen="30 2" halign="right" posn="2.5 0 0.1" text="{[Rank]}" textcolor="FFFF"/&gt;
+				&lt;label sizen="30 2" halign="left" posn="2.8 0 0.1" text="{[TimeOrScore]}" textcolor="0D0F"/&gt;
+				&lt;label sizen="8 2" posn="7.2 0 0.1" text="{[Nickname]}" textcolor="FFFF"/&gt;
+			&lt;/frame&gt;</value>
+  </data>
+  <data name="RecordListRecordTemplate" xml:space="preserve">
+    <value>&lt;frame posn="0 {[Y]} 0"&gt;
+				&lt;format textsize="1"/&gt;
+				&lt;label sizen="30 2" halign="right" posn="2.5 0 0.1" text="{[Rank]}" textcolor="FFFF"/&gt;
+				&lt;label sizen="30 2" halign="left" posn="2.8 0 0.1" text="{[TimeOrScore]}" textcolor="5AFF"/&gt;
+				&lt;label sizen="8 2" posn="7.2 0 0.1" text="{[Nickname]}" textcolor="FFFF"/&gt;
+			&lt;/frame&gt;</value>
+  </data>
+  <data name="RecordListTop3RecordTemplate" xml:space="preserve">
+    <value>&lt;frame posn="0 {[Y]} 0"&gt;
+				&lt;format textsize="1"/&gt;
+				&lt;label sizen="30 2" halign="right" posn="2.5 0 0.1" text="{[Rank]}" textcolor="FFFF"/&gt;
+				&lt;label sizen="30 2" halign="left" posn="2.8 0 0.1" text="{[TimeOrScore]}" textcolor="DD0F"/&gt;
+				&lt;label sizen="8 2" posn="7.2 0 0.1" text="{[Nickname]}" textcolor="FFFF"/&gt;
+			&lt;/frame&gt;</value>
+  </data>
 </root>
