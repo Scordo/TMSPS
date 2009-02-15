@@ -334,7 +334,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.Dedimania
             }, "Error in Callbacks_EndRace Method.", true);
         }
 
-        private static List<PlayerInfo> GetPlayerList(TMSPSPluginBase plugin)
+        public static List<PlayerInfo> GetPlayerList(TMSPSPluginBase plugin)
         {
             GenericListResponse<PlayerInfo> playersResponse = plugin.Context.RPCClient.Methods.GetPlayerList();
 

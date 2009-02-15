@@ -17,6 +17,12 @@ namespace TMSPS.Core.PluginSystem.Plugins.Dedimania
         public const string IMPROVED_DEDIMANIA_RANK_MESSAGE = "$z{[Nickname]}$z improved his/her dedimania rank: $w$s$0f0{[Rank]}$z!";
         public const bool SHOW_DEDIMANIA_RECORD_UI = true;
 
+        public const double RECORDLIST_PLAYER_START_MARGIN = -2.9;
+        public const double RECORDLIST_TOP3_GAP = 0.6;
+        public const double RECORDLIST_PLAYER_RECORD_HEIGHT = 1.5;
+        public const double RECORDLIST_PLAYER_END_MARGIN = 0;
+        public const double RECORDLIST_PLAYER_TO_CONTAINER_MARGIN_Y = 0.7;
+
         #endregion
 
         #region Properties
@@ -29,6 +35,18 @@ namespace TMSPS.Core.PluginSystem.Plugins.Dedimania
         public string DediPanelTemplateInactive { get; private set; }
         public string NewDedimaniaRankMessage { get; private set; }
         public string ImprovedDedimaniaRankMessage { get; private set; }
+
+
+        public double RecordListPlayerStartMargin { get; private set; }
+        public double RecordListTop3Gap { get; private set; }
+        public double RecordListPlayerRecordHeight { get; private set; }
+        public double RecordListPlayerEndMargin { get; private set; }
+        public double RecordListPlayerToContainerMarginY { get; private set; }
+
+        public string RecordListMainTemplate { get; private set; }
+        public string RecordListTop3RecordTemplate { get; private set; }
+        public string RecordListRecordTemplate { get; private set; }
+        public string RecordListRecordHighlightTemplate { get; private set; }
 
         #endregion
 
@@ -56,7 +74,19 @@ namespace TMSPS.Core.PluginSystem.Plugins.Dedimania
             result.DediPanelTemplateActive = File.Exists(dediPanelActiveTemplateFile) ? File.ReadAllText(dediPanelActiveTemplateFile) : UITemplates.LowerRightDediRecordPanelActive;
             string dediPanelInactiveTemplateFile = Path.Combine(settingsDirectory, "DediPanelInactiveTemplate.xml");
             result.DediPanelTemplateInactive = File.Exists(dediPanelInactiveTemplateFile) ? File.ReadAllText(dediPanelInactiveTemplateFile) : UITemplates.LowerRightDediRecordPanelInActive;
-            
+
+            result.RecordListPlayerToContainerMarginY = RECORDLIST_PLAYER_TO_CONTAINER_MARGIN_Y;
+            result.RecordListPlayerStartMargin = RECORDLIST_PLAYER_START_MARGIN;
+            result.RecordListPlayerEndMargin = RECORDLIST_PLAYER_END_MARGIN;
+            result.RecordListPlayerRecordHeight = RECORDLIST_PLAYER_RECORD_HEIGHT;
+            result.RecordListTop3Gap = RECORDLIST_TOP3_GAP;
+
+            result.RecordListMainTemplate = UITemplates.RecordListMainTemplate;
+            result.RecordListTop3RecordTemplate  = UITemplates.RecordListTop3RecordTemplate;
+            result.RecordListRecordTemplate  = UITemplates.RecordListRecordTemplate;
+            result.RecordListRecordHighlightTemplate = UITemplates.RecordListRecordHighlightTemplate;
+
+
             return result;
         }
 
