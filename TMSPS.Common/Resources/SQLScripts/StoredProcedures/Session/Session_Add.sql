@@ -1,5 +1,5 @@
 ﻿CREATE PROCEDURE dbo.Session_Add
-	@Login nvarchar(50),
+	@Login nvarchar(100),
 	@ChallengeID int,
 	@TimeOrScore int
 AS

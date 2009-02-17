@@ -1,7 +1,7 @@
 ﻿CREATE TABLE [dbo].[Player](
 	[ID] [int] IDENTITY(1,1) NOT NULL,
-	[Login] [nvarchar](50) NOT NULL,
-	[Nickname] [nvarchar](50) NOT NULL,
+	[Login] [nvarchar](100) NOT NULL,
+	[Nickname] [nvarchar](100) NOT NULL,
 	[Wins] [int] NOT NULL,
 	[TimePlayed] [bigint] NOT NULL,
 	[Created] [datetime] NOT NULL,

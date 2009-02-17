@@ -2,7 +2,7 @@
 	@ID int,
 	@UniqueID char(27),
 	@Name nvarchar(100),
-	@Author nvarchar(50),
+	@Author nvarchar(100),
 	@Environment nvarchar(20)
 AS
 BEGIN

@@ -1,5 +1,5 @@
 ﻿CREATE PROCEDURE dbo.Rating_Vote
-	@Login nvarchar(50),
+	@Login nvarchar(100),
 	@ChallengeID int,
 	@Rating tinyint
 AS

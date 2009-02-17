@@ -1,5 +1,5 @@
 ﻿CREATE PROCEDURE dbo.Player_IncreaseWins
-	@Login nvarchar(50)
+	@Login nvarchar(100)
 AS
 BEGIN
 	declare @InsertedValues Table ( Wins int)
