@@ -101,7 +101,7 @@ namespace TMSPS.Core.PluginSystem.Plugins
 			}, "Error in Callbacks_PlayerConnect Method.", true);
     	}
 
-    	protected override void Dispose()
+        protected override void Dispose(bool connectionLost)
     	{
     		Context.RPCClient.Callbacks.PlayerConnect -= Callbacks_PlayerConnect;
     	}

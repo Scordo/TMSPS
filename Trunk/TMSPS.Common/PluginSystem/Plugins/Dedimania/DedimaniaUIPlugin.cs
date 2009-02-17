@@ -192,7 +192,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.Dedimania
             return maniaLinkPage.ToString();
         }
 
-        protected override void Dispose()
+        protected override void Dispose(bool connectionLost)
         {
             HostPlugin.RankChanged -= HostPlugin_RankChanged;
             HostPlugin.RankingsChanged -= HostPlugin_RankingsChanged;

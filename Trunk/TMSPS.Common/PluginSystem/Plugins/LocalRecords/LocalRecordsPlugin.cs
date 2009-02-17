@@ -369,19 +369,22 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
             Context.ValueStore.SetOrUpdate(GlobalConstants.FIRST_LOCAL_RECORD_TIMEORSCORE, LocalRecords.Count == 0 ? null : (int?)LocalRecords[0].TimeOrScore);
         }
 
-	    private void DisposePlugins()
+        private void DisposePlugins(bool connectionLost)
 	    {
 	        foreach (ILocalRecordsPluginPlugin plugin in Plugins)
 	        {
-	            plugin.DisposePlugin();
+	            plugin.DisposePlugin(connectionLost);
 	        }
 	    }
 
-	    protected override void Dispose()
+        protected override void Dispose(bool connectionLost)
 	    {
 	        TimePlayedTimer.Stop();
-	        UpdateTimePlayedForAllCurrentPlayers();
-	        DisposePlugins();
+            
+            if (!connectionLost)
+	            UpdateTimePlayedForAllCurrentPlayers();
+
+	        DisposePlugins(connectionLost);
 
 	        Context.RPCClient.Callbacks.BeginRace -= Callbacks_BeginRace;
 	        Context.RPCClient.Callbacks.EndRace -= Callbacks_EndRace;

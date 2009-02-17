@@ -163,7 +163,7 @@ namespace TMSPS.Core.PluginSystem.Plugins
             return false;
         }
 
-        protected override void Dispose()
+        protected override void Dispose(bool connectionLost)
         {
             Context.RPCClient.Callbacks.PlayerChat -= Callbacks_PlayerChat;
         }
