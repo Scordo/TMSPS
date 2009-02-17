@@ -1,5 +1,5 @@
 ﻿ALTER PROCEDURE [dbo].[Record_TryInsertOrUpdate]
-	@Login nvarchar(50),
+	@Login nvarchar(100),
 	@ChallengeID int,
 	@TimeOrScore int
 AS

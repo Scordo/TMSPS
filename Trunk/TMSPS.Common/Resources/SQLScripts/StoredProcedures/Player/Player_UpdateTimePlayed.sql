@@ -1,5 +1,5 @@
 ﻿CREATE PROCEDURE dbo.Player_UpdateTimePlayed
-	@Login nvarchar(50)
+	@Login nvarchar(100)
 AS
 BEGIN
 	declare @currentdate datetime
