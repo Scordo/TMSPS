@@ -182,14 +182,14 @@ namespace TMSPS.Core.PluginSystem.Plugins.Dedimania
             }
         }
 
-        private void DisposePlugins()
+        private void DisposePlugins(bool connectionLost)
         {
-            Plugins.ForEach(plugin => plugin.DisposePlugin());
+            Plugins.ForEach(plugin => plugin.DisposePlugin(connectionLost));
         }
 
-        protected override void Dispose()
+        protected override void Dispose(bool connectionLost)
         {
-            DisposePlugins();
+            DisposePlugins(connectionLost);
             Context.RPCClient.Callbacks.BeginRace -= Callbacks_BeginRace;
             Context.RPCClient.Callbacks.EndRace -= Callbacks_EndRace;
             

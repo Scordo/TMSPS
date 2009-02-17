@@ -12,6 +12,6 @@ namespace TMSPS.Core.PluginSystem
 		string ShortName { get; }
 
 		void InitPlugin(PluginHostContext context, IUILogger logger);
-		void DisposePlugin();
+		void DisposePlugin(bool connectionLost);
 	}
 }

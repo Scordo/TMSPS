@@ -84,7 +84,7 @@ namespace TMSPS.Daemon
 
         public void Stop()
         {
-            DisposePlugins();
+            DisposePlugins(false);
             _client.Disconnect();
 
             _client.Connected -= Connected;
@@ -103,14 +103,14 @@ namespace TMSPS.Daemon
         {
             Log.ErrorToUI("Socket Error occured!");
             Log.Error(string.Format("Connection Error: {0}.", e.SocketError));
-            DisposePlugins();
+            DisposePlugins(true);
             _client.Connect();
         }
 
         private void ServerClosedConnection(object sender, EventArgs e)
         {
             Log.InfoToUI(string.Format("Lost connection to server {0} at port {1}.", ConfigSettings.ServerAddress, ConfigSettings.ServerXMLRPCPort));
-            DisposePlugins();
+            DisposePlugins(true);
             _client.Connect();
         }
 
@@ -137,11 +137,11 @@ namespace TMSPS.Daemon
             }
         }
 
-        private void DisposePlugins()
+        private void DisposePlugins(bool connectionLost)
         {
             foreach (ITMSPSPlugin plugin in Plugins)
             {
-                plugin.DisposePlugin();
+                plugin.DisposePlugin(connectionLost);
             }
         }
 

@@ -203,7 +203,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
             }
         }
 
-        protected override void Dispose()
+        protected override void Dispose(bool connectionLost)
         {
             HostPlugin.PlayerVoted += HostPlugin_PlayerVoted;
             HostPlugin.PlayerNewRecord += HostPlugin_PlayerNewRecord;

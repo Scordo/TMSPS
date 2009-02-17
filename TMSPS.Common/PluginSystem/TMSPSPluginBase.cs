@@ -43,9 +43,9 @@ namespace TMSPS.Core.PluginSystem
 			RunCatchLogReThrow(Init, "Error initializing plugin.", true);
 		}
 
-		public void DisposePlugin()
+        public void DisposePlugin(bool connectionLost)
 		{
-			RunCatchLogReThrow(Dispose, "Error during disposing plugin.", true);
+			RunCatchLogReThrow(() => Dispose(connectionLost), "Error during disposing plugin.", true);
 		}
 
 		#endregion
@@ -53,7 +53,7 @@ namespace TMSPS.Core.PluginSystem
 		#region Non Public Methods
 
 		protected abstract void Init();
-		protected abstract void Dispose();
+        protected abstract void Dispose(bool connectionLost);
 
 		protected void RunCatchLog(ParameterlessMethodDelegate logic)
 		{
