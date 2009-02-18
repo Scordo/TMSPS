@@ -6,7 +6,7 @@ using TMSPS.Core.Logging;
 
 namespace TMSPS.Core.PluginSystem
 {
-	public abstract class TMSPSPluginBase : ITMSPSPluginBase
+	public  abstract partial class TMSPSPluginBase : ITMSPSPluginBase
 	{
 		#region Members
 

@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using TMSPS.Core.Communication.EventArguments.Callbacks;
-using TMSPS.Core.Communication.ResponseHandling;
 using PlayerInfo=TMSPS.Core.Communication.ProxyTypes.PlayerInfo;
 
 namespace TMSPS.Core.PluginSystem.Plugins
@@ -89,16 +88,12 @@ namespace TMSPS.Core.PluginSystem.Plugins
                 {
                     if (Context.Credentials.UserHasRight(e.Login, GET_SPECTATORS_RIGHT))
                     {
-                        GenericListResponse<PlayerInfo> playersResponse = Context.RPCClient.Methods.GetPlayerList();
+                        List<PlayerInfo> players = GetPlayerList();
 
-                        if (playersResponse.Erroneous)
-                        {
-                            Logger.Error("Error getting PlayerList: " + playersResponse.Fault.FaultMessage);
-                            Logger.ErrorToUI("An error occured during player list retrieval!");
+                        if (players == null)
                             return true;
-                        }
 
-                        List<string> spectators = playersResponse.Value.Where(playerInfo => playerInfo.IsSpectator)
+                        List<string> spectators = players.Where(playerInfo => playerInfo.IsSpectator)
                             .Select(playerInfo => string.Format("{0} $z [{1}]$z", playerInfo.NickName, playerInfo.Login))
                             .ToList();
 
@@ -129,16 +124,12 @@ namespace TMSPS.Core.PluginSystem.Plugins
                 {
                     if (Context.Credentials.UserHasRight(e.Login, GET_SPECTATORS_RIGHT))
                     {
-                        GenericListResponse<PlayerInfo> playersResponse = Context.RPCClient.Methods.GetPlayerList();
+                        List<PlayerInfo> players = GetPlayerList();
 
-                        if (playersResponse.Erroneous)
-                        {
-                            Logger.Error("Error getting PlayerList: " + playersResponse.Fault.FaultMessage);
-                            Logger.ErrorToUI("An error occured during player list retrieval!");
+                        if (players == null)
                             return true;
-                        }
 
-                        List<PlayerInfo> logins = playersResponse.Value.Where(playerInfo => playerInfo.IsSpectator).ToList();
+                        List<PlayerInfo> logins = players.Where(playerInfo => playerInfo.IsSpectator).ToList();
 
                         foreach (PlayerInfo playerInfo in logins)
                         {

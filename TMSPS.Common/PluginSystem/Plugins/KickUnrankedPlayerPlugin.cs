@@ -2,7 +2,6 @@
 using System.Configuration;
 using TMSPS.Core.Communication.EventArguments.Callbacks;
 using TMSPS.Core.Communication.ProxyTypes;
-using TMSPS.Core.Communication.ResponseHandling;
 using SettingsBase=TMSPS.Core.Common.SettingsBase;
 using Version=System.Version;
 
@@ -70,21 +69,7 @@ namespace TMSPS.Core.PluginSystem.Plugins
 
         protected override void Dispose(bool connectionLost)
         {
-            
-        }
-
-        public DetailedPlayerInfo GetDetailedPlayerInfo(string login)
-        {
-            GenericResponse<DetailedPlayerInfo> playerInfoResponse = Context.RPCClient.Methods.GetDetailedPlayerInfo(login);
-
-            if (playerInfoResponse.Erroneous)
-            {
-                Logger.Error(string.Format("Error getting detailed Playerinfo for player with login {0}: {1}", login, playerInfoResponse.Fault.FaultMessage));
-                Logger.ErrorToUI(string.Format("Error getting detailed Playerinfo for player with login {0}", login));
-                return null;
-            }
-
-            return playerInfoResponse.Value;
+            Context.RPCClient.Callbacks.PlayerConnect -= Callbacks_PlayerConnect;
         }
 
         #endregion

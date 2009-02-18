@@ -4,7 +4,6 @@ using System.Timers;
 using TMSPS.Core.Common;
 using TMSPS.Core.Communication.EventArguments.Callbacks;
 using TMSPS.Core.Communication.ProxyTypes;
-using TMSPS.Core.Communication.ResponseHandling;
 using TMSPS.Core.Logging;
 using Version=System.Version;
 using System.Linq;
@@ -31,7 +30,6 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
 	    public ISessionAdapter SessionAdapter { get; protected set; }
 	    public int CurrentChallengeID { get; protected set; }
 	    protected Timer TimePlayedTimer { get; private set; }
-	    public Dictionary<string, PlayerInfo> PlayerInfoCache { get; protected set; }
 	    public LocalRecordsSettings Settings { get; protected set; }
 	    protected List<ILocalRecordsPluginPlugin> Plugins {get; private set;}
         protected List<RankEntry> LocalRecords { get; private set; }
@@ -54,8 +52,6 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
 	    protected override void Init()
 	    {
 	        Logger.InfoToUI("Started initialziation of " + ShortName);
-	        PlayerInfoCache = new Dictionary<string, PlayerInfo>();
-	    	
 	        Settings = LocalRecordsSettings.ReadFromFile(PluginSettingsFilePath);
 	        
 	        try
@@ -81,12 +77,16 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
 
 	        foreach (PlayerInfo playerInfo in players)
 	        {
-	            PlayerAdapter.CreateOrUpdate(new Player(playerInfo.Login, playerInfo.NickName));
+                if (!playerInfo.NickName.IsNullOrTimmedEmpty())
+	                PlayerAdapter.CreateOrUpdate(new Player(playerInfo.Login, playerInfo.NickName));
 	        }
 
-	        ChallengeInfo currentChallengeInfo = GetCurrentChallengeInfo();
-	        if (currentChallengeInfo == null)
-	            return;
+	        ChallengeInfo currentChallengeInfo = GetCurrentChallengeInfoCached();
+            if (currentChallengeInfo == null)
+            {
+                Logger.ErrorToUI(string.Format("An error occured. {0} not started!", Name));
+                return;
+            }
 
 	        EnsureChallengeExistsInStorage(currentChallengeInfo);
 	        
@@ -123,32 +123,13 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
                     return;
 
                 string message = e.Text.Trim();
-                ushort? voteValue = null;
+                ushort? voteValue;
 
-                switch (message)
-                {
-                    case "++":
-                        voteValue = 8;
-                        break;
-                    case "--":
-                        voteValue = 0;
-                        break;
-                    case "+-":
-                    case "-+":
-                        voteValue = 4;
-                        break;
-                    case "+0":
-                    case "+1":
-                    case "+2":
-                    case "+3":
-                    case "+4":
-                    case "+5":
-                    case "+6":
-                    case "+7":
-                    case "+8":
-                        voteValue = Convert.ToUInt16(message.Substring(1));
-                        break;
-                }
+                Dictionary<string, ushort?> voteValues = new Dictionary<string, ushort?> {{ "++", 8 }, { "--", 0 }, { "+-", 4 }, { "-+", 4 }, 
+                                                                                          { "+1", 1 }, { "+2", 2 }, { "+3", 3 }, { "+4", 4 }, 
+                                                                                          { "+5", 5 }, { "+6", 6 }, { "+7", 7 }, { "+8", 8 }};
+
+                voteValues.TryGetValue(message, out voteValue);
 
                 if (voteValue.HasValue)
                 {
@@ -178,7 +159,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
 
                     if (newBest)
                     {
-                        PlayerInfo playerInfo = GetPlayerInfo(e.Login, true);
+                        PlayerInfo playerInfo = GetPlayerInfoCached(e.Login);
 
                         if (playerInfo != null && newPosition <= Settings.MaxRecordsToReport)
                             OnPlayerNewRecord(playerInfo, e.TimeOrScore, oldPosition, newPosition);
@@ -246,14 +227,17 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
 
 	        RunCatchLog(()=>
             {
-                PlayerInfo playerInfo = GetPlayerInfo(e.Login);
+                PlayerInfo playerInfo = GetPlayerInfoCached(e.Login);
 
                 if (playerInfo == null)
                     return;
 
-                Player player = new Player(playerInfo.Login, playerInfo.NickName);
-                PlayerAdapter.CreateOrUpdate(player);
-                OnPlayerCreatedOrUpdated(player, playerInfo);
+                if (!playerInfo.NickName.IsNullOrTimmedEmpty())
+                {
+                    Player player = new Player(playerInfo.Login, playerInfo.NickName);
+                    PlayerAdapter.CreateOrUpdate(player);
+                    OnPlayerCreatedOrUpdated(player, playerInfo);
+                }
             }, "Error in Callbacks_PlayerConnect Method.", true);
 	    }
 
@@ -282,73 +266,15 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
 	        OnChallengeCreatedOrUpdated(challengeInfo, challenge);
 	    }
 
-	    public PlayerInfo GetPlayerInfo(string login, bool allowCached)
-	    {
-	        if (!allowCached || !PlayerInfoCache.ContainsKey(login))
-	            return GetPlayerInfo(login);
-
-	        return PlayerInfoCache[login];
-	    }
-
-	    public PlayerInfo GetPlayerInfo(string login)
-	    {
-	        GenericResponse<PlayerInfo> playerInfoResponse = Context.RPCClient.Methods.GetPlayerInfo(login);
-
-	        if (playerInfoResponse.Erroneous)
-	        {
-	            Logger.Error(string.Format("Error getting Playerinfo for player with login {0}: {1}", login, playerInfoResponse.Fault.FaultMessage));
-	            Logger.ErrorToUI(string.Format("Error getting Playerinfo for player with login {0}", login));
-	            return null;
-	        }
-
-	        // cache the playerinfo
-	        PlayerInfoCache[playerInfoResponse.Value.Login] = playerInfoResponse.Value;
-
-	        return playerInfoResponse.Value;
-	    }
-
-	    public List<PlayerInfo> GetPlayerList()
-	    {
-	        GenericListResponse<PlayerInfo> playersResponse = Context.RPCClient.Methods.GetPlayerList();
-
-	        if (playersResponse.Erroneous)
-	        {
-	            Logger.Error("Error getting PlayerList: " + playersResponse.Fault.FaultMessage);
-	            Logger.ErrorToUI("An error occured during player list retrieval!");
-	            return null;
-	        }
-
-	        // cache the playerInfo list
-	        playersResponse.Value.ForEach(info => PlayerInfoCache[info.Login] = info);
-
-	        return playersResponse.Value;
-	    }
-
-	    public ChallengeInfo GetCurrentChallengeInfo()
-	    {
-	        GenericResponse<ChallengeInfo> currentChallengeInfoResponse = Context.RPCClient.Methods.GetCurrentChallengeInfo();
-            
-	        if (currentChallengeInfoResponse.Erroneous)
-	        {
-	            Logger.Error("Error getting current ChallengeInfo: " + currentChallengeInfoResponse.Fault.FaultMessage);
-	            Logger.ErrorToUI("An error occured during current challenge info retrieval!");
-	            return null;
-	        }
-
-	        return currentChallengeInfoResponse.Value;
-	    }
-
 	    private void UpdateTimePlayedForAllCurrentPlayers()
 	    {
 	        List<PlayerInfo> players = GetPlayerList();
 
-	        if (players != null)
-	        {
-	            foreach (PlayerInfo playerInfo in players)
-	            {
-	                PlayerAdapter.UpdateTimePlayed(playerInfo.Login);
-	            }    
-	        }
+	        if (players == null)
+	            return;
+
+            foreach (PlayerInfo playerInfo in players)
+                PlayerAdapter.UpdateTimePlayed(playerInfo.Login);  
 	    }
 
 	    private void InitializePlugins()

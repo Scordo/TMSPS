@@ -218,10 +218,12 @@
     <Compile Include="PluginSystem\Plugins\LocalRecords\SQL\RecordAdapter.cs" />
     <Compile Include="PluginSystem\Plugins\LocalRecords\SQL\SessionAdapter.cs" />
     <Compile Include="PluginSystem\Plugins\NameProtectionBotPlugin.cs" />
+    <Compile Include="PluginSystem\Plugins\TMSPSCorePlugin.cs" />
     <Compile Include="PluginSystem\PluginUtil.cs" />
     <Compile Include="PluginSystem\ServerInfo.cs" />
     <Compile Include="PluginSystem\TMSPSPlugin.cs" />
     <Compile Include="PluginSystem\TMSPSPluginBase.cs" />
+    <Compile Include="PluginSystem\TMSPSPluginBase_Communication.cs" />
     <Compile Include="PluginSystem\TMSPSPluginPlugin.cs" />
     <Compile Include="PluginSystem\ValueStore.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

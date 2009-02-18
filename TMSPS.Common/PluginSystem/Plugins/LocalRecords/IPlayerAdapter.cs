@@ -6,6 +6,6 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
     {
         void CreateOrUpdate(Player player);
         uint IncreaseWins(string login);
-        ulong UpdateTimePlayed(string login);
+        ulong? UpdateTimePlayed(string login);
     }
 }

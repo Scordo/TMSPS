@@ -66,7 +66,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
 
         private void SendPBManiaLinkPageToAll(RankEntry[] rankEntries)
         {
-            List<PlayerInfo> players = HostPlugin.GetPlayerList();
+            List<PlayerInfo> players = GetPlayerList();
 
             if (players == null)
                 return;
@@ -205,9 +205,11 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
 
         protected override void Dispose(bool connectionLost)
         {
-            HostPlugin.PlayerVoted += HostPlugin_PlayerVoted;
-            HostPlugin.PlayerNewRecord += HostPlugin_PlayerNewRecord;
+            HostPlugin.PlayerVoted -= HostPlugin_PlayerVoted;
+            HostPlugin.PlayerNewRecord -= HostPlugin_PlayerNewRecord;
+            HostPlugin.LocalRecordsDetermined -= HostPlugin_LocalRecordsDetermined;
             Context.RPCClient.Callbacks.EndRace -= Callbacks_EndRace;
+            Context.RPCClient.Callbacks.PlayerConnect -= Callbacks_PlayerConnect;
         }
 
         #endregion

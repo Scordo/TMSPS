@@ -82,19 +82,19 @@ namespace TMSPS.Core.PluginSystem.Plugins
 			{
     			if (!ClanMembers.Contains(e.Login.ToLower()))
     			{
-    				GenericResponse<PlayerInfo> playerInfoResponse =  Context.RPCClient.Methods.GetPlayerInfo(e.Login);
+    			    PlayerInfo playerInfo = GetPlayerInfoCached(e.Login);
 
-    				if (playerInfoResponse != null && !playerInfoResponse.Erroneous)
+    				if (playerInfo != null)
     				{
-    					if (!Regex.IsMatch(playerInfoResponse.Value.NickName, Pattern, RegexOptions.Singleline | RegexOptions.IgnoreCase | RegexOptions.Compiled))
+    					if (!Regex.IsMatch(playerInfo.NickName, Pattern, RegexOptions.Singleline | RegexOptions.IgnoreCase | RegexOptions.Compiled))
     						return;
 
-    					GenericResponse<bool> kickResponse = Context.RPCClient.Methods.Kick(playerInfoResponse.Value.Login, KickReason);
+    					GenericResponse<bool> kickResponse = Context.RPCClient.Methods.Kick(playerInfo.Login, KickReason);
 
     					if (kickResponse == null || kickResponse.Value)
     					{
-    						Logger.InfoToUI(string.Format("Login {0} with player name {1} was kicked due to name abuse!", e.Login, playerInfoResponse.Value.NickName));
-    						Context.RPCClient.Methods.ChatSendServerMessage(string.Format(PublicKickReason, playerInfoResponse.Value.NickName));
+    						Logger.InfoToUI(string.Format("Login {0} with player name {1} was kicked due to name abuse!", e.Login, playerInfo.NickName));
+    						Context.RPCClient.Methods.ChatSendServerMessage(string.Format(PublicKickReason, playerInfo.NickName));
     					}
     				}
     			}
