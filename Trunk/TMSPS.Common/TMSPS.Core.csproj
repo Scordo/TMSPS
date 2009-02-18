@@ -179,6 +179,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>UITemplates.resx</DependentUpon>
     </Compile>
+    <Compile Include="PluginSystem\Plugins\KickUnrankedPlayerPlugin.cs" />
     <Compile Include="PluginSystem\Plugins\LocalRecords\ILocalRecordsPluginPlugin.cs" />
     <Compile Include="PluginSystem\Plugins\LocalRecords\LocalRecordsPluginPlugin.cs" />
     <Compile Include="PluginSystem\Plugins\LocalRecords\LocalRecordsUIPlugin.cs" />

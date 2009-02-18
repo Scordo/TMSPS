@@ -93,6 +93,8 @@
     <Content Include="Plugins\Dedimania\DedimaniaUI\Settings_Template.xml" />
     <Content Include="Plugins\Dedimania\Settings_Template.xml" />
     <Content Include="Plugins\Dedimania\Settings.xml" />
+    <Content Include="Plugins\KickUnrankedPlayers\Settings.xml" />
+    <Content Include="Plugins\KickUnrankedPlayers\Settings_Template.xml" />
     <Content Include="Plugins\LocalRecords\LocalRecordsUI\LocalRecordPanelActiveTemplate.xml" />
     <Content Include="Plugins\LocalRecords\LocalRecordsUI\LocalRecordPanelInactiveTemplate.xml" />
     <Content Include="Plugins\LocalRecords\LocalRecordsUI\PBPanelActiveTemplate.xml" />
