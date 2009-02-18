@@ -56,14 +56,14 @@ namespace TMSPS.Core.PluginSystem.Plugins.Dedimania
             }
         }
 
-        private void SendRecordListToAllPlayers(DedimaniaRanking[] rankings)
+        private void SendRecordListToAllPlayers(ICollection<DedimaniaRanking> rankings)
         {
-            List<PlayerInfo> players = DedimaniaPlugin.GetPlayerList(this);
+            List<PlayerInfo> players = GetPlayerList(this);
 
             if (players == null)
                 return;
 
-            if (rankings != null && rankings.Length > 0)
+            if (rankings != null && rankings.Count > 0)
             {
                 foreach (PlayerInfo playerInfo in players)
                 {
@@ -125,7 +125,6 @@ namespace TMSPS.Core.PluginSystem.Plugins.Dedimania
         private XElement GetPlayerRecordElement(string templateXML, DedimaniaRanking ranking, double currentY, int currentRank, string login)
         {
             TimeSpan time = TimeSpan.FromMilliseconds(ranking.TimeOrScore);
-
 
             StringBuilder playerRecordXml = new StringBuilder(ranking.Login != login ? templateXML : Settings.RecordListRecordHighlightTemplate);
             playerRecordXml.Replace("{[Y]}", currentY.ToString(CultureInfo.InvariantCulture));

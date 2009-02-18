@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using TMSPS.Core.Common;
 using TMSPS.Core.Communication.EventArguments.Callbacks;
-using TMSPS.Core.Communication.ResponseHandling;
 using TMSPS.Core.Communication.ProxyTypes;
 using TMSPS.Core.Logging;
 using TMSPS.Core.PluginSystem.Plugins.Dedimania.Communication;
@@ -125,7 +124,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.Dedimania
                     }
                     else
                     {
-                        playerInfo = GetPlayerInfo(e.Login);
+                        playerInfo = GetPlayerInfoCached(e.Login);
 
                         if (playerInfo == null)
                             return;
@@ -200,11 +199,11 @@ namespace TMSPS.Core.PluginSystem.Plugins.Dedimania
             DedimaniaPlugin plugin = (DedimaniaPlugin) state;
             RunCatchLog(()=>
             {
-                ServerOptions serverOptions = GetServerOptions(plugin);
+                ServerOptions serverOptions = GetServerOptionsCached(plugin);
                 if (serverOptions == null)
                     return;
 
-                int? currentGameMode = GetCurrentGameMode(plugin);
+                GameMode? currentGameMode = GetCurrentGameModeCached(plugin);
                 if (!currentGameMode.HasValue)
                     return;
 
@@ -226,7 +225,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.Dedimania
                 int spectatorsCount = currentPlayers.Count - playersCount;
                 DedimaniaServerInfo serverInfo = new DedimaniaServerInfo(serverOptions.Name, serverOptions.Comment, serverOptions.Password.Length > 0, string.Empty, 0, plugin.Context.ServerInfo.ServerXMLRpcPort, playersCount, serverOptions.CurrentMaxPlayers, spectatorsCount, serverOptions.CurrentMaxSpectators, serverOptions.CurrentLadderMode, string.Empty);
 
-                if (!plugin.DedimaniaClient.UpdateServerPlayers(plugin.Context.ServerInfo.Version.GetShortName(), currentGameMode.Value, serverInfo, playersToReport.ToArray()))
+                if (!plugin.DedimaniaClient.UpdateServerPlayers(plugin.Context.ServerInfo.Version.GetShortName(), (int) currentGameMode.Value, serverInfo, playersToReport.ToArray()))
                     plugin.Logger.WarnToUI("Error while calling UpdateServerPlayers!");
             }, "Error in Callbacks_BeginRace Method.", true, plugin.Logger);
         }
@@ -248,20 +247,20 @@ namespace TMSPS.Core.PluginSystem.Plugins.Dedimania
 
         private void ReportCurrentChallenge()
         {
-            ServerOptions serverOptions = GetServerOptions(this);
+            ServerOptions serverOptions = GetServerOptionsCached(this);
             if (serverOptions == null)
                 return;
 
-            int? currentGameMode = GetCurrentGameMode(this);
+            GameMode? currentGameMode = GetCurrentGameModeCached(this);
             if (!currentGameMode.HasValue)
+                return;
+
+            ChallengeInfo currentChallenge = GetCurrentChallengeInfoCached();
+            if (currentChallenge == null)
                 return;
 
             List<PlayerInfo> playerList = GetPlayerList(this);
             if (playerList == null)
-                return;
-
-            ChallengeInfo currentChallenge = GetCurrentChallengeInfo();
-            if (currentChallenge == null)
                 return;
 
             List<PlayerInfo> currentPlayers = playerList;
@@ -278,7 +277,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.Dedimania
             int spectatorsCount = currentPlayers.Count - playersCount;
             DedimaniaServerInfo serverInfo = new DedimaniaServerInfo(serverOptions.Name, serverOptions.Comment, serverOptions.Password.Length > 0, string.Empty, 0, Context.ServerInfo.ServerXMLRpcPort, playersCount, serverOptions.CurrentMaxPlayers, spectatorsCount, serverOptions.CurrentMaxSpectators, serverOptions.CurrentLadderMode, string.Empty);
 
-            DedimaniaCurrentChallengeReply currentChallengeReply = DedimaniaClient.CurrentChallenge(currentChallenge.UId, currentChallenge.Name, currentChallenge.Environnement, currentChallenge.Author, Context.ServerInfo.Version.GetShortName(), currentGameMode.Value, serverInfo, Convert.ToInt32(Settings.MaxRecordsToReport), playersToReport.ToArray());
+            DedimaniaCurrentChallengeReply currentChallengeReply = DedimaniaClient.CurrentChallenge(currentChallenge.UId, currentChallenge.Name, currentChallenge.Environnement, currentChallenge.Author, Context.ServerInfo.Version.GetShortName(), (int) currentGameMode.Value, serverInfo, Convert.ToInt32(Settings.MaxRecordsToReport), playersToReport.ToArray());
 
             if (currentChallengeReply != null)
             {
@@ -322,72 +321,16 @@ namespace TMSPS.Core.PluginSystem.Plugins.Dedimania
                 if (times.Count == 0)
                     return;
 
-                int? currentGameMode = GetCurrentGameMode(this);
+                GameMode? currentGameMode = GetCurrentGameModeCached(this);
                 if (!currentGameMode.HasValue)
                     return;
 
                 ResetUpdateServerPlayersTimer();
-                DedimaniaChallengeRaceTimesReply challengeRaceTimesReply = DedimaniaClient.ChallengeRaceTimes(e.Challenge.UId, e.Challenge.Name, e.Challenge.Environnement, e.Challenge.Author, Context.ServerInfo.Version.GetShortName(), currentGameMode.Value, maxCheckPointAmount, Convert.ToInt32(Settings.MaxRecordsToReport), times.ToArray());
+                DedimaniaChallengeRaceTimesReply challengeRaceTimesReply = DedimaniaClient.ChallengeRaceTimes(e.Challenge.UId, e.Challenge.Name, e.Challenge.Environnement, e.Challenge.Author, Context.ServerInfo.Version.GetShortName(), (int) currentGameMode.Value, maxCheckPointAmount, Convert.ToInt32(Settings.MaxRecordsToReport), times.ToArray());
 
                 if (challengeRaceTimesReply == null)
                     Logger.WarnToUI("Error while calling ChallengeRaceTimes!");
             }, "Error in Callbacks_EndRace Method.", true);
-        }
-
-        public static List<PlayerInfo> GetPlayerList(TMSPSPluginBase plugin)
-        {
-            GenericListResponse<PlayerInfo> playersResponse = plugin.Context.RPCClient.Methods.GetPlayerList();
-
-            if (playersResponse.Erroneous)
-            {
-                plugin.Logger.Error("Error getting PlayerList: " + playersResponse.Fault.FaultMessage);
-                plugin.Logger.ErrorToUI("An error occured during player list retrieval!");
-                return null;
-            }
-
-            return playersResponse.Value;
-        }
-
-        private ChallengeInfo GetCurrentChallengeInfo()
-        {
-            GenericResponse<ChallengeInfo> currentChallengeInfoResponse = Context.RPCClient.Methods.GetCurrentChallengeInfo();
-
-            if (currentChallengeInfoResponse.Erroneous)
-            {
-                Logger.Error("Error getting current ChallengeInfo: " + currentChallengeInfoResponse.Fault.FaultMessage);
-                Logger.ErrorToUI("An error occured during current challenge info retrieval!");
-                return null;
-            }
-
-            return currentChallengeInfoResponse.Value;
-        }
-
-        private static ServerOptions GetServerOptions(TMSPSPluginBase plugin)
-        {
-            GenericResponse<ServerOptions> serverOptionsResponse = plugin.Context.RPCClient.Methods.GetServerOptions();
-
-            if (serverOptionsResponse.Erroneous)
-            {
-                plugin.Logger.Error("Error getting server options: " + serverOptionsResponse.Fault.FaultMessage);
-                plugin.Logger.ErrorToUI("An error occured during server options retrieval!");
-                return null;
-            }
-
-            return serverOptionsResponse.Value;
-        }
-
-        private static int? GetCurrentGameMode(TMSPSPluginBase plugin)
-        {
-            GenericResponse<int> currentGameModeResponse = plugin.Context.RPCClient.Methods.GetGameMode();
-
-            if (currentGameModeResponse.Erroneous)
-            {
-                plugin.Logger.Error("Error getting current game mode: " + currentGameModeResponse.Fault.FaultMessage);
-                plugin.Logger.ErrorToUI("An error occured during current game mode retrieval!");
-                return null;
-            }
-
-            return currentGameModeResponse.Value;
         }
 
         private void ResetUpdateServerPlayersTimer()
@@ -396,20 +339,6 @@ namespace TMSPS.Core.PluginSystem.Plugins.Dedimania
                 UpdateServerPlayersTimer.Dispose();
 
             UpdateServerPlayersTimer = new Timer(UpdateServerPlayers, this, TimeSpan.FromMinutes(UPDATE_SERVER_PLAYERS_INTERVAL_IN_MINUTES), TimeSpan.FromMinutes(UPDATE_SERVER_PLAYERS_INTERVAL_IN_MINUTES));
-        }
-
-        public PlayerInfo GetPlayerInfo(string login)
-        {
-            GenericResponse<PlayerInfo> playerInfoResponse = Context.RPCClient.Methods.GetPlayerInfo(login);
-
-            if (playerInfoResponse.Erroneous)
-            {
-                Logger.Error(string.Format("Error getting Playerinfo for player with login {0}: {1}", login, playerInfoResponse.Fault.FaultMessage));
-                Logger.ErrorToUI(string.Format("Error getting Playerinfo for player with login {0}", login));
-                return null;
-            }
-
-            return playerInfoResponse.Value;
         }
 
         private void FillRankingsFromDedimania(IEnumerable<DedimaniaRecord> records)

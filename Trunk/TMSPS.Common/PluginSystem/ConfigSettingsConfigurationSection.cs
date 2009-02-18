@@ -6,6 +6,7 @@ using System.Reflection;
 using log4net;
 using TMSPS.Core.Common;
 using TMSPS.Core.PluginSystem.Configuration;
+using TMSPS.Core.PluginSystem.Plugins;
 
 namespace TMSPS.Core.PluginSystem
 {
@@ -71,6 +72,7 @@ namespace TMSPS.Core.PluginSystem
 			string pluginsSettingsFile = Path.Combine(mainDirectory, @"Plugins\Settings.xml");
 			
             List<ITMSPSPlugin> result = new List<ITMSPSPlugin>();
+            result.Add(new TMSPSCorePlugin());
 
 			foreach (PluginConfigEntry pluginConfigEntry in PluginUtil.GetEnabledPlugins(pluginsSettingsFile))
             {

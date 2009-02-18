@@ -39,9 +39,6 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords.SQL
             if (player.Nickname.IsNullOrTimmedEmpty())
                 throw new ArgumentException("Nickname is null or empty.");
 
-            if (player.Nickname.IsNullOrTimmedEmpty())
-                throw new ArgumentException("Nickname is null or empty.");
-
             Dictionary<string, object> parameters = new Dictionary<string, object>
             {
                 {"Login", player.Login.Trim()},
@@ -72,12 +69,12 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords.SQL
             return SqlHelper.ExecuteScalar<uint>("Player_IncreaseWins", "Login", login);
         }
 
-        public ulong UpdateTimePlayed(string login)
+        public ulong? UpdateTimePlayed(string login)
         {
             if (login == null)
                 throw new ArgumentNullException("login");
 
-            return SqlHelper.ExecuteScalar<ulong>("Player_UpdateTimePlayed", "Login", login);
+            return SqlHelper.ExecuteScalar<ulong?>("Player_UpdateTimePlayed", "Login", login);
         }
 
         #endregion
