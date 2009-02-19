@@ -173,6 +173,19 @@ namespace TMSPS.Core.PluginSystem
             return playerInfoResponse.Value;
         }
 
+        protected List<PlayerRank> GetCurrentRanking()
+        {
+            GenericListResponse<PlayerRank> rankingResponse = Context.RPCClient.Methods.GetCurrentRanking();
+
+            if (rankingResponse.Erroneous)
+            {
+                Logger.ErrorToUI("Error getting current ranking.");
+                return null;
+            }
+
+            return rankingResponse.Value;
+        }
+
         #endregion
     }
 }

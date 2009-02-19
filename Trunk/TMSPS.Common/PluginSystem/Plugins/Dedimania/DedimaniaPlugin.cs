@@ -49,7 +49,6 @@ namespace TMSPS.Core.PluginSystem.Plugins.Dedimania
 
         #endregion
 
-
         #region Methods
 
         protected override void Init()
@@ -83,7 +82,10 @@ namespace TMSPS.Core.PluginSystem.Plugins.Dedimania
 
             InitializePlugins();
             ResetUpdateServerPlayersTimer();
-            ReportCurrentChallenge();
+
+            List<PlayerRank> currentRankings = GetCurrentRanking();
+
+            ReportCurrentChallenge(currentRankings);
         }
 
         private void Callbacks_PlayerFinish(object sender, PlayerFinishEventArgs e)
@@ -241,11 +243,11 @@ namespace TMSPS.Core.PluginSystem.Plugins.Dedimania
             RunCatchLog(()=>
             {
                 ResetUpdateServerPlayersTimer();
-                ReportCurrentChallenge();
+                ReportCurrentChallenge(null);
             }, "Error in Callbacks_BeginRace Method.", true);
         }
 
-        private void ReportCurrentChallenge()
+        private void ReportCurrentChallenge(ICollection<PlayerRank> currentRankings)
         {
             ServerOptions serverOptions = GetServerOptionsCached(this);
             if (serverOptions == null)
@@ -281,7 +283,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.Dedimania
 
             if (currentChallengeReply != null)
             {
-                FillRankingsFromDedimania(currentChallengeReply.Records);
+                FillRankingsFromDedimania(currentChallengeReply.Records, currentRankings);
                 BestTime = Rankings.Length == 0 ? null : (uint?) Rankings[0].TimeOrScore;
                 OnRankingsChanged(Rankings);
             }
@@ -341,13 +343,38 @@ namespace TMSPS.Core.PluginSystem.Plugins.Dedimania
             UpdateServerPlayersTimer = new Timer(UpdateServerPlayers, this, TimeSpan.FromMinutes(UPDATE_SERVER_PLAYERS_INTERVAL_IN_MINUTES), TimeSpan.FromMinutes(UPDATE_SERVER_PLAYERS_INTERVAL_IN_MINUTES));
         }
 
-        private void FillRankingsFromDedimania(IEnumerable<DedimaniaRecord> records)
+        private void FillRankingsFromDedimania(IEnumerable<DedimaniaRecord> records, ICollection<PlayerRank> currentRankings)
         {
             List<DedimaniaRanking> rankings = new List<DedimaniaRanking>();
 
             foreach (DedimaniaRecord dedimaniaRecord in records)
             {
                 rankings.Add(new DedimaniaRanking(dedimaniaRecord.Login, dedimaniaRecord.Nickname, Convert.ToUInt32(dedimaniaRecord.BestTime.TotalMilliseconds), DateTime.MinValue.AddSeconds(dedimaniaRecord.Rank)));
+            }
+
+            if (currentRankings != null)
+            {
+                foreach (PlayerRank playerRank in currentRankings)
+                {
+                    if (playerRank.BestTime <= 0)
+                        continue;
+
+                    PlayerInfo playerInfo = GetPlayerInfoCached(playerRank.Login);
+
+                    DedimaniaRanking existingRanking = rankings.Find(ranking => ranking.Login == playerRank.Login);
+
+                    if (existingRanking != null)
+                    {
+                        if (existingRanking.TimeOrScore != playerRank.BestTime)
+                            existingRanking.Created = DateTime.Now.AddMilliseconds(-1 * currentRankings.Count).AddMilliseconds(playerRank.Rank);
+
+                        existingRanking.TimeOrScore = Convert.ToUInt32(playerRank.BestTime);
+                    }
+                    else
+                    {
+                        rankings.Add(new DedimaniaRanking(playerRank.Login, playerInfo.NickName,Convert.ToUInt32(playerRank.BestTime), DateTime.Now.AddMilliseconds(-1 * currentRankings.Count).AddMilliseconds(playerRank.Rank)));
+                    }
+                }
             }
 
             rankings.Sort(DedimaniaRanking.Comparer);
