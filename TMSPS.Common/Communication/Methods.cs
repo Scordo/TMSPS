@@ -1667,6 +1667,14 @@ namespace TMSPS.Core.Communication
 			return (GenericResponse<ChallengeInfo>)_client.SendMethod<GenericResponse<ChallengeInfo>>(TrackManiaMethod.GetChallengeInfo.ToString(), filename);
 		}
 
+        /// <summary>
+        /// Returns the current ranking for the race in progress. This method take two parameters. The first parameter specifies the maximum number of infos to be returned, and the second one the starting index in the ranking. The ranking returned is a list of structure. Each structure contains the following fields : Login, NickName, PlayerId, Rank, BestTime, Score, NbrLapsFinished and LadderScore. it also contains an array BestCheckpoints that contains the checkpoints times for the best race.
+        /// </summary>
+        public GenericListResponse<PlayerRank> GetCurrentRanking()
+        {
+            return GetCurrentRanking(500, 0);
+        }
+
 		/// <summary>
 		/// Returns the current ranking for the race in progress. This method take two parameters. The first parameter specifies the maximum number of infos to be returned, and the second one the starting index in the ranking. The ranking returned is a list of structure. Each structure contains the following fields : Login, NickName, PlayerId, Rank, BestTime, Score, NbrLapsFinished and LadderScore. it also contains an array BestCheckpoints that contains the checkpoints times for the best race.
 		/// </summary>
