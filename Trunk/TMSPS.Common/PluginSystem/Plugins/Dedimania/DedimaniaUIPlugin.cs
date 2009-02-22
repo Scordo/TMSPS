@@ -96,41 +96,130 @@ namespace TMSPS.Core.PluginSystem.Plugins.Dedimania
 
             XElement lastInsertedNode = rankingPlaceHolder;
 
-            for (int i = 1; i <= 3; i++)
+            SortedList<uint, DedimaniaRanking> localRankings = GetRankingsToShow(rankings, login, Settings.MaxRecordsToShow, DedimaniaSettings.MAX_RECORDS_TO_REPORT);
+
+            foreach (KeyValuePair<uint, DedimaniaRanking> localRanking in localRankings)
             {
-                DedimaniaRanking currentRank = rankings.Length >= i ? rankings[i - 1] : new DedimaniaRanking(string.Empty, string.Empty, 0, DateTime.MinValue);
-                XElement currentElement = GetPlayerRecordElement(Settings.RecordListTop3RecordTemplate, currentRank, currentY, i, login);
+                XElement currentElement = GetPlayerRecordElement(localRanking.Value, currentY, localRanking.Key, login);
                 lastInsertedNode.AddAfterSelf(currentElement);
                 lastInsertedNode = currentElement;
                 currentY -= Settings.RecordListPlayerRecordHeight;
+
+                if (localRanking.Key == 3 && localRankings.Count > 3)
+                    currentY -= Settings.RecordListTop3Gap;
             }
-
-            currentY -= Settings.RecordListTop3Gap;
-
-            for (int i = 4; i <= recordsToShow; i++)
-            {
-                DedimaniaRanking currentRank = rankings[i - 1];
-                XElement currentElement = GetPlayerRecordElement(Settings.RecordListRecordTemplate, currentRank, currentY, i, login);
-                lastInsertedNode.AddAfterSelf(currentElement);
-                lastInsertedNode = currentElement;
-                currentY -= Settings.RecordListPlayerRecordHeight;
-            }
-
 
             rankingPlaceHolder.Remove();
 
             return mainTemplate.ToString();
         }
 
-        private XElement GetPlayerRecordElement(string templateXML, DedimaniaRanking ranking, double currentY, int currentRank, string login)
-        {
-            TimeSpan time = TimeSpan.FromMilliseconds(ranking.TimeOrScore);
 
-            StringBuilder playerRecordXml = new StringBuilder(ranking.Login != login ? templateXML : Settings.RecordListRecordHighlightTemplate);
+
+        public static SortedList<uint, DedimaniaRanking> GetRankingsToShow(DedimaniaRanking[] rankings, string login, uint maxRecordsToShow, uint maxRecordsToReport)
+        {
+            // show at least the top 3
+            maxRecordsToShow = (uint)Math.Max(Math.Min(Math.Min(maxRecordsToShow, maxRecordsToReport), rankings.Length), 3);
+            maxRecordsToReport = (uint)Math.Min(rankings.Length, maxRecordsToReport);
+
+            // set maxRecordsToShow to amount of existing rankings when the amoutn of rankings is less than the value of maxRecordsToShow
+            if (rankings.Length < maxRecordsToShow && rankings.Length > 3)
+                maxRecordsToShow = Convert.ToUInt32(rankings.Length);
+
+            int currentPlayerRankIndex = Array.FindIndex(rankings, ranking => ranking.Login == login);
+
+            SortedList<uint, DedimaniaRanking> result = new SortedList<uint, DedimaniaRanking>();
+
+            // always add the first 3 records, replace non existing records with empty ones
+            for (uint i = 1; i <= 3; i++)
+            {
+                DedimaniaRanking currentRank = rankings.Length >= i ? rankings[i - 1] : new DedimaniaRanking(string.Empty, string.Empty, 0, DateTime.MinValue);
+                result.Add(i, currentRank);
+            }
+
+            // leave if no more records left
+            if (maxRecordsToShow <= 3)
+                return result;
+
+            uint amountOfRecordsLeft = maxRecordsToShow - 3;
+            uint upperLimitLeft = 4 + ((maxRecordsToReport - 3) / 2) + ((maxRecordsToReport - 3) % 2);
+            uint lowerLimitRight = upperLimitLeft;
+
+            if (currentPlayerRankIndex != -1 && currentPlayerRankIndex > 2)
+            {
+                result.Add((uint)(currentPlayerRankIndex + 1), rankings[currentPlayerRankIndex]);
+                amountOfRecordsLeft--;
+
+                upperLimitLeft = (uint)currentPlayerRankIndex + 1;
+                lowerLimitRight = (uint)(currentPlayerRankIndex + 2);
+            }
+
+            List<uint> ranksBeforePlayerRank = new List<uint>();
+            for (uint i = 4; i < upperLimitLeft; i++)
+                ranksBeforePlayerRank.Add(i);
+
+            List<uint> ranksAfterPlayerRank = new List<uint>();
+            for (uint i = lowerLimitRight; i <= maxRecordsToReport; i++)
+                ranksAfterPlayerRank.Add(i);
+
+            uint leftAmount = (amountOfRecordsLeft / 2) + (amountOfRecordsLeft % 2);
+            uint rightAmount = (amountOfRecordsLeft / 2);
+
+            if (leftAmount > ranksBeforePlayerRank.Count)
+            {
+                uint diff = leftAmount - (uint)ranksBeforePlayerRank.Count;
+                leftAmount = (uint)ranksBeforePlayerRank.Count;
+                rightAmount += diff;
+            }
+
+            if (rightAmount > ranksAfterPlayerRank.Count)
+            {
+                uint diff = rightAmount - (uint)ranksAfterPlayerRank.Count;
+                rightAmount = (uint)ranksAfterPlayerRank.Count;
+                leftAmount += diff;
+            }
+
+            uint leftAmountStart = leftAmount, leftAmountEnd = 0;
+            uint rightAmountStart = 0, rightAmountEnd = rightAmount;
+            if (currentPlayerRankIndex != -1 && currentPlayerRankIndex > 2)
+            {
+                leftAmountStart = (leftAmount/2);
+                leftAmountEnd = (leftAmount/2) + (leftAmount%2);
+                rightAmountStart = (rightAmount / 2);
+                rightAmountEnd = (rightAmount / 2) + (rightAmount % 2);
+            }
+
+            for (int i = 0; i < leftAmountStart; i++)
+                result.Add(ranksBeforePlayerRank[i], rankings[ranksBeforePlayerRank[i] - 1]);
+
+            for (int i = ranksBeforePlayerRank.Count - 1; i > (ranksBeforePlayerRank.Count-1) - leftAmountEnd; i--)
+                result.Add(ranksBeforePlayerRank[i], rankings[ranksBeforePlayerRank[i] - 1]);
+
+            for (int i = 0; i < rightAmountStart; i++)
+                result.Add(ranksAfterPlayerRank[i], rankings[ranksAfterPlayerRank[i] - 1]);
+
+            for (int i = ranksAfterPlayerRank.Count - 1; i > (ranksAfterPlayerRank.Count - 1) - rightAmountEnd; i--)
+                result.Add(ranksAfterPlayerRank[i], rankings[ranksAfterPlayerRank[i] - 1]);
+
+            return result;
+        }
+
+        private XElement GetPlayerRecordElement(DedimaniaRanking rankingInfo, double currentY, uint currentRank, string login)
+        {
+            string templateXML = Settings.RecordListRecordTemplate;
+
+            if (rankingInfo.Login == login)
+                templateXML = Settings.RecordListRecordHighlightTemplate;
+            else if (currentRank <= 3)
+                templateXML = Settings.RecordListTop3RecordTemplate;
+
+            TimeSpan time = TimeSpan.FromMilliseconds(rankingInfo.TimeOrScore);
+
+            StringBuilder playerRecordXml = new StringBuilder(rankingInfo.Login != login ? templateXML : Settings.RecordListRecordHighlightTemplate);
             playerRecordXml.Replace("{[Y]}", currentY.ToString(CultureInfo.InvariantCulture));
             playerRecordXml.Replace("{[Rank]}", currentRank + ".");
-            playerRecordXml.Replace("{[TimeOrScore]}", ranking.TimeOrScore == 0 ? "  --.--  " : string.Format("{0}:{1}.{2}", time.Minutes, time.Seconds.ToString("00"), (time.Milliseconds / 10).ToString("00")));
-            playerRecordXml.Replace("{[Nickname]}", SecurityElement.Escape(ranking.Nickname));
+            playerRecordXml.Replace("{[TimeOrScore]}", rankingInfo.TimeOrScore == 0 ? "  --.--  " : string.Format("{0}:{1}.{2}", time.Minutes, time.Seconds.ToString("00"), (time.Milliseconds / 10).ToString("00")));
+            playerRecordXml.Replace("{[Nickname]}", SecurityElement.Escape(rankingInfo.Nickname));
 
             return XElement.Parse(playerRecordXml.ToString());
         }

@@ -142,7 +142,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.Dedimania
                         }
                     }
 
-                    if (newRank.HasValue && newRank <= Settings.MaxRecordsToReport)
+                    if (newRank.HasValue && newRank <= DedimaniaSettings.MAX_RECORDS_TO_REPORT)
                     {
                         if (newRank == 1)
                             BestTime = Convert.ToUInt32(e.TimeOrScore);
@@ -279,7 +279,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.Dedimania
             int spectatorsCount = currentPlayers.Count - playersCount;
             DedimaniaServerInfo serverInfo = new DedimaniaServerInfo(serverOptions.Name, serverOptions.Comment, serverOptions.Password.Length > 0, string.Empty, 0, Context.ServerInfo.ServerXMLRpcPort, playersCount, serverOptions.CurrentMaxPlayers, spectatorsCount, serverOptions.CurrentMaxSpectators, serverOptions.CurrentLadderMode, string.Empty);
 
-            DedimaniaCurrentChallengeReply currentChallengeReply = DedimaniaClient.CurrentChallenge(currentChallenge.UId, currentChallenge.Name, currentChallenge.Environnement, currentChallenge.Author, Context.ServerInfo.Version.GetShortName(), (int) currentGameMode.Value, serverInfo, Convert.ToInt32(Settings.MaxRecordsToReport), playersToReport.ToArray());
+            DedimaniaCurrentChallengeReply currentChallengeReply = DedimaniaClient.CurrentChallenge(currentChallenge.UId, currentChallenge.Name, currentChallenge.Environnement, currentChallenge.Author, Context.ServerInfo.Version.GetShortName(), (int) currentGameMode.Value, serverInfo, (int) DedimaniaSettings.MAX_RECORDS_TO_REPORT, playersToReport.ToArray());
 
             if (currentChallengeReply != null)
             {
@@ -328,7 +328,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.Dedimania
                     return;
 
                 ResetUpdateServerPlayersTimer();
-                DedimaniaChallengeRaceTimesReply challengeRaceTimesReply = DedimaniaClient.ChallengeRaceTimes(e.Challenge.UId, e.Challenge.Name, e.Challenge.Environnement, e.Challenge.Author, Context.ServerInfo.Version.GetShortName(), (int) currentGameMode.Value, maxCheckPointAmount, Convert.ToInt32(Settings.MaxRecordsToReport), times.ToArray());
+                DedimaniaChallengeRaceTimesReply challengeRaceTimesReply = DedimaniaClient.ChallengeRaceTimes(e.Challenge.UId, e.Challenge.Name, e.Challenge.Environnement, e.Challenge.Author, Context.ServerInfo.Version.GetShortName(), (int) currentGameMode.Value, maxCheckPointAmount, (int) DedimaniaSettings.MAX_RECORDS_TO_REPORT, times.ToArray());
 
                 if (challengeRaceTimesReply == null)
                     Logger.WarnToUI("Error while calling ChallengeRaceTimes!");

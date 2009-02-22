@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Configuration;
 using System.Xml.Linq;
 using TMSPS.Core.Common;
@@ -15,7 +14,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.Dedimania
 
         public const string AUTH_URL = "http://dedimania.net/RPC4/server.php";
         public const string REPORT_URL = "http://dedimania.net:8015/Dedimania";
-        private const uint MAX_RECORDS_TO_REPORT = 30; // values above this value wont be accepted
+        public const uint MAX_RECORDS_TO_REPORT = 30; // values above this value wont be accepted
 
         #endregion
 
@@ -23,7 +22,6 @@ namespace TMSPS.Core.PluginSystem.Plugins.Dedimania
 
         public string AuthUrl { get; private set; }
         public string ReportUrl { get; private set; }
-        public uint MaxRecordsToReport { get; private set; }
 
         #endregion
 
@@ -39,7 +37,6 @@ namespace TMSPS.Core.PluginSystem.Plugins.Dedimania
 
             result.AuthUrl = ReadConfigString(configDocument.Root, "AuthUrl", AUTH_URL, xmlConfigurationFile);
             result.ReportUrl = ReadConfigString(configDocument.Root, "ReportUrl", REPORT_URL, xmlConfigurationFile);
-            result.MaxRecordsToReport = Math.Min(ReadConfigUInt(configDocument.Root, "MaxRecordsToReport", MAX_RECORDS_TO_REPORT, xmlConfigurationFile), MAX_RECORDS_TO_REPORT);
             result.Plugins = PluginConfigEntryCollection.ReadFromXElement(configDocument.Root.Element("Plugins"));
 
             return result;

@@ -7,9 +7,17 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TMSPS.Core", "TMSPS.Common\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TMSPS.TestClient", "TMSPS.TestClient\TMSPS.TestClient.csproj", "{D4484EE3-0BE1-4A2A-BC05-9F63170E0B3F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TMSPS.UnitTests", "TMSPS.UnitTests\TMSPS.UnitTests.csproj", "{AC12E80A-4482-404D-B4E2-C1FC6BE50755}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{FCBB4885-DD33-412F-B591-FDDC2CA85458}"
+	ProjectSection(SolutionItems) = preProject
+		LocalTestRun.testrunconfig = LocalTestRun.testrunconfig
+		TMSPS.vsmdi = TMSPS.vsmdi
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(TeamFoundationVersionControl) = preSolution
-		SccNumberOfProjects = 4
+		SccNumberOfProjects = 5
 		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
 		SccTeamFoundationServer = https://tfs09.codeplex.com/
 		SccLocalPath0 = .
@@ -22,6 +30,12 @@ Global
 		SccProjectUniqueName3 = TMSPS.TestClient\\TMSPS.TestClient.csproj
 		SccProjectName3 = TMSPS.TestClient
 		SccLocalPath3 = TMSPS.TestClient
+		SccProjectUniqueName4 = TMSPS.UnitTests\\TMSPS.UnitTests.csproj
+		SccProjectName4 = TMSPS.UnitTests
+		SccLocalPath4 = TMSPS.UnitTests
+	EndGlobalSection
+	GlobalSection(TestCaseManagementSettings) = postSolution
+		CategoryFile = TMSPS.vsmdi
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -40,6 +54,10 @@ Global
 		{D4484EE3-0BE1-4A2A-BC05-9F63170E0B3F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D4484EE3-0BE1-4A2A-BC05-9F63170E0B3F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D4484EE3-0BE1-4A2A-BC05-9F63170E0B3F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AC12E80A-4482-404D-B4E2-C1FC6BE50755}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AC12E80A-4482-404D-B4E2-C1FC6BE50755}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AC12E80A-4482-404D-B4E2-C1FC6BE50755}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AC12E80A-4482-404D-B4E2-C1FC6BE50755}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
