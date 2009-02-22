@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Diagnostics;
 
 namespace TMSPS.Core.PluginSystem.Plugins.Dedimania
 {
+    [DebuggerDisplay("Login: {Login}, Nickname: {Nickname}, Created: {Created}, TimeOrScore: {TimeOrScore}")]
     public class DedimaniaRanking
     {
         #region Properties
