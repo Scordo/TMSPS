@@ -43,13 +43,13 @@ namespace TMSPS.Core.PluginSystem.Plugins.Dedimania
 
         private void Callbacks_EndRace(object sender, Core.Communication.EventArguments.Callbacks.EndRaceEventArgs e)
         {
-            if (Settings.ShowDedimaniaRecordUI)
+            if (Settings.ShowRecordUI)
                 SendHideDedimaniaRecordManiaLinkPageToAll();
         }
 
         private void Callbacks_PlayerConnect(object sender, Core.Communication.EventArguments.Callbacks.PlayerConnectEventArgs e)
         {
-            if (Settings.ShowDedimaniaRecordUI)
+            if (Settings.ShowRecordUI)
             {
                 SendDedimaniaRecordManiaLinkPageToLogin(e.Login);
                 Context.RPCClient.Methods.SendDisplayManialinkPageToLogin(e.Login, GetRecordListManiaLinkPage(HostPlugin.Rankings, e.Login), 0, false);
@@ -76,7 +76,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.Dedimania
 
         private void HostPlugin_RankingsChanged(object sender, Common.EventArgs<DedimaniaRanking[]> e)
         {
-            if (Settings.ShowDedimaniaRecordUI)
+            if (Settings.ShowRecordUI)
             {
                 SendDedimaniaRecordManiaLinkPageToAll();
                 SendRecordListToAllPlayers(e.Value);
@@ -230,19 +230,19 @@ namespace TMSPS.Core.PluginSystem.Plugins.Dedimania
             {
                 if (e.RankChanged)
                 {
-                    string message = Settings.NewDedimaniaRankMessage.Replace("{[Nickname]}", e.Nickname).Replace("{[Rank]}", e.NewRank.ToString());
+                    string message = Settings.NewRankMessage.Replace("{[Nickname]}", e.Nickname).Replace("{[Rank]}", e.NewRank.ToString());
                     Context.RPCClient.Methods.ChatSend(message);
                     Context.RPCClient.Methods.SendNotice(message, e.Login, Convert.ToInt32(Settings.NoticeDelayInSeconds));
                 }
                 else
                 {
-                    string message = Settings.ImprovedDedimaniaRankMessage.Replace("{[Nickname]}", e.Nickname).Replace("{[Rank]}", e.NewRank.ToString());
+                    string message = Settings.ImprovedRankMessage.Replace("{[Nickname]}", e.Nickname).Replace("{[Rank]}", e.NewRank.ToString());
                     Context.RPCClient.Methods.ChatSend(message);
                     Context.RPCClient.Methods.SendNotice(message, e.Login, Convert.ToInt32(Settings.NoticeDelayInSeconds));
                 }
             }
 
-            if (e.NewRank == 1 && Settings.ShowDedimaniaRecordUI)
+            if (e.NewRank == 1 && Settings.ShowRecordUI)
             {
                 SendDedimaniaRecordManiaLinkPageToAll();
             }

@@ -13,9 +13,9 @@ namespace TMSPS.Core.PluginSystem.Plugins.Dedimania
         public const bool SHOW_MESSAGES = true;
         public const uint NOTICE_DELAY_IN_SECONDS = 1;
 
-        public const string NEW_DEDIMANIA_RANK_MESSAGE = "$z{[Nickname]}$z claimed dedimania rank: $w$s$0f0{[Rank]}$z!";
-        public const string IMPROVED_DEDIMANIA_RANK_MESSAGE = "$z{[Nickname]}$z improved his/her dedimania rank: $w$s$0f0{[Rank]}$z!";
-        public const bool SHOW_DEDIMANIA_RECORD_UI = true;
+        public const string NEW_RANK_MESSAGE = "$z{[Nickname]}$z claimed dedimania rank: $w$s$0f0{[Rank]}$z!";
+        public const string IMPROVED_RANK_MESSAGE = "$z{[Nickname]}$z improved his/her dedimania rank: $w$s$0f0{[Rank]}$z!";
+        public const bool SHOW_RECORD_UI = true;
 
         public const double RECORDLIST_PLAYER_START_MARGIN = -2.9;
         public const double RECORDLIST_TOP3_GAP = 0.6;
@@ -29,12 +29,12 @@ namespace TMSPS.Core.PluginSystem.Plugins.Dedimania
 
         public uint MaxRecordsToShow { get; protected internal set; }
         public bool ShowMessages { get; private set; }
-        public bool ShowDedimaniaRecordUI { get; private set; }
+        public bool ShowRecordUI { get; private set; }
         public uint NoticeDelayInSeconds { get; private set; }
         public string DediPanelTemplateActive { get; private set; }
         public string DediPanelTemplateInactive { get; private set; }
-        public string NewDedimaniaRankMessage { get; private set; }
-        public string ImprovedDedimaniaRankMessage { get; private set; }
+        public string NewRankMessage { get; private set; }
+        public string ImprovedRankMessage { get; private set; }
 
 
         public double RecordListPlayerStartMargin { get; private set; }
@@ -65,10 +65,10 @@ namespace TMSPS.Core.PluginSystem.Plugins.Dedimania
 
             result.MaxRecordsToShow = ReadConfigUInt(configDocument.Root, "MaxRecordsToShow", MAX_RECORDS_TO_SHOW, xmlConfigurationFile);
             result.ShowMessages = ReadConfigBool(configDocument.Root, "ShowMessages", SHOW_MESSAGES, xmlConfigurationFile);
-            result.ShowDedimaniaRecordUI = ReadConfigBool(configDocument.Root, "ShowDEDUI", SHOW_DEDIMANIA_RECORD_UI, xmlConfigurationFile);
+            result.ShowRecordUI = ReadConfigBool(configDocument.Root, "ShowDEDUI", SHOW_RECORD_UI, xmlConfigurationFile);
             result.NoticeDelayInSeconds = ReadConfigUInt(configDocument.Root, "NoticeDelayInSeconds", NOTICE_DELAY_IN_SECONDS, xmlConfigurationFile);
-            result.NewDedimaniaRankMessage = ReadConfigString(configDocument.Root, "NewDedimaniaRankMessage", NEW_DEDIMANIA_RANK_MESSAGE, xmlConfigurationFile);
-            result.ImprovedDedimaniaRankMessage = ReadConfigString(configDocument.Root, "ImprovedDedimaniaRankMessage", IMPROVED_DEDIMANIA_RANK_MESSAGE, xmlConfigurationFile);
+            result.NewRankMessage = ReadConfigString(configDocument.Root, "NewDedimaniaRankMessage", NEW_RANK_MESSAGE, xmlConfigurationFile);
+            result.ImprovedRankMessage = ReadConfigString(configDocument.Root, "ImprovedDedimaniaRankMessage", IMPROVED_RANK_MESSAGE, xmlConfigurationFile);
 
             string dediPanelActiveTemplateFile = Path.Combine(settingsDirectory, "DediPanelActiveTemplate.xml");
             result.DediPanelTemplateActive = File.Exists(dediPanelActiveTemplateFile) ? File.ReadAllText(dediPanelActiveTemplateFile) : UITemplates.LowerRightDediRecordPanelActive;
