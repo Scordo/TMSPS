@@ -26,6 +26,16 @@ namespace TMSPS.Core.PluginSystem
 
         #region Methods
 
+        protected static string GetEmptyManiaLinkPage(string manaiaLinkID)
+        {
+            return string.Format(@"<manialink id=""{0}""></manialink>", manaiaLinkID);
+        }
+
+        protected GenericResponse<bool> SendEmptyManiaLinkPage(string manaiaLinkID)
+        {
+            return Context.RPCClient.Methods.SendDisplayManialinkPage(GetEmptyManiaLinkPage(manaiaLinkID), 0, false);
+        }
+
         public ChallengeInfo GetCurrentChallengeInfoCached()
         {
             return CurrentChallengeInfo ?? GetCurrentChallengeInfo();

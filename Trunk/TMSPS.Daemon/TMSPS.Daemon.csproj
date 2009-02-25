@@ -95,6 +95,8 @@
     <Content Include="Plugins\Dedimania\Settings.xml" />
     <Content Include="Plugins\KickUnrankedPlayers\Settings.xml" />
     <Content Include="Plugins\KickUnrankedPlayers\Settings_Template.xml" />
+    <Content Include="Plugins\LiveRanking\Settings.xml" />
+    <Content Include="Plugins\LiveRanking\Settings_Template.xml" />
     <Content Include="Plugins\LocalRecords\LocalRecordsUI\LocalRecordPanelActiveTemplate.xml" />
     <Content Include="Plugins\LocalRecords\LocalRecordsUI\LocalRecordPanelInactiveTemplate.xml" />
     <Content Include="Plugins\LocalRecords\LocalRecordsUI\PBPanelActiveTemplate.xml" />
