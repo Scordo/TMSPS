@@ -180,6 +180,13 @@
       <DependentUpon>UITemplates.resx</DependentUpon>
     </Compile>
     <Compile Include="PluginSystem\Plugins\KickUnrankedPlayerPlugin.cs" />
+    <Compile Include="PluginSystem\Plugins\LiveRanking\LiveRankingPlugin.cs" />
+    <Compile Include="PluginSystem\Plugins\LiveRanking\LiveRankingsSettings.cs" />
+    <Compile Include="PluginSystem\Plugins\LiveRanking\UITemplates.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>UITemplates.resx</DependentUpon>
+    </Compile>
     <Compile Include="PluginSystem\Plugins\LocalRecords\ILocalRecordsPluginPlugin.cs" />
     <Compile Include="PluginSystem\Plugins\LocalRecords\LocalRecordsPluginPlugin.cs" />
     <Compile Include="PluginSystem\Plugins\LocalRecords\LocalRecordsUIPlugin.cs" />
@@ -263,6 +270,10 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="PluginSystem\Plugins\Dedimania\UITemplates.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>UITemplates.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="PluginSystem\Plugins\LiveRanking\UITemplates.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>UITemplates.Designer.cs</LastGenOutput>
     </EmbeddedResource>
