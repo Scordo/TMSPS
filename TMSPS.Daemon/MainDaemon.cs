@@ -131,10 +131,14 @@ namespace TMSPS.Daemon
             if (HostContext == null)
                 return;
 
+            Log.InfoToUI(string.Format("{0} Plugins found, starting to initialize plugins.", Plugins.Count));
+
             foreach (ITMSPSPlugin plugin in Plugins)
             {
                 plugin.InitPlugin(HostContext, new ConsoleUILogger("TMSPS", string.Format(" - [{0}]",plugin.ShortName)));
             }
+
+            Log.InfoToUI("Plugins initialized.");
         }
 
         private void DisposePlugins(bool connectionLost)

@@ -33,11 +33,9 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
         public string NewLocalRankMessage { get; private set; }
         public string ImprovedLocalRankMessage { get; private set; }
         public uint NoticeDelayInSeconds { get; private set; }
-        public string PBPanelTemplateActive { get; private set; }
-        public string PBPanelTemplateInactive { get; private set; }
+        public string PBPanelTemplate { get; private set; }
 
-        public string LocalRecordPanelTemplateActive { get; private set; }
-        public string LocalRecordPanelTemplateInactive { get; private set; }
+        public string LocalRecordPanelTemplate { get; private set; }
 
         #endregion
 
@@ -63,15 +61,11 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
             result.ImprovedLocalRankMessage = ReadConfigString(configDocument.Root, "ImprovedLocalRankMessage", IMPROVED_LOCAL_RANK_MESSAGE, xmlConfigurationFile);
             result.NoticeDelayInSeconds = ReadConfigUInt(configDocument.Root, "NoticeDelayInSeconds", NOTICE_DELAY_IN_SECONDS, xmlConfigurationFile);
 
-            string pbPanelActiveTemplateFile = Path.Combine(settingsDirectory, "PBPanelActiveTemplate.xml");
-            result.PBPanelTemplateActive = File.Exists(pbPanelActiveTemplateFile) ? File.ReadAllText(pbPanelActiveTemplateFile) : UITemplates.LowerRightPBPanelActive;
-            string pbPanelInactiveTemplateFile = Path.Combine(settingsDirectory, "PBPanelInactiveTemplate.xml");
-            result.PBPanelTemplateInactive = File.Exists(pbPanelInactiveTemplateFile) ? File.ReadAllText(pbPanelInactiveTemplateFile) : UITemplates.LowerRightPBPanelInactive;
+            string pbPanelActiveTemplateFile = Path.Combine(settingsDirectory, "PBPanelTemplate.xml");
+            result.PBPanelTemplate = File.Exists(pbPanelActiveTemplateFile) ? File.ReadAllText(pbPanelActiveTemplateFile) : UITemplates.LowerRightPBRecordPanelActive;
 
-            string localRecordPanelActiveTemplateFile = Path.Combine(settingsDirectory, "LocalRecordPanelActiveTemplate.xml");
-            result.LocalRecordPanelTemplateActive = File.Exists(localRecordPanelActiveTemplateFile) ? File.ReadAllText(localRecordPanelActiveTemplateFile) : UITemplates.LowerRightLocalRecordPanelActive;
-            string localRecordPanelInactiveTemplateFile = Path.Combine(settingsDirectory, "LocalRecordPanelInactiveTemplate.xml");
-            result.LocalRecordPanelTemplateInactive = File.Exists(localRecordPanelInactiveTemplateFile) ? File.ReadAllText(localRecordPanelInactiveTemplateFile) : UITemplates.LowerRightLocalRecordPanelInactive;
+            string localRecordPanelActiveTemplateFile = Path.Combine(settingsDirectory, "LocalRecordPanelTemplate.xml");
+            result.LocalRecordPanelTemplate = File.Exists(localRecordPanelActiveTemplateFile) ? File.ReadAllText(localRecordPanelActiveTemplateFile) : UITemplates.LowerRightLocalRecordPanelActive;
 
             return result;
         }

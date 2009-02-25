@@ -44,7 +44,10 @@ namespace TMSPS.Core.PluginSystem.Plugins.Dedimania
         private void Callbacks_EndRace(object sender, Core.Communication.EventArguments.Callbacks.EndRaceEventArgs e)
         {
             if (Settings.ShowRecordUI)
-                SendHideDedimaniaRecordManiaLinkPageToAll();
+            {
+                SendEmptyManiaLinkPage(_dedimaniaManiaLinkPageID);
+                SendEmptyManiaLinkPage(_dedimaniaRecordListManiaLinkPageID);
+            }
         }
 
         private void Callbacks_PlayerConnect(object sender, Core.Communication.EventArguments.Callbacks.PlayerConnectEventArgs e)
@@ -215,7 +218,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.Dedimania
 
             TimeSpan time = TimeSpan.FromMilliseconds(rankingInfo.TimeOrScore);
 
-            StringBuilder playerRecordXml = new StringBuilder(rankingInfo.Login != login ? templateXML : Settings.RecordListRecordHighlightTemplate);
+            StringBuilder playerRecordXml = new StringBuilder(templateXML);
             playerRecordXml.Replace("{[Y]}", currentY.ToString(CultureInfo.InvariantCulture));
             playerRecordXml.Replace("{[Rank]}", currentRank + ".");
             playerRecordXml.Replace("{[TimeOrScore]}", rankingInfo.TimeOrScore == 0 ? "  --.--  " : string.Format("{0}:{1}.{2}", time.Minutes, time.Seconds.ToString("00"), (time.Milliseconds / 10).ToString("00")));
@@ -248,10 +251,6 @@ namespace TMSPS.Core.PluginSystem.Plugins.Dedimania
             }
         }
 
-        private void SendHideDedimaniaRecordManiaLinkPageToAll()
-        {
-            Context.RPCClient.Methods.SendDisplayManialinkPage(Settings.DediPanelTemplateInactive.Replace("{[ManiaLinkID]}", _dedimaniaManiaLinkPageID), 0, false);
-        }
 
         private void SendDedimaniaRecordManiaLinkPageToLogin(string login)
         {

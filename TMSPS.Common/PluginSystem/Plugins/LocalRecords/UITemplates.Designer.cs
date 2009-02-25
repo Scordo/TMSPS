@@ -77,15 +77,6 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to &lt;manialink id=&quot;{[ManiaLinkID]}&quot;&gt;&lt;/manialink&gt;.
-        /// </summary>
-        internal static string LowerRightLocalRecordPanelInactive {
-            get {
-                return ResourceManager.GetString("LowerRightLocalRecordPanelInactive", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to &lt;manialink id=&quot;{[ManiaLinkID]}&quot;&gt;
         ///	&lt;frame posn=&quot;53.5 -33 0&quot;&gt;
         ///		&lt;quad sizen=&quot;10.5 2.2&quot;/&gt;
@@ -95,18 +86,9 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords {
         ///	&lt;/frame&gt;             
         ///&lt;/manialink&gt;.
         /// </summary>
-        internal static string LowerRightPBPanelActive {
+        internal static string LowerRightPBRecordPanelActive {
             get {
                 return ResourceManager.GetString("LowerRightPBRecordPanelActive", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to &lt;manialink id=&quot;{[ManiaLinkID]}&quot;&gt;&lt;/manialink&gt;.
-        /// </summary>
-        internal static string LowerRightPBPanelInactive {
-            get {
-                return ResourceManager.GetString("LowerRightPBRecordPanelInactive", resourceCulture);
             }
         }
     }
