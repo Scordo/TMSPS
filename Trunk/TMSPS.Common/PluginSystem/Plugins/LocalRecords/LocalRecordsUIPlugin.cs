@@ -90,7 +90,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
 
         private void SendPBManiaLinkPage(string login, uint? personalBestTimeOrScore)
         {
-            StringBuilder maniaLinkPage = new StringBuilder(Settings.PBPanelTemplateActive);
+            StringBuilder maniaLinkPage = new StringBuilder(Settings.PBPanelTemplate);
 
             string pbValue = "  --.--  ";
             if (personalBestTimeOrScore.HasValue)
@@ -117,7 +117,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
 
         private string GetLocalRecordManiaLinkPage()
         {
-            StringBuilder maniaLinkPage = new StringBuilder(Settings.LocalRecordPanelTemplateActive);
+            StringBuilder maniaLinkPage = new StringBuilder(Settings.LocalRecordPanelTemplate);
 
             string timeString = "  --.--  ";
             if (LocalBestTimeOrScore.HasValue)
@@ -132,24 +132,13 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
             return maniaLinkPage.ToString();
         }
 
-        private void SendHideLocalRecordManiaLinkPageToAll()
-        {
-            Context.RPCClient.Methods.SendDisplayManialinkPage(Settings.LocalRecordPanelTemplateInactive.Replace("{[ManiaLinkID]}", _localRecordManiaLinkPageID), 0, false);
-        }
-
-        private void SendHidePBManiaLinkPageToAll()
-        {
-            Context.RPCClient.Methods.SendDisplayManialinkPage(Settings.PBPanelTemplateInactive.Replace("{[ManiaLinkID]}", _pbManiaLinkPageID), 0, false);
-        }
-
-
         private void Callbacks_EndRace(object sender, Communication.EventArguments.Callbacks.EndRaceEventArgs e)
         {
             if (Settings.ShowPBUserInterface)
-                SendHidePBManiaLinkPageToAll();
+                SendEmptyManiaLinkPage(_pbManiaLinkPageID);
 
             if (Settings.ShowLocalRecordUserInterface)
-                SendHideLocalRecordManiaLinkPageToAll();
+                SendEmptyManiaLinkPage(_localRecordManiaLinkPageID);
         }
 
         private void HostPlugin_PlayerVoted(object sender, PlayerVoteEventArgs e)

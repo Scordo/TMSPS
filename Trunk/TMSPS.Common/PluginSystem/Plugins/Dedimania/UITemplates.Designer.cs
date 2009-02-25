@@ -70,18 +70,9 @@ namespace TMSPS.Core.PluginSystem.Plugins.Dedimania {
         ///	&lt;/frame&gt;             
         ///&lt;/manialink&gt;.
         /// </summary>
-        internal static string LowerRightDediRecordPanelActive {
+        internal static string LowerRightDediRecordPanel {
             get {
-                return ResourceManager.GetString("LowerRightDediRecordPanelActive", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to &lt;manialink id=&quot;{[ManiaLinkID]}&quot;&gt;&lt;/manialink&gt;.
-        /// </summary>
-        internal static string LowerRightDediRecordPanelInActive {
-            get {
-                return ResourceManager.GetString("LowerRightDediRecordPanelInActive", resourceCulture);
+                return ResourceManager.GetString("LowerRightDediRecordPanel", resourceCulture);
             }
         }
         

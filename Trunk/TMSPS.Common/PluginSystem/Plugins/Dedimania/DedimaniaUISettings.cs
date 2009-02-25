@@ -32,10 +32,8 @@ namespace TMSPS.Core.PluginSystem.Plugins.Dedimania
         public bool ShowRecordUI { get; private set; }
         public uint NoticeDelayInSeconds { get; private set; }
         public string DediPanelTemplateActive { get; private set; }
-        public string DediPanelTemplateInactive { get; private set; }
         public string NewRankMessage { get; private set; }
         public string ImprovedRankMessage { get; private set; }
-
 
         public double RecordListPlayerStartMargin { get; private set; }
         public double RecordListTop3Gap { get; private set; }
@@ -70,10 +68,8 @@ namespace TMSPS.Core.PluginSystem.Plugins.Dedimania
             result.NewRankMessage = ReadConfigString(configDocument.Root, "NewDedimaniaRankMessage", NEW_RANK_MESSAGE, xmlConfigurationFile);
             result.ImprovedRankMessage = ReadConfigString(configDocument.Root, "ImprovedDedimaniaRankMessage", IMPROVED_RANK_MESSAGE, xmlConfigurationFile);
 
-            string dediPanelActiveTemplateFile = Path.Combine(settingsDirectory, "DediPanelActiveTemplate.xml");
-            result.DediPanelTemplateActive = File.Exists(dediPanelActiveTemplateFile) ? File.ReadAllText(dediPanelActiveTemplateFile) : UITemplates.LowerRightDediRecordPanelActive;
-            string dediPanelInactiveTemplateFile = Path.Combine(settingsDirectory, "DediPanelInactiveTemplate.xml");
-            result.DediPanelTemplateInactive = File.Exists(dediPanelInactiveTemplateFile) ? File.ReadAllText(dediPanelInactiveTemplateFile) : UITemplates.LowerRightDediRecordPanelInActive;
+            string dediPanelActiveTemplateFile = Path.Combine(settingsDirectory, "DediPanelTemplate.xml");
+            result.DediPanelTemplateActive = File.Exists(dediPanelActiveTemplateFile) ? File.ReadAllText(dediPanelActiveTemplateFile) : UITemplates.LowerRightDediRecordPanel;
 
             result.RecordListPlayerToContainerMarginY = RECORDLIST_PLAYER_TO_CONTAINER_MARGIN_Y;
             result.RecordListPlayerStartMargin = RECORDLIST_PLAYER_START_MARGIN;

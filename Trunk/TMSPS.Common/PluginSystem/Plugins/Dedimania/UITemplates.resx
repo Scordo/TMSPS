@@ -117,7 +117,7 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="LowerRightDediRecordPanelActive" xml:space="preserve">
+  <data name="LowerRightDediRecordPanel" xml:space="preserve">
     <value>&lt;manialink id="{[ManiaLinkID]}"&gt;
 	&lt;frame posn="53.5 -37.4 0"&gt;
 		&lt;quad sizen="10.5 2"/&gt;
@@ -126,9 +126,6 @@
 		&lt;label posn="4.6 0.0 2" halign="left" text="{[DED]}" /&gt;
 	&lt;/frame&gt;             
 &lt;/manialink&gt;</value>
-  </data>
-  <data name="LowerRightDediRecordPanelInActive" xml:space="preserve">
-    <value>&lt;manialink id="{[ManiaLinkID]}"&gt;&lt;/manialink&gt;</value>
   </data>
   <data name="RecordListMainTemplate" xml:space="preserve">
     <value>&lt;manialink id="{[ManiaLinkID]}"&gt;

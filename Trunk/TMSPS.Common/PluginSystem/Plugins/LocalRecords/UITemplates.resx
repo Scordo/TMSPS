@@ -127,9 +127,6 @@
 	&lt;/frame&gt;             
 &lt;/manialink&gt;</value>
   </data>
-  <data name="LowerRightLocalRecordPanelInactive" xml:space="preserve">
-    <value>&lt;manialink id="{[ManiaLinkID]}"&gt;&lt;/manialink&gt;</value>
-  </data>
   <data name="LowerRightPBRecordPanelActive" xml:space="preserve">
     <value>&lt;manialink id="{[ManiaLinkID]}"&gt;
 	&lt;frame posn="53.5 -33 0"&gt;
@@ -139,8 +136,5 @@
 		&lt;label posn="4.6 0.0 2" halign="left" text="{[PB]}" /&gt;
 	&lt;/frame&gt;             
 &lt;/manialink&gt;</value>
-  </data>
-  <data name="LowerRightPBRecordPanelInactive" xml:space="preserve">
-    <value>&lt;manialink id="{[ManiaLinkID]}"&gt;&lt;/manialink&gt;</value>
   </data>
 </root>
