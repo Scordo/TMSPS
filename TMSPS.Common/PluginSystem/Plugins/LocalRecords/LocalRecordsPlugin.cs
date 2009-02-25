@@ -51,7 +51,6 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
 
 	    protected override void Init()
 	    {
-	        Logger.InfoToUI("Started initialziation of " + ShortName);
 	        Settings = LocalRecordsSettings.ReadFromFile(PluginSettingsFilePath);
 	        
 	        try
@@ -105,8 +104,6 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
 	        Context.RPCClient.Callbacks.PlayerDisconnect += Callbacks_PlayerDisconnect;
 	        Context.RPCClient.Callbacks.PlayerFinish += Callbacks_PlayerFinish;
 	        Context.RPCClient.Callbacks.PlayerChat += Callbacks_PlayerChat;
-
-	        Logger.InfoToUI("Finished initialization of " + ShortName);
 	    }
 
 	    private void Callbacks_PlayerChat(object sender, PlayerChatEventArgs e)

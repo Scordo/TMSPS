@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System.Text;
+using System.Xml.Linq;
+using System.Collections.Generic;
 
 namespace System
 {
@@ -21,5 +23,15 @@ namespace System
 				return predicate(peekValue) ? queue.Dequeue() : default(T);
 			}
 		}
+
+        public static string InnerXML(this XElement element)
+        {
+            StringBuilder result = new StringBuilder();
+
+            foreach (XNode node in element.Nodes())
+                result.Append(node.ToString());
+
+            return result.ToString();
+        }
     }
 }

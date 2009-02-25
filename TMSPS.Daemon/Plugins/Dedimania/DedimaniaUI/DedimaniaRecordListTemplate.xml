@@ -1,10 +1,11 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <Settings>
-	<PlayerStartMargin>0.0</PlayerStartMargin>
+	<PlayerStartMargin>-2.9</PlayerStartMargin>
 	<Top3Gap>0.6</Top3Gap>
 	<PlayerRecordHeight>1.5</PlayerRecordHeight>
 	<PlayerEndMargin>0.0</PlayerEndMargin>
-	
+	<PlayerToContainerMarginY>0.7</PlayerToContainerMarginY>
+
 	<Templates>
 		<MainTemplate>
 			<manialink id="{[ManiaLinkID]}">
@@ -51,4 +52,3 @@
 
 	</Templates>
 </Settings>
-
