@@ -78,10 +78,35 @@ namespace TMSPS.Core.PluginSystem.Plugins.Dedimania
             result.RecordListTop3Gap = RECORDLIST_TOP3_GAP;
 
             result.RecordListMainTemplate = UITemplates.RecordListMainTemplate;
-            result.RecordListTop3RecordTemplate  = UITemplates.RecordListTop3RecordTemplate;
-            result.RecordListRecordTemplate  = UITemplates.RecordListRecordTemplate;
+            result.RecordListTop3RecordTemplate = UITemplates.RecordListTop3RecordTemplate;
+            result.RecordListRecordTemplate = UITemplates.RecordListRecordTemplate;
             result.RecordListRecordHighlightTemplate = UITemplates.RecordListRecordHighlightTemplate;
 
+            string recordListTemplateFile = Path.Combine(settingsDirectory, "DedimaniaRecordListTemplate.xml");
+
+            if (File.Exists(recordListTemplateFile))
+            {
+                XDocument listTemplateDocument = XDocument.Load(recordListTemplateFile);
+
+                if (listTemplateDocument.Root == null)
+                    throw new ConfigurationErrorsException("Could not find root node in file: " + listTemplateDocument);
+
+                result.RecordListPlayerStartMargin = ReadConfigDouble(listTemplateDocument.Root, "PlayerStartMargin", result.RecordListPlayerStartMargin, recordListTemplateFile);
+                result.RecordListTop3Gap = ReadConfigDouble(listTemplateDocument.Root, "Top3Gap", result.RecordListTop3Gap, recordListTemplateFile);
+                result.RecordListPlayerRecordHeight = ReadConfigDouble(listTemplateDocument.Root, "PlayerRecordHeight", result.RecordListPlayerRecordHeight, recordListTemplateFile);
+                result.RecordListPlayerEndMargin = ReadConfigDouble(listTemplateDocument.Root, "PlayerEndMargin", result.RecordListPlayerEndMargin, recordListTemplateFile);
+                result.RecordListPlayerToContainerMarginY = ReadConfigDouble(listTemplateDocument.Root, "PlayerToContainerMarginY", result.RecordListPlayerToContainerMarginY, recordListTemplateFile);
+
+                XElement templatesElement = listTemplateDocument.Root.Element("Templates");
+
+                if (templatesElement != null)
+                {
+                    result.RecordListMainTemplate = ReadConfigString(templatesElement, "MainTemplate", result.RecordListMainTemplate, recordListTemplateFile);
+                    result.RecordListTop3RecordTemplate = ReadConfigString(templatesElement, "Top3RecordTemplate", result.RecordListTop3RecordTemplate, recordListTemplateFile);
+                    result.RecordListRecordTemplate = ReadConfigString(templatesElement, "RecordTemplate", result.RecordListRecordTemplate, recordListTemplateFile);
+                    result.RecordListRecordHighlightTemplate = ReadConfigString(templatesElement, "RecordHighlightTemplate", result.RecordListRecordHighlightTemplate, recordListTemplateFile);
+                }
+            }
 
             return result;
         }
