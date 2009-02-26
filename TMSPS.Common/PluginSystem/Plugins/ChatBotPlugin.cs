@@ -13,7 +13,6 @@ namespace TMSPS.Core.PluginSystem.Plugins
     {
     	#region Constants
 
-    	public const string READ_SETTINGS_RIGHT = "ChatBotReadSettings";
     	public const string READ_SETTINGS_COMMAND = "ReadChatBotSettings";
 
     	#endregion
@@ -109,26 +108,21 @@ namespace TMSPS.Core.PluginSystem.Plugins
 
     	private bool CheckForReadSettingsCommand(PlayerChatEventArgs e)
     	{
-    		if (e.Text.StartsWith("/tmsps ", StringComparison.InvariantCultureIgnoreCase))
+            if (ServerCommand.Parse(e.Text).IsMainCommandAnyOf(READ_SETTINGS_COMMAND))
     		{
-    			string command = e.Text.Substring(7).Trim();
+                if (Context.Credentials.UserHasRight(e.Login, READ_SETTINGS_COMMAND))
+				{
+					if (ReadSettings())
+						Context.RPCClient.Methods.ChatSendToLogin(string.Format("{0}ChatBot-Settings successfully read!", Botname), e.Login);
+					else
+                        Context.RPCClient.Methods.ChatSendToLogin(string.Format("{0}Error while reading ChatBot-Settings. See log for deailed error description", Botname), e.Login);
+				}
+				else
+				{
+                    Context.RPCClient.Methods.ChatSendToLogin(string.Format("{0}You do not have permissions to execute this command!", Botname), e.Login);
+				}
 
-    			if (READ_SETTINGS_COMMAND.Equals(command, StringComparison.InvariantCultureIgnoreCase))
-    			{
-    				if (Context.Credentials.UserHasRight(e.Login, command))
-    				{
-    					if (ReadSettings())
-    						Context.RPCClient.Methods.ChatSendToLogin(string.Format("{0}ChatBot-Settings successfully read!", Botname), e.Login);
-    					else
-                            Context.RPCClient.Methods.ChatSendToLogin(string.Format("{0}Error while reading ChatBot-Settings. See log for deailed error description", Botname), e.Login);
-    				}
-    				else
-    				{
-                        Context.RPCClient.Methods.ChatSendToLogin(string.Format("{0}You do not have permissions to execute this command!", Botname), e.Login);
-    				}
-
-    				return true;
-    			}
+				return true;
     		}
 
     		return false;

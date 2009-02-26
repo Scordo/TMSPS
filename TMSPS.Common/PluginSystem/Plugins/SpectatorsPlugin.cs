@@ -80,75 +80,66 @@ namespace TMSPS.Core.PluginSystem.Plugins
 
         private bool CheckForGetSpectatorsCommand(PlayerChatEventArgs e)
         {
-            if (e.IsRegisteredCommand && e.Text.StartsWith("/tmsps ", StringComparison.InvariantCultureIgnoreCase))
+            if (ServerCommand.Parse(e.Text).IsMainCommandAnyOf(GET_SPECTATORS_COMMAND1, GET_SPECTATORS_COMMAND2))
             {
-                string command = e.Text.Substring(7).Trim();
-
-                if (GET_SPECTATORS_COMMAND1.Equals(command, StringComparison.InvariantCultureIgnoreCase) || GET_SPECTATORS_COMMAND2.Equals(command, StringComparison.InvariantCultureIgnoreCase))
+                if (Context.Credentials.UserHasRight(e.Login, GET_SPECTATORS_RIGHT))
                 {
-                    if (Context.Credentials.UserHasRight(e.Login, GET_SPECTATORS_RIGHT))
-                    {
-                        List<PlayerInfo> players = GetPlayerList();
+                    List<PlayerInfo> players = GetPlayerList();
 
-                        if (players == null)
-                            return true;
+                    if (players == null)
+                        return true;
 
-                        List<string> spectators = players.Where(playerInfo => playerInfo.IsSpectator)
-                            .Select(playerInfo => string.Format("{0} $z [{1}]$z", playerInfo.NickName, playerInfo.Login))
-                            .ToList();
+                    List<string> spectators = players.Where(playerInfo => playerInfo.IsSpectator)
+                        .Select(playerInfo => string.Format("{0} $z [{1}]$z", playerInfo.NickName, playerInfo.Login))
+                        .ToList();
 
-                        if (spectators.Count > 0)
-                            Context.RPCClient.Methods.ChatSendToLogin(string.Format("{0} spectator(s): {1}", spectators.Count, string.Join(", ", spectators.ToArray())), e.Login);
-                        else
-                            Context.RPCClient.Methods.ChatSendToLogin("Currently no spectators!", e.Login);
-                    }
+                    if (spectators.Count > 0)
+                        Context.RPCClient.Methods.ChatSendToLogin(string.Format("{0} spectator(s): {1}", spectators.Count, string.Join(", ", spectators.ToArray())), e.Login);
                     else
-                    {
-                        Context.RPCClient.Methods.ChatSendToLogin("You do not have permissions to execute this command!", e.Login);
-                    }
-
-                    return true;
+                        Context.RPCClient.Methods.ChatSendToLogin("Currently no spectators!", e.Login);
                 }
+                else
+                {
+                    Context.RPCClient.Methods.ChatSendToLogin("You do not have permissions to execute this command!", e.Login);
+                }
+
+                return true;
             }
+
 
             return false;
         }
 
         private bool CheckForKickSpectatorsCommand(PlayerChatEventArgs e)
         {
-            if (e.IsRegisteredCommand && e.Text.StartsWith("/tmsps ", StringComparison.InvariantCultureIgnoreCase))
+            if (ServerCommand.Parse(e.Text).IsMainCommandAnyOf(KICK_SPECTATORS_COMMAND1, KICK_SPECTATORS_COMMAND2))
             {
-                string command = e.Text.Substring(7).Trim();
-
-                if (KICK_SPECTATORS_COMMAND1.Equals(command, StringComparison.InvariantCultureIgnoreCase) || KICK_SPECTATORS_COMMAND2.Equals(command, StringComparison.InvariantCultureIgnoreCase))
+                if (Context.Credentials.UserHasRight(e.Login, GET_SPECTATORS_RIGHT))
                 {
-                    if (Context.Credentials.UserHasRight(e.Login, GET_SPECTATORS_RIGHT))
+                    List<PlayerInfo> players = GetPlayerList();
+
+                    if (players == null)
+                        return true;
+
+                    List<PlayerInfo> logins = players.Where(playerInfo => playerInfo.IsSpectator).ToList();
+
+                    foreach (PlayerInfo playerInfo in logins)
                     {
-                        List<PlayerInfo> players = GetPlayerList();
-
-                        if (players == null)
-                            return true;
-
-                        List<PlayerInfo> logins = players.Where(playerInfo => playerInfo.IsSpectator).ToList();
-
-                        foreach (PlayerInfo playerInfo in logins)
-                        {
-                            Context.RPCClient.Methods.Kick(playerInfo.Login, "Kicked for spectating without asking.");
-                            Context.RPCClient.Methods.ChatSendServerMessage(string.Format("[SpectatorBot] {0} got kicked for spectating without asking.", playerInfo.NickName));
-                        }
-
-                        if (logins.Count == 0)
-                            Context.RPCClient.Methods.ChatSendServerMessageToLogin("No one is spectating!", e.Login);
-                        else
-                            Context.RPCClient.Methods.ChatSendServerMessageToLogin(string.Format("Kicked {0} players for spectating without asking.", logins.Count), e.Login);
+                        Context.RPCClient.Methods.Kick(playerInfo.Login, "Kicked for spectating without asking.");
+                        Context.RPCClient.Methods.ChatSendServerMessage(string.Format("[SpectatorBot] {0} got kicked for spectating without asking.", playerInfo.NickName));
                     }
+
+                    if (logins.Count == 0)
+                        Context.RPCClient.Methods.ChatSendServerMessageToLogin("No one is spectating!", e.Login);
                     else
-                    {
-                        Context.RPCClient.Methods.ChatSendServerMessageToLogin("You do not have permissions to execute this command.", e.Login);
-                    }
-
-                    return true;
+                        Context.RPCClient.Methods.ChatSendServerMessageToLogin(string.Format("Kicked {0} players for spectating without asking.", logins.Count), e.Login);
                 }
+                else
+                {
+                    Context.RPCClient.Methods.ChatSendServerMessageToLogin("You do not have permissions to execute this command.", e.Login);
+                }
+
+                return true;
             }
 
             return false;
