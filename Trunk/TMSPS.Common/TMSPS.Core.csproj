@@ -227,6 +227,7 @@
     <Compile Include="PluginSystem\Plugins\NameProtectionBotPlugin.cs" />
     <Compile Include="PluginSystem\Plugins\TMSPSCorePlugin.cs" />
     <Compile Include="PluginSystem\PluginUtil.cs" />
+    <Compile Include="PluginSystem\ServerCommand.cs" />
     <Compile Include="PluginSystem\ServerInfo.cs" />
     <Compile Include="PluginSystem\TMSPSPlugin.cs" />
     <Compile Include="PluginSystem\TMSPSPluginBase.cs" />
