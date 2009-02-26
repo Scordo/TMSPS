@@ -203,7 +203,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.LiveRanking
             uint upperLimitLeft = 4 + ((maxRecordsToReport - 3) / 2) + ((maxRecordsToReport - 3) % 2);
             uint lowerLimitRight = upperLimitLeft;
 
-            if (currentPlayerRankIndex != -1 && currentPlayerRankIndex > 2)
+            if (currentPlayerRankIndex != -1 && currentPlayerRankIndex > 2 && currentPlayerRankIndex < maxRecordsToReport)
             {
                 result.Add((uint)(currentPlayerRankIndex + 1), rankings[currentPlayerRankIndex]);
                 amountOfRecordsLeft--;
