@@ -32,7 +32,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
 	    protected Timer TimePlayedTimer { get; private set; }
 	    public LocalRecordsSettings Settings { get; protected set; }
 	    protected List<ILocalRecordsPluginPlugin> Plugins {get; private set;}
-        protected List<RankEntry> LocalRecords { get; private set; }
+        public RankEntry[] LocalRecords { get; private set; }
 
 	    #endregion
 
@@ -96,7 +96,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
             DetermineLocalRecords();
 
             InitializePlugins();
-            OnLocalRecordsDetermined(LocalRecords);
+            OnLocalRecordsDetermined(new List<RankEntry>(LocalRecords));
 
 	        Context.RPCClient.Callbacks.BeginRace += Callbacks_BeginRace;
 	        Context.RPCClient.Callbacks.EndRace += Callbacks_EndRace;
@@ -159,7 +159,10 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
                         PlayerInfo playerInfo = GetPlayerInfoCached(e.Login);
 
                         if (playerInfo != null && newPosition <= Settings.MaxRecordsToReport)
+                        {
+                            DetermineLocalRecords();
                             OnPlayerNewRecord(playerInfo, e.TimeOrScore, oldPosition, newPosition);
+                        }
                     }
 
                     SessionAdapter.AddSession(e.Login, CurrentChallengeID, Convert.ToUInt32(e.TimeOrScore));
@@ -250,7 +253,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
             {
                 EnsureChallengeExistsInStorage(e.ChallengeInfo);
                 DetermineLocalRecords();
-                OnLocalRecordsDetermined(LocalRecords);
+                OnLocalRecordsDetermined(new List<RankEntry>(LocalRecords));
             }, "Error in Callbacks_BeginRace Method.", true);
 	    }
 
@@ -287,9 +290,9 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
 
         private void DetermineLocalRecords()
         {
-            LocalRecords = RecordAdapter.GetTopRecordsForChallenge(CurrentChallengeID, Settings.MaxRecordsToReport);
+            LocalRecords = RecordAdapter.GetTopRecordsForChallenge(CurrentChallengeID, Settings.MaxRecordsToReport).ToArray();
             Context.ValueStore.SetOrUpdate(GlobalConstants.LOCAL_RECORDS, LocalRecords.ToArray());
-            Context.ValueStore.SetOrUpdate(GlobalConstants.FIRST_LOCAL_RECORD_TIMEORSCORE, LocalRecords.Count == 0 ? null : (int?)LocalRecords[0].TimeOrScore);
+            Context.ValueStore.SetOrUpdate(GlobalConstants.FIRST_LOCAL_RECORD_TIMEORSCORE, LocalRecords.Length == 0 ? null : (int?)LocalRecords[0].TimeOrScore);
         }
 
         private void DisposePlugins(bool connectionLost)

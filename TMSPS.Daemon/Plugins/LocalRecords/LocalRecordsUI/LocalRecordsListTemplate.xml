@@ -9,10 +9,10 @@
 	<Templates>
 		<MainTemplate>
 			<manialink id="{[ManiaLinkID]}">
-				<frame posn="48.5 -7.5 0">
+				<frame posn="48.5 17 0">
 					<quad sizen="11.5 2.5" posn="5 0 0" halign="left" valign="top" style="BgsPlayerCard" substyle="BgActivePlayerName"/>
 					<format textsize="1"/>
-					<label posn="7 -0.5 2" halign="left" text="Live Rankings"/>
+					<label posn="7 -0.5 2" halign="left" text="Local Records"/>
 
 					<quad sizen="16.7 6" posn="0 -2.2 0" halign="left" valign="top" style="Bgs1" substyle="BgList"/>
 					<quad sizen="17 {[ContainerHeight}}" posn="0 -2.2 0" halign="left" valign="top" style="BgsPlayerCard" substyle="BgActivePlayerName"/>
