@@ -4,7 +4,7 @@ using PlayerInfo=TMSPS.Core.Communication.ProxyTypes.PlayerInfo;
 
 namespace TMSPS.Core.PluginSystem.Plugins
 {
-    internal class TMSPSCorePlugin : TMSPSPlugin
+    internal partial class TMSPSCorePlugin : TMSPSPlugin
     {
         #region Properties
 
@@ -45,12 +45,23 @@ namespace TMSPS.Core.PluginSystem.Plugins
             Context.RPCClient.Callbacks.PlayerConnect += Callbacks_PlayerConnect;
             Context.RPCClient.Callbacks.PlayerDisconnect += Callbacks_PlayerDisconnect;
             Context.RPCClient.Callbacks.BeginRace += Callbacks_BeginRace;
+            Context.RPCClient.Callbacks.PlayerChat += Callbacks_PlayerChat;
+        }
+
+        private void Callbacks_PlayerChat(object sender, PlayerChatEventArgs e)
+        {
+            ServerCommand command = ServerCommand.Parse(e.Text);
+
+            if (command != null)
+                HandleCommand(command);
         }
 
         protected override void Dispose(bool connectionLost)
         {
             Context.RPCClient.Callbacks.PlayerConnect -= Callbacks_PlayerConnect;
             Context.RPCClient.Callbacks.PlayerDisconnect -= Callbacks_PlayerDisconnect;
+            Context.RPCClient.Callbacks.BeginRace -= Callbacks_BeginRace;
+            Context.RPCClient.Callbacks.PlayerChat -= Callbacks_PlayerChat;
         }
 
         private void Callbacks_PlayerConnect(object sender, PlayerConnectEventArgs e)

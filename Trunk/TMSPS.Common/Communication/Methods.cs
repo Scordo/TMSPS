@@ -1324,9 +1324,9 @@ namespace TMSPS.Core.Communication
         /// <summary>
         /// Start a server on internet using the 'Login' and 'Password' specified in the struct passed as parameters.
         /// </summary>
-        public GenericResponse<bool> StartServerInternet()
+        public GenericResponse<bool> StartServerInternet(string login, string password)
         {
-            return (GenericResponse<bool>)_client.SendMethod<GenericResponse<bool>>(TrackManiaMethod.StartServerInternet.ToString());
+            return (GenericResponse<bool>)_client.SendMethod<GenericResponse<bool>>(TrackManiaMethod.StartServerInternet.ToString(), new StartServerParameters(login, password));
         }
 
         /// <summary>

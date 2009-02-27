@@ -81,8 +81,9 @@ namespace TMSPS.Core.Communication
 
 			if (value.GetType().IsClass)
 			{
-				XElement result = new XElement("struct");
-
+				XElement result = new XElement("value");
+                XElement structElement = new XElement("struct");
+                
 				List<RPCParamInfo> members = RPCParamInfo.GetFromType(value.GetType(), RPCParamInfo.RevtrievalMode.OnlyWithMemberName);
 
 				foreach (RPCParamInfo member in members)
@@ -90,8 +91,10 @@ namespace TMSPS.Core.Communication
 					XElement memberElement = new XElement("member", new XElement("name", member.MemberName));
 					memberElement.Add(GetValueElement(member.PropertyInfo.GetValue(value, null)));
 
-					result.Add(memberElement);
+                    structElement.Add(memberElement);
 				}
+
+                result.Add(structElement);
 
 				return result;
 			}
