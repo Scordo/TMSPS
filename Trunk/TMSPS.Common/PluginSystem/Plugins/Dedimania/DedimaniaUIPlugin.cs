@@ -44,19 +44,19 @@ namespace TMSPS.Core.PluginSystem.Plugins.Dedimania
         private void Callbacks_EndRace(object sender, Core.Communication.EventArguments.Callbacks.EndRaceEventArgs e)
         {
             if (Settings.ShowRecordUI)
-            {
                 SendEmptyManiaLinkPage(_dedimaniaManiaLinkPageID);
+                
+            if (Settings.ShowRecordListUI && Settings.HideRecordListUIOnFinish)
                 SendEmptyManiaLinkPage(_dedimaniaRecordListManiaLinkPageID);
-            }
         }
 
         private void Callbacks_PlayerConnect(object sender, Core.Communication.EventArguments.Callbacks.PlayerConnectEventArgs e)
         {
             if (Settings.ShowRecordUI)
-            {
                 SendDedimaniaRecordManiaLinkPageToLogin(e.Login);
+
+            if (Settings.ShowRecordListUI)
                 Context.RPCClient.Methods.SendDisplayManialinkPageToLogin(e.Login, GetRecordListManiaLinkPage(HostPlugin.Rankings, e.Login), 0, false);
-            }
         }
 
         private void SendRecordListToAllPlayers(ICollection<DedimaniaRanking> rankings)
@@ -80,10 +80,10 @@ namespace TMSPS.Core.PluginSystem.Plugins.Dedimania
         private void HostPlugin_RankingsChanged(object sender, Common.EventArgs<DedimaniaRanking[]> e)
         {
             if (Settings.ShowRecordUI)
-            {
                 SendDedimaniaRecordManiaLinkPageToAll();
+
+            if (Settings.ShowRecordListUI)
                 SendRecordListToAllPlayers(e.Value);
-            }
         }
 
         private string GetRecordListManiaLinkPage(DedimaniaRanking[] rankings, string login)
@@ -246,9 +246,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.Dedimania
             }
 
             if (e.NewRank == 1 && Settings.ShowRecordUI)
-            {
                 SendDedimaniaRecordManiaLinkPageToAll();
-            }
         }
 
 
