@@ -16,6 +16,8 @@ namespace TMSPS.Core.PluginSystem.Plugins.Dedimania
         public const string NEW_RANK_MESSAGE = "$z{[Nickname]}$z claimed dedimania rank: $w$s$0f0{[Rank]}$z!";
         public const string IMPROVED_RANK_MESSAGE = "$z{[Nickname]}$z improved his/her dedimania rank: $w$s$0f0{[Rank]}$z!";
         public const bool SHOW_RECORD_UI = true;
+        public const bool SHOW_RECORD_LIST_UI = true;
+        public const bool HIDE_RECORD_LIST_UI_ON_FINISH = true;
 
         public const double RECORDLIST_PLAYER_START_MARGIN = -2.9;
         public const double RECORDLIST_TOP3_GAP = 0.6;
@@ -30,6 +32,8 @@ namespace TMSPS.Core.PluginSystem.Plugins.Dedimania
         public uint MaxRecordsToShow { get; protected internal set; }
         public bool ShowMessages { get; private set; }
         public bool ShowRecordUI { get; private set; }
+        public bool ShowRecordListUI { get; private set; }
+        public bool HideRecordListUIOnFinish { get; private set; }
         public uint NoticeDelayInSeconds { get; private set; }
         public string DediPanelTemplateActive { get; private set; }
         public string NewRankMessage { get; private set; }
@@ -64,6 +68,8 @@ namespace TMSPS.Core.PluginSystem.Plugins.Dedimania
             result.MaxRecordsToShow = ReadConfigUInt(configDocument.Root, "MaxRecordsToShow", MAX_RECORDS_TO_SHOW, xmlConfigurationFile);
             result.ShowMessages = ReadConfigBool(configDocument.Root, "ShowMessages", SHOW_MESSAGES, xmlConfigurationFile);
             result.ShowRecordUI = ReadConfigBool(configDocument.Root, "ShowDEDUI", SHOW_RECORD_UI, xmlConfigurationFile);
+            result.ShowRecordListUI = ReadConfigBool(configDocument.Root, "ShowDEDListUI", SHOW_RECORD_LIST_UI, xmlConfigurationFile);
+            result.HideRecordListUIOnFinish = ReadConfigBool(configDocument.Root, "HideDEDListUIOnFinish", HIDE_RECORD_LIST_UI_ON_FINISH, xmlConfigurationFile);
             result.NoticeDelayInSeconds = ReadConfigUInt(configDocument.Root, "NoticeDelayInSeconds", NOTICE_DELAY_IN_SECONDS, xmlConfigurationFile);
             result.NewRankMessage = ReadConfigString(configDocument.Root, "NewDedimaniaRankMessage", NEW_RANK_MESSAGE, xmlConfigurationFile);
             result.ImprovedRankMessage = ReadConfigString(configDocument.Root, "ImprovedDedimaniaRankMessage", IMPROVED_RANK_MESSAGE, xmlConfigurationFile);
