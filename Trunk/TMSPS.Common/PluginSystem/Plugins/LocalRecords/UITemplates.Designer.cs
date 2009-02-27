@@ -91,5 +91,68 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords {
                 return ResourceManager.GetString("LowerRightPBRecordPanelActive", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &lt;frame posn=&quot;0 {[Y]} 0&quot;&gt;
+        ///				&lt;quad sizen=&quot;1.6 1.6&quot; posn=&quot;-1.3 0 0.3&quot; style=&quot;Icons64x64_1&quot; substyle=&quot;ArrowGreen&quot;/&gt;
+        ///				&lt;format textsize=&quot;1&quot; /&gt;
+        ///				&lt;label sizen=&quot;30 2&quot; halign=&quot;right&quot; posn=&quot;2.5 0 0.1&quot; text=&quot;{[Rank]}&quot; textcolor=&quot;FFFF&quot;/&gt;
+        ///				&lt;label sizen=&quot;30 2&quot; halign=&quot;left&quot; posn=&quot;2.8 0 0.1&quot; text=&quot;{[TimeOrScore]}&quot; textcolor=&quot;0D0F&quot;/&gt;
+        ///				&lt;label sizen=&quot;8 2&quot; posn=&quot;7.2 0 0.1&quot; text=&quot;{[Nickname]}&quot; textcolor=&quot;FFFF&quot;/&gt;
+        ///			&lt;/frame&gt;.
+        /// </summary>
+        internal static string RankingHighlightTemplate {
+            get {
+                return ResourceManager.GetString("RankingHighlightTemplate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &lt;manialink id=&quot;{[ManiaLinkID]}&quot;&gt;
+        ///	&lt;frame posn=&quot;48.5 15 0&quot;&gt;
+        ///		&lt;!-- Start: Live Ranking Header --&gt;
+        ///		&lt;quad sizen=&quot;11.5 2.5&quot; posn=&quot;5 0 0&quot; halign=&quot;left&quot; valign=&quot;top&quot; style=&quot;BgsPlayerCard&quot; substyle=&quot;BgActivePlayerName&quot;/&gt;
+        ///		&lt;format textsize=&quot;1&quot;/&gt;
+        ///		&lt;label posn=&quot;7 -0.5 2&quot; halign=&quot;left&quot; text=&quot;Live Rankings&quot;/&gt;
+        ///		&lt;!-- End: Live Ranking Header --&gt;
+        ///
+        ///		&lt;!-- Top 3 Container --&gt;
+        ///		&lt;quad sizen=&quot;16.7 6&quot; posn=&quot;0 -2.2 0&quot; halign=&quot;left&quot; valign=&quot;top&quot; style=&quot;Bgs1&quot; substyle=&quot;BgList&quot;/&gt;
+        ///		
+        ///		&lt;!-- Container for Records --&gt; [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string RankingListTemplate {
+            get {
+                return ResourceManager.GetString("RankingListTemplate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &lt;frame posn=&quot;0 {[Y]} 0&quot;&gt;
+        ///				&lt;format textsize=&quot;1&quot;/&gt;
+        ///				&lt;label sizen=&quot;30 2&quot; halign=&quot;right&quot; posn=&quot;2.5 0 0.1&quot; text=&quot;{[Rank]}&quot; textcolor=&quot;FFFF&quot;/&gt;
+        ///				&lt;label sizen=&quot;30 2&quot; halign=&quot;left&quot; posn=&quot;2.8 0 0.1&quot; text=&quot;{[TimeOrScore]}&quot; textcolor=&quot;5AFF&quot;/&gt;
+        ///				&lt;label sizen=&quot;8 2&quot; posn=&quot;7.2 0 0.1&quot; text=&quot;{[Nickname]}&quot; textcolor=&quot;FFFF&quot;/&gt;
+        ///			&lt;/frame&gt;.
+        /// </summary>
+        internal static string RankingTemplate {
+            get {
+                return ResourceManager.GetString("RankingTemplate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &lt;frame posn=&quot;0 {[Y]} 0&quot;&gt;
+        ///				&lt;format textsize=&quot;1&quot;/&gt;
+        ///				&lt;label sizen=&quot;30 2&quot; halign=&quot;right&quot; posn=&quot;2.5 0 0.1&quot; text=&quot;{[Rank]}&quot; textcolor=&quot;FFFF&quot;/&gt;
+        ///				&lt;label sizen=&quot;30 2&quot; halign=&quot;left&quot; posn=&quot;2.8 0 0.1&quot; text=&quot;{[TimeOrScore]}&quot; textcolor=&quot;DD0F&quot;/&gt;
+        ///				&lt;label sizen=&quot;8 2&quot; posn=&quot;7.2 0 0.1&quot; text=&quot;{[Nickname]}&quot; textcolor=&quot;FFFF&quot;/&gt;
+        ///			&lt;/frame&gt;.
+        /// </summary>
+        internal static string RankingTop3RecordTemplate {
+            get {
+                return ResourceManager.GetString("RankingTop3RecordTemplate", resourceCulture);
+            }
+        }
     }
 }
