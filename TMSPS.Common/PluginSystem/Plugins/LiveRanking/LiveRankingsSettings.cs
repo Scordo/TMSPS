@@ -1,4 +1,5 @@
 ﻿using System.Configuration;
+using System.IO;
 using System.Xml.Linq;
 using SettingsBase=TMSPS.Core.Common.SettingsBase;
 
@@ -41,6 +42,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.LiveRanking
 
         public static LiveRankingsSettings ReadFromFile(string xmlConfigurationFile)
         {
+            string settingsDirectory = Path.GetDirectoryName(xmlConfigurationFile);
             LiveRankingsSettings result = new LiveRankingsSettings();
             XDocument configDocument = XDocument.Load(xmlConfigurationFile);
 
@@ -60,6 +62,32 @@ namespace TMSPS.Core.PluginSystem.Plugins.LiveRanking
             result.RankingTop3RecordTemplate = UITemplates.RankingTop3RecordTemplate;
             result.RankingTemplate = UITemplates.RankingTemplate;
             result.RankingHighlightTemplate = UITemplates.RankingHighlightTemplate;
+
+            string recordListTemplateFile = Path.Combine(settingsDirectory, "LiveRankingListTemplate.xml");
+
+            if (File.Exists(recordListTemplateFile))
+            {
+                XDocument listTemplateDocument = XDocument.Load(recordListTemplateFile);
+
+                if (listTemplateDocument.Root == null)
+                    throw new ConfigurationErrorsException("Could not find root node in file: " + listTemplateDocument);
+
+                result.RankingPlayerStartMargin = ReadConfigDouble(listTemplateDocument.Root, "PlayerStartMargin", result.RankingPlayerStartMargin, recordListTemplateFile);
+                result.RankingTop3Gap = ReadConfigDouble(listTemplateDocument.Root, "Top3Gap", result.RankingTop3Gap, recordListTemplateFile);
+                result.RankingPlayerRecordHeight = ReadConfigDouble(listTemplateDocument.Root, "PlayerRecordHeight", result.RankingPlayerRecordHeight, recordListTemplateFile);
+                result.RankingPlayerEndMargin = ReadConfigDouble(listTemplateDocument.Root, "PlayerEndMargin", result.RankingPlayerEndMargin, recordListTemplateFile);
+                result.RankingPlayerToContainerMarginY = ReadConfigDouble(listTemplateDocument.Root, "PlayerToContainerMarginY", result.RankingPlayerToContainerMarginY, recordListTemplateFile);
+
+                XElement templatesElement = listTemplateDocument.Root.Element("Templates");
+
+                if (templatesElement != null)
+                {
+                    result.RankingListTemplate = ReadConfigString(templatesElement, "MainTemplate", result.RankingListTemplate, recordListTemplateFile);
+                    result.RankingTop3RecordTemplate = ReadConfigString(templatesElement, "Top3RecordTemplate", result.RankingTop3RecordTemplate, recordListTemplateFile);
+                    result.RankingTemplate = ReadConfigString(templatesElement, "RecordTemplate", result.RankingTemplate, recordListTemplateFile);
+                    result.RankingHighlightTemplate = ReadConfigString(templatesElement, "RecordHighlightTemplate", result.RankingHighlightTemplate, recordListTemplateFile);
+                }
+            }
 
             return result;
         }
