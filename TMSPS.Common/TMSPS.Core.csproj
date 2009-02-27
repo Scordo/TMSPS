@@ -60,6 +60,7 @@
     <Compile Include="Common\ParameterlessMethodDelegate.cs" />
     <Compile Include="Common\SettingsBase.cs" />
     <Compile Include="Communication\ProxyTypes\GameMode.cs" />
+    <Compile Include="Communication\ProxyTypes\StartServerParameters.cs" />
     <Compile Include="Logging\ConsoleUILogger.cs" />
     <Compile Include="Logging\CoreLogger.cs" />
     <Compile Include="Common\IDump.cs" />
@@ -226,6 +227,7 @@
     <Compile Include="PluginSystem\Plugins\LocalRecords\SQL\SessionAdapter.cs" />
     <Compile Include="PluginSystem\Plugins\NameProtectionBotPlugin.cs" />
     <Compile Include="PluginSystem\Plugins\TMSPSCorePlugin.cs" />
+    <Compile Include="PluginSystem\Plugins\TMSPSCorePlugin_CommandHandling.cs" />
     <Compile Include="PluginSystem\PluginUtil.cs" />
     <Compile Include="PluginSystem\ServerCommand.cs" />
     <Compile Include="PluginSystem\ServerInfo.cs" />
