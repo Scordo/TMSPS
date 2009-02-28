@@ -52,6 +52,9 @@ namespace TMSPS.Core.PluginSystem.Plugins.Dedimania
 
         private void Callbacks_PlayerConnect(object sender, Core.Communication.EventArguments.Callbacks.PlayerConnectEventArgs e)
         {
+            if (e.Handled)
+                return;
+
             if (Settings.ShowRecordUI)
                 SendDedimaniaRecordManiaLinkPageToLogin(e.Login);
 

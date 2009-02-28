@@ -49,6 +49,9 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
 
         private void Callbacks_PlayerConnect(object sender, Communication.EventArguments.Callbacks.PlayerConnectEventArgs e)
         {
+            if (e.Handled)
+                return;
+
             if (Settings.ShowPBUserInterface)
             {
                 uint? personalBest = HostPlugin.RecordAdapter.GetBestTime(e.Login, HostPlugin.CurrentChallengeID);

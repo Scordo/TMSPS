@@ -78,6 +78,9 @@ namespace TMSPS.Core.PluginSystem.Plugins
                 return;
             }
 
+            if (e.Handled)
+                return;
+
 			RunCatchLog(()=>
 			{
     			if (!ClanMembers.Contains(e.Login.ToLower()))
@@ -91,10 +94,11 @@ namespace TMSPS.Core.PluginSystem.Plugins
 
     					GenericResponse<bool> kickResponse = Context.RPCClient.Methods.Kick(playerInfo.Login, KickReason);
 
-    					if (kickResponse == null || kickResponse.Value)
+    					if (kickResponse != null && kickResponse.Value)
     					{
     						Logger.InfoToUI(string.Format("Login {0} with player name {1} was kicked due to name abuse!", e.Login, playerInfo.NickName));
     						Context.RPCClient.Methods.ChatSendServerMessage(string.Format(PublicKickReason, playerInfo.NickName));
+    					    e.Handled = true;
     					}
     				}
     			}
