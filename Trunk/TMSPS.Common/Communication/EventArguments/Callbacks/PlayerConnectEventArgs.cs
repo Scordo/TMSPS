@@ -7,15 +7,20 @@ namespace TMSPS.Core.Communication.EventArguments.Callbacks
         #region Properties
 
         [RPCParam(0)]
-        public string Login
-        {
-            get; private set;
-        }
+        public string Login { get; private set; }
 
         [RPCParam(1)]
-        public bool IsSpectator
+        public bool IsSpectator { get; private set; }
+
+        public bool Handled { get; set; }
+
+        #endregion
+
+        #region Consturctors
+
+        public PlayerConnectEventArgs()
         {
-            get; private set;
+            Handled = false;
         }
 
         #endregion

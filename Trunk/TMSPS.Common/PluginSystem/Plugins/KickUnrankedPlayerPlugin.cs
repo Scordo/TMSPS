@@ -64,6 +64,7 @@ namespace TMSPS.Core.PluginSystem.Plugins
             {
                 Context.RPCClient.Methods.Kick(e.Login, Settings.PersonalKickMessage);
                 Context.RPCClient.Methods.ChatSend(Settings.PublicKickMessage.Replace("{{Nickname]}", detailedPlayerInfo.NickName));
+                e.Handled = true;
             }
         }
 

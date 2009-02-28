@@ -225,6 +225,9 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
 	            return;
 	        }
 
+            if (e.Handled)
+                return;
+
 	        RunCatchLog(()=>
             {
                 PlayerInfo playerInfo = GetPlayerInfoCached(e.Login);
