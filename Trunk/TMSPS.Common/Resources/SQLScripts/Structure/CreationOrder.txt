@@ -4,3 +4,4 @@
 4. Record.sql
 5. Rating.sql
 6. Session.sql
+7. Ranking.sql

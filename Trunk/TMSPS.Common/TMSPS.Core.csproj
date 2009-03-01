@@ -259,6 +259,10 @@
     <None Include="Resources\SQLScripts\StoredProcedures\Player\Player_IncreaseWins.sql" />
     <None Include="Resources\SQLScripts\StoredProcedures\Player\Player_UpdateTimePlayed.sql" />
     <None Include="Resources\SQLScripts\StoredProcedures\Position\Position_Add.sql" />
+    <None Include="Resources\SQLScripts\StoredProcedures\Ranking\Ranking_Deserialize_ByLogin.sql" />
+    <None Include="Resources\SQLScripts\StoredProcedures\Ranking\Ranking_Deserialize_List.sql" />
+    <None Include="Resources\SQLScripts\StoredProcedures\Ranking\Ranking_ReCreateAll.sql" />
+    <None Include="Resources\SQLScripts\StoredProcedures\Ranking\Ranking_UpdateForChallenge.sql" />
     <None Include="Resources\SQLScripts\StoredProcedures\Rating\Rating_Vote.sql" />
     <None Include="Resources\SQLScripts\StoredProcedures\Record\Record_GetBest.sql" />
     <None Include="Resources\SQLScripts\StoredProcedures\Record\Record_GetTopRecords.sql" />
@@ -267,6 +271,7 @@
     <None Include="Resources\SQLScripts\Structure\Challenge.sql" />
     <None Include="Resources\SQLScripts\Structure\Player.sql" />
     <None Include="Resources\SQLScripts\Structure\Position.sql" />
+    <None Include="Resources\SQLScripts\Structure\Ranking.sql" />
     <None Include="Resources\SQLScripts\Structure\Rating.sql" />
     <None Include="Resources\SQLScripts\Structure\Record.sql" />
     <None Include="Resources\SQLScripts\Structure\Session.sql" />
