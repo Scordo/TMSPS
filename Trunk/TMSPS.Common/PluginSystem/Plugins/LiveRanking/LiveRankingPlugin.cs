@@ -49,6 +49,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.LiveRanking
         private Timer LiveRankingsTimer { get; set; }
         private LiveRankingsSettings Settings { get; set; }
         private PlayerRank[] LastRankings { get; set; }
+        private bool PodiumStage { get; set; }
 
         #endregion
 
@@ -56,6 +57,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.LiveRanking
 
         protected override void Init()
         {
+            PodiumStage = false; 
             Settings = LiveRankingsSettings.ReadFromFile(PluginSettingsFilePath);
             LastRankings = new PlayerRank[]{};
             UpdateUI(this);
@@ -75,23 +77,14 @@ namespace TMSPS.Core.PluginSystem.Plugins.LiveRanking
 
         private void Callbacks_BeginRace(object sender, Communication.EventArguments.Callbacks.BeginRaceEventArgs e)
         {
-            RunCatchLog(() =>
-            {
-                StopLiveRankingsTimer();
-
-                UpdateUI(this);
-
-                StartLiveRankingsTimer();
-            }, "Error in Callbacks_BeginRace Method.", true);
+            PodiumStage = false;
+            RunCatchLog(() => UpdateUI(this), "Error in Callbacks_BeginRace Method.", true);
         }
 
         private void Callbacks_EndRace(object sender, Communication.EventArguments.Callbacks.EndRaceEventArgs e)
         {
-            RunCatchLog(() =>
-            {
-                StopLiveRankingsTimer();
-                HideUI();
-            }, "Error in Callbacks_EndRace Method.", true);
+            PodiumStage = true;
+            RunCatchLog(() => UpdateUI(this), "Error in Callbacks_EndRace Method.", true);
         }
 
         private void UpdateUI(object state)
@@ -99,6 +92,13 @@ namespace TMSPS.Core.PluginSystem.Plugins.LiveRanking
             RunCatchLog(() =>
             {
                 StopLiveRankingsTimer();
+
+                if (PodiumStage)
+                {
+                    HideUI();
+                    return;
+                }
+
                 List<PlayerRank> rankings = GetCurrentRanking();
                 if (rankings == null)
                     return;
