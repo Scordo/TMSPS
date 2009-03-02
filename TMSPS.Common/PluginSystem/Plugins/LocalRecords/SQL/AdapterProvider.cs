@@ -67,14 +67,14 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords.SQL
             return adapter;
         }
 
-        public IRankAdapter GetRankAdapter()
+        public IRankingAdapter GetRankingAdapter()
         {
-            return new RankAdapter(_connectionManager);
+            return new RankingAdapter(_connectionManager);
         }
 
-        public IRankAdapter GetRankAdapter(IBaseAdapter adapterToCopyContextFrom)
+        public IRankingAdapter GetRankingAdapter(IBaseAdapter adapterToCopyContextFrom)
         {
-            IRankAdapter adapter = new RankAdapter();
+            IRankingAdapter adapter = new RankingAdapter();
             adapter.SetContextFrom(adapterToCopyContextFrom);
 
             return adapter;

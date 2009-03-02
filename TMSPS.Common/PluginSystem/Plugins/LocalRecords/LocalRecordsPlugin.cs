@@ -28,6 +28,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
 	    public IRecordAdapter RecordAdapter { get; protected set; }
 	    public IRatingAdapter RatingAdapter { get; protected set; }
 	    public ISessionAdapter SessionAdapter { get; protected set; }
+        public IRankingAdapter RankingAdapter { get; protected set; }
 	    public int CurrentChallengeID { get; protected set; }
 	    protected Timer TimePlayedTimer { get; private set; }
 	    public LocalRecordsSettings Settings { get; protected set; }
@@ -62,6 +63,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
 	            RecordAdapter = AdapterProvider.GetRecordAdapter();
 	            RatingAdapter = AdapterProvider.GetRatingAdapter();
 	            SessionAdapter = AdapterProvider.GetSessionAdapter();
+	            RankingAdapter = AdapterProvider.GetRankingAdapter();
 	        }
 	        catch (Exception ex)
 	        {

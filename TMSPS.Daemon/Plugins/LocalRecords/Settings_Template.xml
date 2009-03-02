@@ -8,6 +8,11 @@
 
 	<Plugins>
 		<Plugin enabled="true" assemblyName="TMSPS.Core" pluginClass="TMSPS.Core.PluginSystem.Plugins.LocalRecords.LocalRecordsUIPlugin" />
+		<Plugin enabled="true" assemblyName="TMSPS.Core" pluginClass="TMSPS.Core.PluginSystem.Plugins.PodiumPlugins.TopRankingsPodiumPlugin" />
+		<Plugin enabled="true" assemblyName="TMSPS.Core" pluginClass="TMSPS.Core.PluginSystem.Plugins.PodiumPlugins.HoursPlayedPodiumPlugin" />
+		<Plugin enabled="true" assemblyName="TMSPS.Core" pluginClass="TMSPS.Core.PluginSystem.Plugins.PodiumPlugins.TopWinnersPodiumPlugin" />
+		<Plugin enabled="true" assemblyName="TMSPS.Core" pluginClass="TMSPS.Core.PluginSystem.Plugins.PodiumPlugins.MostTop3RaceResultsPodiumPlugin" />
+		<Plugin enabled="true" assemblyName="TMSPS.Core" pluginClass="TMSPS.Core.PluginSystem.Plugins.PodiumPlugins.MostTop3RecordsPodiumPlugin" />
 	</Plugins>
 
 	<MaxRecordsToReport>50</MaxRecordsToReport>

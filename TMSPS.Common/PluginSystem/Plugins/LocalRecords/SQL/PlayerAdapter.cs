@@ -77,6 +77,32 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords.SQL
             return SqlHelper.ExecuteScalar<ulong?>("Player_UpdateTimePlayed", "Login", login);
         }
 
+        public List<Player> DeserializeList(uint top, PlayerSortOrder sorting, bool ascending)
+        {
+            return SqlHelper.ExecuteClassListQuery<Player>("Player_DeserializeList", PlayerFromDataRow, "top", (int)top, "sorting", (int)sorting, "asc", ascending);
+        }
+
+        #endregion
+
+        #region Non Public Methods
+
+        private static Player PlayerFromDataRow(DataRow row)
+        {
+            string login = Convert.ToString(row["Login"]);
+            string nickname = Convert.ToString(row["Nickname"]);
+            Player player = new Player(login, nickname);
+
+            IPlayerSerializable playerSerializable = player;
+            playerSerializable.ID = Convert.ToInt32(row["ID"]);
+            playerSerializable.Created = Convert.ToDateTime(row["Created"]);
+            playerSerializable.LastChanged = row["LastChanged"] == DBNull.Value ? null : (DateTime?)Convert.ToDateTime(row["LastChanged"]);
+            playerSerializable.LastTimePlayedChanged = Convert.ToDateTime(row["LastTimePlayedChanged"]);
+            playerSerializable.Wins = Convert.ToUInt32(row["Wins"]);
+            playerSerializable.TimePlayed = TimeSpan.FromMilliseconds(Convert.ToInt64(row["TimePlayed"]));
+
+            return player;
+        }
+
         #endregion
 
     }
