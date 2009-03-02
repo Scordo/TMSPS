@@ -174,7 +174,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
             if (Settings.ShowLocalRecordUserInterface)
                 SendEmptyManiaLinkPage(_localRecordManiaLinkPageID);
 
-            if (Settings.ShowLocalRecordListUserInterface && !Settings.HideRecordListUIOnFinish)
+            if (Settings.ShowLocalRecordListUserInterface && Settings.HideRecordListUIOnFinish)
                 SendEmptyManiaLinkPage(_localRecordListManiaLinkPageID);
         }
 
