@@ -57,14 +57,14 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
         /// Gets the rank adapter.
         /// </summary>
         /// <returns></returns>
-        IRankAdapter GetRankAdapter();
+        IRankingAdapter GetRankingAdapter();
 
         /// <summary>
         /// Gets the rank adapter.
         /// </summary>
         /// <param name="adapterToCopyContextFrom">The adapter to copy context from.</param>
         /// <returns></GetRankAdapter>
-        IRankAdapter GetRankAdapter(IBaseAdapter adapterToCopyContextFrom);
+        IRankingAdapter GetRankingAdapter(IBaseAdapter adapterToCopyContextFrom);
 
         /// <summary>
         /// Gets the rating adapter.

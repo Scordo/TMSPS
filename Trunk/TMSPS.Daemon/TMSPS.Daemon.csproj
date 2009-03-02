@@ -97,17 +97,32 @@
     <Content Include="Plugins\LiveRanking\LiveRankingListTemplate.xml" />
     <Content Include="Plugins\LiveRanking\Settings.xml" />
     <Content Include="Plugins\LiveRanking\Settings_Template.xml" />
+    <Content Include="Plugins\LocalRecords\HoursPlayedPodium\EntryListTemplate.xml" />
+    <Content Include="Plugins\LocalRecords\HoursPlayedPodium\Settings.xml" />
+    <Content Include="Plugins\LocalRecords\HoursPlayedPodium\Settings_Template.xml" />
     <Content Include="Plugins\LocalRecords\LocalRecordsUI\LocalRecordsListTemplate.xml" />
     <Content Include="Plugins\LocalRecords\LocalRecordsUI\LocalRecordPanelTemplate.xml" />
     <Content Include="Plugins\LocalRecords\LocalRecordsUI\PBPanelTemplate.xml" />
     <Content Include="Plugins\LocalRecords\LocalRecordsUI\Settings.xml" />
     <Content Include="Plugins\LocalRecords\LocalRecordsUI\Settings_Template.xml" />
+    <Content Include="Plugins\LocalRecords\MostTop3RaceResultsPodium\EntryListTemplate.xml" />
+    <Content Include="Plugins\LocalRecords\MostTop3RaceResultsPodium\Settings.xml" />
+    <Content Include="Plugins\LocalRecords\MostTop3RaceResultsPodium\Settings_Template.xml" />
+    <Content Include="Plugins\LocalRecords\MostTop3RecordsPodium\EntryListTemplate.xml" />
+    <Content Include="Plugins\LocalRecords\MostTop3RecordsPodium\Settings.xml" />
+    <Content Include="Plugins\LocalRecords\MostTop3RecordsPodium\Settings_Template.xml" />
     <Content Include="Plugins\LocalRecords\Settings.xml" />
     <Content Include="Plugins\LocalRecords\Settings_Template.xml" />
+    <Content Include="Plugins\LocalRecords\TopRankingsPodium\EntryListTemplate.xml" />
+    <Content Include="Plugins\LocalRecords\TopRankingsPodium\Settings.xml" />
+    <Content Include="Plugins\LocalRecords\TopWinnersPodium\EntryListTemplate.xml" />
+    <Content Include="Plugins\LocalRecords\TopWinnersPodium\Settings.xml" />
+    <Content Include="Plugins\LocalRecords\TopWinnersPodium\Settings_Template.xml" />
     <Content Include="Plugins\NameProtectionBot\Settings.xml" />
     <Content Include="Plugins\NameProtectionBot\Settings_Template.xml" />
     <Content Include="Plugins\Settings.xml" />
     <Content Include="Plugins\Settings_Template.xml" />
+    <Content Include="Plugins\LocalRecords\TopRankingsPodium\Settings_Template.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -198,6 +198,18 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>UITemplates.resx</DependentUpon>
     </Compile>
+    <Compile Include="PluginSystem\Plugins\PodiumPlugins\HoursPlayedPodiumPlugin.cs" />
+    <Compile Include="PluginSystem\Plugins\PodiumPlugins\MostTop3RaceResultsPodiumPlugin.cs" />
+    <Compile Include="PluginSystem\Plugins\PodiumPlugins\MostTop3RecordsPodiumPlugin.cs" />
+    <Compile Include="PluginSystem\Plugins\PodiumPlugins\PodiumPluginSettings.cs" />
+    <Compile Include="PluginSystem\Plugins\PodiumPlugins\PodiumPluginUI.cs" />
+    <Compile Include="PluginSystem\Plugins\PodiumPlugins\TopRankingsPodiumPlugin.cs" />
+    <Compile Include="PluginSystem\Plugins\PodiumPlugins\TopWinnersPodiumPlugin.cs" />
+    <Compile Include="PluginSystem\Plugins\PodiumPlugins\UITemplates.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>UITemplates.resx</DependentUpon>
+    </Compile>
     <Compile Include="PluginSystem\Plugins\SpectatorsPlugin.cs" />
     <Compile Include="PluginSystem\Plugins\LocalRecords\AdapterProviderFactory.cs" />
     <Compile Include="PluginSystem\Plugins\LocalRecords\Challenge.cs" />
@@ -205,7 +217,7 @@
     <Compile Include="PluginSystem\Plugins\LocalRecords\IChallengeAdapter.cs" />
     <Compile Include="PluginSystem\Plugins\LocalRecords\IPlayerAdapter.cs" />
     <Compile Include="PluginSystem\Plugins\LocalRecords\IPositionAdapter.cs" />
-    <Compile Include="PluginSystem\Plugins\LocalRecords\IRankAdapter.cs" />
+    <Compile Include="PluginSystem\Plugins\LocalRecords\IRankingAdapter.cs" />
     <Compile Include="PluginSystem\Plugins\LocalRecords\IRatingAdapter.cs" />
     <Compile Include="PluginSystem\Plugins\LocalRecords\IRecordAdapter.cs" />
     <Compile Include="PluginSystem\Plugins\LocalRecords\ISessionAdapter.cs" />
@@ -214,14 +226,14 @@
     <Compile Include="PluginSystem\Plugins\LocalRecords\SQL\AdapterProvider.cs" />
     <Compile Include="PluginSystem\Plugins\LocalRecords\Player.cs" />
     <Compile Include="PluginSystem\Plugins\LocalRecords\Position.cs" />
-    <Compile Include="PluginSystem\Plugins\LocalRecords\Rank.cs" />
+    <Compile Include="PluginSystem\Plugins\LocalRecords\Ranking.cs" />
     <Compile Include="PluginSystem\Plugins\LocalRecords\Rating.cs" />
     <Compile Include="PluginSystem\Plugins\LocalRecords\Record.cs" />
     <Compile Include="PluginSystem\Plugins\LocalRecords\Session.cs" />
     <Compile Include="PluginSystem\Plugins\LocalRecords\SQL\ChallengeAdapter.cs" />
     <Compile Include="PluginSystem\Plugins\LocalRecords\SQL\PlayerAdapter.cs" />
     <Compile Include="PluginSystem\Plugins\LocalRecords\SQL\PositionAdapter.cs" />
-    <Compile Include="PluginSystem\Plugins\LocalRecords\SQL\RankAdapter.cs" />
+    <Compile Include="PluginSystem\Plugins\LocalRecords\SQL\RankingAdapter.cs" />
     <Compile Include="PluginSystem\Plugins\LocalRecords\SQL\RatingAdapter.cs" />
     <Compile Include="PluginSystem\Plugins\LocalRecords\SQL\RecordAdapter.cs" />
     <Compile Include="PluginSystem\Plugins\LocalRecords\SQL\SessionAdapter.cs" />
@@ -256,11 +268,14 @@
     <None Include="Resources\SQLScripts\StoredProcedures\Challenge\Challenge_IncreaseRaces_ByID.sql" />
     <None Include="Resources\SQLScripts\StoredProcedures\Challenge\Challenge_IncreaseRaces_ByUniqueID.sql" />
     <None Include="Resources\SQLScripts\StoredProcedures\Player\Player_CreateOrUpdate.sql" />
+    <None Include="Resources\SQLScripts\StoredProcedures\Player\Player_DeserializeList.sql" />
     <None Include="Resources\SQLScripts\StoredProcedures\Player\Player_IncreaseWins.sql" />
     <None Include="Resources\SQLScripts\StoredProcedures\Player\Player_UpdateTimePlayed.sql" />
     <None Include="Resources\SQLScripts\StoredProcedures\Position\Position_Add.sql" />
+    <None Include="Resources\SQLScripts\StoredProcedures\Position\Position_Deserialize_List_ByMost.sql" />
     <None Include="Resources\SQLScripts\StoredProcedures\Ranking\Ranking_Deserialize_ByLogin.sql" />
     <None Include="Resources\SQLScripts\StoredProcedures\Ranking\Ranking_Deserialize_List.sql" />
+    <None Include="Resources\SQLScripts\StoredProcedures\Ranking\Ranking_Deserialize_List_ByMost.sql" />
     <None Include="Resources\SQLScripts\StoredProcedures\Ranking\Ranking_ReCreateAll.sql" />
     <None Include="Resources\SQLScripts\StoredProcedures\Ranking\Ranking_UpdateForChallenge.sql" />
     <None Include="Resources\SQLScripts\StoredProcedures\Rating\Rating_Vote.sql" />
@@ -286,6 +301,10 @@
       <LastGenOutput>UITemplates.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <EmbeddedResource Include="PluginSystem\Plugins\LocalRecords\UITemplates.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>UITemplates.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="PluginSystem\Plugins\PodiumPlugins\UITemplates.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>UITemplates.Designer.cs</LastGenOutput>
     </EmbeddedResource>

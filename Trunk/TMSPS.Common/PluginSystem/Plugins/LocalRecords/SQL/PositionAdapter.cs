@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using TMSPS.Core.SQL;
 
 namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords.SQL
@@ -49,6 +50,25 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords.SQL
             SqlHelper.ExecuteNonQuery("Position_Add", parameters);
         }
 
+        public List<PositionStats> DeserializeListByMost(uint top, uint positionLimit)
+        {
+            return SqlHelper.ExecuteClassListQuery<PositionStats>("Position_Deserialize_List_ByMost", PositionStatsFromDataRow, "top", (int)top, "positionLimit", (int)positionLimit);
+        }
+
         #endregion
+
+        #region Non Public Methods
+
+        private static PositionStats PositionStatsFromDataRow(DataRow row)
+        {
+            string nickname = Convert.ToString(row["Nickname"]);
+            int playerID = Convert.ToInt32(row["PlayerID"]);
+            uint positionsCount = Convert.ToUInt32(row["PositionsCount"]);
+
+            return new PositionStats(playerID, nickname, positionsCount);
+        }
+
+        #endregion
+
     }
 }
