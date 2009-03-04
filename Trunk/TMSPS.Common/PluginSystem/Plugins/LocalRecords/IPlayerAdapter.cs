@@ -9,6 +9,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
         uint IncreaseWins(string login);
         ulong? UpdateTimePlayed(string login);
         List<Player> DeserializeList(uint top, PlayerSortOrder sorting, bool ascending);
+        bool RemoveAllStatsForLogin(string login);
     }
 
     public enum PlayerSortOrder

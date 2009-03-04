@@ -16,4 +16,6 @@
 	</Plugins>
 
 	<MaxRecordsToReport>50</MaxRecordsToReport>
+	<CheaterDeletedMessage>Stats of cheater with login '{[Login]}' deleted!</CheaterDeletedMessage>
+	<CheaterDeletionFailedMessage>Cheater with login '{[Login]}' does not exist!</CheaterDeletionFailedMessage>
 </Settings>
