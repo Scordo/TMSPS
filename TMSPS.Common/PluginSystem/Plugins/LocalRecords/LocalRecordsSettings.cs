@@ -16,6 +16,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
 	    public const uint MAX_RECORDS_TO_REPORT = 50;
 	    public const string CHEATER_DELETED_MSG = "Stats of cheater with login '{[Login]}' deleted!";
         public const string CHEATER_DELETION_FAILED_MSG = "Cheater with login '{[Login]}' does not exist!";
+        public const string CHEATER_BANNED_MSG = "Cheater detected! Login is '{[Login]}'. Cheater got banned and blacklisted. All stats deleted.";
 
 	    #endregion
 
@@ -28,6 +29,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
 
         public string CheaterDeletedMessage { get; private set; }
         public string CheaterDeletionFailedMessage { get; private set; }
+        public string CheaterBannedMessage { get; private set; }
 
 	    #endregion
 
@@ -84,6 +86,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
             result.MaxRecordsToReport = ReadConfigUInt(configDocument.Root, "MaxRecordsToReport", MAX_RECORDS_TO_REPORT, xmlConfigurationFile);
             result.CheaterDeletedMessage = ReadConfigString(configDocument.Root, "CheaterDeletedMessage", CHEATER_DELETED_MSG, xmlConfigurationFile);
             result.CheaterDeletionFailedMessage = ReadConfigString(configDocument.Root, "CheaterDeletionFailedMessage", CHEATER_DELETION_FAILED_MSG, xmlConfigurationFile);
+            result.CheaterBannedMessage = ReadConfigString(configDocument.Root, "CheaterBannedMessage", CHEATER_BANNED_MSG, xmlConfigurationFile);
 	        result.Plugins = PluginConfigEntryCollection.ReadFromXElement(configDocument.Root.Element("Plugins"));
 
 	        return result;
