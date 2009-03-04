@@ -58,6 +58,20 @@ namespace TMSPS.Core.PluginSystem
             return currentChallengeInfoResponse.Value;
         }
 
+        protected List<ChallengeListSingleInfo> GetChallengeList()
+        {
+            GenericListResponse<ChallengeListSingleInfo> challengeResponse = Context.RPCClient.Methods.GetChallengeList(10000, 0);
+            
+            if (challengeResponse.Erroneous)
+            {
+                Logger.Error("Error getting ChallengeList: " + challengeResponse.Fault.FaultMessage);
+                Logger.ErrorToUI("An error occured during challenge list retrieval!");
+                return null;
+            }
+
+            return challengeResponse.Value;
+        }
+
         protected PlayerInfo GetPlayerInfoCached(string login)
         {
             return PlayerInfoCache.ContainsKey(login) ? PlayerInfoCache[login] : GetPlayerInfo(login);

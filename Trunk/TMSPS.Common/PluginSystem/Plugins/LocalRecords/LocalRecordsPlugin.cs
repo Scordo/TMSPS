@@ -72,6 +72,12 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
 	            return;
 	        }
 
+	        List<ChallengeListSingleInfo> challenges = GetChallengeList();
+            if (challenges == null)
+                return;
+
+            ChallengeAdapter.DeleteTracksNotInProvidedList(challenges.ConvertAll(c => c.UId));
+
 	        List<PlayerInfo> players = GetPlayerList();
 	        if (players == null)
 	            return;

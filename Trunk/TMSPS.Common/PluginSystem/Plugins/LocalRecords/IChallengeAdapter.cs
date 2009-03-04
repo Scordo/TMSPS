@@ -1,4 +1,5 @@
-﻿using TMSPS.Core.Common;
+﻿using System.Collections.Generic;
+using TMSPS.Core.Common;
 
 namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
 {
@@ -10,5 +11,6 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
 		int? IncreaseRaces(int challengeID);
 		int? IncreaseRaces(string uniqueID);
     	void IncreaseRaces(Challenge challenge);
+        void DeleteTracksNotInProvidedList(List<string> uniqueTrackIDs);
     }
 }
