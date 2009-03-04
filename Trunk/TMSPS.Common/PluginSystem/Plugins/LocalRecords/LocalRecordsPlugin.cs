@@ -21,7 +21,6 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
 
 	    #endregion
 
-
 	    #region Properties
 
 	    public override Version Version { get { return new Version("1.0.0.0"); } }
@@ -121,7 +120,27 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
 	        Context.RPCClient.Callbacks.PlayerDisconnect += Callbacks_PlayerDisconnect;
 	        Context.RPCClient.Callbacks.PlayerFinish += Callbacks_PlayerFinish;
 	        Context.RPCClient.Callbacks.PlayerChat += Callbacks_PlayerChat;
+            Context.RPCClient.Callbacks.PlayerCheckpoint += Callbacks_PlayerCheckpoint;
 	    }
+
+        private void Callbacks_PlayerCheckpoint(object sender, PlayerCheckpointEventArgs e)
+        {
+            if (e.TimeOrScore <= 0)
+                HandleCheater(e.Login, true);
+        }
+
+        private void HandleCheater(string login, bool updateUI)
+        {
+            Context.RPCClient.Methods.BanAndBlackList(login, "Banned and blacklisted for cheating!", true);
+            Context.RPCClient.Methods.ChatSend(Settings.CheaterBannedMessage.Replace("{[Login]}", login));
+            PlayerAdapter.RemoveAllStatsForLogin(login);
+
+            if (updateUI)
+            {
+                DetermineLocalRecords();
+                OnLocalRecordsDetermined(new List<RankEntry>(LocalRecords));
+            }
+        }
 
 	    private void Callbacks_PlayerChat(object sender, PlayerChatEventArgs e)
 	    {
@@ -241,27 +260,27 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
 	        }
 
 	        RunCatchLog(()=>
-	                        {
-	                            if (e.TimeOrScore > 0)
-	                            {
-	                                uint? oldPosition, newPosition;
-	                                bool newBest;
-	                                RecordAdapter.CheckAndWriteNewRecord(e.Login, CurrentChallengeID, e.TimeOrScore, out oldPosition, out newPosition, out newBest);
+            {
+                if (e.TimeOrScore > 0)
+                {
+                    uint? oldPosition, newPosition;
+                    bool newBest;
+                    RecordAdapter.CheckAndWriteNewRecord(e.Login, CurrentChallengeID, e.TimeOrScore, out oldPosition, out newPosition, out newBest);
 
-	                                if (newBest)
-	                                {
-	                                    PlayerInfo playerInfo = GetPlayerInfoCached(e.Login);
+                    if (newBest)
+                    {
+                        PlayerInfo playerInfo = GetPlayerInfoCached(e.Login);
 
-	                                    if (playerInfo != null && newPosition <= Settings.MaxRecordsToReport)
-	                                    {
-	                                        DetermineLocalRecords();
-	                                        OnPlayerNewRecord(playerInfo, e.TimeOrScore, oldPosition, newPosition);
-	                                    }
-	                                }
+                        if (playerInfo != null && newPosition <= Settings.MaxRecordsToReport)
+                        {
+                            DetermineLocalRecords();
+                            OnPlayerNewRecord(playerInfo, e.TimeOrScore, oldPosition, newPosition);
+                        }
+                    }
 
-	                                SessionAdapter.AddSession(e.Login, CurrentChallengeID, Convert.ToUInt32(e.TimeOrScore));
-	                            }
-	                        }, "Error in Callbacks_PlayerFinish Method.", true);
+                    SessionAdapter.AddSession(e.Login, CurrentChallengeID, Convert.ToUInt32(e.TimeOrScore));
+                }
+            }, "Error in Callbacks_PlayerFinish Method.", true);
 	    }
 
 	    private void Callbacks_EndRace(object sender, EndRaceEventArgs e)
@@ -273,27 +292,30 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
 	        }
 
 	        RunCatchLog(()=>
-	                        {
-	                            if (e.Rankings.Count > 1)
-	                            {
-	                                // there must be at least 2 players to increase the wins for the first player
-	                                if (e.Rankings[0].BestTime > 0)
-	                                {
-	                                    uint wins = PlayerAdapter.IncreaseWins(e.Rankings[0].Login);
-	                                    OnPlayerWins(e.Rankings[0], wins);
-	                                    int maxRank = e.Rankings.Max(playerRank => playerRank.Rank);
+            {
+                if (e.Rankings.Count > 1)
+                {
+                    // there must be at least 2 players to increase the wins for the first player
+                    if (e.Rankings[0].BestTime > 0)
+                    {
+                        uint wins = PlayerAdapter.IncreaseWins(e.Rankings[0].Login);
+                        OnPlayerWins(e.Rankings[0], wins);
+                        int maxRank = e.Rankings.Max(playerRank => playerRank.Rank);
 
-	                                    foreach (PlayerRank playerRank in e.Rankings)
-	                                    {
-	                                        if (playerRank.Rank <= 0)
-	                                            continue;
+                        foreach (PlayerRank playerRank in e.Rankings)
+                        {
+                            if (playerRank.Rank <= 0)
+                                continue;
 
-	                                        PositionAdapter.AddPosition(playerRank.Login, e.Challenge.UId, Convert.ToUInt16(playerRank.Rank), Convert.ToUInt16(maxRank));
-	                                    }
-	                                }
-	                            }
-	                        }, "Error in Callbacks_EndRace Method.", true);
-	    }
+                            if (!CheckpointsValid(playerRank.BestCheckpoints))
+                                HandleCheater(playerRank.Login, false);
+                            else
+                                PositionAdapter.AddPosition(playerRank.Login, e.Challenge.UId, Convert.ToUInt16(playerRank.Rank), Convert.ToUInt16(maxRank));
+                        }
+                    }
+                }
+            }, "Error in Callbacks_EndRace Method.", true);
+        }
 
 	    private void TimePlayedTimer_Elapsed(object sender, ElapsedEventArgs e)
 	    {
@@ -323,19 +345,19 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
 	            return;
 
 	        RunCatchLog(()=>
-	                        {
-	                            PlayerInfo playerInfo = GetPlayerInfoCached(e.Login);
+            {
+                PlayerInfo playerInfo = GetPlayerInfoCached(e.Login);
 
-	                            if (playerInfo == null)
-	                                return;
+                if (playerInfo == null)
+                    return;
 
-	                            if (!playerInfo.NickName.IsNullOrTimmedEmpty())
-	                            {
-	                                Player player = new Player(playerInfo.Login, playerInfo.NickName);
-	                                PlayerAdapter.CreateOrUpdate(player);
-	                                OnPlayerCreatedOrUpdated(player, playerInfo);
-	                            }
-	                        }, "Error in Callbacks_PlayerConnect Method.", true);
+                if (!playerInfo.NickName.IsNullOrTimmedEmpty())
+                {
+                    Player player = new Player(playerInfo.Login, playerInfo.NickName);
+                    PlayerAdapter.CreateOrUpdate(player);
+                    OnPlayerCreatedOrUpdated(player, playerInfo);
+                }
+            }, "Error in Callbacks_PlayerConnect Method.", true);
 	    }
 
 	    private void Callbacks_BeginRace(object sender, BeginRaceEventArgs e)
@@ -347,11 +369,11 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
 	        }
 
 	        RunCatchLog(() =>
-	                        {
-	                            EnsureChallengeExistsInStorage(e.ChallengeInfo);
-	                            DetermineLocalRecords();
-	                            OnLocalRecordsDetermined(new List<RankEntry>(LocalRecords));
-	                        }, "Error in Callbacks_BeginRace Method.", true);
+            {
+                EnsureChallengeExistsInStorage(e.ChallengeInfo);
+                DetermineLocalRecords();
+                OnLocalRecordsDetermined(new List<RankEntry>(LocalRecords));
+            }, "Error in Callbacks_BeginRace Method.", true);
 	    }
 
 	    private void EnsureChallengeExistsInStorage(ChallengeListSingleInfo challengeInfo)
@@ -414,6 +436,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
 	        Context.RPCClient.Callbacks.PlayerConnect -= Callbacks_PlayerConnect;
 	        Context.RPCClient.Callbacks.PlayerDisconnect -= Callbacks_PlayerDisconnect;
 	        Context.RPCClient.Callbacks.PlayerFinish -= Callbacks_PlayerFinish;
+            Context.RPCClient.Callbacks.PlayerCheckpoint -= Callbacks_PlayerCheckpoint;
 	    }
 
 	    protected void OnPlayerVoted(string login, int challengeID, ushort voteValue, double averageVoteValue)

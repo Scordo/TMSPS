@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using TMSPS.Core.Common;
@@ -140,6 +141,21 @@ namespace TMSPS.Core.PluginSystem
 					throw;
 			}
 		}
+
+        protected static bool CheckpointsValid(IEnumerable<int> checkpoints)
+        {
+            int lastCheckpoint = 0;
+
+            foreach (int checkpoint in checkpoints)
+            {
+                if (checkpoint <= lastCheckpoint)
+                    return false;
+
+                lastCheckpoint = checkpoint;
+            }
+
+            return true;
+        }
 
 		#endregion
 	}

@@ -328,7 +328,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.Dedimania
 
                 foreach (PlayerRank ranking in e.Rankings)
                 {
-                    if (ranking.BestTime >= 6 * 1000)
+                    if (ranking.BestTime >= 6 * 1000 && CheckpointsValid(ranking.BestCheckpoints))
                         times.Add(new DedimaniaTime(ranking.Login, ranking.BestTime, ranking.BestCheckpoints));
                 }
 
