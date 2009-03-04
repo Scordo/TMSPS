@@ -82,6 +82,11 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords.SQL
             return SqlHelper.ExecuteClassListQuery<Player>("Player_DeserializeList", PlayerFromDataRow, "top", (int)top, "sorting", (int)sorting, "asc", ascending);
         }
 
+        public bool RemoveAllStatsForLogin(string login)
+        {
+            return SqlHelper.ExecuteScalarReturnBool("Player_RemoveAllStatsForLogin", "login", login);
+        }
+
         #endregion
 
         #region Non Public Methods
