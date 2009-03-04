@@ -84,6 +84,18 @@ namespace TMSPS.Core.PluginSystem.Plugins.Dedimania
             ResetUpdateServerPlayersTimer();
 
             List<PlayerRank> currentRankings = GetCurrentRanking();
+            if (currentRankings == null)
+                return;
+
+            List<PlayerInfo> playerList = GetPlayerList();
+            if (playerList == null)
+                return;
+
+            foreach (PlayerRank rank in currentRankings.ToArray())
+            {
+                if (!playerList.Exists(p => p.Login == rank.Login))
+                    currentRankings.Remove(rank);
+            }
 
             ReportCurrentChallenge(currentRankings);
         }

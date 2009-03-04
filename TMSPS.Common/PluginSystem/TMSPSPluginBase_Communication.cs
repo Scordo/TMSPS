@@ -203,6 +203,7 @@ namespace TMSPS.Core.PluginSystem
 
             if (rankingResponse.Erroneous)
             {
+                Logger.Error(string.Format("Error getting current ranking. : {0}", rankingResponse.Fault));
                 Logger.ErrorToUI("Error getting current ranking.");
                 return null;
             }
