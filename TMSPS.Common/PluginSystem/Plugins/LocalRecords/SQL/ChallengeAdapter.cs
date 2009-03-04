@@ -110,6 +110,15 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords.SQL
 			return SqlHelper.ExecuteScalar<int?>("Challenge_IncreaseRaces_ByUniqueID", "UniqueID", uniqueID);
 		}
 
+        public void DeleteTracksNotInProvidedList(List<string> uniqueTrackIDs)
+        {
+            // do not delete all maps
+            if (uniqueTrackIDs == null || uniqueTrackIDs.Count == 0)
+                return;
+
+            SqlHelper.ExecuteNonQuery("Challenge_DeleteTracksNotInProvidedList", "uniqueTrackIDs", uniqueTrackIDs.ToXmlListString()); 
+        }
+
         #endregion
 
         #region Non Public Methods

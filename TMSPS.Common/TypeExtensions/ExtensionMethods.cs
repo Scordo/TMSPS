@@ -33,5 +33,33 @@ namespace System
 
             return result.ToString();
         }
+
+        /// <summary>
+        /// Converts an Enumerable to an xml-representation that can be passed as a list to a stored procedure
+        /// </summary>
+        /// <param name="objList">The list of objects.</param>
+        /// <returns>An xml representing a list of objects</returns>
+        public static string ToXmlListString<T>(this IEnumerable<T> objList)
+        {
+            if (objList == null)
+                return null;
+
+            StringBuilder objXMLBuilder = new StringBuilder();
+
+            foreach (T obj in objList)
+            {
+                objXMLBuilder.AppendFormat("<i>{0}</i>", obj);
+            }
+
+            if (objXMLBuilder.Length != 0)
+            {
+                objXMLBuilder.Insert(0, "<l>");
+                objXMLBuilder.Append("</l>");
+            }
+
+            string strResult = objXMLBuilder.ToString();
+
+            return strResult.Trim().Length == 0 ? null : strResult;
+        }
     }
 }

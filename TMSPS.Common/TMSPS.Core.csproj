@@ -262,6 +262,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\SQLScripts\StoredProcedures\Challenge\Challenge_Create.sql" />
+    <None Include="Resources\SQLScripts\StoredProcedures\Challenge\Challenge_DeleteTracksNotInProvidedList.sql" />
     <None Include="Resources\SQLScripts\StoredProcedures\Challenge\Challenge_Deserialize_ByID.sql" />
     <None Include="Resources\SQLScripts\StoredProcedures\Challenge\Challenge_Deserialize_ByUniqueID.sql" />
     <None Include="Resources\SQLScripts\StoredProcedures\Challenge\Challenge_IncreaseRaces_ByChallenge.sql" />
