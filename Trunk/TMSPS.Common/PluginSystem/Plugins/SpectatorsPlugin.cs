@@ -10,8 +10,6 @@ namespace TMSPS.Core.PluginSystem.Plugins
     {
         #region Constants
 
-        public const string GET_SPECTATORS_RIGHT = "GetSpectatorsRight";
-        public const string KICK_SPECTATORS_RIGHT = "KickSpectatorsRight";
         public const string GET_SPECTATORS_COMMAND1 = "GetSpectators";
         public const string GET_SPECTATORS_COMMAND2 = "Specs";
 
@@ -82,7 +80,7 @@ namespace TMSPS.Core.PluginSystem.Plugins
         {
             if (ServerCommand.Parse(e.Text).IsMainCommandAnyOf(GET_SPECTATORS_COMMAND1, GET_SPECTATORS_COMMAND2))
             {
-                if (Context.Credentials.UserHasRight(e.Login, GET_SPECTATORS_RIGHT))
+                if (Context.Credentials.UserHasAnyRight(e.Login, GET_SPECTATORS_COMMAND1, GET_SPECTATORS_COMMAND2))
                 {
                     List<PlayerInfo> players = GetPlayerList();
 
@@ -114,7 +112,7 @@ namespace TMSPS.Core.PluginSystem.Plugins
         {
             if (ServerCommand.Parse(e.Text).IsMainCommandAnyOf(KICK_SPECTATORS_COMMAND1, KICK_SPECTATORS_COMMAND2))
             {
-                if (Context.Credentials.UserHasRight(e.Login, GET_SPECTATORS_RIGHT))
+                if (Context.Credentials.UserHasAnyRight(e.Login, KICK_SPECTATORS_COMMAND1, KICK_SPECTATORS_COMMAND2))
                 {
                     List<PlayerInfo> players = GetPlayerList();
 

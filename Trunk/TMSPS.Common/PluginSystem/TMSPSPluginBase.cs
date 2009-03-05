@@ -157,6 +157,29 @@ namespace TMSPS.Core.PluginSystem
             return true;
         }
 
+        protected void SendNoPermissionMessagetoLogin(string login)
+        {
+            Context.RPCClient.Methods.ChatSendServerMessageToLogin("You do not have permissions to execute this command.", login);
+        }
+
+        protected bool LoginHasRight(string login, bool sendNoPermissionMessageIfRightMissing, string right)
+        {
+            return LoginHasAnyRight(login, sendNoPermissionMessageIfRightMissing, right);
+        }
+
+        protected bool LoginHasAnyRight(string login, bool sendNoPermissionMessageIfRightMissing, params string[] rights)
+        {
+            if (!Context.Credentials.UserHasAnyRight(login, rights))
+            {
+                if (sendNoPermissionMessageIfRightMissing)
+                    SendNoPermissionMessagetoLogin(login);
+
+                return false;
+            }
+
+            return true;
+        }
+
 		#endregion
 	}
 }

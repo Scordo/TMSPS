@@ -7,7 +7,7 @@ namespace TMSPS.Core.PluginSystem.Configuration
 	{
 		private readonly Dictionary<string, HashSet<string>> _credentials;
 
-		public Credentials(Dictionary<string, HashSet<string>> credentials)
+		public Credentials(IEnumerable<KeyValuePair<string, HashSet<string>>> credentials)
 		{
 			_credentials = new Dictionary<string, HashSet<string>>();
 
@@ -24,21 +24,33 @@ namespace TMSPS.Core.PluginSystem.Configuration
 
 		public bool UserHasRight(string user, string right)
 		{
-			if (user == null)
-				throw new ArgumentNullException("user");
-
-			if (right == null)
-				throw new ArgumentNullException("right");
-
-			user = user.ToLower();
-
-			if (!_credentials.ContainsKey(user))
-				return false;
-
-			right = right.ToLower();
-
-			return _credentials[user].Contains(right);
+		    return UserHasAnyRight(user, right);
 		}
+
+        public bool UserHasAnyRight(string user, params string[] rights)
+        {
+            if (user == null)
+                throw new ArgumentNullException("user");
+
+            if (rights == null)
+                return true;
+
+            user = user.ToLower();
+
+            if (!_credentials.ContainsKey(user))
+                return false;
+
+            foreach (string right in rights)
+            {
+                if (right == null)
+                    continue;
+
+                if (_credentials[user].Contains(right.ToLower()))
+                    return true;
+            }
+
+            return false;
+        }
 
 		public HashSet<string> GetAllUserRights(string user)
 		{
