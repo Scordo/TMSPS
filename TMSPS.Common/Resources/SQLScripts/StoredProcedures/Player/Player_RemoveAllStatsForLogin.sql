@@ -14,6 +14,7 @@ BEGIN
 		DELETE dbo.Rating where PlayerID = @playerID
 		DELETE dbo.Record where PlayerID = @playerID
 		DELETE dbo.Session where PlayerID = @playerID
+		UPDATE dbo.Player set Wins = 0, TimePlayed = 0 where ID = @playerID
 		set @result = 1
 	END;
 
