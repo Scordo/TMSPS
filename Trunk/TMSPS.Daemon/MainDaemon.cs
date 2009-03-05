@@ -184,7 +184,16 @@ namespace TMSPS.Daemon
                 return null;
             }
 
-            ServerInfo serverInfo = new ServerInfo(ConfigSettings, packMaskResponse.Value, versionResponse.Value);
+            GenericResponse<string> directoryResponse = _client.Methods.GetTracksDirectory();
+
+            if (directoryResponse.Erroneous)
+            {
+                Log.WarnToUI("Error retrieving TracksDirectory: " + directoryResponse.Fault.FaultMessage);
+                Log.WarnToUI("Plugins initialization skipped!");
+                return null;
+            }
+
+            ServerInfo serverInfo = new ServerInfo(ConfigSettings, packMaskResponse.Value, versionResponse.Value, directoryResponse.Value);
 
             return new PluginHostContext(_client, serverInfo, new Credentials(GetFullFilePath("Credentials.xml")));
         }

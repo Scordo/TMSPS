@@ -13,8 +13,9 @@ namespace TMSPS.Core.PluginSystem
         public string ServerLoginPassword { get; private set; }
         public string ServerPackMask { get; private set; }
         public Version Version { get; private set; }
+        public string TrackDirectory { get; private set; }
 
-        public ServerInfo(ConfigSettingsConfigurationSection configSection, string serverPackMask, Version version)
+        public ServerInfo(ConfigSettingsConfigurationSection configSection, string serverPackMask, Version version, string trackDirectory)
         {
             if (configSection == null)
                 throw new ArgumentNullException("configSection");
@@ -25,6 +26,9 @@ namespace TMSPS.Core.PluginSystem
             if (version == null)
                 throw new ArgumentNullException("version");
 
+            if (trackDirectory == null)
+                throw new ArgumentNullException("trackDirectory");
+
             ServerAddress = configSection.ServerAddress;
             ServerXMLRpcPort = configSection.ServerXMLRPCPort;
             SuperAdminPassword = configSection.SuperAdminPassword;
@@ -33,6 +37,7 @@ namespace TMSPS.Core.PluginSystem
             ServerLoginPassword = configSection.ServerLoginPassword;
             ServerPackMask = serverPackMask;
             Version = version.Clone();
+            TrackDirectory = trackDirectory;
         }
     }
 }
