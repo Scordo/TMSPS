@@ -53,6 +53,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.PodiumPlugins
         protected override void Init()
         {
             Settings = PodiumPluginSettings.ReadFromFile(PluginSettingsFilePath, "Most Top3 Race Results", 8);
+            SendEmptyManiaLinkPage(_linkPageID);
 
             Context.RPCClient.Callbacks.BeginRace += Callbacks_BeginRace;
             Context.RPCClient.Callbacks.EndRace += Callbacks_EndRace;
