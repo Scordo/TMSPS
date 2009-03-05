@@ -1116,9 +1116,9 @@ namespace TMSPS.Core.Communication
         /// <summary>
         /// Sets the challenge index in the selection that will be played next (unless the current one is restarted...)
         /// </summary>
-        public GenericResponse<bool> SetNextChallengeIndex()
+        public GenericResponse<bool> SetNextChallengeIndex(int trackIndex)
         {
-            return (GenericResponse<bool>)_client.SendMethod<GenericResponse<bool>>(TrackManiaMethod.SetNextChallengeIndex.ToString());
+            return (GenericResponse<bool>)_client.SendMethod<GenericResponse<bool>>(TrackManiaMethod.SetNextChallengeIndex.ToString(), trackIndex);
         }
 
         /// <summary>
