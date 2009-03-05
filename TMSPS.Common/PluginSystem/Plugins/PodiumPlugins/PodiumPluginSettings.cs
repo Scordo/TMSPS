@@ -14,6 +14,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.PodiumPlugins
         public const double ENTRY_HEIGHT = 1.5;
         public const double ENTRY_END_MARGIN = 0;
         public const double ENTRY_TO_CONTAINER_MARGIN_Y = 0.7;
+        public const bool STRIP_NICK_FORMATTING = false;
 
         #endregion
 
@@ -24,6 +25,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.PodiumPlugins
         public double EntryHeight { get; private set; }
         public double EntryEndMargin { get; private set; }
         public double EntryToContainerMarginY { get; private set; }
+        public bool StripNickFormatting { get; private set; }
 
         public string MainTemplate { get; private set; }
         public string EntryTemplate { get; private set; }
@@ -47,6 +49,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.PodiumPlugins
             result.MaxEntriesToShow = ReadConfigUInt(configDocument.Root, "MaxEntriesToShow", MAX_ENTRIES_TO_SHOW, xmlConfigurationFile);
             result.Title = ReadConfigString(configDocument.Root, "Title", title, xmlConfigurationFile);
             result.X = ReadConfigDouble(configDocument.Root, "PositionX", x, xmlConfigurationFile);
+            result.StripNickFormatting = ReadConfigBool(configDocument.Root, "StripNickFormatting", STRIP_NICK_FORMATTING, xmlConfigurationFile);
             result.EntryToContainerMarginY = ENTRY_TO_CONTAINER_MARGIN_Y;
             result.EntryStartMargin = ENTRY_START_MARGIN;
             result.EntryEndMargin = ENTRY_END_MARGIN;

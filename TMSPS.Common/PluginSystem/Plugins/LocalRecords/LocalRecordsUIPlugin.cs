@@ -280,7 +280,13 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
             playerRecordXml.Replace("{[Y]}", currentY.ToString(CultureInfo.InvariantCulture));
             playerRecordXml.Replace("{[Rank]}", currentRank + ".");
             playerRecordXml.Replace("{[TimeOrScore]}", rankingInfo.TimeOrScore == 0 ? "  --.--  " : string.Format("{0}:{1}.{2}", time.Minutes, time.Seconds.ToString("00"), (time.Milliseconds / 10).ToString("00")));
-            playerRecordXml.Replace("{[Nickname]}", SecurityElement.Escape(rankingInfo.Nickname));
+            
+            string nickname = SecurityElement.Escape(rankingInfo.Nickname);
+
+            if (Settings.StripNickFormatting)
+                nickname = StripTMColorsAndFormatting(nickname);
+
+            playerRecordXml.Replace("{[Nickname]}", nickname);
 
             return XElement.Parse(playerRecordXml.ToString());
         }

@@ -23,7 +23,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.PodiumPlugins
             for (uint i = 1; i <= entries.Count; i++)
             {
                 PodiumPluginUIEntry entry = entries[(int) i - 1];
-                XElement currentElement = GetEntryElement(entry, settings.EntryTemplate, currentY, i);
+                XElement currentElement = GetEntryElement(entry, settings.EntryTemplate, currentY, i, settings.StripNickFormatting);
                 lastInsertedNode.AddAfterSelf(currentElement);
                 lastInsertedNode = currentElement;
                 currentY -= settings.EntryHeight;
@@ -34,13 +34,19 @@ namespace TMSPS.Core.PluginSystem.Plugins.PodiumPlugins
             return mainTemplate.ToString();
         }
 
-        private static XElement GetEntryElement(PodiumPluginUIEntry entryInfo, string templateXML, double currentY, uint currentPosition)
+        private static XElement GetEntryElement(PodiumPluginUIEntry entryInfo, string templateXML, double currentY, uint currentPosition, bool stripFormatting)
         {
             StringBuilder playerRecordXml = new StringBuilder(templateXML);
             playerRecordXml.Replace("{[Y]}", currentY.ToString(CultureInfo.InvariantCulture));
             playerRecordXml.Replace("{[Rank]}", currentPosition + ".");
             playerRecordXml.Replace("{[Value]}", entryInfo.Value);
-            playerRecordXml.Replace("{[Description]}", SecurityElement.Escape(entryInfo.Description));
+
+            string description = SecurityElement.Escape(entryInfo.Description);
+
+            if (stripFormatting)
+                description = TMSPSPluginBase.StripTMColorsAndFormatting(description);
+
+            playerRecordXml.Replace("{[Description]}", description);
 
             return XElement.Parse(playerRecordXml.ToString());
         }

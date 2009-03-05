@@ -2,4 +2,5 @@
 <Settings>
 	<MaxRecordsToShow>11</MaxRecordsToShow>
 	<UpdateIntervalInSeconds>2</UpdateIntervalInSeconds>
+	<StripNickFormatting>false</StripNickFormatting>
 </Settings>
