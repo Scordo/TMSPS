@@ -148,6 +148,12 @@
     <Compile Include="PluginSystem\ITMSPSPluginBase.cs" />
     <Compile Include="PluginSystem\ITMSPSPluginPlugin.cs" />
     <Compile Include="PluginSystem\PluginHostContext.cs" />
+    <Compile Include="PluginSystem\Plugins\AdminPlayer\AdminPlayerPlugin.cs" />
+    <Compile Include="PluginSystem\Plugins\AdminPlayer\UITemplates.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>UITemplates.resx</DependentUpon>
+    </Compile>
     <Compile Include="PluginSystem\Plugins\ChatBotPlugin.cs" />
     <Compile Include="PluginSystem\Plugins\Dedimania\Communication\AliasTextTool.cs" />
     <Compile Include="PluginSystem\Plugins\Dedimania\Communication\AuthenticateParameters.cs" />
@@ -296,6 +302,10 @@
     <None Include="Resources\SQLScripts\Structure\Session.sql" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="PluginSystem\Plugins\AdminPlayer\UITemplates.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>UITemplates.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
     <EmbeddedResource Include="PluginSystem\Plugins\Dedimania\UITemplates.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>UITemplates.Designer.cs</LastGenOutput>
