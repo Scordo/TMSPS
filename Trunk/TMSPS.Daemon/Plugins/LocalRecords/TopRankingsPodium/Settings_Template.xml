@@ -3,4 +3,5 @@
 	<MaxEntriesToShow>10</MaxEntriesToShow>
 	<Title>Top Ranks</Title>
 	<PositionX>-38</PositionX>
+	<StripNickFormatting>false</StripNickFormatting>
 </Settings>

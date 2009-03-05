@@ -3,4 +3,5 @@
 	<MaxEntriesToShow>10</MaxEntriesToShow>
 	<Title>Hours Played</Title>
 	<PositionX>-24</PositionX>
+	<StripNickFormatting>false</StripNickFormatting>
 </Settings>

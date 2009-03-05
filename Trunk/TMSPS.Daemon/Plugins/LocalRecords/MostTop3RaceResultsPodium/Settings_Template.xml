@@ -3,4 +3,5 @@
 	<MaxEntriesToShow>10</MaxEntriesToShow>
 	<Title>Most Top3 Race Results</Title>
 	<PositionX>8</PositionX>
+	<StripNickFormatting>false</StripNickFormatting>
 </Settings>

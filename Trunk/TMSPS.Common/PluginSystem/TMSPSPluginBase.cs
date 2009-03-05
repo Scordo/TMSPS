@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
+using System.Text.RegularExpressions;
 using TMSPS.Core.Common;
 using TMSPS.Core.Logging;
 
@@ -178,6 +179,40 @@ namespace TMSPS.Core.PluginSystem
             }
 
             return true;
+        }
+
+        public static string StripTMColorsAndFormatting(string input)
+        {
+            if (input.IsNullOrTimmedEmpty())
+                return input;
+
+            input = input.Replace("$$", "\t");
+            input = Regex.Replace(input, @"\$[\da-f]{3}", string.Empty, RegexOptions.Singleline | RegexOptions.Compiled | RegexOptions.IgnoreCase);
+            input = Regex.Replace(input, @"\$[istwnmgzhl]{1}", string.Empty, RegexOptions.Singleline | RegexOptions.Compiled | RegexOptions.IgnoreCase);
+
+            return input.Replace("\t", "$$");
+        }
+
+        public static string StripTMColors(string input)
+        {
+            if (input.IsNullOrTimmedEmpty())
+                return input;
+
+            input = input.Replace("$$", "\t");
+            input = Regex.Replace(input, @"\$[\da-f]{3}", string.Empty, RegexOptions.Singleline | RegexOptions.Compiled | RegexOptions.IgnoreCase);
+            
+            return input.Replace("\t", "$$");
+        }
+
+        public static string StripTMFormatting(string input)
+        {
+            if (input.IsNullOrTimmedEmpty())
+                return input;
+
+            input = input.Replace("$$", "\t");
+            input = Regex.Replace(input, @"\$[istwnmgzhl]{1}", string.Empty, RegexOptions.Singleline | RegexOptions.Compiled | RegexOptions.IgnoreCase);
+
+            return input.Replace("\t", "$$");
         }
 
 		#endregion
