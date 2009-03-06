@@ -13,8 +13,8 @@ namespace TMSPS.Core.PluginSystem.Plugins.Dedimania
         public const bool SHOW_MESSAGES = true;
         public const uint NOTICE_DELAY_IN_SECONDS = 1;
 
-        public const string NEW_RANK_MESSAGE = "$z{[Nickname]}$z claimed dedimania rank: $w$s$0f0{[Rank]}$z!";
-        public const string IMPROVED_RANK_MESSAGE = "$z{[Nickname]}$z improved his/her dedimania rank: $w$s$0f0{[Rank]}$z!";
+        public const string NEW_RANK_MESSAGE = "{[#ServerStyle]}>> {[#HighlightStyle]}{[Nickname]}$z{[#DedimaniaRecordStyle]} claimed the {[#RankStyle]}{[Rank]}{[#DedimaniaRecordStyle]}. Dedimania Record!";
+        public const string IMPROVED_RANK_MESSAGE = "{[#ServerStyle]}>> {[#HighlightStyle]}{[Nickname]}$z{[#DedimaniaRecordStyle]} improved his/her {[#RankStyle]}{[Rank]}{[#DedimaniaRecordStyle]}. Dedimania Record!";
         public const bool SHOW_RECORD_UI = true;
         public const bool SHOW_RECORD_LIST_UI = true;
         public const bool HIDE_RECORD_LIST_UI_ON_FINISH = true;

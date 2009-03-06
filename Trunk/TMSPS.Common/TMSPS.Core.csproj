@@ -58,6 +58,7 @@
     <Compile Include="Common\GlobalConstants.cs" />
     <Compile Include="Common\IBaseAdapter.cs" />
     <Compile Include="Common\ParameterlessMethodDelegate.cs" />
+    <Compile Include="Common\ReadOnlyDictionary.cs" />
     <Compile Include="Common\SettingsBase.cs" />
     <Compile Include="Communication\ProxyTypes\GameMode.cs" />
     <Compile Include="Communication\ProxyTypes\StartServerParameters.cs" />
@@ -147,6 +148,7 @@
     <Compile Include="PluginSystem\ITMSPSPlugin.cs" />
     <Compile Include="PluginSystem\ITMSPSPluginBase.cs" />
     <Compile Include="PluginSystem\ITMSPSPluginPlugin.cs" />
+    <Compile Include="PluginSystem\MessageStyles.cs" />
     <Compile Include="PluginSystem\PluginHostContext.cs" />
     <Compile Include="PluginSystem\Plugins\AdminPlayer\AdminPlayerPlugin.cs" />
     <Compile Include="PluginSystem\Plugins\AdminPlayer\UITemplates.Designer.cs">
@@ -250,6 +252,7 @@
     <Compile Include="PluginSystem\Plugins\TMX\TMXPlugin.cs" />
     <Compile Include="PluginSystem\PluginUtil.cs" />
     <Compile Include="PluginSystem\ServerCommand.cs" />
+    <Compile Include="PluginSystem\MessageConstants.cs" />
     <Compile Include="PluginSystem\ServerInfo.cs" />
     <Compile Include="PluginSystem\TMSPSPlugin.cs" />
     <Compile Include="PluginSystem\TMSPSPluginBase.cs" />

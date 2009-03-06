@@ -182,8 +182,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
         {
             if (Settings.ShowMessages)
             {
-                string message = Settings.VoteAcceptedMessage.Replace("{[AverageVote]}", e.AverageVoteValue.ToString("F", CultureInfo.InvariantCulture));
-                Context.RPCClient.Methods.ChatSendToLogin(message, e.Login);
+                SendFormattedMessageToLogin(e.Login, Settings.VoteAcceptedMessage, "AverageVote", e.AverageVoteValue.ToString("F", CultureInfo.InvariantCulture));
             }  
         }
 
@@ -193,27 +192,27 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
             {
                 if (Settings.ShowMessages)
                 {
-                    string message = Settings.FirstLocalRankMessage.Replace("{[Nickname]}", e.PlayerInfo.NickName).Replace("{[Rank]}", e.NewPosition.ToString());
+                    string message = FormatMessage(Settings.FirstLocalRankMessage, "Nickname", StripTMColorsAndFormatting(e.PlayerInfo.NickName), "Rank", e.NewPosition.ToString());
                     Context.RPCClient.Methods.SendNotice(message, e.PlayerInfo.Login, Convert.ToInt32(Settings.NoticeDelayInSeconds));
-                    Context.RPCClient.Methods.ChatSend(message);
+                    Context.RPCClient.Methods.ChatSendServerMessage(message);
                 }
             }
             else if (e.NewPosition > e.OldPosition)
             {
                 if (Settings.ShowMessages)
                 {
-                    string message = Settings.NewLocalRankMessage.Replace("{[Nickname]}", e.PlayerInfo.NickName).Replace("{[OldRank]}", e.OldPosition.ToString()).Replace("{[NewRank]}", e.NewPosition.ToString());
+                    string message = FormatMessage(Settings.NewLocalRankMessage, "Nickname", StripTMColorsAndFormatting(e.PlayerInfo.NickName), "OldRank", e.OldPosition.ToString(), "NewRank", e.NewPosition.ToString());
                     Context.RPCClient.Methods.SendNotice(message, e.PlayerInfo.Login, Convert.ToInt32(Settings.NoticeDelayInSeconds));
-                    Context.RPCClient.Methods.ChatSend(message);
+                    Context.RPCClient.Methods.ChatSendServerMessage(message);
                 }
             }
             else
             {
                 if (Settings.ShowMessages)
                 {
-                    string message = Settings.ImprovedLocalRankMessage.Replace("{[Nickname]}", e.PlayerInfo.NickName).Replace("{[Rank]}", e.NewPosition.ToString());
+                    string message = FormatMessage(Settings.ImprovedLocalRankMessage, "Nickname", StripTMColorsAndFormatting(e.PlayerInfo.NickName), "Rank", e.NewPosition.ToString());
                     Context.RPCClient.Methods.SendNotice(message, e.PlayerInfo.Login, Convert.ToInt32(Settings.NoticeDelayInSeconds));
-                    Context.RPCClient.Methods.ChatSend(message);
+                    Context.RPCClient.Methods.ChatSendServerMessage(message);
                 }
             }
 

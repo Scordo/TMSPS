@@ -1,6 +1,7 @@
 ﻿using System.Text;
 using System.Xml.Linq;
 using System.Collections.Generic;
+using TMSPS.Core.Common;
 
 namespace System
 {
@@ -60,6 +61,27 @@ namespace System
             string strResult = objXMLBuilder.ToString();
 
             return strResult.Trim().Length == 0 ? null : strResult;
+        }
+
+        public static ReadOnlyDictionary<TKey, TValue> AsReadOnly<TKey, TValue>(this IDictionary<TKey, TValue> dictionary)
+        {
+            return dictionary == null ? null : new ReadOnlyDictionary<TKey, TValue>(dictionary);
+        }
+
+        public static string[] ToArray(this IDictionary<string, string> dictionary)
+        {
+            if (dictionary == null)
+                return null;
+
+            List<string> values = new List<string>();
+
+            foreach (var pair in dictionary)
+            {
+                values.Add(pair.Key);
+                values.Add(pair.Value);
+            }
+
+            return values.ToArray();
         }
     }
 }

@@ -93,12 +93,6 @@ namespace TMSPS.Daemon
             _client.ReadyForSendingCommands -= ReadyForSendingCommands;
         }
 
-        private void ReReadConfig()
-        {
-            Stop();
-            Start();
-        }
-
         private void SocketError(object sender, Core.Communication.EventArguments.SocketErrorEventArgs e)
         {
             Log.ErrorToUI("Socket Error occured!");
@@ -194,13 +188,15 @@ namespace TMSPS.Daemon
             }
 
             ServerInfo serverInfo = new ServerInfo(ConfigSettings, packMaskResponse.Value, versionResponse.Value, directoryResponse.Value);
+            MessageStyles messageStyles = MessageStyles.ReadFromFileOrGetDefault(Path.Combine(ApplicationDirectory, "MessageStyles.xml"));
+            MessageConstants messageConstants = MessageConstants.ReadFromFile(Path.Combine(ApplicationDirectory, "MessageConstants.xml"), _client);
 
-            return new PluginHostContext(_client, serverInfo, new Credentials(GetFullFilePath("Credentials.xml")));
+            return new PluginHostContext(_client, serverInfo, new Credentials(GetFullFilePath("Credentials.xml")), messageStyles, messageConstants);
         }
 
         private void ReadConfigSettings()
         {
-            Util.WaitUntilReadable(Assembly.GetExecutingAssembly().Location +".config", 10000);
+            Util.WaitUntilReadable(ApplicationConfigFileName, 10000);
             ConfigSettings = ConfigSettingsConfigurationSection.GetFromConfig("ConfigSettings");
         }
 

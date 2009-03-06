@@ -1,0 +1,10 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<MessageStyles>
+	<MessageStyle>$39f</MessageStyle>
+	<ErrorStyle>$f00$i</ErrorStyle>
+	<ServerStyle>$ff0</ServerStyle>
+	<HighlightStyle>$fff</HighlightStyle>
+	<RankStyle>$ff3</RankStyle>
+	<RecordStyle>$0f3</RecordStyle>
+	<DedimaniaRecordStyle>$28b</DedimaniaRecordStyle>
+</MessageStyles>

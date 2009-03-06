@@ -132,7 +132,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
         private void HandleCheater(string login, bool updateUI)
         {
             Context.RPCClient.Methods.BanAndBlackList(login, "Banned and blacklisted for cheating!", true);
-            Context.RPCClient.Methods.ChatSend(Settings.CheaterBannedMessage.Replace("{[Login]}", login));
+            SendFormattedMessage(Settings.CheaterBannedMessage, "Login", login);
             PlayerAdapter.RemoveAllStatsForLogin(login);
 
             if (updateUI)
@@ -205,21 +205,19 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
             {
                 if (PlayerAdapter.RemoveAllStatsForLogin(login))
                 {
-                    string message = Settings.CheaterDeletedMessage.Replace("{[Login]}", login);
-                    Context.RPCClient.Methods.ChatSendToLogin(message, args.Login);
+                    SendFormattedMessageToLogin(args.Login, Settings.CheaterDeletedMessage, "Login", login);
 
                     DetermineLocalRecords();
                     OnLocalRecordsDetermined(new List<RankEntry>(LocalRecords));
                 }
                 else
                 {
-                    string message = Settings.CheaterDeletionFailedMessage.Replace("{[Login]}", login);
-                    Context.RPCClient.Methods.ChatSendToLogin(message, args.Login);
+                    SendFormattedMessageToLogin(args.Login, Settings.CheaterDeletionFailedMessage, "Login", login);
                 }
             }
             else
             {
-                Context.RPCClient.Methods.ChatSendToLogin("You do not have permissions to execute this command!", args.Login);
+                SendNoPermissionMessagetoLogin(args.Login);
             }
 
 	        return true;
@@ -247,7 +245,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
                 msg.AppendFormat("{0}. {1}$z[{2}]", i + 1, entry.Nickname, entry.Login);
             }
 
-            Context.RPCClient.Methods.ChatSendToLogin(msg.ToString(), args.Login);
+            SendFormattedMessageToLogin(args.Login, msg.ToString());
             return true;
         }
 

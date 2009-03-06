@@ -49,7 +49,6 @@ namespace TMSPS.Core.PluginSystem.Plugins.TMX
 
         protected override void Init()
         {
-
             Context.RPCClient.Callbacks.PlayerChat += Callbacks_PlayerChat;
         }
 
@@ -87,9 +86,9 @@ namespace TMSPS.Core.PluginSystem.Plugins.TMX
                     TMXInfo tmxInfo = TMXInfo.Retrieve(trackID);
 
                     if (tmxInfo != null && !tmxInfo.Erroneous)
-                        Context.RPCClient.Methods.ChatSendToLogin(string.Format("[TMX-Info] Name: {0}, Author: {1}, Environment: {2}", tmxInfo.Name, tmxInfo.Author, tmxInfo.Environment), e.Login);
+                        SendFormattedMessageToLogin(e.Login, "{[#ServerStyle]}> {[#MessageStyle]}[TMX-Info] Name: {[#HighlightStyle]}{[Name]}{[#MessageStyle]}, Author: {[#HighlightStyle]}{[Author]}{[#MessageStyle]}, Environment: {[#HighlightStyle]}{[Env]}", "Name", tmxInfo.Name, "Author", tmxInfo.Author, "Env", tmxInfo.Environment);
                     else
-                        Context.RPCClient.Methods.ChatSendToLogin("Could not retrieve trackinfo for trackid " + trackID, e.Login);
+                        SendFormattedMessageToLogin(e.Login, "{[#ServerStyle]}> {[#ErrorStyle]}Could not retrieve trackinfo for trackid " + trackID);
                 }
 
                 return true;
@@ -118,7 +117,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.TMX
 
             if (!Context.Credentials.UserHasRight(e.Login, TMX_ADD_TRACK_COMMAND))
             {
-                Context.RPCClient.Methods.ChatSendToLogin("You do not have permissions to execute this command!", e.Login);
+                SendNoPermissionMessagetoLogin(e.Login);
                 return true;
             }
 
@@ -130,7 +129,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.TMX
             
             if (tmxInfo == null || tmxInfo.Erroneous)
             {
-                Context.RPCClient.Methods.ChatSendToLogin("Could not retrieve trackinfo for trackid " + trackID, e.Login);
+                SendFormattedMessageToLogin(e.Login, "{[#ServerStyle]}> {[#ErrorStyle]}Could not retrieve trackinfo for trackid " + trackID);
                 return true;
             }
 
@@ -138,13 +137,13 @@ namespace TMSPS.Core.PluginSystem.Plugins.TMX
             
             if (challenges == null)
             {
-                Context.RPCClient.Methods.ChatSendToLogin("Could not retrieve current challenge list.", e.Login);
+                SendFormattedMessageToLogin(e.Login, "{[#ServerStyle]}> {[#ErrorStyle]}Could not retrieve current challenge list.");
                 return true;
             }
 
             if (challenges.Exists(c => c.FileName.Equals(tmxInfo.GetRelativeFilePath(), StringComparison.InvariantCultureIgnoreCase)))
             {
-                Context.RPCClient.Methods.ChatSendToLogin("Track is already in tracklist.", e.Login);
+                SendFormattedMessageToLogin(e.Login, "{[#ServerStyle]}> {[#MessageStyle]}Track is already in tracklist.");
                 return true;
             }
 
@@ -157,8 +156,8 @@ namespace TMSPS.Core.PluginSystem.Plugins.TMX
 
                 WriteTMXTrack(trackData, trackID);
                 Context.RPCClient.Methods.AddChallenge(targetTrackFilePath);
-                Context.RPCClient.Methods.ChatSendToLogin(string.Format("Track '{0}' with trackid {1} added to tracklist.", tmxInfo.Name, trackID), e.Login);
 
+                SendFormattedMessageToLogin(e.Login, "{[#ServerStyle]}> {[#MessageStyle]}Track {[#HighlightStyle]}{[Trackname]}{[#MessageStyle]} with trackid {[#HighlightStyle]}{[TrackID]}{[#MessageStyle]} added to tracklist.", "Trackname", tmxInfo.Name, "TrackID", trackID);
 
                 challenges = GetChallengeList();
                 if (challenges != null)
@@ -168,13 +167,13 @@ namespace TMSPS.Core.PluginSystem.Plugins.TMX
                     if (challengeIndex != -1)
                     {
                         Context.RPCClient.Methods.SetNextChallengeIndex(challengeIndex);
-                        Context.RPCClient.Methods.ChatSendToLogin(string.Format("Track '{0}' with trackid {1} will be the next track.", tmxInfo.Name, trackID), e.Login);
+                        SendFormattedMessageToLogin(e.Login, "{[#ServerStyle]}> {[#MessageStyle]}Track {[#HighlightStyle]}{[Trackname]}{[#MessageStyle]} with trackid {[#HighlightStyle]}{[TrackID]}{[#MessageStyle]} will be the next track.", "Trackname", tmxInfo.Name, "TrackID", trackID);
                     }
                 }
             }
             else
             {
-                Context.RPCClient.Methods.ChatSendToLogin(string.Format("Could not retrieve track '{0}' for trackid {1}.", tmxInfo.Name, trackID), e.Login);
+                SendFormattedMessageToLogin(e.Login, "{[#ServerStyle]}> {[#ErrorStyle]}Could not retrieve track {[#HighlightStyle]}{[Trackname]}{[#ErrorStyle]} with trackid {[#HighlightStyle]}{[TrackID]}.", "Trackname", tmxInfo.Name, "TrackID", trackID);
             }
 
             return true;
@@ -184,8 +183,6 @@ namespace TMSPS.Core.PluginSystem.Plugins.TMX
         {
             Context.RPCClient.Callbacks.PlayerChat -= Callbacks_PlayerChat;
         }
-
-      
 
         #endregion
     }

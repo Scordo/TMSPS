@@ -242,14 +242,14 @@ namespace TMSPS.Core.PluginSystem.Plugins.Dedimania
             {
                 if (e.RankChanged)
                 {
-                    string message = Settings.NewRankMessage.Replace("{[Nickname]}", e.Nickname).Replace("{[Rank]}", e.NewRank.ToString());
-                    Context.RPCClient.Methods.ChatSend(message);
+                    string message = FormatMessage(Settings.NewRankMessage, "Nickname", StripTMColorsAndFormatting(e.Nickname), "Rank", e.NewRank.ToString());
+                    Context.RPCClient.Methods.ChatSendServerMessage(message);
                     Context.RPCClient.Methods.SendNotice(message, e.Login, Convert.ToInt32(Settings.NoticeDelayInSeconds));
                 }
                 else
                 {
-                    string message = Settings.ImprovedRankMessage.Replace("{[Nickname]}", e.Nickname).Replace("{[Rank]}", e.NewRank.ToString());
-                    Context.RPCClient.Methods.ChatSend(message);
+                    string message = FormatMessage(Settings.ImprovedRankMessage, "Nickname", StripTMColorsAndFormatting(e.Nickname), "Rank", e.NewRank.ToString());
+                    Context.RPCClient.Methods.ChatSendServerMessage(message);
                     Context.RPCClient.Methods.SendNotice(message, e.Login, Convert.ToInt32(Settings.NoticeDelayInSeconds));
                 }
             }

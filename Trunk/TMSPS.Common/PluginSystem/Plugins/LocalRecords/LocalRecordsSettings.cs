@@ -14,9 +14,9 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
 	    #region Constants
 
 	    public const uint MAX_RECORDS_TO_REPORT = 50;
-	    public const string CHEATER_DELETED_MSG = "Stats of cheater with login '{[Login]}' deleted!";
-        public const string CHEATER_DELETION_FAILED_MSG = "Cheater with login '{[Login]}' does not exist!";
-        public const string CHEATER_BANNED_MSG = "Cheater detected! Login is '{[Login]}'. Cheater got banned and blacklisted. All stats deleted.";
+        public const string CHEATER_DELETED_MSG = "{[#ServerStyle]}> {[#MessageStyle]}Stats of cheater with login {[#HighlightStyle]}{[Login]} {[#MessageStyle]}deleted!";
+        public const string CHEATER_DELETION_FAILED_MSG = "{[#ServerStyle]}> {[#MessageStyle]}Cheater with login {[#HighlightStyle]}{[Login]} {[#MessageStyle]}does not exist!";
+        public const string CHEATER_BANNED_MSG = "{[#ServerStyle]}>> {[#ErrorStyle]}Cheater detected! {[#MessageStyle]}Login is {[#HighlightStyle]}{[Login]}. {[#MessageStyle]}Cheater got banned and blacklisted. All stats deleted.";
 
 	    #endregion
 
