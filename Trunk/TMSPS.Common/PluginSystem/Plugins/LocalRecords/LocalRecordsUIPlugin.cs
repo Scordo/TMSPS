@@ -5,7 +5,8 @@ using System.Linq;
 using System.Security;
 using System.Text;
 using System.Xml.Linq;
-using TMSPS.Core.Communication.ProxyTypes;
+using TMSPS.Core.Communication.EventArguments.Callbacks;
+using PlayerInfo=TMSPS.Core.Communication.ProxyTypes.PlayerInfo;
 using Version=System.Version;
 
 namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
@@ -43,11 +44,47 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
             HostPlugin.PlayerVoted += HostPlugin_PlayerVoted;
             HostPlugin.PlayerNewRecord += HostPlugin_PlayerNewRecord;
             HostPlugin.LocalRecordsDetermined += HostPlugin_LocalRecordsDetermined;
+            HostPlugin.PlayerWins += HostPlugin_PlayerWins;
             Context.RPCClient.Callbacks.EndRace += Callbacks_EndRace;
             Context.RPCClient.Callbacks.PlayerConnect += Callbacks_PlayerConnect;
+            Context.RPCClient.Callbacks.PlayerChat += Callbacks_PlayerChat;
+
         }
 
-        private void Callbacks_PlayerConnect(object sender, Communication.EventArguments.Callbacks.PlayerConnectEventArgs e)
+        private void Callbacks_PlayerChat(object sender, PlayerChatEventArgs e)
+        {
+            RunCatchLog(() =>
+            {
+                if (CheckForServerRankCommand(e))
+                    return;
+            }, "Error in Callbacks_PlayerChat Method.", true);
+        }
+
+        private bool CheckForServerRankCommand(PlayerChatEventArgs args)
+	    {
+            if (string.Compare(args.Text, "/sr", StringComparison.InvariantCultureIgnoreCase) != 0 && string.Compare(args.Text, "/rank", StringComparison.InvariantCultureIgnoreCase) != 0)
+	           return false;
+
+            SendServerRankMessageToLogin(args.Login);
+
+            return true;
+	    }
+
+        private void SendServerRankMessageToLogin(string login)
+        {
+            Ranking ranking = HostPlugin.RankingAdapter.Deserialize_ByLogin(login);
+
+            if (ranking != null)
+                SendFormattedMessageToLogin(login, Settings.RankingMessage, "Rank", ranking.CurrentRank.ToString("F0", CultureInfo.InvariantCulture), "Average", ranking.AverageRank.ToString("F1", CultureInfo.InvariantCulture), "Score", ranking.Score.ToString("F1", CultureInfo.InvariantCulture), "Tracks", ranking.RecordsCount.ToString("F0", CultureInfo.InvariantCulture), "TracksCount", ranking.ChallengesCount.ToString("F0", CultureInfo.InvariantCulture));
+        }
+
+        private void HostPlugin_PlayerWins(object sender, PlayerWinEventArgs e)
+        {
+            if (Settings.ShowMessages)
+                SendFormattedMessageToLogin(e.RankingInfo.Login, Settings.WinMessage, "Wins", e.Wins.ToString());
+        }
+
+        private void Callbacks_PlayerConnect(object sender, PlayerConnectEventArgs e)
         {
             if (e.Handled)
                 return;
@@ -63,6 +100,9 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
 
             if (Settings.ShowLocalRecordListUserInterface)
                 Context.RPCClient.Methods.SendDisplayManialinkPageToLogin(e.Login, GetRecordListManiaLinkPage(LastRankings, e.Login), 0, false);
+
+            if (Settings.ShowMessages)
+                SendServerRankMessageToLogin(e.Login);
         }
 
         private void HostPlugin_LocalRecordsDetermined(object sender, Common.EventArgs<RankEntry[]> e)
@@ -166,7 +206,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
             return maniaLinkPage.ToString();
         }
 
-        private void Callbacks_EndRace(object sender, Communication.EventArguments.Callbacks.EndRaceEventArgs e)
+        private void Callbacks_EndRace(object sender, EndRaceEventArgs e)
         {
             if (Settings.ShowPBUserInterface)
                 SendEmptyManiaLinkPage(_pbManiaLinkPageID);
@@ -385,6 +425,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
             HostPlugin.LocalRecordsDetermined -= HostPlugin_LocalRecordsDetermined;
             Context.RPCClient.Callbacks.EndRace -= Callbacks_EndRace;
             Context.RPCClient.Callbacks.PlayerConnect -= Callbacks_PlayerConnect;
+            Context.RPCClient.Callbacks.PlayerChat -= Callbacks_PlayerChat;
         }
 
         #endregion
