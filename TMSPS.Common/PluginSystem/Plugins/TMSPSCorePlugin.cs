@@ -30,7 +30,7 @@ namespace TMSPS.Core.PluginSystem.Plugins
 
         public override string ShortName
         {
-            get { return "CorePlugin"; }
+            get { return "Core"; }
         }
 
         #endregion

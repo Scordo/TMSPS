@@ -95,6 +95,8 @@
     </Content>
     <Content Include="Plugins\ChatBot\Settings.xml" />
     <Content Include="Plugins\ChatBot\Settings_Template.xml" />
+    <Content Include="Plugins\Core\Settings.xml" />
+    <Content Include="Plugins\Core\Settings_Template.xml" />
     <Content Include="Plugins\Dedimania\DedimaniaUI\DedimaniaRecordListTemplate.xml" />
     <Content Include="Plugins\Dedimania\DedimaniaUI\DediPanelTemplate.xml" />
     <Content Include="Plugins\Dedimania\DedimaniaUI\Settings.xml" />
