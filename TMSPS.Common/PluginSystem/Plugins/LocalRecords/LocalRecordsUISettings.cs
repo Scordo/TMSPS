@@ -10,10 +10,10 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
         #region Constants
 
         public const uint MAX_RECORDS_TO_SHOW = 20;
-        public const string VOTE_ACCEPTED_MESSAGE = "$zVote accepted! Average vote is: {[AverageVote]}";
-        public const string FIRST_LOCAL_RANK_MESSAGE = "$z{[Nickname]}$z got his/her first local rank: $w$s$0f0{[Rank]}$z!";
-        public const string NEW_LOCAL_RANK_MESSAGE = "$z{[Nickname]}$z achieved local rank: $w$s$0f0{[NewRank]}$z. Old rank: $w$s{[OldRank]}";
-        public const string IMPROVED_LOCAL_RANK_MESSAGE = "$z{[Nickname]}$z improved his/her local rank: $w$s$0f0{[Rank]}$z!";
+        public const string VOTE_ACCEPTED_MESSAGE = "{[#ServerStyle]}> {[#MessageStyle]}Vote accepted! Average vote is: {[#HighlightStyle]}{[AverageVote]}";
+        public const string FIRST_LOCAL_RANK_MESSAGE = "{[#ServerStyle]}>> {[#HighlightStyle]}{[Nickname]}$z{[#RecordStyle]} gained the {[#RankStyle]}{[Rank]}{[#RecordStyle]}. Local Record!";
+        public const string NEW_LOCAL_RANK_MESSAGE = "{[#ServerStyle]}>> {[#HighlightStyle]}{[Nickname]}$z{[#RecordStyle]} claimed the {[#RankStyle]}{[NewRank]}{[#RecordStyle]}. Local Record!";
+        public const string IMPROVED_LOCAL_RANK_MESSAGE = "{[#ServerStyle]}>> {[#HighlightStyle]}{[Nickname]}$z{[#RecordStyle]} secured his/her {[#RankStyle]}{[Rank]}{[#RecordStyle]}. Local Record!";
         public const bool SHOW_MESSAGES = true;
         public const uint NOTICE_DELAY_IN_SECONDS = 1;
         public const bool SHOW_LOCAL_RECORD_UI = true;

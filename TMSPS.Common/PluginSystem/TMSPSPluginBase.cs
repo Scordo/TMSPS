@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Reflection;
 using System.Text.RegularExpressions;
@@ -160,7 +161,7 @@ namespace TMSPS.Core.PluginSystem
 
         protected void SendNoPermissionMessagetoLogin(string login)
         {
-            Context.RPCClient.Methods.ChatSendServerMessageToLogin("You do not have permissions to execute this command.", login);
+            SendFormattedMessage(login, "{[#ServerStyle]}> {[#ErrorStyle]}You do not have permissions to execute this command.");
         }
 
         protected bool LoginHasRight(string login, bool sendNoPermissionMessageIfRightMissing, string right)
@@ -213,6 +214,53 @@ namespace TMSPS.Core.PluginSystem
             input = Regex.Replace(input, @"\$[istwnmgzhl]{1}", string.Empty, RegexOptions.Singleline | RegexOptions.Compiled | RegexOptions.IgnoreCase);
 
             return input.Replace("\t", "$$");
+        }
+
+        protected string ReplaceMessageConstants(string message)
+        {
+            return ReplaceMessagePlaceHolders(message, Context.MessageConstants.ToArray());
+        }
+
+        protected string ReplaceMessageStyles(string message)
+        {
+            return Context.MessagStyles.ReplaceStyles(message);
+        }
+
+        protected string FormatMessage(string message, params string[] keyValuePairs)
+        {
+            return ReplaceMessagePlaceHolders(ReplaceMessageStyles(ReplaceMessageConstants(message)), keyValuePairs);
+        }
+
+        protected void SendFormattedMessageToLogin(string login, string message, params string[] keyValuePairs)
+        {
+            Context.RPCClient.Methods.ChatSendServerMessageToLogin(FormatMessage(message, keyValuePairs), login);
+        }
+
+        protected void SendFormattedMessage(string message, params string[] keyValuePairs)
+        {
+            Context.RPCClient.Methods.ChatSendServerMessage(FormatMessage(message, keyValuePairs));
+        }
+
+        public static string ReplaceMessagePlaceHolders(string message, params string[] keyValuePairs)
+        {
+            if (message.IsNullOrTimmedEmpty() || keyValuePairs == null || keyValuePairs.Length == 0)
+                return message;
+
+            if (keyValuePairs.Length % 2 != 0)
+                throw new ArgumentOutOfRangeException("keyValuePairs", "The amount of passed strings must be even!");
+
+            return Regex.Replace(message, @"{\[(?<tag>[^\[{#}\]]+)\]}", match =>
+            {
+                string tag = match.Groups["tag"].Value.ToLower(CultureInfo.InvariantCulture);
+
+                for (int i = 0; i < keyValuePairs.Length; i += 2)
+                {
+                    if (string.Compare(tag, keyValuePairs[i], StringComparison.InvariantCultureIgnoreCase) == 0)
+                        return keyValuePairs[i + 1];
+                }
+
+                return match.Value;
+            }, RegexOptions.Singleline | RegexOptions.Compiled);
         }
 
 		#endregion

@@ -16,6 +16,7 @@
 	</Plugins>
 
 	<MaxRecordsToReport>50</MaxRecordsToReport>
-	<CheaterDeletedMessage>Stats of cheater with login '{[Login]}' deleted!</CheaterDeletedMessage>
-	<CheaterDeletionFailedMessage>Cheater with login '{[Login]}' does not exist!</CheaterDeletionFailedMessage>
+	<CheaterDeletedMessage>{[#ServerStyle]}> {[#MessageStyle]}Stats of cheater with login {[#HighlightStyle]}{[Login]} {[#MessageStyle]}deleted!</CheaterDeletedMessage>
+	<CheaterDeletionFailedMessage>{[#ServerStyle]}> {[#MessageStyle]}Cheater with login {[#HighlightStyle]}{[Login]} {[#MessageStyle]}does not exist!</CheaterDeletionFailedMessage>
+	<CheaterBannedMessage>{[#ServerStyle]}>> {[#ErrorStyle]}Cheater detected! {[#MessageStyle]}Login is {[#HighlightStyle]}{[Login]}. {[#MessageStyle]}Cheater got banned and blacklisted. All stats deleted.</CheaterBannedMessage>
 </Settings>

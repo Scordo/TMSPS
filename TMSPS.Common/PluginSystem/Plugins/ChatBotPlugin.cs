@@ -113,13 +113,13 @@ namespace TMSPS.Core.PluginSystem.Plugins
                 if (Context.Credentials.UserHasRight(e.Login, READ_SETTINGS_COMMAND))
 				{
 					if (ReadSettings())
-						Context.RPCClient.Methods.ChatSendToLogin(string.Format("{0}ChatBot-Settings successfully read!", Botname), e.Login);
+                        SendFormattedMessageToLogin(e.Login, "{[#ServerStyle]}> {[#MessageStyle]}ChatBot-Settings successfully read!");
 					else
-                        Context.RPCClient.Methods.ChatSendToLogin(string.Format("{0}Error while reading ChatBot-Settings. See log for deailed error description", Botname), e.Login);
+                        SendFormattedMessageToLogin(e.Login, "{[#ServerStyle]}> {[#ErrorStyle]}Error while reading ChatBot-Settings. See log for detailed error description.");
 				}
 				else
 				{
-                    Context.RPCClient.Methods.ChatSendToLogin(string.Format("{0}You do not have permissions to execute this command!", Botname), e.Login);
+                    SendNoPermissionMessagetoLogin(e.Login);
 				}
 
 				return true;

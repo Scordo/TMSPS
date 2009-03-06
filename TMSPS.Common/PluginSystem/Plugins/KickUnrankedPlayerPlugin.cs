@@ -63,7 +63,7 @@ namespace TMSPS.Core.PluginSystem.Plugins
             if (worldRanking.Ranking == -1)
             {
                 Context.RPCClient.Methods.Kick(e.Login, Settings.PersonalKickMessage);
-                Context.RPCClient.Methods.ChatSend(Settings.PublicKickMessage.Replace("{{Nickname]}", detailedPlayerInfo.NickName));
+                SendFormattedMessage(Settings.PublicKickMessage, "Nickname", StripTMColorsAndFormatting(detailedPlayerInfo.NickName));
                 e.Handled = true;
             }
         }
@@ -78,11 +78,21 @@ namespace TMSPS.Core.PluginSystem.Plugins
 
     public class KickUnrankedPlayerPluginSettings : SettingsBase
     {
+        #region Constants
+
         public const string PERSONAL_KICK_MESSAGE = "Unranked players are not welcome at this server.";
-        public const string PUBLIC_KICK_MESSAGE = "{{Nickname]} got kicked for not having a ranking.";
+        public const string PUBLIC_KICK_MESSAGE = "{[#ServerStyle]}>> {[#HighlightStyle]}{[Nickname]} {[#MessageStyle]} got kicked for not having a ranking.";
+
+        #endregion
+
+        #region Properties
 
         public string PersonalKickMessage { get; private set; }
         public string PublicKickMessage { get; private set; }
+
+        #endregion
+
+        #region Public Methods
 
         public static KickUnrankedPlayerPluginSettings ReadFromFile(string xmlConfigurationFile)
         {
@@ -100,5 +110,7 @@ namespace TMSPS.Core.PluginSystem.Plugins
 
             return result;
         }
+
+        #endregion
     }
 }

@@ -103,13 +103,13 @@ namespace TMSPS.Core.PluginSystem.Plugins.AdminPlayer
             foreach (PlayerInfo playerInfo in logins)
             {
                 Context.RPCClient.Methods.Kick(playerInfo.Login, "Kicked for spectating without asking.");
-                Context.RPCClient.Methods.ChatSendServerMessage(string.Format("[SpectatorBot] {0} got kicked for spectating without asking.", playerInfo.NickName));
+                SendFormattedMessage("{[#ServerStyle]}>> {[#HighlightStyle]}" + StripTMColorsAndFormatting(playerInfo.NickName) + " {[#MessageStyle]}got kicked for spectating without asking.");
             }
 
             if (logins.Count == 0)
-                Context.RPCClient.Methods.ChatSendServerMessageToLogin("No one is spectating!", login);
+                SendFormattedMessageToLogin(login, "{[#ServerStyle]}> {[#MessageStyle]} No one is spectating!");
             else
-                Context.RPCClient.Methods.ChatSendServerMessageToLogin(string.Format("Kicked {0} players for spectating without asking.", logins.Count), login);
+                SendFormattedMessageToLogin(login, "{[#ServerStyle]}> {[#MessageStyle]}Kicked {[#HighlightStyle]}" + logins.Count + "{[#MessageStyle]} player for spectating without asking.");
         }
 
         private void RestartTrackImmediately(string login)

@@ -81,7 +81,16 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="MessageConstants.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MessageConstants_template.xml" />
+    <Content Include="MessageStyles_template.xml" />
     <Content Include="Credentials.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Credentials_Template.xml" />
+    <Content Include="MessageStyles.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Plugins\ChatBot\Settings.xml" />
