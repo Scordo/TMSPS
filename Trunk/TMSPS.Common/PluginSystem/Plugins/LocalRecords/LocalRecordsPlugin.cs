@@ -120,14 +120,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
 	        Context.RPCClient.Callbacks.PlayerDisconnect += Callbacks_PlayerDisconnect;
 	        Context.RPCClient.Callbacks.PlayerFinish += Callbacks_PlayerFinish;
 	        Context.RPCClient.Callbacks.PlayerChat += Callbacks_PlayerChat;
-            Context.RPCClient.Callbacks.PlayerCheckpoint += Callbacks_PlayerCheckpoint;
 	    }
-
-        private void Callbacks_PlayerCheckpoint(object sender, PlayerCheckpointEventArgs e)
-        {
-            if (e.TimeOrScore <= 0)
-                HandleCheater(e.Login, true);
-        }
 
         private void HandleCheater(string login, bool updateUI)
         {
@@ -434,7 +427,6 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
 	        Context.RPCClient.Callbacks.PlayerConnect -= Callbacks_PlayerConnect;
 	        Context.RPCClient.Callbacks.PlayerDisconnect -= Callbacks_PlayerDisconnect;
 	        Context.RPCClient.Callbacks.PlayerFinish -= Callbacks_PlayerFinish;
-            Context.RPCClient.Callbacks.PlayerCheckpoint -= Callbacks_PlayerCheckpoint;
 	    }
 
 	    protected void OnPlayerVoted(string login, int challengeID, ushort voteValue, double averageVoteValue)
