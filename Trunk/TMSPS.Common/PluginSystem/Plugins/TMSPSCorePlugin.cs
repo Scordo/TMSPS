@@ -62,7 +62,7 @@ namespace TMSPS.Core.PluginSystem.Plugins
             ServerCommand command = ServerCommand.Parse(e.Text);
 
             if (command != null)
-                HandleCommand(command);
+                HandleCommand(e.Login, command);
         }
 
         protected override void Dispose(bool connectionLost)
