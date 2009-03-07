@@ -1,6 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using TMSPS.Core.Communication.EventArguments.Callbacks;
+using TMSPS.Core.Communication.ProxyTypes;
 using PlayerInfo=TMSPS.Core.Communication.ProxyTypes.PlayerInfo;
+using Version=System.Version;
 
 namespace TMSPS.Core.PluginSystem.Plugins
 {
@@ -33,10 +36,16 @@ namespace TMSPS.Core.PluginSystem.Plugins
             get { return "Core"; }
         }
 
+        private TMSPSCorePluginSettings Settings
+        {
+            get; set;
+        }
+
         #endregion
 
         protected override void Init()
         {
+            Settings = TMSPSCorePluginSettings.ReadFromFile(PluginSettingsFilePath);
             GetPlayerList(); // cach all current player infos
             GetCurrentChallengeInfo(); // cache the current challenge info
             GetServerOptions(); // cache currenr server options
@@ -80,7 +89,31 @@ namespace TMSPS.Core.PluginSystem.Plugins
                     return;
 
                 if (playerInfo.NickName.IsNullOrTimmedEmpty())
+                {
                     Context.RPCClient.Methods.Kick(e.Login, "Please provide a nickname!");
+                    e.Handled = true;
+                    return;
+                }
+
+                DetailedPlayerInfo detailedPlayerInfo = GetDetailedPlayerInfo(e.Login);
+
+                if (detailedPlayerInfo == null)
+                    return;
+
+                string nation = "Unknown";
+                List<string> pathParts = new List<string>(detailedPlayerInfo.Path.Split(new [] {'|'}, StringSplitOptions.RemoveEmptyEntries));
+
+                if (pathParts.Count > 1)
+                    nation = string.Join(" > ", pathParts.ToArray(), 1, pathParts.Count - 1);
+
+                int ladderRank = -1;
+
+                PlayerRanking worldRanking = detailedPlayerInfo.LadderStats.PlayerRankings.Find(ranking => ranking.Path == "World");
+
+                if (worldRanking != null)
+                    ladderRank = worldRanking.Ranking;
+
+                SendFormattedMessage(Settings.JoinMessage, "Nickname", StripTMColorsAndFormatting(detailedPlayerInfo.NickName), "Nation", nation, "Ladder", ladderRank.ToString(Context.Culture));
             }, "Error in Callbacks_PlayerConnect Method.", true);
         }
 
@@ -94,6 +127,11 @@ namespace TMSPS.Core.PluginSystem.Plugins
 
             RunCatchLog(() =>
             {
+                PlayerInfo playerInfo = GetPlayerInfoCached(e.Login);
+
+                if (playerInfo != null)
+                    SendFormattedMessage(Settings.LeaveMessage, "Nickname", StripTMColorsAndFormatting(playerInfo.NickName));
+
                 RemoveCachedPlayerInfo(e.Login);
             }, "Error in Callbacks_PlayerDisconnect Method.", true);
         }

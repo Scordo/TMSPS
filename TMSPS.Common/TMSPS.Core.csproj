@@ -247,6 +247,7 @@
     <Compile Include="PluginSystem\Plugins\LocalRecords\SQL\SessionAdapter.cs" />
     <Compile Include="PluginSystem\Plugins\NameProtectionBotPlugin.cs" />
     <Compile Include="PluginSystem\Plugins\TMSPSCorePlugin.cs" />
+    <Compile Include="PluginSystem\Plugins\TMSPSCorePluginSettings.cs" />
     <Compile Include="PluginSystem\Plugins\TMSPSCorePlugin_CommandHandling.cs" />
     <Compile Include="PluginSystem\Plugins\TMX\TMXInfo.cs" />
     <Compile Include="PluginSystem\Plugins\TMX\TMXPlugin.cs" />

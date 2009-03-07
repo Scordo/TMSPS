@@ -161,7 +161,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.Dedimania
 
                         OnRankingsChanged(Rankings);
 
-                        playerInfo = playerInfo ?? GetPlayerInfo(e.Login);
+                        playerInfo = playerInfo ?? GetPlayerInfoCached(e.Login);
 
                         if (playerInfo == null)
                             return;
