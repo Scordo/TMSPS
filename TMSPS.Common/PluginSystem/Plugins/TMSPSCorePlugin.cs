@@ -95,25 +95,28 @@ namespace TMSPS.Core.PluginSystem.Plugins
                     return;
                 }
 
-                DetailedPlayerInfo detailedPlayerInfo = GetDetailedPlayerInfo(e.Login);
+                if (Settings.EnableJoinMessage)
+                {
+                    DetailedPlayerInfo detailedPlayerInfo = GetDetailedPlayerInfo(e.Login);
 
-                if (detailedPlayerInfo == null)
-                    return;
+                    if (detailedPlayerInfo == null)
+                        return;
 
-                string nation = "Unknown";
-                List<string> pathParts = new List<string>(detailedPlayerInfo.Path.Split(new [] {'|'}, StringSplitOptions.RemoveEmptyEntries));
+                    string nation = "Unknown";
+                    List<string> pathParts = new List<string>(detailedPlayerInfo.Path.Split(new[] { '|' }, StringSplitOptions.RemoveEmptyEntries));
 
-                if (pathParts.Count > 1)
-                    nation = string.Join(" > ", pathParts.ToArray(), 1, pathParts.Count - 1);
+                    if (pathParts.Count > 1)
+                        nation = string.Join(" > ", pathParts.ToArray(), 1, pathParts.Count - 1);
 
-                int ladderRank = -1;
+                    int ladderRank = -1;
 
-                PlayerRanking worldRanking = detailedPlayerInfo.LadderStats.PlayerRankings.Find(ranking => ranking.Path == "World");
+                    PlayerRanking worldRanking = detailedPlayerInfo.LadderStats.PlayerRankings.Find(ranking => ranking.Path == "World");
 
-                if (worldRanking != null)
-                    ladderRank = worldRanking.Ranking;
+                    if (worldRanking != null)
+                        ladderRank = worldRanking.Ranking;
 
-                SendFormattedMessage(Settings.JoinMessage, "Nickname", StripTMColorsAndFormatting(detailedPlayerInfo.NickName), "Nation", nation, "Ladder", ladderRank.ToString(Context.Culture));
+                    SendFormattedMessage(Settings.JoinMessage, "Nickname", StripTMColorsAndFormatting(detailedPlayerInfo.NickName), "Nation", nation, "Ladder", ladderRank.ToString(Context.Culture));
+                }
             }, "Error in Callbacks_PlayerConnect Method.", true);
         }
 
@@ -127,10 +130,14 @@ namespace TMSPS.Core.PluginSystem.Plugins
 
             RunCatchLog(() =>
             {
-                PlayerInfo playerInfo = GetPlayerInfoCached(e.Login);
 
-                if (playerInfo != null)
-                    SendFormattedMessage(Settings.LeaveMessage, "Nickname", StripTMColorsAndFormatting(playerInfo.NickName));
+                if (Settings.EnableLeaveMessage)
+                {
+                    PlayerInfo playerInfo = GetPlayerInfoCached(e.Login);
+
+                    if (playerInfo != null)
+                        SendFormattedMessage(Settings.LeaveMessage, "Nickname", StripTMColorsAndFormatting(playerInfo.NickName));
+                }
 
                 RemoveCachedPlayerInfo(e.Login);
             }, "Error in Callbacks_PlayerDisconnect Method.", true);
