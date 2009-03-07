@@ -146,7 +146,7 @@ namespace TMSPS.Core.PluginSystem
 
         protected static bool CheckpointsValid(IEnumerable<int> checkpoints)
         {
-            int lastCheckpoint = 0;
+            int lastCheckpoint = -1;
 
             foreach (int checkpoint in checkpoints)
             {
