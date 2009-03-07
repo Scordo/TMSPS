@@ -12,6 +12,9 @@ namespace TMSPS.Core.PluginSystem.Plugins
         public const bool ENABLE_JOIN_MESSAGE = true;
         public const string LEAVE_MESSAGE = "{[#ServerStyle]}>> {[#HighlightStyle]}{[Nickname]}{[#MessageStyle]} has left the game.";
         public const bool ENABLE_LEAVE_MESSAGE = true;
+        public const string KICK_MESSAGE = "{[#ServerStyle]}>> {[#HighlightStyle]}{[KickingNickname]}{[#MessageStyle]} kicked {[#HighlightStyle]}{[KickedNickname]}.";
+        public const string BAN_MESSAGE = "{[#ServerStyle]}>> {[#HighlightStyle]}{[BanningNickname]}{[#MessageStyle]} banned {[#HighlightStyle]}{[BannedNickname]}.";
+        public const string BLACKLIST_MESSAGE = "{[#ServerStyle]}>> {[#HighlightStyle]}{[BlackListingNickname]}{[#MessageStyle]} blacklists {[#HighlightStyle]}{[BlackListedNickname]}.";
 
         #endregion
 
@@ -21,6 +24,9 @@ namespace TMSPS.Core.PluginSystem.Plugins
         public string JoinMessage { get; private set; }
         public string LeaveMessage { get; private set; }
         public bool EnableLeaveMessage { get; private set; }
+        public string KickMessage { get; private set; }
+        public string BanMessage { get; private set; }
+        public string BlackListMessage { get; private set; }
 
         #endregion
 
@@ -40,6 +46,9 @@ namespace TMSPS.Core.PluginSystem.Plugins
             result.JoinMessage = ReadConfigString(configDocument.Root, "JoinMessage", JOIN_MESSAGE, xmlConfigurationFile);
             result.EnableLeaveMessage = ReadConfigBool(configDocument.Root, "EnableLeaveMessage", ENABLE_LEAVE_MESSAGE, xmlConfigurationFile);
             result.LeaveMessage = ReadConfigString(configDocument.Root, "LeaveMessage", LEAVE_MESSAGE, xmlConfigurationFile);
+            result.KickMessage = ReadConfigString(configDocument.Root, "KickMessage", KICK_MESSAGE, xmlConfigurationFile);
+            result.BanMessage = ReadConfigString(configDocument.Root, "BanMessage", BAN_MESSAGE, xmlConfigurationFile);
+            result.BlackListMessage = ReadConfigString(configDocument.Root, "BlackListMessage", BLACKLIST_MESSAGE, xmlConfigurationFile);
             
 
             return result;

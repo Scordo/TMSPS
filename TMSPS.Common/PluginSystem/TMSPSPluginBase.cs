@@ -164,6 +164,11 @@ namespace TMSPS.Core.PluginSystem
             SendFormattedMessageToLogin(login, "{[#ServerStyle]}> {[#ErrorStyle]}You do not have permissions to execute this command.");
         }
 
+        protected void SendNoPlayerWithLoginMessageToLogin(string login, string missingLogin)
+        {
+            SendFormattedMessageToLogin(login, "{[#ServerStyle]}> {[#ErrorStyle]}There is no player with login " + missingLogin);
+        }
+
         protected bool LoginHasRight(string login, bool sendNoPermissionMessageIfRightMissing, string right)
         {
             return LoginHasAnyRight(login, sendNoPermissionMessageIfRightMissing, right);
