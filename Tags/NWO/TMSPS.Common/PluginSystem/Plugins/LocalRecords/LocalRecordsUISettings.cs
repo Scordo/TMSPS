@@ -1,7 +1,7 @@
 ﻿using System.Configuration;
 using System.IO;
 using System.Xml.Linq;
-using SettingsBase=TMSPS.Core.Common.SettingsBase;
+using SettingsBase = TMSPS.Core.Common.SettingsBase;
 
 namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
 {
