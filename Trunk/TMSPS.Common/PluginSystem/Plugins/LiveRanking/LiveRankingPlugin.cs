@@ -4,8 +4,8 @@ using System.Globalization;
 using System.Linq;
 using System.Security;
 using System.Text;
+using System.Threading;
 using System.Xml.Linq;
-using TMSPS.Core.Common;
 using TMSPS.Core.Communication.ProxyTypes;
 using Version=System.Version;
 
@@ -46,9 +46,9 @@ namespace TMSPS.Core.PluginSystem.Plugins.LiveRanking
             get { return "LiveRanking"; }
         }
 
+        private Timer LiveRankingsTimer { get; set; }
         private LiveRankingsSettings Settings { get; set; }
         private PlayerRank[] LastRankings { get; set; }
-        private TimedVolatileExecutionQueue<LiveRankingPlugin> UpdateTimer { get; set; }
         private bool PodiumStage { get; set; }
 
         #endregion
@@ -61,20 +61,10 @@ namespace TMSPS.Core.PluginSystem.Plugins.LiveRanking
             Settings = LiveRankingsSettings.ReadFromFile(PluginSettingsFilePath);
             LastRankings = new PlayerRank[]{};
             UpdateUI(this);
-            UpdateTimer = new TimedVolatileExecutionQueue<LiveRankingPlugin>(TimeSpan.FromSeconds(Settings.UpdateInterval));
 
             Context.RPCClient.Callbacks.PlayerConnect += Callbacks_PlayerConnect;
             Context.RPCClient.Callbacks.BeginRace += Callbacks_BeginRace;
             Context.RPCClient.Callbacks.EndRace += Callbacks_EndRace;
-            Context.RPCClient.Callbacks.PlayerFinish += Callbacks_PlayerFinish;
-        }
-
-        private void Callbacks_PlayerFinish(object sender, Communication.EventArguments.Callbacks.PlayerFinishEventArgs e)
-        {
-            if (e.TimeOrScore <= 0)
-                return;
-
-            UpdateTimer.Enqueue(UpdateUI, this);
         }
 
         private void Callbacks_PlayerConnect(object sender, Communication.EventArguments.Callbacks.PlayerConnectEventArgs e)
@@ -88,28 +78,21 @@ namespace TMSPS.Core.PluginSystem.Plugins.LiveRanking
         private void Callbacks_BeginRace(object sender, Communication.EventArguments.Callbacks.BeginRaceEventArgs e)
         {
             PodiumStage = false;
-            RunCatchLog(() => 
-            {
-                UpdateTimer.Clear();
-                UpdateUI(this);
-            }, "Error in Callbacks_BeginRace Method.", true);
+            RunCatchLog(() => UpdateUI(this), "Error in Callbacks_BeginRace Method.", true);
         }
 
         private void Callbacks_EndRace(object sender, Communication.EventArguments.Callbacks.EndRaceEventArgs e)
         {
             PodiumStage = true;
-            
-            RunCatchLog(() =>
-            {
-                UpdateTimer.Clear();
-                UpdateUI(this);
-            }, "Error in Callbacks_EndRace Method.", true);
+            RunCatchLog(() => UpdateUI(this), "Error in Callbacks_EndRace Method.", true);
         }
 
         private void UpdateUI(object state)
         {
             RunCatchLog(() =>
             {
+                StopLiveRankingsTimer();
+
                 if (PodiumStage)
                 {
                     HideUI();
@@ -133,6 +116,8 @@ namespace TMSPS.Core.PluginSystem.Plugins.LiveRanking
                 {
                     SendUIToPlayer(rankingArray, playerInfo.Login);
                 }
+
+                StartLiveRankingsTimer();
             }, "Error in UpdateUI Method.", true);
         }
 
@@ -290,14 +275,21 @@ namespace TMSPS.Core.PluginSystem.Plugins.LiveRanking
             SendEmptyManiaLinkPage(_liveRankingListManiaLinkPageID);
         }
 
+        private void StopLiveRankingsTimer()
+        {
+            if (LiveRankingsTimer != null)
+                LiveRankingsTimer.Dispose();
+        }
+
+        private void StartLiveRankingsTimer()
+        {
+            LiveRankingsTimer = new Timer(UpdateUI, this, TimeSpan.FromSeconds(Settings.UpdateInterval), TimeSpan.FromSeconds(Settings.UpdateInterval));
+        }
+
         protected override void Dispose(bool connectionLost)
         {
-            UpdateTimer.Stop();
-
-            Context.RPCClient.Callbacks.PlayerConnect -= Callbacks_PlayerConnect;
-            Context.RPCClient.Callbacks.BeginRace -= Callbacks_BeginRace;
-            Context.RPCClient.Callbacks.EndRace -= Callbacks_EndRace;
-            Context.RPCClient.Callbacks.PlayerFinish -= Callbacks_PlayerFinish;
+            Context.RPCClient.Callbacks.BeginRace += Callbacks_BeginRace;
+            Context.RPCClient.Callbacks.EndRace += Callbacks_EndRace;
         }
 
         #endregion

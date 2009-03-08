@@ -5,10 +5,9 @@ using System.Linq;
 using System.Security;
 using System.Text;
 using System.Xml.Linq;
-using TMSPS.Core.Common;
 using TMSPS.Core.Communication.EventArguments.Callbacks;
-using PlayerInfo=TMSPS.Core.Communication.ProxyTypes.PlayerInfo;
-using Version=System.Version;
+using PlayerInfo = TMSPS.Core.Communication.ProxyTypes.PlayerInfo;
+using Version = System.Version;
 
 namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
 {
@@ -28,8 +27,6 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
         private readonly string _localRecordManiaLinkPageID = "LocalRecordPanelID"; //Guid.NewGuid().ToString("N");
         private readonly string _localRecordListManiaLinkPageID = "LocalRecordListPanelID"; //Guid.NewGuid().ToString("N");
         private RankEntry[] LastRankings { get; set; }
-        private TimedVolatileExecutionQueue<RankEntry[]> UpdateListTimer { get; set; }
-        private TimedVolatileExecutionQueue<string> UpdateLocalRecordTimer { get; set; }
 
         #endregion
 
@@ -37,14 +34,11 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
 
         protected override void Init()
         {
-            LastRankings = new RankEntry[] {};
+            LastRankings = new RankEntry[] { };
             Settings = LocalRecordsUISettings.ReadFromFile(PluginSettingsFilePath);
 
             if (Settings.MaxRecordsToShow > HostPlugin.Settings.MaxRecordsToReport)
                 Settings.MaxRecordsToShow = HostPlugin.Settings.MaxRecordsToReport;
-
-            UpdateListTimer = new TimedVolatileExecutionQueue<RankEntry[]>(TimeSpan.FromSeconds(Settings.RecordListUpdateInterval));
-            UpdateLocalRecordTimer = new TimedVolatileExecutionQueue<string>(TimeSpan.FromSeconds(Settings.LocalRecordUpdateInterval));
 
             //SendPBManiaLinkPageToAll(null);
             HostPlugin.PlayerVoted += HostPlugin_PlayerVoted;
@@ -54,6 +48,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
             Context.RPCClient.Callbacks.EndRace += Callbacks_EndRace;
             Context.RPCClient.Callbacks.PlayerConnect += Callbacks_PlayerConnect;
             Context.RPCClient.Callbacks.PlayerChat += Callbacks_PlayerChat;
+
         }
 
         private void Callbacks_PlayerChat(object sender, PlayerChatEventArgs e)
@@ -66,14 +61,14 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
         }
 
         private bool CheckForServerRankCommand(PlayerChatEventArgs args)
-	    {
+        {
             if (string.Compare(args.Text, "/sr", StringComparison.InvariantCultureIgnoreCase) != 0 && string.Compare(args.Text, "/rank", StringComparison.InvariantCultureIgnoreCase) != 0)
-	           return false;
+                return false;
 
             SendServerRankMessageToLogin(args.Login);
 
             return true;
-	    }
+        }
 
         private void SendServerRankMessageToLogin(string login)
         {
@@ -110,10 +105,10 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
                 SendServerRankMessageToLogin(e.Login);
         }
 
-        private void HostPlugin_LocalRecordsDetermined(object sender, EventArgs<RankEntry[]> e)
+        private void HostPlugin_LocalRecordsDetermined(object sender, Common.EventArgs<RankEntry[]> e)
         {
             LastRankings = e.Value;
-            LocalBestTimeOrScore = e.Value.Length > 0 ? (uint?) e.Value[0].TimeOrScore : null;
+            LocalBestTimeOrScore = e.Value.Length > 0 ? (uint?)e.Value[0].TimeOrScore : null;
 
             if (Settings.ShowPBUserInterface)
                 SendPBManiaLinkPageToAll(e.Value);
@@ -151,18 +146,18 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
                 return;
 
             if (rankEntries == null)
-                rankEntries = new RankEntry[]{};
+                rankEntries = new RankEntry[] { };
 
             foreach (PlayerInfo playerInfo in players)
             {
                 RankEntry rank = Array.Find(rankEntries, rankEntry => rankEntry.Login == playerInfo.Login);
 
-                uint? personalBest = rank == null ? null : (uint?) rank.TimeOrScore;
+                uint? personalBest = rank == null ? null : (uint?)rank.TimeOrScore;
 
                 if (!personalBest.HasValue)
                     personalBest = HostPlugin.RecordAdapter.GetBestTime(playerInfo.Login, HostPlugin.CurrentChallengeID);
 
-                
+
                 SendPBManiaLinkPage(playerInfo.Login, personalBest);
             }
         }
@@ -187,11 +182,6 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
         private void SendLocalRecordManiaLinkToLogin(string login)
         {
             Context.RPCClient.Methods.SendDisplayManialinkPageToLogin(login, GetLocalRecordManiaLinkPage(), 0, false);
-        }
-
-        private void SendLocalRecordManiaLinkPageToAll(string dummy)
-        {
-            SendLocalRecordManiaLinkPageToAll();
         }
 
         private void SendLocalRecordManiaLinkPageToAll()
@@ -233,7 +223,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
             if (Settings.ShowMessages)
             {
                 SendFormattedMessageToLogin(e.Login, Settings.VoteAcceptedMessage, "AverageVote", e.AverageVoteValue.ToString("F", CultureInfo.InvariantCulture));
-            }  
+            }
         }
 
         private void HostPlugin_PlayerNewRecord(object sender, PlayerNewRecordEventArgs e)
@@ -269,16 +259,18 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
             if (Settings.ShowPBUserInterface)
                 SendPBManiaLinkPage(e.PlayerInfo.Login, Convert.ToUInt32(e.TimeOrScore));
 
+
+
             if (LocalBestTimeOrScore == null || e.TimeOrScore < LocalBestTimeOrScore)
             {
                 LocalBestTimeOrScore = Convert.ToUInt32(e.TimeOrScore);
 
                 if (Settings.ShowLocalRecordUserInterface)
-                    UpdateLocalRecordTimer.Enqueue(SendLocalRecordManiaLinkPageToAll, null);
+                    SendLocalRecordManiaLinkPageToAll();
             }
 
             if (Settings.ShowLocalRecordUserInterface)
-                UpdateListTimer.Enqueue(SendRecordListToAllPlayers, HostPlugin.LocalRecords);
+                SendRecordListToAllPlayers(HostPlugin.LocalRecords);
         }
 
         private string GetRecordListManiaLinkPage(RankEntry[] rankings, string login)
@@ -327,7 +319,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
             playerRecordXml.Replace("{[Y]}", currentY.ToString(CultureInfo.InvariantCulture));
             playerRecordXml.Replace("{[Rank]}", currentRank + ".");
             playerRecordXml.Replace("{[TimeOrScore]}", rankingInfo.TimeOrScore == 0 ? "  --.--  " : string.Format("{0}:{1}.{2}", time.Minutes, time.Seconds.ToString("00"), (time.Milliseconds / 10).ToString("00")));
-            
+
             string nickname = SecurityElement.Escape(rankingInfo.Nickname);
 
             if (Settings.StripNickFormatting)
