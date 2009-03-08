@@ -6,6 +6,7 @@ using System.Reflection;
 using System.Text.RegularExpressions;
 using TMSPS.Core.Common;
 using TMSPS.Core.Logging;
+using System.Linq;
 
 namespace TMSPS.Core.PluginSystem
 {
@@ -146,6 +147,11 @@ namespace TMSPS.Core.PluginSystem
 
         protected static bool CheckpointsValid(IEnumerable<int> checkpoints)
         {
+            // if all checkpoints have a value of -1 return true, otherwise non cheaters get banned 
+            // this case happens when a player connects, drives a time... disconnects within the same round.. connects within the same round.. does not drive a time within the same round .. and disconnects within the same round
+            if (checkpoints.All(time => time == -1))
+                return true;
+
             int lastCheckpoint = -1;
 
             foreach (int checkpoint in checkpoints)
