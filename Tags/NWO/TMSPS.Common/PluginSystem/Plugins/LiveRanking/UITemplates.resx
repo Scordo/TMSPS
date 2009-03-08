@@ -139,7 +139,7 @@
 		&lt;quad sizen="16.7 6" posn="0 -2.2 0" halign="left" valign="top" style="Bgs1" substyle="BgList"/&gt;
 		
 		&lt;!-- Container for Records --&gt;
-		&lt;quad sizen="17 {[ContainerHeight}}" posn="0 -2.2 0" halign="left" valign="top" style="BgsPlayerCard" substyle="BgActivePlayerName"/&gt;
+		&lt;quad sizen="17 {[ContainerHeight}}" posn="0 -2.2 0" halign="left" valign="top" style="Bgs1InRace" substyle="NavButton"/&gt;
 
 		&lt;RankingPlaceHolder /&gt;
 	&lt;/frame&gt;
