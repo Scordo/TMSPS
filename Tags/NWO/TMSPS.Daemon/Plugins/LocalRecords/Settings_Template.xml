@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Settings>
+	<ProviderSettings>
+		<Assembly>TMSPS.Core</Assembly>
+		<Provider>TMSPS.Core.PluginSystem.Plugins.LocalRecords.SQL.AdapterProvider</Provider>
+		<Parameter>server=sqlserver;database=database;uid=login;pwd=password;MultipleActiveResultSets=True;</Parameter>
+	</ProviderSettings>
+
+	<Plugins>
+		<Plugin enabled="true" assemblyName="TMSPS.Core" pluginClass="TMSPS.Core.PluginSystem.Plugins.LocalRecords.LocalRecordsUIPlugin" />
+		<Plugin enabled="true" assemblyName="TMSPS.Core" pluginClass="TMSPS.Core.PluginSystem.Plugins.PodiumPlugins.TopRankingsPodiumPlugin" />
+		<Plugin enabled="true" assemblyName="TMSPS.Core" pluginClass="TMSPS.Core.PluginSystem.Plugins.PodiumPlugins.HoursPlayedPodiumPlugin" />
+		<Plugin enabled="true" assemblyName="TMSPS.Core" pluginClass="TMSPS.Core.PluginSystem.Plugins.PodiumPlugins.TopWinnersPodiumPlugin" />
+		<Plugin enabled="true" assemblyName="TMSPS.Core" pluginClass="TMSPS.Core.PluginSystem.Plugins.PodiumPlugins.MostTop3RaceResultsPodiumPlugin" />
+		<Plugin enabled="true" assemblyName="TMSPS.Core" pluginClass="TMSPS.Core.PluginSystem.Plugins.PodiumPlugins.MostTop3RecordsPodiumPlugin" />
+	</Plugins>
+
+	<MaxRecordsToReport>50</MaxRecordsToReport>
+	<CheaterDeletedMessage>{[#ServerStyle]}> {[#MessageStyle]}Stats of cheater with login {[#HighlightStyle]}{[Login]} {[#MessageStyle]}deleted!</CheaterDeletedMessage>
+	<CheaterDeletionFailedMessage>{[#ServerStyle]}> {[#MessageStyle]}Cheater with login {[#HighlightStyle]}{[Login]} {[#MessageStyle]}does not exist!</CheaterDeletionFailedMessage>
+	<CheaterBannedMessage>{[#ServerStyle]}>> {[#ErrorStyle]}Cheater detected! {[#MessageStyle]}Login is {[#HighlightStyle]}{[Login]}. {[#MessageStyle]}Cheater got banned and blacklisted. All stats deleted.</CheaterBannedMessage>
+</Settings>

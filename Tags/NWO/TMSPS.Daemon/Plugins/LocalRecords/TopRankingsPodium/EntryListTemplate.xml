@@ -1,0 +1,28 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Settings>
+	<EntryStartMargin>-2.9</EntryStartMargin>
+	<EntryHeight>1.5</EntryHeight>
+	<EntryEndMargin>0.0</EntryEndMargin>
+	<EntryToContainerMarginY>0.7</EntryToContainerMarginY>
+
+	<Templates>
+		<MainTemplate>
+			<manialink id="{[ManiaLinkID]}">
+				<frame posn="{[X]} 48 0">
+					<format textsize="1"/>
+					<label posn="8.05 -0.5 2" sizen="16.1 2" halign="center" text="{[Title]}"/>
+					<EntryPlaceHolder />
+				</frame>
+			</manialink>
+		</MainTemplate>
+
+		<EntryTemplate>
+			<frame posn="0 {[Y]} 0">
+				<format textsize="1"/>
+				<label sizen="2.5 1" halign="right" posn="2.5 0 0.1" text="{[Rank]}" textcolor="FFFF"/>
+				<label sizen="3 1" halign="right" posn="5.8 0 0.1" text="{[Value]}" textcolor="5AFF"/>
+				<label sizen="9 1" posn="6.1 0 0.1" text="{[Description]}" textcolor="FFFF"/>
+			</frame>
+		</EntryTemplate>
+	</Templates>
+</Settings>

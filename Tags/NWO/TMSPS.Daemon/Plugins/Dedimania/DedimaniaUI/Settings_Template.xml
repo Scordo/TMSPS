@@ -1,0 +1,12 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Settings>
+	<ShowMessages>true</ShowMessages>
+	<ShowDEDUI>true</ShowDEDUI>
+	<ShowDEDListUI>true</ShowDEDListUI>
+	<HideDEDListUIOnFinish>true</HideDEDListUIOnFinish>
+	<MaxRecordsToShow>30</MaxRecordsToShow>
+	<NoticeDelayInSeconds>2</NoticeDelayInSeconds>
+	<NewDedimaniaRankMessage>$z{[Nickname]}$z claimed dedimania rank: $w$s$0f0{[Rank]}$z!</NewDedimaniaRankMessage>
+	<ImprovedDedimaniaRankMessage>$z{[Nickname]}$z improved his/her dedimania rank: $w$s$0f0{[Rank]}$z!</ImprovedDedimaniaRankMessage>
+	<StripNickFormatting>false</StripNickFormatting>
+</Settings>
