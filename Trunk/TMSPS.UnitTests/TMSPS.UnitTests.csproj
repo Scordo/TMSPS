@@ -42,6 +42,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Core\Common\TimedVolatileExecutionQueueUTC.cs" />
     <Compile Include="Core\PluginSystem\Plugins\Dedimania\DedimaniaUIPluginUTC.cs" />
     <Compile Include="Core\PluginSystem\Plugins\TMX\TMXInfoUTC.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
