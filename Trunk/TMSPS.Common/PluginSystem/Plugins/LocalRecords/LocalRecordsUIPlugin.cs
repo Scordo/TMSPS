@@ -127,7 +127,6 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
 
         private void SendRecordListToAllPlayers(RankEntry[] rankings)
         {
-            SendFormattedMessage(string.Format("[{0}] Local Record List update", DateTime.Now));
             List<PlayerInfo> players = GetPlayerList(this);
 
             if (players == null)
@@ -192,7 +191,6 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
 
         private void SendLocalRecordManiaLinkPageToAll(string dummy)
         {
-            SendFormattedMessage(string.Format("[{0}] Best Local record update", DateTime.Now));
             SendLocalRecordManiaLinkPageToAll();
         }
 
