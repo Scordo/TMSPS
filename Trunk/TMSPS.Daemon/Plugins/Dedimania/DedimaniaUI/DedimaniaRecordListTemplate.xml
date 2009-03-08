@@ -15,7 +15,7 @@
 					<label posn="1.3 -0.5 2" halign="left" text="Dedimania"/>
 
 					<quad sizen="16.7 6" posn="-1 -2.2 0" halign="left" valign="top" style="Bgs1" substyle="BgList"/>
-					<quad sizen="17 {[ContainerHeight}}" posn="-1 -2.2 0" halign="left" valign="top" style="BgsPlayerCard" substyle="BgActivePlayerName"/>
+					<quad sizen="17 {[ContainerHeight}}" posn="-1 -2.2 0" halign="left" valign="top" style="Bgs1InRace" substyle="NavButton"/>
 
 					<RankingPlaceHolder />
 				</frame>
