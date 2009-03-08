@@ -1,7 +1,7 @@
 ﻿using System.Configuration;
 using System.IO;
 using System.Xml.Linq;
-using SettingsBase=TMSPS.Core.Common.SettingsBase;
+using SettingsBase = TMSPS.Core.Common.SettingsBase;
 
 namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
 {
@@ -23,14 +23,12 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
         public const bool SHOW_LOCAL_RECORD_LIST_UI = true;
         public const bool HIDE_RECORD_LIST_UI_ON_FINISH = true;
         public const bool STRIP_NICK_FORMATTING = false;
-        public const uint LOCAL_RECORD_UPDATE_INTERVAL_IN_SECONDS = 2;
 
         public const double RECORDLIST_PLAYER_START_MARGIN = -2.9;
         public const double RECORDLIST_TOP3_GAP = 0.6;
         public const double RECORDLIST_PLAYER_RECORD_HEIGHT = 1.5;
         public const double RECORDLIST_PLAYER_END_MARGIN = 0;
         public const double RECORDLIST_PLAYER_TO_CONTAINER_MARGIN_Y = 0.7;
-        public const uint RECORDLIST_UPDATE_INTERVAL_IN_SECONDS = 2;
 
 
         #endregion
@@ -44,7 +42,6 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
         public bool ShowLocalRecordListUserInterface { get; private set; }
         public bool HideRecordListUIOnFinish { get; private set; }
         public bool StripNickFormatting { get; private set; }
-        public uint LocalRecordUpdateInterval { get; private set; }
 
         public string VoteAcceptedMessage { get; private set; }
         public string FirstLocalRankMessage { get; private set; }
@@ -62,7 +59,6 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
         public double RecordListPlayerRecordHeight { get; private set; }
         public double RecordListPlayerEndMargin { get; private set; }
         public double RecordListPlayerToContainerMarginY { get; private set; }
-        public uint RecordListUpdateInterval { get; private set; }
 
         public string RecordListMainTemplate { get; private set; }
         public string RecordListTop3RecordTemplate { get; private set; }
@@ -97,8 +93,6 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
             result.RankingMessage = ReadConfigString(configDocument.Root, "RankingMessage", RANKING_MESSAGE, xmlConfigurationFile);
             result.NoticeDelayInSeconds = ReadConfigUInt(configDocument.Root, "NoticeDelayInSeconds", NOTICE_DELAY_IN_SECONDS, xmlConfigurationFile);
             result.StripNickFormatting = ReadConfigBool(configDocument.Root, "StripNickFormatting", STRIP_NICK_FORMATTING, xmlConfigurationFile);
-            result.LocalRecordUpdateInterval = ReadConfigUInt(configDocument.Root, "LocalRecordUpdateInterval", LOCAL_RECORD_UPDATE_INTERVAL_IN_SECONDS, xmlConfigurationFile);
-            result.RecordListUpdateInterval = ReadConfigUInt(configDocument.Root, "RecordListUpdateInterval", RECORDLIST_UPDATE_INTERVAL_IN_SECONDS, xmlConfigurationFile);
 
             string pbPanelTemplateFile = Path.Combine(settingsDirectory, "PBPanelTemplate.xml");
             result.PBPanelTemplate = File.Exists(pbPanelTemplateFile) ? File.ReadAllText(pbPanelTemplateFile) : UITemplates.LowerRightPBRecordPanelActive;

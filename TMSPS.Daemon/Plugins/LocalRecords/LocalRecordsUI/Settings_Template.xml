@@ -14,6 +14,4 @@
 	<WinMessage>{[#ServerStyle]}> {[#RecordStyle]}Congratulations, you've won your {[#RankStyle]}{[Wins]}{[#RecordStyle]}. race!</WinMessage>
 	<RankingMessage>{[#ServerStyle]}> {[#RecordStyle]}Your server rank is {[#HighlightStyle]}{[Rank]}{[#RecordStyle]}, Average: {[#HighlightStyle]}{[Average]}{[#RecordStyle]}, Score: {[#HighlightStyle]}{[Score]}{[#RecordStyle]}, Tracks {[#HighlightStyle]}{[Tracks]}{[#RecordStyle]}/{[#HighlightStyle]}{[TracksCount]}</RankingMessage>
 	<StripNickFormatting>false</StripNickFormatting>
-	<LocalRecordUpdateInterval>2</LocalRecordUpdateInterval>
-	<RecordListUpdateInterval>2</RecordListUpdateInterval>
 </Settings>
