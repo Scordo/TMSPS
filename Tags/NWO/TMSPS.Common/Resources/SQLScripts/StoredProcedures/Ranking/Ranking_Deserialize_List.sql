@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE dbo.Ranking_Deserialize_List
+﻿CREATE PROCEDURE [dbo].[Ranking_Deserialize_List]
 	@amountOfRankings int
 AS
 BEGIN
@@ -8,12 +8,12 @@ BEGIN
 	;with MainQuery as
 	(
 		Select
-			ROW_NUMBER() OVER (order by (AVG([Rank]) + (@challengesCount+1) / (Count([Rank])+1) * (@challengesCount - Count([Rank]))) ASC) [Rank],
+			ROW_NUMBER() OVER (order by (AVG([Rank]) + cast((@challengesCount+1) as float) / cast((Count([Rank])+1)as float) * cast((@challengesCount - Count([Rank])) as float)) ASC) [Rank],
 			PlayerID,
 			AVG([Rank]) as AverageRank,
 			Count([Rank]) as RecordsCount,
 			@challengesCount as ChallengesCount,
-			(AVG([Rank]) + (@challengesCount+1) / (Count([Rank])+1) * (@challengesCount - Count([Rank]))) as Score
+			(AVG([Rank]) + cast((@challengesCount+1) as float) / cast((Count([Rank])+1)as float) * cast((@challengesCount - Count([Rank])) as float)) as Score
 		From
 			Ranking with (nolock)
 		GROUP By 
