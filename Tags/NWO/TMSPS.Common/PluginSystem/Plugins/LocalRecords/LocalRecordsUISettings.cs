@@ -16,6 +16,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
         public const string IMPROVED_LOCAL_RANK_MESSAGE = "{[#ServerStyle]}>> {[#HighlightStyle]}{[Nickname]}$z{[#RecordStyle]} secured his/her {[#RankStyle]}{[Rank]}{[#RecordStyle]}. Local Record!";
         public const string WIN_MESSAGE = "{[#ServerStyle]}> {[#RecordStyle]}Congratulations, you've won your {[#RankStyle]}{[Wins]}{[#RecordStyle]}. race!";
         public const string RANKING_MESSAGE = "{[#ServerStyle]}> {[#RecordStyle]}Your server rank is {[#HighlightStyle]}{[Rank]}{[#RecordStyle]}, Average: {[#HighlightStyle]}{[Average]}{[#RecordStyle]}, Score: {[#HighlightStyle]}{[Score]}{[#RecordStyle]}, Tracks {[#HighlightStyle]}{[Tracks]}{[#RecordStyle]}/{[#HighlightStyle]}{[TracksCount]}";
+        public const string INFO_MESSAGE = "{[#ServerStyle]}> Your info: {[#MessageStyle]}Wins: {[#HighlightStyle]}{[Wins]}{[#MessageStyle]} Time played: {[#HighlightStyle]}{[Played]}{[#MessageStyle]} First visit: {[#HighlightStyle]}{[Created]}";
         public const bool SHOW_MESSAGES = true;
         public const uint NOTICE_DELAY_IN_SECONDS = 1;
         public const bool SHOW_LOCAL_RECORD_UI = true;
@@ -48,6 +49,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
         public string NewLocalRankMessage { get; private set; }
         public string ImprovedLocalRankMessage { get; private set; }
         public string WinMessage { get; private set; }
+        public string InfoMessage { get; private set; }
         public string RankingMessage { get; private set; }
         public uint NoticeDelayInSeconds { get; private set; }
         public string PBPanelTemplate { get; private set; }
@@ -90,6 +92,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
             result.NewLocalRankMessage = ReadConfigString(configDocument.Root, "NewLocalRankMessage", NEW_LOCAL_RANK_MESSAGE, xmlConfigurationFile);
             result.ImprovedLocalRankMessage = ReadConfigString(configDocument.Root, "ImprovedLocalRankMessage", IMPROVED_LOCAL_RANK_MESSAGE, xmlConfigurationFile);
             result.WinMessage = ReadConfigString(configDocument.Root, "WinMessage", WIN_MESSAGE, xmlConfigurationFile);
+            result.InfoMessage = ReadConfigString(configDocument.Root, "InfoMessage", INFO_MESSAGE, xmlConfigurationFile);
             result.RankingMessage = ReadConfigString(configDocument.Root, "RankingMessage", RANKING_MESSAGE, xmlConfigurationFile);
             result.NoticeDelayInSeconds = ReadConfigUInt(configDocument.Root, "NoticeDelayInSeconds", NOTICE_DELAY_IN_SECONDS, xmlConfigurationFile);
             result.StripNickFormatting = ReadConfigBool(configDocument.Root, "StripNickFormatting", STRIP_NICK_FORMATTING, xmlConfigurationFile);

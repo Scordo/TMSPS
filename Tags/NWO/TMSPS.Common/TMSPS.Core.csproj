@@ -289,6 +289,7 @@
     <None Include="Resources\SQLScripts\StoredProcedures\Challenge\Challenge_IncreaseRaces_ByID.sql" />
     <None Include="Resources\SQLScripts\StoredProcedures\Challenge\Challenge_IncreaseRaces_ByUniqueID.sql" />
     <None Include="Resources\SQLScripts\StoredProcedures\Player\Player_CreateOrUpdate.sql" />
+    <None Include="Resources\SQLScripts\StoredProcedures\Player\Player_Deserialize.sql" />
     <None Include="Resources\SQLScripts\StoredProcedures\Player\Player_DeserializeList.sql" />
     <None Include="Resources\SQLScripts\StoredProcedures\Player\Player_IncreaseWins.sql" />
     <None Include="Resources\SQLScripts\StoredProcedures\Player\Player_RemoveAllStatsForLogin.sql" />
