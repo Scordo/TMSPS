@@ -61,10 +61,10 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords.SQL
             string login = Convert.ToString(row["Login"]);
             ushort rank = Convert.ToUInt16(row["Rank"]);
             int playerID = Convert.ToInt32(row["PlayerID"]);
-            double averageRank = Convert.ToInt32(row["AverageRank"]);
+            double averageRank = Convert.ToDouble(row["AverageRank"]);
             uint recordsCount = Convert.ToUInt32(row["RecordsCount"]);
             uint challengesCount = Convert.ToUInt32(row["ChallengesCount"]);
-            double score = Convert.ToUInt32(row["Score"]);
+            double score = Convert.ToDouble(row["Score"]);
 
             return new Ranking
             {
