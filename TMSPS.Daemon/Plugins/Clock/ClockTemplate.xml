@@ -1,0 +1,8 @@
+﻿<manialink id="{[ManiaLinkID]}">
+	<frame posn="-63.9 28.55 0">
+		<quad sizen="8.5 3.5" style="Bgs1InRace" substyle="NavButton"/>
+		<quad sizen="3 3" posn="0.2 -0.25 1" style="BgRaceScore2" substyle="ScoreReplay" />
+		<format textsize="2"/>
+		<label posn="3.5 -0.75 2" halign="left" text="{[Hours2]}:{[Minutes2]}" />
+	</frame>
+</manialink>
