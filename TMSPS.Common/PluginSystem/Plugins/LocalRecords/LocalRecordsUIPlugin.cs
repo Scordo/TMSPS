@@ -57,6 +57,9 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
             {
                 if (CheckForServerRankCommand(e))
                     return;
+
+                if (CheckForInfoCommand(e))
+                    return;
             }, "Error in Callbacks_PlayerChat Method.", true);
         }
 
@@ -70,12 +73,33 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
             return true;
         }
 
+        private bool CheckForInfoCommand(PlayerChatEventArgs args)
+        {
+            if (string.Compare(args.Text, "/info", StringComparison.InvariantCultureIgnoreCase) != 0 &&
+                string.Compare(args.Text, "/wins", StringComparison.InvariantCultureIgnoreCase) != 0 &&
+                string.Compare(args.Text, "/played", StringComparison.InvariantCultureIgnoreCase) != 0 &&
+                string.Compare(args.Text, "/visit", StringComparison.InvariantCultureIgnoreCase) != 0)
+                return false;
+
+            SendInfoMessageToLogin(args.Login);
+
+            return true;
+        }
+
         private void SendServerRankMessageToLogin(string login)
         {
             Ranking ranking = HostPlugin.RankingAdapter.Deserialize_ByLogin(login);
 
             if (ranking != null)
                 SendFormattedMessageToLogin(login, Settings.RankingMessage, "Rank", ranking.CurrentRank.ToString("F0", CultureInfo.InvariantCulture), "Average", ranking.AverageRank.ToString("F1", CultureInfo.InvariantCulture), "Score", ranking.Score.ToString("F1", CultureInfo.InvariantCulture), "Tracks", ranking.RecordsCount.ToString("F0", CultureInfo.InvariantCulture), "TracksCount", ranking.ChallengesCount.ToString("F0", CultureInfo.InvariantCulture));
+        }
+
+        private void SendInfoMessageToLogin(string login)
+        {
+            Player player = HostPlugin.PlayerAdapter.Deserialize(login);
+
+            if (player != null)
+                SendFormattedMessageToLogin(login, Settings.InfoMessage, "Wins", player.Wins.ToString(CultureInfo.InvariantCulture), "Played", player.TimePlayed.TotalHours.ToString("F0", CultureInfo.InvariantCulture) + "h", "Created", player.Created.ToShortDateString());
         }
 
         private void HostPlugin_PlayerWins(object sender, PlayerWinEventArgs e)

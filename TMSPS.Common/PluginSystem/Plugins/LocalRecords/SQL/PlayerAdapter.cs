@@ -77,6 +77,11 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords.SQL
             return SqlHelper.ExecuteScalar<ulong?>("Player_UpdateTimePlayed", "Login", login);
         }
 
+        public Player Deserialize(string login)
+        {
+            return SqlHelper.ExecuteClassQuery<Player>("Player_Deserialize", PlayerFromDataRow, "login", login);
+        }
+
         public List<Player> DeserializeList(uint top, PlayerSortOrder sorting, bool ascending)
         {
             return SqlHelper.ExecuteClassListQuery<Player>("Player_DeserializeList", PlayerFromDataRow, "top", (int)top, "sorting", (int)sorting, "asc", ascending);
