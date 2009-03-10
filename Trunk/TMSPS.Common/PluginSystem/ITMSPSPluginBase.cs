@@ -5,6 +5,7 @@ namespace TMSPS.Core.PluginSystem
 {
 	public interface ITMSPSPluginBase
 	{
+        ushort ID { get; }
 		Version Version { get; }
 		string Author { get; }
 		string Name { get; }
