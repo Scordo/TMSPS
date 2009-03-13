@@ -10,4 +10,5 @@
 	<ImprovedDedimaniaRankMessage>$z{[Nickname]}$z improved his/her dedimania rank: $w$s$0f0{[Rank]}$z!</ImprovedDedimaniaRankMessage>
 	<StripNickFormatting>false</StripNickFormatting>
 	<StaticModeStartLimit>40</StaticModeStartLimit>
+	<UpdateInterval>2</UpdateInterval>
 </Settings>

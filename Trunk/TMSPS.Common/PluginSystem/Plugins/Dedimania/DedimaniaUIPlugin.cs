@@ -5,6 +5,7 @@ using System.Security;
 using System.Text;
 using System.Xml.Linq;
 using System.Linq;
+using TMSPS.Core.Common;
 using TMSPS.Core.Communication.ProxyTypes;
 using Version=System.Version;
 
@@ -28,6 +29,8 @@ namespace TMSPS.Core.PluginSystem.Plugins.Dedimania
         public override string Description { get { return "Displays dedimania records in a userinterface."; } }
         public override string ShortName { get { return "DedimaniaUI"; } }
         public DedimaniaUISettings Settings { get; private set; }
+        private TimedVolatileExecutionQueue<DedimaniaRanking[]> UpdateListTimer { get; set; }
+        private TimedVolatileExecutionQueue<object> UpdateRecordTimer { get; set; }
 
 
         #endregion
@@ -35,6 +38,9 @@ namespace TMSPS.Core.PluginSystem.Plugins.Dedimania
         protected override void Init()
         {
             Settings = DedimaniaUISettings.ReadFromFile(PluginSettingsFilePath);
+            UpdateListTimer = new TimedVolatileExecutionQueue<DedimaniaRanking[]>(TimeSpan.FromSeconds(Settings.UpdateInterval));
+            UpdateRecordTimer = new TimedVolatileExecutionQueue<object>(TimeSpan.FromSeconds(Settings.UpdateInterval));
+
             HostPlugin.RankChanged += HostPlugin_RankChanged;
             HostPlugin.RankingsChanged += HostPlugin_RankingsChanged;
             Context.RPCClient.Callbacks.PlayerConnect += Callbacks_PlayerConnect;
@@ -43,11 +49,17 @@ namespace TMSPS.Core.PluginSystem.Plugins.Dedimania
 
         private void Callbacks_EndRace(object sender, Core.Communication.EventArguments.Callbacks.EndRaceEventArgs e)
         {
-            if (Settings.ShowRecordUI)
-                SendEmptyManiaLinkPage(_dedimaniaManiaLinkPageID);
-                
-            if (Settings.ShowRecordListUI && Settings.HideRecordListUIOnFinish)
-                SendEmptyManiaLinkPage(_dedimaniaRecordListManiaLinkPageID);
+            RunCatchLog(() =>
+            {
+                UpdateListTimer.Clear();
+                UpdateRecordTimer.Clear();
+
+                if (Settings.ShowRecordUI)
+                    SendEmptyManiaLinkPage(_dedimaniaManiaLinkPageID);
+                    
+                if (Settings.ShowRecordListUI && Settings.HideRecordListUIOnFinish)
+                    SendEmptyManiaLinkPage(_dedimaniaRecordListManiaLinkPageID);
+            }, "Error in Callbacks_EndRace Method.", false);
         }
 
         private void Callbacks_PlayerConnect(object sender, Core.Communication.EventArguments.Callbacks.PlayerConnectEventArgs e)
@@ -55,11 +67,14 @@ namespace TMSPS.Core.PluginSystem.Plugins.Dedimania
             if (e.Handled)
                 return;
 
-            if (Settings.ShowRecordUI)
-                SendDedimaniaRecordManiaLinkPageToLogin(e.Login);
+            RunCatchLog(() =>
+            {
+                if (Settings.ShowRecordUI)
+                    SendDedimaniaRecordManiaLinkPageToLogin(e.Login);
 
-            if (Settings.ShowRecordListUI)
-                Context.RPCClient.Methods.SendDisplayManialinkPageToLogin(e.Login, GetRecordListManiaLinkPage(HostPlugin.Rankings, PlayersCount < Settings.StaticModeStartLimit ? e.Login : null), 0, false);
+                if (Settings.ShowRecordListUI)
+                    Context.RPCClient.Methods.SendDisplayManialinkPageToLogin(e.Login, GetRecordListManiaLinkPage(HostPlugin.Rankings, PlayersCount < Settings.StaticModeStartLimit ? e.Login : null), 0, false);
+            }, "Error in Callbacks_PlayerConnect Method.", false);
         }
 
         private void SendRecordListToAllPlayers(ICollection<DedimaniaRanking> rankings)
@@ -87,13 +102,18 @@ namespace TMSPS.Core.PluginSystem.Plugins.Dedimania
                 Context.RPCClient.Methods.SendDisplayManialinkPage(GetRecordListManiaLinkPage(new DedimaniaRanking[] {}, null), 0, false);
         }
 
-        private void HostPlugin_RankingsChanged(object sender, Common.EventArgs<DedimaniaRanking[]> e)
+        private void HostPlugin_RankingsChanged(object sender, EventArgs<DedimaniaRanking[]> e)
         {
-            if (Settings.ShowRecordUI)
-                SendDedimaniaRecordManiaLinkPageToAll();
+            RunCatchLog(() =>
+            {
+                if (Settings.ShowRecordUI)
+                    UpdateRecordTimer.Enqueue(SendDedimaniaRecordManiaLinkPageToAll, null);
+                    //SendDedimaniaRecordManiaLinkPageToAll();
 
-            if (Settings.ShowRecordListUI)
-                SendRecordListToAllPlayers(e.Value);
+                if (Settings.ShowRecordListUI)
+                    UpdateListTimer.Enqueue(SendRecordListToAllPlayers, new List<DedimaniaRanking>(e.Value).ToArray());
+                    //SendRecordListToAllPlayers(e.Value);
+            }, "Error in HostPlugin_RankingsChanged Method.", false);
         }
 
         private string GetRecordListManiaLinkPage(DedimaniaRanking[] rankings, string login)
@@ -245,24 +265,28 @@ namespace TMSPS.Core.PluginSystem.Plugins.Dedimania
 
         private void HostPlugin_RankChanged(object sender, RankingChangedEventArgs e)
         {
-            if (Settings.ShowMessages)
+            RunCatchLog(() =>
             {
-                if (e.RankChanged)
+                if (Settings.ShowMessages)
                 {
-                    string message = FormatMessage(Settings.NewRankMessage, "Nickname", StripTMColorsAndFormatting(e.Nickname), "Rank", e.NewRank.ToString());
-                    Context.RPCClient.Methods.ChatSendServerMessage(message);
-                    Context.RPCClient.Methods.SendNotice(message, e.Login, Convert.ToInt32(Settings.NoticeDelayInSeconds));
+                    if (e.RankChanged)
+                    {
+                        string message = FormatMessage(Settings.NewRankMessage, "Nickname", StripTMColorsAndFormatting(e.Nickname), "Rank", e.NewRank.ToString());
+                        Context.RPCClient.Methods.ChatSendServerMessage(message);
+                        Context.RPCClient.Methods.SendNotice(message, e.Login, Convert.ToInt32(Settings.NoticeDelayInSeconds));
+                    }
+                    else
+                    {
+                        string message = FormatMessage(Settings.ImprovedRankMessage, "Nickname", StripTMColorsAndFormatting(e.Nickname), "Rank", e.NewRank.ToString());
+                        Context.RPCClient.Methods.ChatSendServerMessage(message);
+                        Context.RPCClient.Methods.SendNotice(message, e.Login, Convert.ToInt32(Settings.NoticeDelayInSeconds));
+                    }
                 }
-                else
-                {
-                    string message = FormatMessage(Settings.ImprovedRankMessage, "Nickname", StripTMColorsAndFormatting(e.Nickname), "Rank", e.NewRank.ToString());
-                    Context.RPCClient.Methods.ChatSendServerMessage(message);
-                    Context.RPCClient.Methods.SendNotice(message, e.Login, Convert.ToInt32(Settings.NoticeDelayInSeconds));
-                }
-            }
 
-            if (e.NewRank == 1 && Settings.ShowRecordUI)
-                SendDedimaniaRecordManiaLinkPageToAll();
+                if (e.NewRank == 1 && Settings.ShowRecordUI)
+                    UpdateRecordTimer.Enqueue(SendDedimaniaRecordManiaLinkPageToAll, null);
+                    //SendDedimaniaRecordManiaLinkPageToAll();
+            }, "Error in HostPlugin_RankChanged Method.", true);
         }
 
 
@@ -271,7 +295,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.Dedimania
             Context.RPCClient.Methods.SendDisplayManialinkPageToLogin(login, GetDedimaniaRecordManiaLinkPage(), 0, false);
         }
 
-        private void SendDedimaniaRecordManiaLinkPageToAll()
+        private void SendDedimaniaRecordManiaLinkPageToAll(object dummy)
         {
             Context.RPCClient.Methods.SendDisplayManialinkPage(GetDedimaniaRecordManiaLinkPage(), 0, false);
         }
@@ -295,6 +319,9 @@ namespace TMSPS.Core.PluginSystem.Plugins.Dedimania
 
         protected override void Dispose(bool connectionLost)
         {
+            UpdateListTimer.Stop();
+            UpdateRecordTimer.Stop();
+
             HostPlugin.RankChanged -= HostPlugin_RankChanged;
             HostPlugin.RankingsChanged -= HostPlugin_RankingsChanged;
             Context.RPCClient.Callbacks.PlayerConnect -= Callbacks_PlayerConnect;
