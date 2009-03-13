@@ -61,6 +61,16 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords.SQL
             return SqlHelper.ExecuteClassListQuery<TopRankingEntry>("Ranking_GetTopRankings", TopRankingEntryDataRow, "startIndex", (int)startIndex, "endIndex", (int)endIndex);            
         }
 
+        public void UpdateForChallenge(int challengeID)
+        {
+            SqlHelper.ExecuteNonQuery("Ranking_UpdateForChallenge", "ChallengeID", challengeID);
+        }
+
+        public void UpdateForChallenge(string uniqueChallengeID)
+        {
+            SqlHelper.ExecuteNonQuery("Ranking_UpdateForChallenge_ByChallengeUID", "UniqueID", uniqueChallengeID);
+        }
+
         #endregion
 
         #region Non Public Methods

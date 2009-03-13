@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading;
 using System.Timers;
 using TMSPS.Core.Common;
 using TMSPS.Core.Communication.EventArguments.Callbacks;
@@ -9,6 +10,7 @@ using TMSPS.Core.Logging;
 using Version=System.Version;
 using System.Linq;
 using PlayerInfo=TMSPS.Core.Communication.ProxyTypes.PlayerInfo;
+using Timer=System.Timers.Timer;
 
 namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
 {
@@ -284,6 +286,12 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
 
 	        RunCatchLog(()=>
             {
+                if (e.Rankings.Count > 0)
+                {
+                    // this may take a while, so run it async on the thread pool
+                    ThreadPool.QueueUserWorkItem(UpdateRankingForChallenge, e.Challenge.UId);
+                }
+
                 if (e.Rankings.Count > 1)
                 {
                     // there must be at least 2 players to increase the wins for the first player
@@ -306,6 +314,11 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
                     }
                 }
             }, "Error in Callbacks_EndRace Method.", true);
+        }
+
+        private void UpdateRankingForChallenge(object challengeID)
+        {
+            RankingAdapter.UpdateForChallenge(Convert.ToString(challengeID));
         }
 
 	    private void TimePlayedTimer_Elapsed(object sender, ElapsedEventArgs e)
@@ -383,8 +396,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
 	        if (players == null)
 	            return;
 
-	        foreach (PlayerInfo playerInfo in players)
-	            PlayerAdapter.UpdateTimePlayed(playerInfo.Login);  
+            PlayerAdapter.UpdateTimePlayed(players.ConvertAll(p => p.Login));  
 	    }
 
 	    private void InitializePlugins()

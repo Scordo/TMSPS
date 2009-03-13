@@ -11,5 +11,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
         void ReCreateAll();
         uint GetTopRankingsCount();
         List<TopRankingEntry> GetTopRankings(uint startIndex, uint endIndex);
+        void UpdateForChallenge(int challengeID);
+        void UpdateForChallenge(string uniqueChallengeID);
     }
 }

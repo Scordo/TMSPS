@@ -85,9 +85,6 @@ BEGIN
 		
 	if (@PlayerID is not null) AND ((@oldTimeOrScore is null) OR (@TimeOrScore < @oldTimeOrScore))
 		set @newBest = 1
-	
-	if (@oldPosition <> @newPosition)
-		exec Ranking_UpdateForChallenge @ChallengeID
 		
 	Select
 		@oldPosition as OldPosition,
