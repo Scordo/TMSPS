@@ -9,6 +9,8 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
         List<Ranking> Deserialize_List(uint top);
         List<RankingStats> DeserializeListByMost(uint top, uint rankLimit);
         void ReCreateAll();
+        uint GetTopRankingsCount();
+        List<TopRankingEntry> GetTopRankings(uint startIndex, uint endIndex);
         void UpdateForChallenge(int challengeID);
         void UpdateForChallenge(string uniqueChallengeID);
     }
