@@ -51,6 +51,16 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords.SQL
             SqlHelper.ExecuteNonQuery("Ranking_ReCreateAll");
         }
 
+        public void UpdateForChallenge(int challengeID)
+        {
+            SqlHelper.ExecuteNonQuery("Ranking_UpdateForChallenge", "ChallengeID", challengeID);
+        }
+
+        public void UpdateForChallenge(string uniqueChallengeID)
+        {
+            SqlHelper.ExecuteNonQuery("Ranking_UpdateForChallenge_ByChallengeUID", "UniqueID", uniqueChallengeID);
+        }
+
         #endregion
 
         #region Non Public Methods

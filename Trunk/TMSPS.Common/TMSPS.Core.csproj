@@ -302,6 +302,7 @@
     <None Include="Resources\SQLScripts\StoredProcedures\Ranking\Ranking_Deserialize_List_ByMost.sql" />
     <None Include="Resources\SQLScripts\StoredProcedures\Ranking\Ranking_ReCreateAll.sql" />
     <None Include="Resources\SQLScripts\StoredProcedures\Ranking\Ranking_UpdateForChallenge.sql" />
+    <None Include="Resources\SQLScripts\StoredProcedures\Ranking\Ranking_UpdateForChallenge_ByChallengeUID.sql" />
     <None Include="Resources\SQLScripts\StoredProcedures\Rating\Rating_Vote.sql" />
     <None Include="Resources\SQLScripts\StoredProcedures\Record\Record_GetBest.sql" />
     <None Include="Resources\SQLScripts\StoredProcedures\Record\Record_GetTopRecords.sql" />
