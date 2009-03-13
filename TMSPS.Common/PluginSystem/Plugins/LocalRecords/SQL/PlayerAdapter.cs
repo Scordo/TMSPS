@@ -77,6 +77,14 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords.SQL
             return SqlHelper.ExecuteScalar<ulong?>("Player_UpdateTimePlayed", "Login", login);
         }
 
+        public void UpdateTimePlayed(List<string> logins)
+        {
+            if (logins == null || logins.Count == 0)
+                return;
+
+            SqlHelper.ExecuteNonQuery("Player_UpdateTimePlayed_List", "Logins", logins.ToXmlListString());
+        }
+
         public Player Deserialize(string login)
         {
             return SqlHelper.ExecuteClassQuery<Player>("Player_Deserialize", PlayerFromDataRow, "login", login);

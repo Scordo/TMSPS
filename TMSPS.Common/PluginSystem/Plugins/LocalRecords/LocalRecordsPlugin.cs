@@ -396,8 +396,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
 	        if (players == null)
 	            return;
 
-	        foreach (PlayerInfo playerInfo in players)
-	            PlayerAdapter.UpdateTimePlayed(playerInfo.Login);  
+            PlayerAdapter.UpdateTimePlayed(players.ConvertAll(p => p.Login));  
 	    }
 
 	    private void InitializePlugins()

@@ -295,6 +295,7 @@
     <None Include="Resources\SQLScripts\StoredProcedures\Player\Player_IncreaseWins.sql" />
     <None Include="Resources\SQLScripts\StoredProcedures\Player\Player_RemoveAllStatsForLogin.sql" />
     <None Include="Resources\SQLScripts\StoredProcedures\Player\Player_UpdateTimePlayed.sql" />
+    <None Include="Resources\SQLScripts\StoredProcedures\Player\Player_UpdateTimePlayed_List.sql" />
     <None Include="Resources\SQLScripts\StoredProcedures\Position\Position_Add.sql" />
     <None Include="Resources\SQLScripts\StoredProcedures\Position\Position_Deserialize_List_ByMost.sql" />
     <None Include="Resources\SQLScripts\StoredProcedures\Ranking\Ranking_Deserialize_ByLogin.sql" />
