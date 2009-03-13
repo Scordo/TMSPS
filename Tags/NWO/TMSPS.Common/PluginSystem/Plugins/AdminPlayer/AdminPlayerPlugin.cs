@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using TMSPS.Core.Communication.ProxyTypes;
+using TMSPS.Core.ManiaLinking;
 using Version=System.Version;
 
 namespace TMSPS.Core.PluginSystem.Plugins.AdminPlayer
@@ -14,13 +15,11 @@ namespace TMSPS.Core.PluginSystem.Plugins.AdminPlayer
 
         #endregion
 
-
         #region Members
 
         private readonly string _playerPanelID = "AdminPlayerPanelID"; //Guid.NewGuid().ToString("N");
 
         #endregion
-
 
         #region Properties
 
@@ -58,35 +57,44 @@ namespace TMSPS.Core.PluginSystem.Plugins.AdminPlayer
             SendToAllLogins();
 
             Context.RPCClient.Callbacks.PlayerConnect += Callbacks_PlayerConnect;
-            Context.RPCClient.Callbacks.PlayerManialinkPageAnswer += Callbacks_PlayerManialinkPageAnswer;
         }
 
         protected override void Dispose(bool connectionLost)
         {
             Context.RPCClient.Callbacks.PlayerConnect -= Callbacks_PlayerConnect;
-            Context.RPCClient.Callbacks.PlayerManialinkPageAnswer -= Callbacks_PlayerManialinkPageAnswer;
         }
 
-        private void Callbacks_PlayerManialinkPageAnswer(object sender, Communication.EventArguments.Callbacks.PlayerManialinkPageAnswerEventArgs e)
+        protected override void OnManiaLinkPageAnswer(string login, int playerID, TMAction action)
         {
-            AdminPlayerAnswers playerAction = (AdminPlayerAnswers) e.Answer;
-
-            switch (playerAction)
+            switch ((Area)action.AreaID)
             {
-                case AdminPlayerAnswers.KickSpectators:
-                    KickSpectators(e.Login);
-                    break;
-                case AdminPlayerAnswers.RestartTrackImmediately:
-                    RestartTrackImmediately(e.Login);
-                    break;
-                case AdminPlayerAnswers.SwitchToNextTrack:
-                    SwitchToNextMap(e.Login);
-                    break;
-                case AdminPlayerAnswers.ShowPlayerListWithAdminAbilities:
-                    ShowPlayerListWithAdminAbilities();
+                case Area.MainArea:
+                    HandleMainAreaActions(login, action);
                     break;
             }
         }
+
+        private void HandleMainAreaActions(string login, TMAction areaAction)
+        {
+            MainAreaAction action = (MainAreaAction) areaAction.AreaActionID;
+
+            switch (action)
+            {
+                case MainAreaAction.KickSpectators:
+                    KickSpectators(login);
+                    break;
+                case MainAreaAction.RestartTrackImmediately:
+                    RestartTrackImmediately(login);
+                    break;
+                case MainAreaAction.SwitchToNextTrack:
+                    SwitchToNextMap(login);
+                    break;
+                case MainAreaAction.ShowPlayerListWithAdminAbilities:
+                    ShowPlayerListWithAdminAbilities(login);
+                    break;
+            }
+        }
+
 
         private void KickSpectators(string login)
         {
@@ -128,9 +136,9 @@ namespace TMSPS.Core.PluginSystem.Plugins.AdminPlayer
             Context.RPCClient.Methods.NextChallenge();
         }
 
-        private void ShowPlayerListWithAdminAbilities()
+        private void ShowPlayerListWithAdminAbilities(string login)
         {
-            
+
         }
 
         private void Callbacks_PlayerConnect(object sender, Communication.EventArguments.Callbacks.PlayerConnectEventArgs e)
@@ -153,7 +161,23 @@ namespace TMSPS.Core.PluginSystem.Plugins.AdminPlayer
         private void SendPlayerUIToLogin(string login)
         {
             if (LoginHasAnyAdminPlayerRight(login))
-                Context.RPCClient.Methods.SendDisplayManialinkPageToLogin(login, UITemplates.PlayerTemplate.Replace("{[ManiaLinkID]}", _playerPanelID), 0, false);
+                Context.RPCClient.Methods.SendDisplayManialinkPageToLogin(login, GetAdminPlayerManiaLinkPage(), 0, false);
+        }
+
+        private string GetAdminPlayerManiaLinkPage()
+        {
+            
+            string result = ReplaceMessagePlaceHolders
+            (
+                UITemplates.PlayerTemplate,
+                "ManiaLinkID", _playerPanelID,
+                MainAreaAction.RestartTrackImmediately.ToString(), TMAction.CalculateActionID(ID, (int)Area.MainArea, (int)MainAreaAction.RestartTrackImmediately).ToString(),
+                MainAreaAction.KickSpectators.ToString(), TMAction.CalculateActionID(ID, (int)Area.MainArea, (int)MainAreaAction.KickSpectators).ToString(),
+                MainAreaAction.SwitchToNextTrack.ToString(), TMAction.CalculateActionID(ID, (int)Area.MainArea, (int)MainAreaAction.SwitchToNextTrack).ToString(),
+                MainAreaAction.ShowPlayerListWithAdminAbilities.ToString(), TMAction.CalculateActionID(ID, (int)Area.MainArea, (int)MainAreaAction.ShowPlayerListWithAdminAbilities).ToString()
+            );
+
+            return result;
         }
 
         private bool LoginHasAnyAdminPlayerRight(string login)
@@ -166,12 +190,18 @@ namespace TMSPS.Core.PluginSystem.Plugins.AdminPlayer
         
         #endregion
 
-        private enum AdminPlayerAnswers
+        private enum Area
         {
-            RestartTrackImmediately = 20101,
-            KickSpectators = 20102,
-            SwitchToNextTrack = 20103,
-            ShowPlayerListWithAdminAbilities = 20104
+            MainArea = 1,
+            ManagePlayersArea = 2
+        }
+
+        private enum MainAreaAction
+        {
+            RestartTrackImmediately = 1,
+            KickSpectators = 2,
+            SwitchToNextTrack = 3,
+            ShowPlayerListWithAdminAbilities = 4
         }
     }
 }

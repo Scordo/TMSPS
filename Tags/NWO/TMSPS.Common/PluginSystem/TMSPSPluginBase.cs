@@ -7,19 +7,22 @@ using System.Text.RegularExpressions;
 using TMSPS.Core.Common;
 using TMSPS.Core.Logging;
 using System.Linq;
+using TMSPS.Core.ManiaLinking;
 
 namespace TMSPS.Core.PluginSystem
 {
-	public  abstract partial class TMSPSPluginBase : ITMSPSPluginBase
+	public abstract partial class TMSPSPluginBase : ITMSPSPluginBase
 	{
 		#region Members
 
 		private PluginHostContext _context;
+        private ushort _pluginID;
 
 		#endregion
 
 		#region Properties
 
+	    public ushort ID { get { return _pluginID; } }
 		public abstract Version Version { get; }
 		public abstract string Author { get; }
 		public abstract string Name { get; }
@@ -43,12 +46,16 @@ namespace TMSPS.Core.PluginSystem
 
 			Logger = logger;
 			_context = context;
+		    _pluginID = Context.GetUniquePluginID();
+            Context.RPCClient.Callbacks.PlayerManialinkPageAnswer += Callbacks_PlayerManialinkPageAnswer;
 
 			RunCatchLogReThrow(Init, "Error initializing plugin.", true);
 		}
 
+        
         public void DisposePlugin(bool connectionLost)
 		{
+            Context.RPCClient.Callbacks.PlayerManialinkPageAnswer -= Callbacks_PlayerManialinkPageAnswer;
 			RunCatchLogReThrow(() => Dispose(connectionLost), "Error during disposing plugin.", true);
 		}
 
@@ -58,6 +65,24 @@ namespace TMSPS.Core.PluginSystem
 
 		protected abstract void Init();
         protected abstract void Dispose(bool connectionLost);
+
+        private void Callbacks_PlayerManialinkPageAnswer(object sender, Communication.EventArguments.Callbacks.PlayerManialinkPageAnswerEventArgs e)
+        {
+            if (e.Answer < 0)
+                return;
+
+            TMAction action = TMAction.Parse(Convert.ToUInt32(e.Answer));
+            if (action == null)
+                return;
+
+            if (action.PluginID == ID)
+                OnManiaLinkPageAnswer(e.Login, e.PlayerID, action);
+        }
+
+        protected virtual void OnManiaLinkPageAnswer(string login, int playerID, TMAction action)
+        {
+            
+        }
 
 		protected void RunCatchLog(ParameterlessMethodDelegate logic)
 		{

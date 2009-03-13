@@ -139,6 +139,7 @@
     <Compile Include="Communication\TrackManiaMethod.cs" />
     <Compile Include="Communication\TrackManiaRPCClient.cs" />
     <Compile Include="Logging\LogMode.cs" />
+    <Compile Include="ManiaLinking\TMAction.cs" />
     <Compile Include="PluginSystem\ConfigSettingsConfigurationSection.cs" />
     <Compile Include="PluginSystem\ConfigurationElementCollection.cs" />
     <Compile Include="PluginSystem\Configuration\Credentials.cs" />
