@@ -59,7 +59,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.Dedimania
                 SendDedimaniaRecordManiaLinkPageToLogin(e.Login);
 
             if (Settings.ShowRecordListUI)
-                Context.RPCClient.Methods.SendDisplayManialinkPageToLogin(e.Login, GetRecordListManiaLinkPage(HostPlugin.Rankings, e.Login), 0, false);
+                Context.RPCClient.Methods.SendDisplayManialinkPageToLogin(e.Login, GetRecordListManiaLinkPage(HostPlugin.Rankings, PlayersCount < Settings.StaticModeStartLimit ? e.Login : null), 0, false);
         }
 
         private void SendRecordListToAllPlayers(ICollection<DedimaniaRanking> rankings)
@@ -71,9 +71,16 @@ namespace TMSPS.Core.PluginSystem.Plugins.Dedimania
 
             if (rankings != null && rankings.Count > 0)
             {
-                foreach (PlayerInfo playerInfo in players)
+                if (PlayersCount < Settings.StaticModeStartLimit)
                 {
-                    Context.RPCClient.Methods.SendDisplayManialinkPageToLogin(playerInfo.Login, GetRecordListManiaLinkPage(HostPlugin.Rankings, playerInfo.Login), 0, false);
+                    foreach (PlayerInfo playerInfo in players)
+                    {
+                        Context.RPCClient.Methods.SendDisplayManialinkPageToLogin(playerInfo.Login, GetRecordListManiaLinkPage(HostPlugin.Rankings, playerInfo.Login), 0, false);
+                    }
+                }
+                else
+                {
+                    Context.RPCClient.Methods.SendDisplayManialinkPage(GetRecordListManiaLinkPage(HostPlugin.Rankings, null), 0, false);
                 }
             }
             else
