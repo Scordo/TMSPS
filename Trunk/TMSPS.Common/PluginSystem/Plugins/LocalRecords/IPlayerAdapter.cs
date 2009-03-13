@@ -11,6 +11,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
         List<Player> DeserializeList(uint top, PlayerSortOrder sorting, bool ascending);
         bool RemoveAllStatsForLogin(string login);
         Player Deserialize(string login);
+        void UpdateTimePlayed(List<string> logins);
     }
 
     public enum PlayerSortOrder
