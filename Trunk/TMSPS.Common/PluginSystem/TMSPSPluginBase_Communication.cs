@@ -12,6 +12,7 @@ namespace TMSPS.Core.PluginSystem
         private static ChallengeInfo CurrentChallengeInfo { get; set; }
         private static ServerOptions CurrentServerOptions { get; set; }
         private static GameMode? CurrentGameMode { get; set; }
+        protected static ushort PlayersCount{ get { return (ushort)PlayerInfoCache.Count; }}
 
         #endregion
 
