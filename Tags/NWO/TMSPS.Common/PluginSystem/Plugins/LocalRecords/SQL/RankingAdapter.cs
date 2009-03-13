@@ -51,6 +51,16 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords.SQL
             SqlHelper.ExecuteNonQuery("Ranking_ReCreateAll");
         }
 
+        public uint GetTopRankingsCount()
+        {
+            return Convert.ToUInt32(SqlHelper.ExecuteScalar<int>("Ranking_GetTopRankingsCount"));
+        }
+
+        public List<TopRankingEntry> GetTopRankings(uint startIndex, uint endIndex)
+        {
+            return SqlHelper.ExecuteClassListQuery<TopRankingEntry>("Ranking_GetTopRankings", TopRankingEntryDataRow, "startIndex", (int)startIndex, "endIndex", (int)endIndex);            
+        }
+
         #endregion
 
         #region Non Public Methods
@@ -86,6 +96,20 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords.SQL
             uint ranksCount = Convert.ToUInt32(row["RanksCount"]);
 
             return new RankingStats(nickname, playerID, ranksCount);
+        }
+
+        private static TopRankingEntry TopRankingEntryDataRow(DataRow row)
+        {
+            return new TopRankingEntry
+            {
+                Position = Convert.ToUInt32(row["Position"]),
+                Login = Convert.ToString(row["Login"]),
+                Nickname = Convert.ToString(row["Nickname"]),
+                FirstRecords = Convert.ToUInt32(row["FirstRecords"]),
+                SecondRecords = Convert.ToUInt32(row["SecondRecords"]),
+                ThirdRecords = Convert.ToUInt32(row["ThirdRecords"])
+            };
+               
         }
 
         #endregion
