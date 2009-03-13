@@ -210,6 +210,7 @@
     <Compile Include="PluginSystem\Plugins\LocalRecords\LocalRecordsUIPlugin.cs" />
     <Compile Include="PluginSystem\Plugins\LocalRecords\LocalRecordsUISettings.cs" />
     <Compile Include="PluginSystem\Plugins\LocalRecords\RankEntry.cs" />
+    <Compile Include="PluginSystem\Plugins\LocalRecords\TopRankingEntry.cs" />
     <Compile Include="PluginSystem\Plugins\LocalRecords\UITemplates.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -301,6 +302,9 @@
     <None Include="Resources\SQLScripts\StoredProcedures\Ranking\Ranking_Deserialize_ByLogin.sql" />
     <None Include="Resources\SQLScripts\StoredProcedures\Ranking\Ranking_Deserialize_List.sql" />
     <None Include="Resources\SQLScripts\StoredProcedures\Ranking\Ranking_Deserialize_List_ByMost.sql" />
+    <None Include="Resources\SQLScripts\StoredProcedures\Ranking\Ranking_GetAmountOfRank.sql" />
+    <None Include="Resources\SQLScripts\StoredProcedures\Ranking\Ranking_GetTopRankings.sql" />
+    <None Include="Resources\SQLScripts\StoredProcedures\Ranking\Ranking_GetTopRankingsCount.sql" />
     <None Include="Resources\SQLScripts\StoredProcedures\Ranking\Ranking_ReCreateAll.sql" />
     <None Include="Resources\SQLScripts\StoredProcedures\Ranking\Ranking_UpdateForChallenge.sql" />
     <None Include="Resources\SQLScripts\StoredProcedures\Ranking\Ranking_UpdateForChallenge_ByChallengeUID.sql" />
