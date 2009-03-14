@@ -15,4 +15,5 @@
 	<RankingMessage>{[#ServerStyle]}> {[#RecordStyle]}Your server rank is {[#HighlightStyle]}{[Rank]}{[#RecordStyle]}, Average: {[#HighlightStyle]}{[Average]}{[#RecordStyle]}, Score: {[#HighlightStyle]}{[Score]}{[#RecordStyle]}, Tracks {[#HighlightStyle]}{[Tracks]}{[#RecordStyle]}/{[#HighlightStyle]}{[TracksCount]}</RankingMessage>
 	<StripNickFormatting>false</StripNickFormatting>
 	<InfoMessage>{[#ServerStyle]}> Your info: {[#MessageStyle]}Wins: {[#HighlightStyle]}{[Wins]}{[#MessageStyle]} Time played: {[#HighlightStyle]}{[Played]}{[#MessageStyle]} First visit: {[#HighlightStyle]}{[Created]}</InfoMessage>
+	<UpdateInterval>2</UpdateInterval>
 </Settings>
