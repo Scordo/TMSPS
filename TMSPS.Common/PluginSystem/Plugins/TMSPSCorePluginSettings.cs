@@ -15,6 +15,7 @@ namespace TMSPS.Core.PluginSystem.Plugins
         public const string KICK_MESSAGE = "{[#ServerStyle]}>> {[#HighlightStyle]}{[KickingNickname]}{[#MessageStyle]} kicked {[#HighlightStyle]}{[KickedNickname]}.";
         public const string BAN_MESSAGE = "{[#ServerStyle]}>> {[#HighlightStyle]}{[BanningNickname]}{[#MessageStyle]} banned {[#HighlightStyle]}{[BannedNickname]}.";
         public const string BLACKLIST_MESSAGE = "{[#ServerStyle]}>> {[#HighlightStyle]}{[BlackListingNickname]}{[#MessageStyle]} blacklists {[#HighlightStyle]}{[BlackListedNickname]}.";
+        public const string TRACKLIST_FILE = "tracklist.txt";
 
         #endregion
 
@@ -27,6 +28,7 @@ namespace TMSPS.Core.PluginSystem.Plugins
         public string KickMessage { get; private set; }
         public string BanMessage { get; private set; }
         public string BlackListMessage { get; private set; }
+        public string TrackListFile { get; private set; }
 
         #endregion
 
@@ -49,6 +51,7 @@ namespace TMSPS.Core.PluginSystem.Plugins
             result.KickMessage = ReadConfigString(configDocument.Root, "KickMessage", KICK_MESSAGE, xmlConfigurationFile);
             result.BanMessage = ReadConfigString(configDocument.Root, "BanMessage", BAN_MESSAGE, xmlConfigurationFile);
             result.BlackListMessage = ReadConfigString(configDocument.Root, "BlackListMessage", BLACKLIST_MESSAGE, xmlConfigurationFile);
+            result.TrackListFile = ReadConfigString(configDocument.Root, "TrackListFile", TRACKLIST_FILE, xmlConfigurationFile);
             
 
             return result;

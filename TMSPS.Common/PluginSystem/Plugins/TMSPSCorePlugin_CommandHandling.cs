@@ -1,4 +1,5 @@
-﻿using TMSPS.Core.Communication.ProxyTypes;
+﻿using System.IO;
+using TMSPS.Core.Communication.ProxyTypes;
 using TMSPS.Core.Communication.ResponseHandling;
 
 namespace TMSPS.Core.PluginSystem.Plugins
@@ -9,6 +10,9 @@ namespace TMSPS.Core.PluginSystem.Plugins
         private const string COMMAND_KICK = "kick";
         private const string COMMAND_BAN = "ban";
         private const string COMMAND_BLACKLIST = "blacklist";
+        private const string COMMAND_WRITE_TRACK_LIST = "writetracklist";
+        private const string COMMAND_READ_TRACK_LIST = "readtracklist";
+        private const string COMMAND_REMOVE_TRACK = "removetrack";
 
         private void HandleCommand(string login, ServerCommand command)
         {
@@ -22,6 +26,15 @@ namespace TMSPS.Core.PluginSystem.Plugins
                     break;
                 case COMMAND_BLACKLIST:
                     HandleBlackListCommand(login, command);
+                    break;
+                case COMMAND_WRITE_TRACK_LIST:
+                    HandleWriteTrackListCommand(login, command);
+                    break;
+                case COMMAND_READ_TRACK_LIST:
+                    HandleReadTrackListCommand(login, command);
+                    break;
+                case COMMAND_REMOVE_TRACK:
+                    HandleRemoveTrackCommand(login, command);
                     break;
                 //case COMMAND_RESTART_SERVER:
                 //    HandleRestartServerCommand(command);
@@ -55,7 +68,7 @@ namespace TMSPS.Core.PluginSystem.Plugins
                 if (!kickResponse.Erroneous && kickResponse.Value)
                     SendFormattedMessage(Settings.KickMessage, "KickingNickname", StripTMColorsAndFormatting(playerInfo.NickName), "KickedNickname", StripTMColorsAndFormatting(playerToKickInfo.NickName));
                 else
-                    SendFormattedMessageToLogin(login, "{[#ServerStyle]}>> {[#ErrorStyle]}Could not kick " + StripTMColorsAndFormatting(playerToKickInfo.NickName));
+                    SendFormattedMessageToLogin(login, "{[#ServerStyle]}> {[#ErrorStyle]}Could not kick " + StripTMColorsAndFormatting(playerToKickInfo.NickName));
             }
             else
             {
@@ -89,7 +102,7 @@ namespace TMSPS.Core.PluginSystem.Plugins
                 if (!banResponse.Erroneous && banResponse.Value)
                     SendFormattedMessage(Settings.BanMessage, "BanningNickname", StripTMColorsAndFormatting(playerInfo.NickName), "BannedNickname", StripTMColorsAndFormatting(playerToBanInfo.NickName));
                 else
-                    SendFormattedMessageToLogin(login, "{[#ServerStyle]}>> {[#ErrorStyle]}Could not ban " + StripTMColorsAndFormatting(playerToBanInfo.NickName));
+                    SendFormattedMessageToLogin(login, "{[#ServerStyle]}> {[#ErrorStyle]}Could not ban " + StripTMColorsAndFormatting(playerToBanInfo.NickName));
             }
             else
             {
@@ -125,12 +138,78 @@ namespace TMSPS.Core.PluginSystem.Plugins
                     SendFormattedMessage(Settings.BlackListMessage, "BlackListingNickname", StripTMColorsAndFormatting(playerInfo.NickName), "BlackListedNickname", StripTMColorsAndFormatting(playerToBlacklistInfo.NickName));
                 }
                 else
-                    SendFormattedMessageToLogin(login, "{[#ServerStyle]}>> {[#ErrorStyle]}Could not blacklist " + StripTMColorsAndFormatting(playerToBlacklistInfo.NickName));
+                    SendFormattedMessageToLogin(login, "{[#ServerStyle]}> {[#ErrorStyle]}Could not blacklist " + StripTMColorsAndFormatting(playerToBlacklistInfo.NickName));
             }
             else
             {
                 SendNoPlayerWithLoginMessageToLogin(login, loginToBlacklist);
             }
+        }
+
+        private void HandleWriteTrackListCommand(string login, ServerCommand command)
+        {
+            if (!Context.Credentials.UserHasAnyRight(login, COMMAND_WRITE_TRACK_LIST))
+            {
+                SendNoPermissionMessagetoLogin(login);
+                return;
+            }
+
+            string filename = Settings.TrackListFile;
+
+            if (command.PartsWithoutMainCommand.Count > 0)
+                filename = command.PartsWithoutMainCommand[0] + ".txt";
+
+            GenericResponse<int> response = Context.RPCClient.Methods.SaveMatchSettings("MatchSettings/"+filename);
+
+            if (!response.Erroneous)
+                SendFormattedMessageToLogin(login, "{[#ServerStyle]}> {[#HighlightStyle]}{[Count]}{[#MessageStyle]} Tracks written!", "Count", response.Value.ToString());
+            else
+                SendFormattedMessageToLogin(login, "{[#ServerStyle]}> {[#ErrorStyle]} error writing tracklist.");
+        }
+
+        private void HandleReadTrackListCommand(string login, ServerCommand command)
+        {
+            if (!Context.Credentials.UserHasAnyRight(login, COMMAND_READ_TRACK_LIST))
+            {
+                SendNoPermissionMessagetoLogin(login);
+                return;
+            }
+
+            string filename = Settings.TrackListFile;
+
+            if (command.PartsWithoutMainCommand.Count > 0)
+                filename = command.PartsWithoutMainCommand[0] + ".txt";
+
+            GenericResponse<int> response = Context.RPCClient.Methods.LoadMatchSettings("MatchSettings/" + filename);
+
+            if (!response.Erroneous)
+                SendFormattedMessageToLogin(login, "{[#ServerStyle]}> {[#HighlightStyle]}{[Count]}{[#MessageStyle]} Tracks read!", "Count", response.Value.ToString());
+            else
+                SendFormattedMessageToLogin(login, "{[#ServerStyle]}> {[#ErrorStyle]} error reading tracklist.");
+        }
+
+        private void HandleRemoveTrackCommand(string login, ServerCommand command)
+        {
+            if (!Context.Credentials.UserHasAnyRight(login, COMMAND_REMOVE_TRACK))
+            {
+                SendNoPermissionMessagetoLogin(login);
+                return;
+            }
+
+            ChallengeListSingleInfo challengeInfo = GetCurrentChallengeInfo();
+
+            if (challengeInfo == null)
+            {
+                SendFormattedMessageToLogin(login, "{[#ServerStyle]}> {[#ErrorStyle]} Could not retrieve current challenge info.");
+                return;
+            }
+
+            GenericResponse<bool> response = Context.RPCClient.Methods.RemoveChallenge(challengeInfo.FileName);
+
+            if (!response.Erroneous && response.Value)
+                SendFormattedMessageToLogin(login, "{[#ServerStyle]}> {[#MessageStyle]} Removed track {[#HighlightStyle]}{[Track]}{[#MessageStyle]}. Use {[#HighlightStyle]}WriteTrackList{[#MessageStyle]} command to save the changes!", "Track", Path.GetFileNameWithoutExtension(Path.GetFileNameWithoutExtension(challengeInfo.FileName)));
+            else
+                SendFormattedMessageToLogin(login, "{[#ServerStyle]}> {[#ErrorStyle]} Error removing current track.");
         }
 
         //private void HandleRestartServerCommand(ServerCommand command)
