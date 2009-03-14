@@ -20,6 +20,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.Dedimania
         public const bool HIDE_RECORD_LIST_UI_ON_FINISH = true;
         public const bool STRIP_NICK_FORMATTING = false;
         public const uint STATIC_MODE_START_LIMIT = 40;
+        public const uint UPDATE_INTERVAL = 2;
 
         public const double RECORDLIST_PLAYER_START_MARGIN = -2.9;
         public const double RECORDLIST_TOP3_GAP = 0.6;
@@ -43,6 +44,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.Dedimania
         public string ImprovedRankMessage { get; private set; }
         public bool StripNickFormatting { get; private set; }
         public uint StaticModeStartLimit { get; private set; }
+        public uint UpdateInterval { get; set; }
 
         public double RecordListPlayerStartMargin { get; private set; }
         public double RecordListTop3Gap { get; private set; }
@@ -80,6 +82,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.Dedimania
             result.ImprovedRankMessage = ReadConfigString(configDocument.Root, "ImprovedDedimaniaRankMessage", IMPROVED_RANK_MESSAGE, xmlConfigurationFile);
             result.StripNickFormatting = ReadConfigBool(configDocument.Root, "StripNickFormatting", STRIP_NICK_FORMATTING, xmlConfigurationFile);
             result.StaticModeStartLimit = ReadConfigUInt(configDocument.Root, "StaticModeStartLimit", STATIC_MODE_START_LIMIT, xmlConfigurationFile);
+            result.UpdateInterval = ReadConfigUInt(configDocument.Root, "UpdateInterval", UPDATE_INTERVAL, xmlConfigurationFile);
 
             string dediPanelActiveTemplateFile = Path.Combine(settingsDirectory, "DediPanelTemplate.xml");
             result.DediPanelTemplateActive = File.Exists(dediPanelActiveTemplateFile) ? File.ReadAllText(dediPanelActiveTemplateFile) : UITemplates.LowerRightDediRecordPanel;
