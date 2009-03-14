@@ -129,7 +129,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
                 SendLocalRecordManiaLinkToLogin(e.Login);
 
             if (Settings.ShowLocalRecordListUserInterface)
-                Context.RPCClient.Methods.SendDisplayManialinkPageToLogin(e.Login, GetRecordListManiaLinkPage(LastRankings, e.Login), 0, false);
+                Context.RPCClient.Methods.SendDisplayManialinkPageToLogin(e.Login, GetRecordListManiaLinkPage(LastRankings, PlayersCount < Settings.StaticModeStartLimit ? e.Login : null), 0, false);
 
             if (Settings.ShowMessages)
                 SendServerRankMessageToLogin(e.Login);
@@ -159,9 +159,16 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
 
             if (rankings != null && rankings.Length > 0)
             {
-                foreach (PlayerInfo playerInfo in players)
+                if (PlayersCount < Settings.StaticModeStartLimit)
                 {
-                    Context.RPCClient.Methods.SendDisplayManialinkPageToLogin(playerInfo.Login, GetRecordListManiaLinkPage(rankings, playerInfo.Login), 0, false);
+                    foreach (PlayerInfo playerInfo in players)
+                    {
+                        Context.RPCClient.Methods.SendDisplayManialinkPageToLogin(playerInfo.Login, GetRecordListManiaLinkPage(rankings, playerInfo.Login), 0, false);
+                    }
+                }
+                else
+                {
+                    Context.RPCClient.Methods.SendDisplayManialinkPage(GetRecordListManiaLinkPage(rankings, null), 0, false);
                 }
             }
             else

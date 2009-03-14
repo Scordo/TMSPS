@@ -16,4 +16,5 @@
 	<StripNickFormatting>false</StripNickFormatting>
 	<InfoMessage>{[#ServerStyle]}> Your info: {[#MessageStyle]}Wins: {[#HighlightStyle]}{[Wins]}{[#MessageStyle]} Time played: {[#HighlightStyle]}{[Played]}{[#MessageStyle]} First visit: {[#HighlightStyle]}{[Created]}</InfoMessage>
 	<UpdateInterval>2</UpdateInterval>
+	<StaticModeStartLimit>40</StaticModeStartLimit>
 </Settings>
