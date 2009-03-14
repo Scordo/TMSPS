@@ -3,4 +3,5 @@
 	<MaxRecordsToShow>11</MaxRecordsToShow>
 	<UpdateIntervalInSeconds>2</UpdateIntervalInSeconds>
 	<StripNickFormatting>false</StripNickFormatting>
+	<StaticModeStartLimit>40</StaticModeStartLimit>
 </Settings>
