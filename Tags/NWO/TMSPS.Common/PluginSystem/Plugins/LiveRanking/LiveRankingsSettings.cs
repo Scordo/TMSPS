@@ -12,6 +12,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.LiveRanking
         public const uint MAX_RECORDS_TO_SHOW = 20;
         public const uint UPDATE_INTERVAL_IN_SECONDS = 2;
         public const bool STRIP_NICK_FORMATTING = false;
+        public const uint STATIC_MODE_START_LIMIT = 40;
 
         public const double RANKING_PLAYER_START_MARGIN = -2.9;
         public const double RANKING_TOP3_GAP = 0.6;
@@ -26,6 +27,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.LiveRanking
         public uint MaxRecordsToShow { get; protected internal set; }
         public uint UpdateInterval { get; private set; }
         public bool StripNickFormatting { get; private set; }
+        public uint StaticModeStartLimit { get; private set; }
 
         public double RankingPlayerStartMargin { get; private set; }
         public double RankingTop3Gap { get; private set; }
@@ -54,6 +56,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.LiveRanking
             result.MaxRecordsToShow = ReadConfigUInt(configDocument.Root, "MaxRecordsToShow", MAX_RECORDS_TO_SHOW, xmlConfigurationFile);
             result.UpdateInterval = ReadConfigUInt(configDocument.Root, "UpdateIntervalInSeconds", UPDATE_INTERVAL_IN_SECONDS, xmlConfigurationFile);
             result.StripNickFormatting = ReadConfigBool(configDocument.Root, "StripNickFormatting", STRIP_NICK_FORMATTING, xmlConfigurationFile);
+            result.StaticModeStartLimit = ReadConfigUInt(configDocument.Root, "StaticModeStartLimit", STATIC_MODE_START_LIMIT, xmlConfigurationFile);
 
             result.RankingPlayerToContainerMarginY = RANKING_PLAYER_TO_CONTAINER_MARGIN_Y;
             result.RankingPlayerStartMargin = RANKING_PLAYER_START_MARGIN;
