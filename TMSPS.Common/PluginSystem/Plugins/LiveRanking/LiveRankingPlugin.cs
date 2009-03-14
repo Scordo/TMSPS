@@ -112,9 +112,16 @@ namespace TMSPS.Core.PluginSystem.Plugins.LiveRanking
                 if (players == null)
                     return;
 
-                foreach (PlayerInfo playerInfo in players)
+                if (PlayersCount < Settings.StaticModeStartLimit)
                 {
-                    SendUIToPlayer(rankingArray, playerInfo.Login);
+                    foreach (PlayerInfo playerInfo in players)
+                    {
+                        SendUIToPlayer(rankingArray, playerInfo.Login);
+                    }
+                }
+                else
+                {
+                    Context.RPCClient.Methods.SendDisplayManialinkPage(GetRecordListManiaLinkPage(rankingArray, null), 0, false);
                 }
 
                 StartLiveRankingsTimer();
@@ -123,7 +130,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.LiveRanking
 
         private void SendUIToPlayer(PlayerRank[] rankings, string login)
         {
-            Context.RPCClient.Methods.SendDisplayManialinkPageToLogin(login, GetRecordListManiaLinkPage(rankings, login), 0, false);
+            Context.RPCClient.Methods.SendDisplayManialinkPageToLogin(login, GetRecordListManiaLinkPage(rankings, PlayersCount < Settings.StaticModeStartLimit ? login : null), 0, false);
         }
 
         private string GetRecordListManiaLinkPage(PlayerRank[] rankings, string login)
