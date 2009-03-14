@@ -24,6 +24,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
         public const bool SHOW_LOCAL_RECORD_LIST_UI = true;
         public const bool HIDE_RECORD_LIST_UI_ON_FINISH = true;
         public const bool STRIP_NICK_FORMATTING = false;
+        public const uint UPDATE_INTERVAL = 2;
 
         public const double RECORDLIST_PLAYER_START_MARGIN = -2.9;
         public const double RECORDLIST_TOP3_GAP = 0.6;
@@ -43,6 +44,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
         public bool ShowLocalRecordListUserInterface { get; private set; }
         public bool HideRecordListUIOnFinish { get; private set; }
         public bool StripNickFormatting { get; private set; }
+        public uint UpdateInterval { get; set; }
 
         public string VoteAcceptedMessage { get; private set; }
         public string FirstLocalRankMessage { get; private set; }
@@ -96,6 +98,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
             result.RankingMessage = ReadConfigString(configDocument.Root, "RankingMessage", RANKING_MESSAGE, xmlConfigurationFile);
             result.NoticeDelayInSeconds = ReadConfigUInt(configDocument.Root, "NoticeDelayInSeconds", NOTICE_DELAY_IN_SECONDS, xmlConfigurationFile);
             result.StripNickFormatting = ReadConfigBool(configDocument.Root, "StripNickFormatting", STRIP_NICK_FORMATTING, xmlConfigurationFile);
+            result.UpdateInterval = ReadConfigUInt(configDocument.Root, "UpdateInterval", UPDATE_INTERVAL, xmlConfigurationFile);
 
             string pbPanelTemplateFile = Path.Combine(settingsDirectory, "PBPanelTemplate.xml");
             result.PBPanelTemplate = File.Exists(pbPanelTemplateFile) ? File.ReadAllText(pbPanelTemplateFile) : UITemplates.LowerRightPBRecordPanelActive;
