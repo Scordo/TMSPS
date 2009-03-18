@@ -256,6 +256,8 @@
     <Compile Include="PluginSystem\Plugins\LocalRecords\SQL\RecordAdapter.cs" />
     <Compile Include="PluginSystem\Plugins\LocalRecords\SQL\SessionAdapter.cs" />
     <Compile Include="PluginSystem\Plugins\NameProtectionBotPlugin.cs" />
+    <Compile Include="PluginSystem\Plugins\StaticUI\StaticUIPlugin.cs" />
+    <Compile Include="PluginSystem\Plugins\StaticUI\StaticUIPluginSettings.cs" />
     <Compile Include="PluginSystem\Plugins\TMSPSCorePlugin.cs" />
     <Compile Include="PluginSystem\Plugins\TMSPSCorePluginSettings.cs" />
     <Compile Include="PluginSystem\Plugins\TMSPSCorePlugin_CommandHandling.cs" />
@@ -280,6 +282,7 @@
     <Content Include="Components\CookComputing.XmlRpcV2.dll" />
     <Content Include="Components\log4net.dll" />
     <Content Include="Components\log4net.xml" />
+    <Content Include="Resources\ManiaLinkPageLayouts\AdminPlayer\UserView.xml" />
     <Content Include="Resources\SQLScripts\Structure\CreationOrder.txt" />
   </ItemGroup>
   <ItemGroup>

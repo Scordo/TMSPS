@@ -10,5 +10,6 @@
 		<Plugin enabled="true" assemblyName="TMSPS.Core" pluginClass="TMSPS.Core.PluginSystem.Plugins.SpectatorsPlugin" />
 		<Plugin enabled="true" assemblyName="TMSPS.Core" pluginClass="TMSPS.Core.PluginSystem.Plugins.TMX.TMXPlugin" />
 		<Plugin enabled="true" assemblyName="TMSPS.Core" pluginClass="TMSPS.Core.PluginSystem.Plugins.Clock.ClockPlugin" />
+		<Plugin enabled="true" assemblyName="TMSPS.Core" pluginClass="TMSPS.Core.PluginSystem.Plugins.StaticUI.StaticUIPlugin" />
 	</Plugins>
 </Settings>
