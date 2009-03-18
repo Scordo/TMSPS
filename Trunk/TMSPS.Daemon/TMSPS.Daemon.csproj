@@ -135,6 +135,9 @@
     <Content Include="Plugins\Settings.xml" />
     <Content Include="Plugins\Settings_Template.xml" />
     <Content Include="Plugins\LocalRecords\TopRankingsPodium\Settings_Template.xml" />
+    <Content Include="Plugins\StaticUI\Content.xml" />
+    <Content Include="Plugins\StaticUI\Settings.xml" />
+    <Content Include="Plugins\StaticUI\Settings_Template.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
