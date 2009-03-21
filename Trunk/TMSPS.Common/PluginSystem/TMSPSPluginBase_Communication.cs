@@ -37,6 +37,11 @@ namespace TMSPS.Core.PluginSystem
             return Context.RPCClient.Methods.SendDisplayManialinkPage(GetEmptyManiaLinkPage(manaiaLinkID), 0, false);
         }
 
+        protected GenericResponse<bool> SendEmptyManiaLinkPageToLogin(string login, string manaiaLinkID)
+        {
+            return Context.RPCClient.Methods.SendDisplayManialinkPageToLogin(login, GetEmptyManiaLinkPage(manaiaLinkID), 0, false);
+        }
+
         public ChallengeInfo GetCurrentChallengeInfoCached()
         {
             return CurrentChallengeInfo ?? GetCurrentChallengeInfo();
