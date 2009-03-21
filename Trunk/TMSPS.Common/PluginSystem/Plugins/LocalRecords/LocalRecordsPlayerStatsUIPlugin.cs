@@ -50,7 +50,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
             if (string.Compare(args.Text, "/topsums", StringComparison.InvariantCultureIgnoreCase) != 0 && string.Compare(args.Text, "/summary", StringComparison.InvariantCultureIgnoreCase) != 0)
                 return false;
 
-            IEnumerable<TopRankingEntry> rankings = HostPlugin.RankingAdapter.GetTopRankings(0, 18);
+            IEnumerable<TopRankingEntry> rankings = HostPlugin.RankingAdapter.GetTopRankings(0, 17);
             Context.RPCClient.Methods.SendDisplayManialinkPageToLogin(args.Login, GetTopSumsManiaLinkPage(1, 1, rankings), 0, false);
 
             return true;
