@@ -117,6 +117,7 @@
     <Content Include="Plugins\LocalRecords\LocalRecordsUI\PBPanelTemplate.xml" />
     <Content Include="Plugins\LocalRecords\LocalRecordsUI\Settings.xml" />
     <Content Include="Plugins\LocalRecords\LocalRecordsUI\Settings_Template.xml" />
+    <Content Include="Plugins\LocalRecords\PlayerStatsUI\TopRecordsTemplate.xml" />
     <Content Include="Plugins\LocalRecords\MostTop3RaceResultsPodium\EntryListTemplate.xml" />
     <Content Include="Plugins\LocalRecords\MostTop3RaceResultsPodium\Settings.xml" />
     <Content Include="Plugins\LocalRecords\MostTop3RaceResultsPodium\Settings_Template.xml" />

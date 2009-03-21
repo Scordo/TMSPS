@@ -151,6 +151,7 @@
     <Compile Include="PluginSystem\ITMSPSPluginBase.cs" />
     <Compile Include="PluginSystem\ITMSPSPluginPlugin.cs" />
     <Compile Include="PluginSystem\MessageStyles.cs" />
+    <Compile Include="PluginSystem\PagedDialogActions.cs" />
     <Compile Include="PluginSystem\PluginHostContext.cs" />
     <Compile Include="PluginSystem\Plugins\AdminPlayer\AdminPlayerPlugin.cs" />
     <Compile Include="PluginSystem\Plugins\AdminPlayer\UITemplates.Designer.cs">
@@ -206,9 +207,11 @@
       <DependentUpon>UITemplates.resx</DependentUpon>
     </Compile>
     <Compile Include="PluginSystem\Plugins\LocalRecords\ILocalRecordsPluginPlugin.cs" />
+    <Compile Include="PluginSystem\Plugins\LocalRecords\LocalRecordsPlayerStatsUIPlugin.cs" />
     <Compile Include="PluginSystem\Plugins\LocalRecords\LocalRecordsPluginPlugin.cs" />
     <Compile Include="PluginSystem\Plugins\LocalRecords\LocalRecordsUIPlugin.cs" />
     <Compile Include="PluginSystem\Plugins\LocalRecords\LocalRecordsUISettings.cs" />
+    <Compile Include="PluginSystem\Plugins\LocalRecords\PagedUIDialogSettings.cs" />
     <Compile Include="PluginSystem\Plugins\LocalRecords\RankEntry.cs" />
     <Compile Include="PluginSystem\Plugins\LocalRecords\TopRankingEntry.cs" />
     <Compile Include="PluginSystem\Plugins\LocalRecords\UITemplates.Designer.cs">
@@ -283,6 +286,7 @@
     <Content Include="Components\log4net.dll" />
     <Content Include="Components\log4net.xml" />
     <Content Include="Resources\ManiaLinkPageLayouts\AdminPlayer\UserView.xml" />
+    <Content Include="Resources\ManiaLinkPageLayouts\StaticUI\TMSPSAdvertise.xml" />
     <Content Include="Resources\SQLScripts\Structure\CreationOrder.txt" />
   </ItemGroup>
   <ItemGroup>
