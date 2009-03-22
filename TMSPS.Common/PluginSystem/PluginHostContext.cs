@@ -10,6 +10,7 @@ namespace TMSPS.Core.PluginSystem
         #region Members
 
         private readonly object _pluginIDLockObject = new object();
+        private readonly PlayerSettingsStore _userSettings = new PlayerSettingsStore();
 
         #endregion
 
@@ -22,6 +23,7 @@ namespace TMSPS.Core.PluginSystem
         public CultureInfo Culture { get; private set; }
         public MessageStyles MessagStyles { get; private set; }
         public MessageConstants MessageConstants { get; private set; }
+        public PlayerSettingsStore PlayerSettings { get { return _userSettings; } }
         private ushort LastPluginID { get; set; }
 
         #endregion

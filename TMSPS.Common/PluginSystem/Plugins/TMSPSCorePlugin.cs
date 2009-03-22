@@ -130,6 +130,7 @@ namespace TMSPS.Core.PluginSystem.Plugins
 
             RunCatchLog(() =>
             {
+                Context.PlayerSettings.Remove(e.Login.ToLower());
 
                 if (Settings.EnableLeaveMessage)
                 {

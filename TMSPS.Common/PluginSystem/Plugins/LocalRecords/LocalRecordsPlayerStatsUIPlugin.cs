@@ -7,6 +7,7 @@ using System.Security;
 using System.Xml.Linq;
 using TMSPS.Core.Communication.EventArguments.Callbacks;
 using TMSPS.Core.ManiaLinking;
+using TMSPS.Core.PluginSystem.Configuration;
 
 namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
 {
@@ -50,10 +51,20 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
             if (string.Compare(args.Text, "/topsums", StringComparison.InvariantCultureIgnoreCase) != 0 && string.Compare(args.Text, "/summary", StringComparison.InvariantCultureIgnoreCase) != 0)
                 return false;
 
-            IEnumerable<TopRankingEntry> rankings = HostPlugin.RankingAdapter.GetTopRankings(0, 17);
-            Context.RPCClient.Methods.SendDisplayManialinkPageToLogin(args.Login, GetTopSumsManiaLinkPage(1, 1, rankings), 0, false);
+            SendTopSumsPageToLogin(args.Login, 0);
 
             return true;
+        }
+
+        private void SendTopSumsPageToLogin(string login, ushort pageIndex)
+        {
+            Context.PlayerSettings.Get(login, ID).AreaSettings.Get((byte)Area.TopSums).CurrentDialogPageIndex = pageIndex;
+            uint[] pageIndeces = GetPageIndices(pageIndex, TopSumsSettings.MaxEntriesPerPage);
+            uint topRanksCount = HostPlugin.RankingAdapter.GetTopRankingsCount();
+            uint maxPage = Convert.ToUInt32(Math.Ceiling((double) topRanksCount/TopSumsSettings.MaxEntriesPerPage));
+
+            IEnumerable<TopRankingEntry> rankings = HostPlugin.RankingAdapter.GetTopRankings(pageIndeces[0], pageIndeces[1]);
+            Context.RPCClient.Methods.SendDisplayManialinkPageToLogin(login, GetTopSumsManiaLinkPage(Convert.ToUInt16(pageIndex + 1), maxPage, rankings), 0, false);
         }
 
 
@@ -129,7 +140,24 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
             switch (dialogAction)
             {
                 case PagedDialogActions.DefaultDialogAction.CloseDialog:
+                    Context.PlayerSettings.Get(login, ID).AreaSettings.Reset((byte)Area.TopSums);
                     SendEmptyManiaLinkPageToLogin(login, _topSumsManiaLinkPageID);
+                    break;
+                case PagedDialogActions.DefaultDialogAction.FirstPage:
+                    SendTopSumsPageToLogin(login, 0);
+                    break;
+                case PagedDialogActions.DefaultDialogAction.PrevPage:
+                    ushort prevPageIndex = Convert.ToUInt16(Math.Max(0, Context.PlayerSettings.Get(login, ID, (byte)Area.TopSums).CurrentDialogPageIndex - 1));
+                    SendTopSumsPageToLogin(login, prevPageIndex);
+                    break;
+                case PagedDialogActions.DefaultDialogAction.NextPage:
+                    ushort nextPageIndex = Convert.ToUInt16(Context.PlayerSettings.Get(login, ID, (byte)Area.TopSums).CurrentDialogPageIndex + 1);
+                    SendTopSumsPageToLogin(login, nextPageIndex);
+                    break;
+                case PagedDialogActions.DefaultDialogAction.LastPage:
+                    uint topRanksCount = HostPlugin.RankingAdapter.GetTopRankingsCount();
+                    ushort lastPageIndex = Convert.ToUInt16(Math.Max(0, Math.Ceiling((double)topRanksCount / TopSumsSettings.MaxEntriesPerPage) - 1));
+                    SendTopSumsPageToLogin(login, lastPageIndex);
                     break;
             }
         }
