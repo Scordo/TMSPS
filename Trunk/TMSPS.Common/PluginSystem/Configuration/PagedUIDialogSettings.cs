@@ -2,7 +2,7 @@
 using System.Xml.Linq;
 using SettingsBase=TMSPS.Core.Common.SettingsBase;
 
-namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
+namespace TMSPS.Core.PluginSystem.Configuration
 {
     public class PagedUIDialogSettings : SettingsBase
     {

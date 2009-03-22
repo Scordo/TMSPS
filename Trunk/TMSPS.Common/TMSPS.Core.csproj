@@ -145,8 +145,14 @@
     <Compile Include="PluginSystem\Configuration\Credentials.cs" />
     <Compile Include="PluginSystem\Configuration\CredentialsReader.cs" />
     <Compile Include="Common\Instancer.cs" />
+    <Compile Include="PluginSystem\Configuration\PluginAreaSettings.cs" />
+    <Compile Include="PluginSystem\Configuration\PluginAreaSettingsStore.cs" />
     <Compile Include="PluginSystem\Configuration\PluginConfigEntry.cs" />
     <Compile Include="PluginSystem\Configuration\PluginConfigEntryCollection.cs" />
+    <Compile Include="PluginSystem\Configuration\PluginSettings.cs" />
+    <Compile Include="PluginSystem\Configuration\PluginSettingsStore.cs" />
+    <Compile Include="PluginSystem\Configuration\PlayerSettings.cs" />
+    <Compile Include="PluginSystem\Configuration\PlayerSettingsStore.cs" />
     <Compile Include="PluginSystem\ITMSPSPlugin.cs" />
     <Compile Include="PluginSystem\ITMSPSPluginBase.cs" />
     <Compile Include="PluginSystem\ITMSPSPluginPlugin.cs" />
@@ -211,7 +217,7 @@
     <Compile Include="PluginSystem\Plugins\LocalRecords\LocalRecordsPluginPlugin.cs" />
     <Compile Include="PluginSystem\Plugins\LocalRecords\LocalRecordsUIPlugin.cs" />
     <Compile Include="PluginSystem\Plugins\LocalRecords\LocalRecordsUISettings.cs" />
-    <Compile Include="PluginSystem\Plugins\LocalRecords\PagedUIDialogSettings.cs" />
+    <Compile Include="PluginSystem\Configuration\PagedUIDialogSettings.cs" />
     <Compile Include="PluginSystem\Plugins\LocalRecords\RankEntry.cs" />
     <Compile Include="PluginSystem\Plugins\LocalRecords\TopRankingEntry.cs" />
     <Compile Include="PluginSystem\Plugins\LocalRecords\UITemplates.Designer.cs">
