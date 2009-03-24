@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Settings>
+	<TimeoutInSeconds>3</TimeoutInSeconds>
+	<SuperiorTimeTextStyle>$o$00f</SuperiorTimeTextStyle>
+	<InferiorTimeTextStyle>$o$f00</InferiorTimeTextStyle>
+
+	<Template>
+		<manialink id="{[ManiaLinkID]}">
+			<frame posn="-7.9 -38.1 0">
+				<quad sizen="16 4" style="Bgs1InRace" substyle="NavButton"/>
+				<label posn="6.4 -0.7 1" textsize="3" textcolor="000" halign="right" text="{[CheckPointText]}"/>
+				<label posn="6.8 -0.7 1" textsize="3" halign="left" text="{[DiffText]}"/>
+			</frame>
+		</manialink>
+	</Template>
+</Settings>

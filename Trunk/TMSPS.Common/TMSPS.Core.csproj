@@ -166,6 +166,8 @@
       <DependentUpon>UITemplates.resx</DependentUpon>
     </Compile>
     <Compile Include="PluginSystem\Plugins\ChatBotPlugin.cs" />
+    <Compile Include="PluginSystem\Plugins\CheckPoints\CheckPointsPlugin.cs" />
+    <Compile Include="PluginSystem\Plugins\CheckPoints\CheckPointsSettings.cs" />
     <Compile Include="PluginSystem\Plugins\Clock\ClockPlugin.cs" />
     <Compile Include="PluginSystem\Plugins\Clock\ClockPluginSettings.cs" />
     <Compile Include="PluginSystem\Plugins\Clock\UITemplates.Designer.cs">
