@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Configuration;
 using System.ServiceProcess;
+using System.Threading;
 using log4net;
 using log4net.Config;
 
@@ -25,7 +27,10 @@ namespace TMSPS.Daemon
 
 			if (args.Length > 0 && (args[0] == "-s" || args[0] == "-service"))
             {
+                int startUpIdleTime = 0;
+                int.TryParse(ConfigurationManager.AppSettings["StartupIdle"], out startUpIdleTime);
 				_log.Debug("Running in service mode.");
+                Thread.Sleep(startUpIdleTime);
 				ServiceBase.Run(new[] { new MainService() });
             }
             else
