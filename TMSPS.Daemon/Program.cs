@@ -1,5 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Configuration;
+using System.Configuration.Install;
+using System.Reflection;
 using System.ServiceProcess;
 using System.Threading;
 using log4net;
@@ -25,27 +28,106 @@ namespace TMSPS.Daemon
 
             AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
 
-			if (args.Length > 0 && (args[0] == "-s" || args[0] == "-service"))
+            if (Environment.UserInteractive)
             {
-                int startUpIdleTime = 0;
-                int.TryParse(ConfigurationManager.AppSettings["StartupIdle"], out startUpIdleTime);
-				_log.Debug("Running in service mode.");
-                Thread.Sleep(startUpIdleTime);
-				ServiceBase.Run(new[] { new MainService() });
+                if (args != null && args.Length > 0 && (args[0].Equals("/i", StringComparison.InvariantCultureIgnoreCase) || args[0].Equals("/install", StringComparison.InvariantCultureIgnoreCase) || args[0].Equals("-i", StringComparison.InvariantCultureIgnoreCase) || args[0].Equals("-install", StringComparison.InvariantCultureIgnoreCase)))
+                {
+                    InstallService(args);
+                    return;
+                }
+
+                if (args != null && args.Length > 0 && (args[0].Equals("/u", StringComparison.InvariantCultureIgnoreCase) || args[0].Equals("/uninstall", StringComparison.InvariantCultureIgnoreCase) || args[0].Equals("-u", StringComparison.InvariantCultureIgnoreCase) || args[0].Equals("-uninstall", StringComparison.InvariantCultureIgnoreCase)))
+                {
+                    UnInstallService(args);
+                    return;
+                }
+
+                RunInConsoleMode();
             }
             else
             {
-				Console.WriteLine("Running in console mode.");
-				_log.Debug("Running in console mode.");
-
-				_mainDaemon = new MainDaemon();
-				_mainDaemon.Start();
-				Console.WriteLine("Press Enter to stop the service...");
-				Console.ReadLine();
-				_mainDaemon.Stop();
-
-				_log.Debug("Finished in console mode.");
+                RunAsService();
             }
+        }
+
+        private static void RunAsService()
+        {
+            int startUpIdleTime;
+            int.TryParse(ConfigurationManager.AppSettings["StartupIdle"], out startUpIdleTime);
+            _log.Debug("Running in service mode.");
+            Thread.Sleep(startUpIdleTime);
+            ServiceBase.Run(new[] { new MainService() });
+        }
+
+        private static void RunInConsoleMode()
+        {
+            Console.WriteLine("Running in console mode.");
+            _log.Debug("Running in console mode.");
+
+            _mainDaemon = new MainDaemon();
+            _mainDaemon.Start();
+            Console.WriteLine("Press Enter to stop the service...");
+            Console.ReadLine();
+            _mainDaemon.Stop();
+
+            _log.Debug("Finished in console mode.");
+        }
+
+        private static void InstallService(string[] args)
+        {
+            string serviceName = GetServiceName(args);
+
+            List<string> parameters = new List<string>{Assembly.GetExecutingAssembly().Location, string.Format("/LogFile={0}", Assembly.GetExecutingAssembly().Location)};
+
+            if (!serviceName.IsNullOrTimmedEmpty())
+                parameters.Add(string.Format("--ServiceName={0}", serviceName));
+
+            try
+            {
+                ManagedInstallerClass.InstallHelper(parameters.ToArray());
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("An error occured during install:");
+                Console.WriteLine(ex.ToString());
+            }
+        }
+
+        private static void UnInstallService(string[] args)
+        {
+            string serviceName = GetServiceName(args);
+
+            List<string> parameters = new List<string> {Assembly.GetExecutingAssembly().Location, "/u", string.Format("/LogFile={0}", Assembly.GetExecutingAssembly().Location)};
+
+            if (!serviceName.IsNullOrTimmedEmpty())
+                parameters.Add(string.Format("--ServiceName={0}", serviceName));
+
+            try
+            {
+                ManagedInstallerClass.InstallHelper(parameters.ToArray());            
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("An error occured during uninstall:");
+                Console.WriteLine(ex.ToString());
+            }
+        }
+
+        private static string GetServiceName(string[] args)
+        {
+            if (args.Length > 1 && args[1].StartsWith("/sn=", StringComparison.InvariantCultureIgnoreCase))
+            {
+                string serviceName = args[1].Substring(4).Trim().Trim('"');
+                return serviceName.IsNullOrTimmedEmpty() ? null : serviceName;
+            }
+
+            if (args.Length > 1 && args[1].StartsWith("/servicename=", StringComparison.InvariantCultureIgnoreCase))
+            {
+                string serviceName = args[1].Substring(13).Trim().Trim('"');
+                return serviceName.IsNullOrTimmedEmpty() ? null : serviceName;
+            }
+
+            return null;
         }
 
         static void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)

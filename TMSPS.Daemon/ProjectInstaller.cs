@@ -17,7 +17,7 @@ namespace TMSPS.Daemon
             if (index == -1)
                 return;
 
-            ServiceInstaller.ServiceName = Environment.CommandLine.Substring(index + paramName.Length).Trim();
+            ServiceInstaller.ServiceName = Environment.CommandLine.Substring(index + paramName.Length).Trim().Trim('"');
 		    ServiceInstaller.DisplayName = ServiceInstaller.ServiceName;
             Console.WriteLine("Installing as '" + ServiceInstaller.ServiceName + "'");
 		}
