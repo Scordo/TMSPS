@@ -271,7 +271,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
 	            {
 	                PlayerInfo playerInfo = GetPlayerInfoCached(e.Login);
 
-	                if (playerInfo != null && newPosition <= Settings.MaxRecordsToReport && currentChallengeID != CurrentChallengeID)
+	                if (playerInfo != null && newPosition <= Settings.MaxRecordsToReport && currentChallengeID == CurrentChallengeID)
 	                {
                         DetermineLocalRecords();
                         OnPlayerNewRecord(playerInfo, e.TimeOrScore, oldPosition, newPosition);
