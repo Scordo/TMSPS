@@ -1,0 +1,51 @@
+﻿<manialink id="StaticUIPanel">
+	<frame posn="-50 34 0">
+
+		<quad posn="0 0 0" sizen="100 65" style="Bgs1" substyle="BgWindow1"/>
+
+		<!-- Header Row -->
+		<frame posn="0.25 -0.25 0.1">
+			<quad posn="0 0 0" sizen="99.4 4" style="Bgs1" substyle="BgTitle3_2"/>
+			<quad posn="0.4 -0.65 0.1" sizen="3 3" style="Icons64x64_1" substyle="IconPlayers"/>
+			<label posn="4 -1 0.1" sizen="70 3" style="TextRaceChat" text="Manage Online Players"/>
+			<quad posn="96.35 -0.6 0.1" sizen="3 3" style="Icons64x64_1" substyle="QuitRace"/>
+		</frame>
+
+		<frame posn="0.25 -4.8 0.1">
+			<quad posn="0 0 0" sizen="99.4 55" style="Bgs1" substyle="BgTitle3"/>
+
+			<label posn="0.75 -1 0.1" style="TextTitle3" text="ID"/>
+			<label posn="7 -1 0.1" style="TextTitle3" text="Nick /"/>
+			<label posn="13.5 -1 0.1" style="TextChallengeNameSmall" text="Login"/>
+			<label posn="56 -1 0.1" style="TextTitle3" text="Warn"/>
+			<label posn="62.75 -1 0.1" style="TextTitle3" text="Ignore"/>
+			<label posn="70 -1 0.1" style="TextTitle3" text="Kíck"/>
+			<label posn="75.5 -1 0.1" style="TextTitle3" text="Bán"/>
+			<label posn="80.5 -1 0.1" style="TextTitle3" text="Bláck"/>
+			<label posn="86.5 -1 0.1" style="TextTitle3" text="Guest"/>
+			<label posn="93.5 -1 0.1" style="TextTitle3" text="Spec"/>
+
+		</frame>
+
+		<!-- Footer Row -->
+		<frame posn="0.25 -60.5 0.1">
+			<quad posn="0 0 0" sizen="99.4 4" style="Bgs1" substyle="BgTitle3_2"/>
+			<quad posn="0.4 -0.65 0.1" sizen="3 3" style="Icons64x64_1" substyle="StarGold"/>
+			<quad posn="30.4 -0.65 0.1" sizen="3 3" style="Icons64x64_1" substyle="StarGold"/>
+
+			<!--
+			<quad posn="0.4 -0.65 0.1" sizen="3 3" style="Icons64x64_1" substyle="ArrowFirst"/>
+			<quad posn="20.4 -0.65 0.1" sizen="3 3" style="Icons64x64_1" substyle="ArrowPrev"/>
+			-->
+
+			<label posn="48.25 -1.8 0.1" sizen="30 3" style="TextRaceChat" text="Page: 1/99" halign="center" valign="center"/>
+			<!--
+			<quad posn="38.25 -0.65 0.1" sizen="3 3" style="Icons64x64_1" substyle="StarGold"/>
+			-->
+
+
+			<quad posn="66.1 -0.65 0.1" sizen="3 3" style="Icons64x64_1" substyle="ArrowNext"/>
+			<quad posn="96.1 -0.65 0.1" sizen="3 3" style="Icons64x64_1" substyle="ArrowLast"/>
+		</frame>
+	</frame>
+</manialink>

@@ -252,28 +252,34 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
 	            return;
 	        }
 
-	        RunCatchLog(()=>
-            {
-                if (e.TimeOrScore > 0)
-                {
-                    uint? oldPosition, newPosition;
-                    bool newBest;
-                    RecordAdapter.CheckAndWriteNewRecord(e.Login, CurrentChallengeID, e.TimeOrScore, out oldPosition, out newPosition, out newBest);
+            RunCatchLog(() => ThreadPool.QueueUserWorkItem(OnPlayerFinished, new object[] { CurrentChallengeID, e}), "Error in Callbacks_PlayerFinish Method.", true);
+	    }
 
-                    if (newBest)
-                    {
-                        PlayerInfo playerInfo = GetPlayerInfoCached(e.Login);
+	    private void OnPlayerFinished(object state)
+	    {
+	        object[] stateParams = (object[]) state;
+	        int currentChallengeID = (int) stateParams[0];
+            PlayerFinishEventArgs e = (PlayerFinishEventArgs)stateParams[1];
 
-                        if (playerInfo != null && newPosition <= Settings.MaxRecordsToReport)
-                        {
-                            DetermineLocalRecords();
-                            OnPlayerNewRecord(playerInfo, e.TimeOrScore, oldPosition, newPosition);
-                        }
-                    }
+	        if (e.TimeOrScore > 0)
+	        {
+	            uint? oldPosition, newPosition;
+	            bool newBest;
+                RecordAdapter.CheckAndWriteNewRecord(e.Login, currentChallengeID, e.TimeOrScore, out oldPosition, out newPosition, out newBest);
 
-                    SessionAdapter.AddSession(e.Login, CurrentChallengeID, Convert.ToUInt32(e.TimeOrScore));
-                }
-            }, "Error in Callbacks_PlayerFinish Method.", true);
+	            if (newBest)
+	            {
+	                PlayerInfo playerInfo = GetPlayerInfoCached(e.Login);
+
+	                if (playerInfo != null && newPosition <= Settings.MaxRecordsToReport && currentChallengeID == CurrentChallengeID)
+	                {
+                        DetermineLocalRecords();
+                        OnPlayerNewRecord(playerInfo, e.TimeOrScore, oldPosition, newPosition);
+	                }
+	            }
+
+                SessionAdapter.AddSession(e.Login, currentChallengeID, Convert.ToUInt32(e.TimeOrScore));
+	        }
 	    }
 
 	    private void Callbacks_EndRace(object sender, EndRaceEventArgs e)

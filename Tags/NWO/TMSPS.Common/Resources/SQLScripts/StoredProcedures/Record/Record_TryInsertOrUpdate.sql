@@ -1,4 +1,11 @@
-﻿ALTER PROCEDURE [dbo].[Record_TryInsertOrUpdate]
+﻿USE [Aseco_NWO]
+GO
+/****** Object:  StoredProcedure [dbo].[Record_TryInsertOrUpdate]    Script Date: 04/26/2009 03:23:49 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+ALTER PROCEDURE [dbo].[Record_TryInsertOrUpdate]
 	@Login nvarchar(100),
 	@ChallengeID int,
 	@TimeOrScore int
@@ -50,13 +57,17 @@ BEGIN
 			(
 				PlayerID,
 				ChallengeID,
-				TimeOrScore
+				TimeOrScore,
+				Created,
+				LastChanged
 			)
 			VALUES
 			(
 				@PlayerID,
 				@ChallengeID,
-				@TimeOrScore
+				@TimeOrScore,
+				getdate(),
+				getdate()
 			)
 		END
 		

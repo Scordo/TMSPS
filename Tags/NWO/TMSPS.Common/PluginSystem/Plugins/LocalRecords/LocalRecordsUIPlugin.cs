@@ -4,6 +4,7 @@ using System.Globalization;
 using System.Linq;
 using System.Security;
 using System.Text;
+using System.Threading;
 using System.Xml.Linq;
 using TMSPS.Core.Common;
 using TMSPS.Core.Communication.EventArguments.Callbacks;
@@ -94,6 +95,12 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
 
         private void SendServerRankMessageToLogin(string login)
         {
+            ThreadPool.QueueUserWorkItem(SendServerRankMessageToLogin, login);
+        }
+
+        private void SendServerRankMessageToLogin(object state)
+        {
+            string login = (string) state;
             Ranking ranking = HostPlugin.RankingAdapter.Deserialize_ByLogin(login);
 
             if (ranking != null)

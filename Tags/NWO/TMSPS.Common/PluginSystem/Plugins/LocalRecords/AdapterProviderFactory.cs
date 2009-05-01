@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Reflection;
+using TMSPS.Core.Common;
 
 namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
 {
@@ -44,41 +44,8 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
 			if (settings == null)
 				throw new ArgumentNullException("settings");
 
-			string assemblyLocation = settings.ProviderAssemblyLocation;
-
-			if (!assemblyLocation.EndsWith(".dll", StringComparison.InvariantCultureIgnoreCase))
-				assemblyLocation += ".dll";
-
-    		Assembly assembly;
-
-    		try
-    		{
-    			assembly = Assembly.LoadFrom(assemblyLocation);
-    		}
-    		catch (Exception ex)
-    		{
-    			throw new ArgumentException("Could not load Assembly " + assemblyLocation, ex);
-    		}
-
-    		object providerInstance;
-
-    		try
-    		{
-				providerInstance = assembly.CreateInstance(settings.ProviderClass);
-    		}
-    		catch (Exception ex)
-    		{
-				throw new ArgumentException("Could not create instance of " + settings.ProviderClass, ex);
-    		}
-
-    		if (providerInstance == null)
-				throw new ArgumentException("Could not create instance of " + settings.ProviderClass);
-
-    		if (!(providerInstance is IAdapterProvider))
-    			throw new ArgumentException(string.Format("Class '{0}' does not implement IAdapterProvider.", providerInstance.GetType().FullName));
-
-    		IAdapterProvider provider = (IAdapterProvider) providerInstance;
-    		provider.Init(settings.ProviderParameter);
+            IAdapterProvider provider = Instancer.GetInstanceOfInterface<IAdapterProvider>(settings.ProviderAssemblyLocation, settings.ProviderClass); 
+            provider.Init(settings.ProviderParameter);
 
     		return provider;
     	}

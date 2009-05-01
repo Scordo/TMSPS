@@ -37,6 +37,11 @@ namespace TMSPS.Core.PluginSystem
             return Context.RPCClient.Methods.SendDisplayManialinkPage(GetEmptyManiaLinkPage(manaiaLinkID), 0, false);
         }
 
+        protected GenericResponse<bool> SendEmptyManiaLinkPageToLogin(string login, string manaiaLinkID)
+        {
+            return Context.RPCClient.Methods.SendDisplayManialinkPageToLogin(login, GetEmptyManiaLinkPage(manaiaLinkID), 0, false);
+        }
+
         public ChallengeInfo GetCurrentChallengeInfoCached()
         {
             return CurrentChallengeInfo ?? GetCurrentChallengeInfo();
@@ -204,7 +209,7 @@ namespace TMSPS.Core.PluginSystem
 
             if (rankingResponse.Erroneous)
             {
-                Logger.Error(string.Format("Error getting current ranking. : {0}", rankingResponse.Fault));
+                Logger.Error(string.Format("Error getting current ranking. : {0}", rankingResponse.Fault.FaultMessage));
                 Logger.ErrorToUI("Error getting current ranking.");
                 return null;
             }

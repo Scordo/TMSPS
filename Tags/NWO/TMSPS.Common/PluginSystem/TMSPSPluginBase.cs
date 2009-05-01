@@ -299,6 +299,14 @@ namespace TMSPS.Core.PluginSystem
             }, RegexOptions.Singleline | RegexOptions.Compiled);
         }
 
+        protected static uint[] GetPageIndices(ushort pageIndex, uint entriesPerPage)
+        {
+            uint startIndex = Convert.ToUInt32(pageIndex * entriesPerPage);
+            uint endIndex = Convert.ToUInt32(((pageIndex + 1) * entriesPerPage) - 1);
+
+            return new[] { startIndex, endIndex};
+        }
+
 		#endregion
 	}
 }

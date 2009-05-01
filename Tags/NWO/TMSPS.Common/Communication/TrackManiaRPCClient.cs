@@ -32,8 +32,7 @@ namespace TMSPS.Core.Communication
         private readonly object _sendLock = new object();
         private readonly Callbacks _callBacks;
         private readonly Methods _methods;
-        private readonly Queue<string> _messageQueue = new Queue<string>();
-        private readonly Thread _messageQueueWorker;
+        private readonly Queue<string> _methodResponseQueue = new Queue<string>();
 
         #endregion
 
@@ -69,9 +68,9 @@ namespace TMSPS.Core.Communication
             get { return _methods; }
         }
 
-        private Queue<string> MessageQueue
+        private Queue<string> MethodResponseQueue
         {
-            get { return _messageQueue; }
+            get { return _methodResponseQueue; }
         }
 
         #endregion
@@ -105,9 +104,6 @@ namespace TMSPS.Core.Communication
             SocketError += TMNRPCClient_SocketError;
             _callBacks = new Callbacks();
             _methods = new Methods(this);
-
-            _messageQueueWorker = new Thread(ReadCallBacksFromQueue);
-            _messageQueueWorker.Start(this);
         }
 
         #endregion
@@ -129,7 +125,7 @@ namespace TMSPS.Core.Communication
             if (SocketAsyncEventArgs != null)
                 return;
 
-            MessageQueue.Clear();
+            MethodResponseQueue.Clear();
 
             if (port == null)
                 port = DEFAULT_PORT;
@@ -193,48 +189,16 @@ namespace TMSPS.Core.Communication
 
         #region Non Public Methods
 
-        private static void ReadCallBacksFromQueue(object state)
-        {
-            TrackManiaRPCClient client = (TrackManiaRPCClient) state;
-
-			if (client == null)
-				throw new InvalidOperationException("Client is null!");
-
-            while (true)
-            {
-				string message = client.MessageQueue.Dequeue(msg => msg == null || msg.IndexOf("<methodCall>", StringComparison.OrdinalIgnoreCase) != -1, client._readLock);
-                
-				if (message != null)
-                {
-                    XElement messageElement = TryParseXElement(message);
-
-                    if (messageElement != null)
-                    {
-                        if (!client.Callbacks.CheckForKnownMethodCallback(messageElement))
-                            throw new InvalidOperationException("Found unknown callback: " + message);    
-                    }
-                    else
-                    {
-                        CoreLogger.UniqueInstance.Debug("Wrong callback: " + message);
-                    }
-                }
-                else
-                {
-                    Thread.Sleep(20);
-                }
-            }
-        }
-
         private string GetNextMethodResponseFromQueue()
         {
             while (true)
             {
-				string message = MessageQueue.Dequeue(msg => msg == null || msg.IndexOf("<methodResponse>", StringComparison.OrdinalIgnoreCase) != -1, _readLock);
+				string message = MethodResponseQueue.Dequeue(msg => true, _readLock);
 
 				if (message != null)
 					return message;
 
-                Thread.Sleep(20);
+                Thread.Sleep(10);
             }
         }
 
@@ -342,7 +306,22 @@ namespace TMSPS.Core.Communication
                         (new MethodInvoker(OnReadyForSendingCommands)).BeginInvoke(null, null);
                     else
                     {
-                        MessageQueue.Enqueue(userToken.CurrentRawMessage);
+                        if (userToken.CurrentRawMessage != null)
+                        {
+                            if (userToken.CurrentRawMessage.IndexOf("<methodCall>", StringComparison.OrdinalIgnoreCase) != -1)
+                            {
+                                // message is a callback
+                                XElement messageElement = TryParseXElement(userToken.CurrentRawMessage);
+
+                                if (messageElement != null && !Callbacks.CheckForKnownMethodCallback(messageElement))
+                                    CoreLogger.UniqueInstance.Error("Found unknown callback: " + userToken.CurrentRawMessage);
+                            }
+                            else
+                            {
+                                // message is a method reply
+                                MethodResponseQueue.Enqueue(userToken.CurrentRawMessage);
+                            }
+                        }
                     }
 
                     ReadMessageWithPrefix(e, Client_MessageSent, true);

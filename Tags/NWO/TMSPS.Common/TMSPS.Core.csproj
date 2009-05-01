@@ -145,12 +145,19 @@
     <Compile Include="PluginSystem\Configuration\Credentials.cs" />
     <Compile Include="PluginSystem\Configuration\CredentialsReader.cs" />
     <Compile Include="Common\Instancer.cs" />
+    <Compile Include="PluginSystem\Configuration\PluginAreaSettings.cs" />
+    <Compile Include="PluginSystem\Configuration\PluginAreaSettingsStore.cs" />
     <Compile Include="PluginSystem\Configuration\PluginConfigEntry.cs" />
     <Compile Include="PluginSystem\Configuration\PluginConfigEntryCollection.cs" />
+    <Compile Include="PluginSystem\Configuration\PluginSettings.cs" />
+    <Compile Include="PluginSystem\Configuration\PluginSettingsStore.cs" />
+    <Compile Include="PluginSystem\Configuration\PlayerSettings.cs" />
+    <Compile Include="PluginSystem\Configuration\PlayerSettingsStore.cs" />
     <Compile Include="PluginSystem\ITMSPSPlugin.cs" />
     <Compile Include="PluginSystem\ITMSPSPluginBase.cs" />
     <Compile Include="PluginSystem\ITMSPSPluginPlugin.cs" />
     <Compile Include="PluginSystem\MessageStyles.cs" />
+    <Compile Include="PluginSystem\PagedDialogActions.cs" />
     <Compile Include="PluginSystem\PluginHostContext.cs" />
     <Compile Include="PluginSystem\Plugins\AdminPlayer\AdminPlayerPlugin.cs" />
     <Compile Include="PluginSystem\Plugins\AdminPlayer\UITemplates.Designer.cs">
@@ -159,6 +166,8 @@
       <DependentUpon>UITemplates.resx</DependentUpon>
     </Compile>
     <Compile Include="PluginSystem\Plugins\ChatBotPlugin.cs" />
+    <Compile Include="PluginSystem\Plugins\CheckPoints\CheckPointsPlugin.cs" />
+    <Compile Include="PluginSystem\Plugins\CheckPoints\CheckPointsSettings.cs" />
     <Compile Include="PluginSystem\Plugins\Clock\ClockPlugin.cs" />
     <Compile Include="PluginSystem\Plugins\Clock\ClockPluginSettings.cs" />
     <Compile Include="PluginSystem\Plugins\Clock\UITemplates.Designer.cs">
@@ -206,9 +215,11 @@
       <DependentUpon>UITemplates.resx</DependentUpon>
     </Compile>
     <Compile Include="PluginSystem\Plugins\LocalRecords\ILocalRecordsPluginPlugin.cs" />
+    <Compile Include="PluginSystem\Plugins\LocalRecords\LocalRecordsPlayerStatsUIPlugin.cs" />
     <Compile Include="PluginSystem\Plugins\LocalRecords\LocalRecordsPluginPlugin.cs" />
     <Compile Include="PluginSystem\Plugins\LocalRecords\LocalRecordsUIPlugin.cs" />
     <Compile Include="PluginSystem\Plugins\LocalRecords\LocalRecordsUISettings.cs" />
+    <Compile Include="PluginSystem\Configuration\PagedUIDialogSettings.cs" />
     <Compile Include="PluginSystem\Plugins\LocalRecords\RankEntry.cs" />
     <Compile Include="PluginSystem\Plugins\LocalRecords\TopRankingEntry.cs" />
     <Compile Include="PluginSystem\Plugins\LocalRecords\UITemplates.Designer.cs">
@@ -256,6 +267,8 @@
     <Compile Include="PluginSystem\Plugins\LocalRecords\SQL\RecordAdapter.cs" />
     <Compile Include="PluginSystem\Plugins\LocalRecords\SQL\SessionAdapter.cs" />
     <Compile Include="PluginSystem\Plugins\NameProtectionBotPlugin.cs" />
+    <Compile Include="PluginSystem\Plugins\StaticUI\StaticUIPlugin.cs" />
+    <Compile Include="PluginSystem\Plugins\StaticUI\StaticUIPluginSettings.cs" />
     <Compile Include="PluginSystem\Plugins\TMSPSCorePlugin.cs" />
     <Compile Include="PluginSystem\Plugins\TMSPSCorePluginSettings.cs" />
     <Compile Include="PluginSystem\Plugins\TMSPSCorePlugin_CommandHandling.cs" />
@@ -280,6 +293,8 @@
     <Content Include="Components\CookComputing.XmlRpcV2.dll" />
     <Content Include="Components\log4net.dll" />
     <Content Include="Components\log4net.xml" />
+    <Content Include="Resources\ManiaLinkPageLayouts\AdminPlayer\UserView.xml" />
+    <Content Include="Resources\ManiaLinkPageLayouts\StaticUI\TMSPSAdvertise.xml" />
     <Content Include="Resources\SQLScripts\Structure\CreationOrder.txt" />
   </ItemGroup>
   <ItemGroup>
