@@ -55,16 +55,16 @@ namespace TMSPS.Core.PluginSystem.Plugins.PodiumPlugins
             Settings = PodiumPluginSettings.ReadFromFile(PluginSettingsFilePath, "Top Ranks", -40);
             SendEmptyManiaLinkPage(_linkPageID);
 
-            Context.RPCClient.Callbacks.BeginRace += Callbacks_BeginRace;
-            Context.RPCClient.Callbacks.EndRace += Callbacks_EndRace;
+            Context.RPCClient.Callbacks.BeginChallenge += Callbacks_BeginChallenge;
+            Context.RPCClient.Callbacks.EndChallenge += Callbacks_EndChallenge;
         }
 
-        private void Callbacks_BeginRace(object sender, Communication.EventArguments.Callbacks.BeginRaceEventArgs e)
+        private void Callbacks_BeginChallenge(object sender, Communication.EventArguments.Callbacks.BeginChallengeEventArgs e)
         {
             SendEmptyManiaLinkPage(_linkPageID);
         }
 
-        private void Callbacks_EndRace(object sender, Communication.EventArguments.Callbacks.EndRaceEventArgs e)
+        private void Callbacks_EndChallenge(object sender, Communication.EventArguments.Callbacks.EndChallengeEventArgs e)
         {
             List<PodiumPluginUIEntry> entries = HostPlugin.RankingAdapter.Deserialize_List(Settings.MaxEntriesToShow).ConvertAll(ranking => new PodiumPluginUIEntry(ranking.Score.ToString("F1", CultureInfo.InvariantCulture), ranking.Nickname));
             Context.RPCClient.Methods.SendDisplayManialinkPage(PodiumPluginUI.GetRecordListManiaLinkPage(entries, _linkPageID, Settings), 0, false);
@@ -72,8 +72,8 @@ namespace TMSPS.Core.PluginSystem.Plugins.PodiumPlugins
        
         protected override void Dispose(bool connectionLost)
         {
-            Context.RPCClient.Callbacks.BeginRace -= Callbacks_BeginRace;
-            Context.RPCClient.Callbacks.EndRace -= Callbacks_EndRace;
+            Context.RPCClient.Callbacks.BeginChallenge -= Callbacks_BeginChallenge;
+            Context.RPCClient.Callbacks.EndChallenge -= Callbacks_EndChallenge;
         }
 
         #endregion

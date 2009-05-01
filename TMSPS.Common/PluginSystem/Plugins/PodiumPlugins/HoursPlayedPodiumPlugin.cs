@@ -55,16 +55,16 @@ namespace TMSPS.Core.PluginSystem.Plugins.PodiumPlugins
             Settings = PodiumPluginSettings.ReadFromFile(PluginSettingsFilePath, "Hours Played", -24);
             SendEmptyManiaLinkPage(_linkPageID);
 
-            Context.RPCClient.Callbacks.BeginRace += Callbacks_BeginRace;
-            Context.RPCClient.Callbacks.EndRace += Callbacks_EndRace;
+            Context.RPCClient.Callbacks.BeginChallenge += Callbacks_BeginChallenge;
+            Context.RPCClient.Callbacks.EndChallenge += Callbacks_EndChallenge;
         }
 
-        private void Callbacks_BeginRace(object sender, Communication.EventArguments.Callbacks.BeginRaceEventArgs e)
+        private void Callbacks_BeginChallenge(object sender, Communication.EventArguments.Callbacks.BeginChallengeEventArgs e)
         {
             SendEmptyManiaLinkPage(_linkPageID);
         }
 
-        private void Callbacks_EndRace(object sender, Communication.EventArguments.Callbacks.EndRaceEventArgs e)
+        private void Callbacks_EndChallenge(object sender, Communication.EventArguments.Callbacks.EndChallengeEventArgs e)
         {
             List<PodiumPluginUIEntry> entries = HostPlugin.PlayerAdapter.DeserializeList(Settings.MaxEntriesToShow, PlayerSortOrder.TimePlayed, false).ConvertAll(player => new PodiumPluginUIEntry(Math.Floor(player.TimePlayed.TotalHours).ToString("F0", CultureInfo.InvariantCulture) + "h", player.Nickname));
             Context.RPCClient.Methods.SendDisplayManialinkPage(PodiumPluginUI.GetRecordListManiaLinkPage(entries, _linkPageID, Settings), 0, false);
@@ -72,8 +72,8 @@ namespace TMSPS.Core.PluginSystem.Plugins.PodiumPlugins
 
         protected override void Dispose(bool connectionLost)
         {
-            Context.RPCClient.Callbacks.BeginRace -= Callbacks_BeginRace;
-            Context.RPCClient.Callbacks.EndRace -= Callbacks_EndRace;
+            Context.RPCClient.Callbacks.BeginChallenge -= Callbacks_BeginChallenge;
+            Context.RPCClient.Callbacks.EndChallenge -= Callbacks_EndChallenge;
         }
 
         #endregion

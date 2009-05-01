@@ -21,6 +21,8 @@
         TunnelDataReceived,
         ChallengeListModified,
         PlayerInfoChanged,
-        ManualFlowControlTransition
+        ManualFlowControlTransition,
+        BeginChallenge,
+        EndChallenge
     }
 }

@@ -61,6 +61,8 @@
     <Compile Include="Common\ReadOnlyDictionary.cs" />
     <Compile Include="Common\SettingsBase.cs" />
     <Compile Include="Common\TimedVolatileExecutionQueue.cs" />
+    <Compile Include="Communication\EventArguments\Callbacks\BeginChallengeEventArgs.cs" />
+    <Compile Include="Communication\EventArguments\Callbacks\EndChallengeEventArgs.cs" />
     <Compile Include="Communication\ProxyTypes\GameMode.cs" />
     <Compile Include="Communication\ProxyTypes\StartServerParameters.cs" />
     <Compile Include="Logging\ConsoleUILogger.cs" />

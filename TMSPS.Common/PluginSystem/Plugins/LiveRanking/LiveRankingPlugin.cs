@@ -63,8 +63,8 @@ namespace TMSPS.Core.PluginSystem.Plugins.LiveRanking
             UpdateUI(this);
 
             Context.RPCClient.Callbacks.PlayerConnect += Callbacks_PlayerConnect;
-            Context.RPCClient.Callbacks.BeginRace += Callbacks_BeginRace;
-            Context.RPCClient.Callbacks.EndRace += Callbacks_EndRace;
+            Context.RPCClient.Callbacks.BeginChallenge += Callbacks_BeginChallenge;
+            Context.RPCClient.Callbacks.EndChallenge += Callbacks_EndChallenge;
         }
 
         private void Callbacks_PlayerConnect(object sender, Communication.EventArguments.Callbacks.PlayerConnectEventArgs e)
@@ -75,13 +75,13 @@ namespace TMSPS.Core.PluginSystem.Plugins.LiveRanking
             RunCatchLog(() => SendUIToPlayer(LastRankings, e.Login), "Error in Callbacks_PlayerConnect Method.", true);
         }
 
-        private void Callbacks_BeginRace(object sender, Communication.EventArguments.Callbacks.BeginRaceEventArgs e)
+        private void Callbacks_BeginChallenge(object sender, Communication.EventArguments.Callbacks.BeginChallengeEventArgs e)
         {
             PodiumStage = false;
             RunCatchLog(() => UpdateUI(this), "Error in Callbacks_BeginRace Method.", true);
         }
 
-        private void Callbacks_EndRace(object sender, Communication.EventArguments.Callbacks.EndRaceEventArgs e)
+        private void Callbacks_EndChallenge(object sender, Communication.EventArguments.Callbacks.EndChallengeEventArgs e)
         {
             PodiumStage = true;
             RunCatchLog(() => UpdateUI(this), "Error in Callbacks_EndRace Method.", true);
@@ -295,8 +295,8 @@ namespace TMSPS.Core.PluginSystem.Plugins.LiveRanking
 
         protected override void Dispose(bool connectionLost)
         {
-            Context.RPCClient.Callbacks.BeginRace += Callbacks_BeginRace;
-            Context.RPCClient.Callbacks.EndRace += Callbacks_EndRace;
+            Context.RPCClient.Callbacks.BeginChallenge += Callbacks_BeginChallenge;
+            Context.RPCClient.Callbacks.EndChallenge += Callbacks_EndChallenge;
         }
 
         #endregion

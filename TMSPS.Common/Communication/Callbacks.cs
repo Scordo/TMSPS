@@ -16,7 +16,9 @@ namespace TMSPS.Core.Communication
         public event EventHandler<PlayerConnectEventArgs> PlayerConnect;
         public event EventHandler<PlayerDisconnectEventArgs> PlayerDisconnect;
         public event EventHandler<PlayerChatEventArgs> PlayerChat;
+        [Obsolete("Please use BeginChallenge")]
         public event EventHandler<BeginRaceEventArgs> BeginRace;
+        [Obsolete("Please use EndChallenge")]
         public event EventHandler<EndRaceEventArgs> EndRace;
         public event EventHandler<PlayerManialinkPageAnswerEventArgs> PlayerManialinkPageAnswer;
         public event EventHandler<EchoEventArgs> Echo;
@@ -33,6 +35,8 @@ namespace TMSPS.Core.Communication
         public event EventHandler<ChallengeListModifiedeventArgs> ChallengeListModified;
         public event EventHandler<PlayerInfoChangedEventArgs> PlayerInfoChanged;
         public event EventHandler<ManualFlowControlTransitionEventArgs> ManualFlowControlTransition;
+        public event EventHandler<BeginChallengeEventArgs> BeginChallenge;
+        public event EventHandler<EndChallengeEventArgs> EndChallenge;
 
         #endregion
 
@@ -109,6 +113,12 @@ namespace TMSPS.Core.Communication
                     break;
                 case TrackManiaCallback.ManualFlowControlTransition:
                     new RaiseEventHandler(OnManualFlowControlTransition).BeginInvoke(messageElement, null, null);
+                    break;
+                case TrackManiaCallback.BeginChallenge:
+                    new RaiseEventHandler(OnBeginChallenge).BeginInvoke(messageElement, null, null);
+                    break;
+                case TrackManiaCallback.EndChallenge:
+                    new RaiseEventHandler(OnEndChallenge).BeginInvoke(messageElement, null, null);
                     break;
                 default:
                     result = false;
@@ -240,6 +250,18 @@ namespace TMSPS.Core.Communication
         {
             if (ManualFlowControlTransition != null)
                 ManualFlowControlTransition(this, EventArgsBase<ManualFlowControlTransitionEventArgs>.Parse(messageElement));
+        }
+
+        protected void OnBeginChallenge(XElement messageElement)
+        {
+            if (BeginChallenge != null)
+                BeginChallenge(this, EventArgsBase<BeginChallengeEventArgs>.Parse(messageElement));
+        }
+
+        protected void OnEndChallenge(XElement messageElement)
+        {
+            if (EndChallenge != null)
+                EndChallenge(this, EventArgsBase<EndChallengeEventArgs>.Parse(messageElement));
         }
 
         private static TrackManiaCallback? TryParseCallback(XContainer messageElement)

@@ -76,8 +76,8 @@ namespace TMSPS.Core.PluginSystem.Plugins.Dedimania
             }
 
             DedimaniaClient.Url = Settings.ReportUrl;
-            Context.RPCClient.Callbacks.BeginRace += Callbacks_BeginRace;
-            Context.RPCClient.Callbacks.EndRace += Callbacks_EndRace;
+            Context.RPCClient.Callbacks.BeginChallenge += Callbacks_BeginChallenge;
+            Context.RPCClient.Callbacks.EndChallenge += Callbacks_EndChallenge;
             Context.RPCClient.Callbacks.PlayerFinish += Callbacks_PlayerFinish;
 
             InitializePlugins();
@@ -203,9 +203,10 @@ namespace TMSPS.Core.PluginSystem.Plugins.Dedimania
         protected override void Dispose(bool connectionLost)
         {
             DisposePlugins(connectionLost);
-            Context.RPCClient.Callbacks.BeginRace -= Callbacks_BeginRace;
-            Context.RPCClient.Callbacks.EndRace -= Callbacks_EndRace;
-            
+
+            Context.RPCClient.Callbacks.BeginChallenge -= Callbacks_BeginChallenge;
+            Context.RPCClient.Callbacks.PlayerFinish -= Callbacks_PlayerFinish;
+            Context.RPCClient.Callbacks.EndChallenge -= Callbacks_EndChallenge;
         }
 
         private static void UpdateServerPlayers(object state)
@@ -244,7 +245,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.Dedimania
             }, "Error in Callbacks_BeginRace Method.", true, plugin.Logger);
         }
 
-        private void Callbacks_BeginRace(object sender, BeginRaceEventArgs e)
+        private void Callbacks_BeginChallenge(object sender, BeginChallengeEventArgs e)
         {
             if (e.Erroneous)
             {
@@ -256,7 +257,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.Dedimania
             {
                 ResetUpdateServerPlayersTimer();
                 ReportCurrentChallenge(null);
-            }, "Error in Callbacks_BeginRace Method.", true);
+            }, "Error in Callbacks_BeginChallenge Method.", true);
         }
 
         private void ReportCurrentChallenge(ICollection<PlayerRank> currentRankings)
@@ -303,7 +304,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.Dedimania
                 Logger.WarnToUI("Error while calling CurrentChallenge!");   
         }
 
-        private void Callbacks_EndRace(object sender, EndRaceEventArgs e)
+        private void Callbacks_EndChallenge(object sender, EndChallengeEventArgs e)
         {
             if (e.Erroneous)
             {
@@ -315,14 +316,6 @@ namespace TMSPS.Core.PluginSystem.Plugins.Dedimania
             {
                 if (e.Rankings.Count == 0 || !e.Rankings.Exists(ranking => ranking.BestTime != -1))
                     return;
-
-                int maxCheckPointAmount = 0;
-
-                foreach (PlayerRank ranking in e.Rankings)
-                {
-                    if (ranking.BestCheckpoints.Count > maxCheckPointAmount)
-                        maxCheckPointAmount = ranking.BestCheckpoints.Count;
-                }
 
                 List<DedimaniaTime> times = new List<DedimaniaTime>();
 
@@ -340,11 +333,11 @@ namespace TMSPS.Core.PluginSystem.Plugins.Dedimania
                     return;
 
                 ResetUpdateServerPlayersTimer();
-                DedimaniaChallengeRaceTimesReply challengeRaceTimesReply = DedimaniaClient.ChallengeRaceTimes(e.Challenge.UId, e.Challenge.Name, e.Challenge.Environnement, e.Challenge.Author, Context.ServerInfo.Version.GetShortName(), (int) currentGameMode.Value, maxCheckPointAmount, (int) DedimaniaSettings.MAX_RECORDS_TO_REPORT, times.ToArray());
+                DedimaniaChallengeRaceTimesReply challengeRaceTimesReply = DedimaniaClient.ChallengeRaceTimes(e.Challenge.UId, e.Challenge.Name, e.Challenge.Environnement, e.Challenge.Author, Context.ServerInfo.Version.GetShortName(), (int) currentGameMode.Value, e.Challenge.NumberOfCheckpoints, (int) DedimaniaSettings.MAX_RECORDS_TO_REPORT, times.ToArray());
 
                 if (challengeRaceTimesReply == null)
                     Logger.WarnToUI("Error while calling ChallengeRaceTimes!");
-            }, "Error in Callbacks_EndRace Method.", true);
+            }, "Error in Callbacks_EndChallenge Method.", true);
         }
 
         private void ResetUpdateServerPlayersTimer()

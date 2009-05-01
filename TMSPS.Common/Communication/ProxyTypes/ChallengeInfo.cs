@@ -18,5 +18,11 @@ namespace TMSPS.Core.Communication.ProxyTypes
 
 		[RPCParam("LapRace")]
 		public bool LapRace { get; set; }
+
+        [RPCParam("NbLaps")]
+        public int NumberOfLaps { get; set; }
+
+        [RPCParam("NbCheckpoints")]
+        public int NumberOfCheckpoints { get; set; }
 	}
 }
