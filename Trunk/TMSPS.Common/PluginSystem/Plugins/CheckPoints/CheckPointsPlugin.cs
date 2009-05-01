@@ -36,8 +36,8 @@ namespace TMSPS.Core.PluginSystem.Plugins.CheckPoints
             BestCheckPoints = new Dictionary<string, Dictionary<int, int>>();
 
             Context.RPCClient.Callbacks.PlayerDisconnect += Callbacks_PlayerDisconnect;
-            Context.RPCClient.Callbacks.BeginRace += Callbacks_BeginRace;
-            Context.RPCClient.Callbacks.EndRace += Callbacks_EndRace;
+            Context.RPCClient.Callbacks.BeginChallenge += Callbacks_BeginChallenge;
+            Context.RPCClient.Callbacks.EndChallenge += Callbacks_EndChallenge;
             Context.RPCClient.Callbacks.PlayerCheckpoint += Callbacks_PlayerCheckpoint;
             Context.RPCClient.Callbacks.PlayerFinish += Callbacks_PlayerFinish;
             Context.RPCClient.Callbacks.PlayerInfoChanged += Callbacks_PlayerInfoChanged;
@@ -46,8 +46,8 @@ namespace TMSPS.Core.PluginSystem.Plugins.CheckPoints
         protected override void Dispose(bool connectionLost)
         {
             Context.RPCClient.Callbacks.PlayerDisconnect -= Callbacks_PlayerDisconnect;
-            Context.RPCClient.Callbacks.BeginRace -= Callbacks_BeginRace;
-            Context.RPCClient.Callbacks.EndRace -= Callbacks_EndRace;
+            Context.RPCClient.Callbacks.BeginChallenge -= Callbacks_BeginChallenge;
+            Context.RPCClient.Callbacks.EndChallenge -= Callbacks_EndChallenge;
             Context.RPCClient.Callbacks.PlayerCheckpoint -= Callbacks_PlayerCheckpoint;
             Context.RPCClient.Callbacks.PlayerFinish -= Callbacks_PlayerFinish;
             Context.RPCClient.Callbacks.PlayerInfoChanged -= Callbacks_PlayerInfoChanged;
@@ -112,7 +112,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.CheckPoints
             BestCheckPoints.Remove(e.Login);
         }
 
-        private void Callbacks_BeginRace(object sender, BeginRaceEventArgs e)
+        private void Callbacks_BeginChallenge(object sender, BeginChallengeEventArgs e)
         {
             lock (_cpReadWriteLock)
             {
@@ -120,7 +120,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.CheckPoints
             }
         }
 
-        private void Callbacks_EndRace(object sender, EndRaceEventArgs e)
+        private void Callbacks_EndChallenge(object sender, EndChallengeEventArgs e)
         {
             SendEmptyManiaLinkPage(_maniaLinkPageID);
         }

@@ -1,4 +1,5 @@
 ﻿using System;
+using TMSPS.Core.Communication.EventArguments.Callbacks;
 
 namespace TMSPS.Core.PluginSystem.Plugins.StaticUI
 {
@@ -43,17 +44,17 @@ namespace TMSPS.Core.PluginSystem.Plugins.StaticUI
             SendContentToAll();
 
             Context.RPCClient.Callbacks.PlayerConnect += Callbacks_PlayerConnect;
-            Context.RPCClient.Callbacks.BeginRace += Callbacks_BeginRace;
-            Context.RPCClient.Callbacks.EndRace += Callbacks_EndRace;
+            Context.RPCClient.Callbacks.BeginChallenge += Callbacks_BeginChallenge;
+            Context.RPCClient.Callbacks.EndChallenge += Callbacks_EndChallenge;
         }
 
-        private void Callbacks_EndRace(object sender, Communication.EventArguments.Callbacks.EndRaceEventArgs e)
+        private void Callbacks_EndChallenge(object sender, EndChallengeEventArgs e)
         {
             if (Settings.HidOnFinish)
                 SendEmptyManiaLinkPage("StaticUIPanel");
         }
 
-        private void Callbacks_BeginRace(object sender, Communication.EventArguments.Callbacks.BeginRaceEventArgs e)
+        private void Callbacks_BeginChallenge(object sender, BeginChallengeEventArgs e)
         {
             if (Settings.HidOnFinish)
                 SendContentToAll();
@@ -69,7 +70,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.StaticUI
             Context.RPCClient.Methods.SendDisplayManialinkPage(Settings.ManiaLinkPageContent, 0, false);
         }
 
-        private void Callbacks_PlayerConnect(object sender, Communication.EventArguments.Callbacks.PlayerConnectEventArgs e)
+        private void Callbacks_PlayerConnect(object sender, PlayerConnectEventArgs e)
         {
             SendContentToLogin(e.Login);
         }
@@ -77,8 +78,8 @@ namespace TMSPS.Core.PluginSystem.Plugins.StaticUI
         protected override void Dispose(bool connectionLost)
         {
             Context.RPCClient.Callbacks.PlayerConnect -= Callbacks_PlayerConnect;
-            Context.RPCClient.Callbacks.BeginRace -= Callbacks_BeginRace;
-            Context.RPCClient.Callbacks.EndRace -= Callbacks_EndRace;
+            Context.RPCClient.Callbacks.BeginChallenge -= Callbacks_BeginChallenge;
+            Context.RPCClient.Callbacks.EndChallenge -= Callbacks_EndChallenge;
         }
 
         #endregion

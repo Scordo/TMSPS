@@ -62,8 +62,6 @@ namespace TMSPS.Core.PluginSystem.Plugins
                 return;
             }
 
-            int a = 1;
-
             RunCatchLog(() =>
             {
                 if (e.IsServerMessage || e.Text.IsNullOrTimmedEmpty())

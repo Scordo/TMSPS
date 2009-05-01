@@ -53,7 +53,7 @@ namespace TMSPS.Core.PluginSystem.Plugins
 
             Context.RPCClient.Callbacks.PlayerConnect += Callbacks_PlayerConnect;
             Context.RPCClient.Callbacks.PlayerDisconnect += Callbacks_PlayerDisconnect;
-            Context.RPCClient.Callbacks.BeginRace += Callbacks_BeginRace;
+            Context.RPCClient.Callbacks.BeginChallenge += Callbacks_BeginChallenge;
             Context.RPCClient.Callbacks.PlayerChat += Callbacks_PlayerChat;
         }
 
@@ -69,7 +69,7 @@ namespace TMSPS.Core.PluginSystem.Plugins
         {
             Context.RPCClient.Callbacks.PlayerConnect -= Callbacks_PlayerConnect;
             Context.RPCClient.Callbacks.PlayerDisconnect -= Callbacks_PlayerDisconnect;
-            Context.RPCClient.Callbacks.BeginRace -= Callbacks_BeginRace;
+            Context.RPCClient.Callbacks.BeginChallenge -= Callbacks_BeginChallenge;
             Context.RPCClient.Callbacks.PlayerChat -= Callbacks_PlayerChat;
         }
 
@@ -144,7 +144,7 @@ namespace TMSPS.Core.PluginSystem.Plugins
             }, "Error in Callbacks_PlayerDisconnect Method.", true);
         }
 
-        private void Callbacks_BeginRace(object sender, BeginRaceEventArgs e)
+        private void Callbacks_BeginChallenge(object sender, BeginChallengeEventArgs e)
         {
             if (e.Erroneous)
             {

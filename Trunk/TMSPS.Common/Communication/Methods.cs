@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using TMSPS.Core.Communication.ResponseHandling;
 using TMSPS.Core.Communication.ProxyTypes;
 using Version=TMSPS.Core.Communication.ProxyTypes.Version;
+using System.Linq;
 
 namespace TMSPS.Core.Communication
 {
@@ -292,6 +293,19 @@ namespace TMSPS.Core.Communication
             return (GenericResponse<bool>)_client.SendMethod<GenericResponse<bool>>(TrackManiaMethod.SendDisplayManialinkPageToLogin.ToString(), login, maniaLinkXML, timeout, hideOnOptionClick);
         }
 
+        public GenericResponse<bool> SendDisplayManialinkPageToLogins(string maniaLinkXML, int timeout, bool hideOnOptionClick, params string[] logins)
+        {
+            if (logins == null || logins.Length == 0)
+                return new GenericResponse<bool> { Value = false };
+
+            return (GenericResponse<bool>)_client.SendMethod<GenericResponse<bool>>(TrackManiaMethod.SendDisplayManialinkPageToLogin.ToString(), string.Join(",", logins), maniaLinkXML, timeout, hideOnOptionClick);
+        }
+
+        public GenericResponse<bool> SendDisplayManialinkPageToLogins(string maniaLinkXML, int timeout, bool hideOnOptionClick, IEnumerable<string> logins)
+        {
+            return SendDisplayManialinkPageToLogins(maniaLinkXML, timeout, hideOnOptionClick, logins == null ? new string[] { } : logins.ToArray());
+        }
+
         public GenericResponse<bool> SendHideManialinkPage()
         {
             return (GenericResponse<bool>)_client.SendMethod<GenericResponse<bool>>(TrackManiaMethod.SendHideManialinkPage.ToString());
@@ -305,6 +319,19 @@ namespace TMSPS.Core.Communication
         public GenericResponse<bool> SendHideManialinkPageToLogin(string login)
         {
             return (GenericResponse<bool>)_client.SendMethod<GenericResponse<bool>>(TrackManiaMethod.SendHideManialinkPageToLogin.ToString(), login);
+        }
+
+        public GenericResponse<bool> SendHideManialinkPageToLogins(params string[] logins)
+        {
+            if (logins == null || logins.Length == 0)
+                return new GenericResponse<bool> { Value = false };
+
+            return (GenericResponse<bool>)_client.SendMethod<GenericResponse<bool>>(TrackManiaMethod.SendHideManialinkPageToLogin.ToString(), string.Join(",", logins));
+        }
+
+        public GenericResponse<bool> SendHideManialinkPageToLogins(IEnumerable<string> logins)
+        {
+            return SendHideManialinkPageToLogins(logins == null ? new string[] {} : logins.ToArray());
         }
 
         public GenericListResponse<ManiaLinkAnswer> GetManialinkPageAnswers()
@@ -350,6 +377,17 @@ namespace TMSPS.Core.Communication
         public GenericResponse<bool> TunnelSendDataToLogin(string login, byte[] data)
         {
             return (GenericResponse<bool>)_client.SendMethod<GenericResponse<bool>>(TrackManiaMethod.TunnelSendDataToLogin.ToString(), login, data);
+        }
+
+        /// <summary>
+        /// Send the data to the specified players.
+        /// </summary>
+        public GenericResponse<bool> TunnelSendDataToLogins(byte[] data, params string[] logins)
+        {
+            if (logins == null || logins.Length == 0)
+                return new GenericResponse<bool> { Value = false };
+
+            return (GenericResponse<bool>)_client.SendMethod<GenericResponse<bool>>(TrackManiaMethod.TunnelSendDataToLogin.ToString(), string.Join(",", logins), data);
         }
 
         /// <summary>
@@ -641,7 +679,7 @@ namespace TMSPS.Core.Communication
         }
 
         /// <summary>
-        /// Returns a replay containing the data needed to validate the current best time of the player.
+        /// Returns a replay containing the data needed to validate the current best time of the player. The parameter is the login of the player.
         /// </summary>
         public GenericResponse<byte[]> GetValidationReplay(string login)
         {
@@ -649,7 +687,7 @@ namespace TMSPS.Core.Communication
         }
 
         /// <summary>
-        ///  Set a new ladder mode between ladder disabled (0), forced (1). Only available to Admin. Requires a challenge restart to be taken into account.
+        ///  Set a new ladder mode between ladder disabled (0) and forced (1). Only available to Admin. Requires a challenge restart to be taken into account.
         /// </summary>
         public GenericResponse<bool> SetLadderMode(int ladderMode)
         {
@@ -1450,6 +1488,26 @@ namespace TMSPS.Core.Communication
         }
 
         /// <summary>
+        /// Send a text message to the specified destination logins (or everybody if empty) on behalf of SenderLogin. Only available if manual routing is enabled.
+        /// </summary>
+        public GenericResponse<bool> ChatForwardToLogins(string text, string senderLogin, params string[] destinationLogins)
+        {
+            string targetLogins = string.Empty;
+            if (destinationLogins != null && destinationLogins.Length > 0)
+                targetLogins = string.Join(",", destinationLogins);
+
+            return (GenericResponse<bool>)_client.SendMethod<GenericResponse<bool>>(TrackManiaMethod.ChatForwardToLogin.ToString(), text, senderLogin, targetLogins);
+        }
+
+        /// <summary>
+        /// Send a text message to the specified destination logins (or everybody if empty) on behalf of SenderLogin. Only available if manual routing is enabled.
+        /// </summary>
+        public GenericResponse<bool> ChatForwardToLogins(string text, string senderLogin, IEnumerable<string> destinationLogins)
+        {
+            return ChatForwardToLogins(text, senderLogin, destinationLogins == null ? new string[] { } : destinationLogins.ToArray());
+        }
+
+        /// <summary>
         /// Get the current and next maximum number of players allowed on server. The struct returned contains two fields CurrentValue and NextValue.
         /// </summary>
         public GenericResponse<CNPair<int>> GetMaxPlayers()
@@ -1509,6 +1567,29 @@ namespace TMSPS.Core.Communication
         }
 
         /// <summary>
+        /// Send a text message to the clients with the specified logins. Only available to Admin.
+        /// </summary>
+        /// <param name="logins"></param>
+        /// <param name="message"></param>
+        public GenericResponse<bool> ChatSendToLogins(string message, params string[] logins)
+        {
+            if (logins == null || logins.Length == 0)
+                return new GenericResponse<bool> { Value = false };
+
+            return (GenericResponse<bool>)_client.SendMethod<GenericResponse<bool>>(TrackManiaMethod.ChatSendToLogin.ToString(), message, string.Join(",", logins));
+        }
+
+        /// <summary>
+        /// Send a text message to the clients with the specified logins. Only available to Admin.
+        /// </summary>
+        /// <param name="logins"></param>
+        /// <param name="message"></param>
+        public GenericResponse<bool> ChatSendToLogins(string message, IEnumerable<string> logins)
+        {
+            return ChatSendToLogins(message, logins == null ? new string[] {} : logins.ToArray());
+        }
+
+        /// <summary>
         /// Send a text message to the client with the specified PlayerId. Only available to Admin.
         /// </summary>
         /// <param name="playerID"></param>
@@ -1535,6 +1616,29 @@ namespace TMSPS.Core.Communication
         public GenericResponse<bool> ChatSendServerMessageToLogin(string message, string login)
         {
             return (GenericResponse<bool>)_client.SendMethod<GenericResponse<bool>>(TrackManiaMethod.ChatSendServerMessageToLogin.ToString(), message, login);
+        }
+
+        /// <summary>
+        /// Send a text message without the server login to the clients with the specified logins. Only available to Admin.
+        /// </summary>
+        /// <param name="logins"></param>
+        /// <param name="message"></param>
+        public GenericResponse<bool> ChatSendServerMessageToLogins(string message, params string[] logins)
+        {
+            if (logins == null || logins.Length == 0)
+                return new GenericResponse<bool>{Value = false};
+
+            return (GenericResponse<bool>)_client.SendMethod<GenericResponse<bool>>(TrackManiaMethod.ChatSendServerMessageToLogin.ToString(), message, string.Join(",", logins));
+        }
+
+        /// <summary>
+        /// Send a text message without the server login to the clients with the specified logins. Only available to Admin.
+        /// </summary>
+        /// <param name="logins"></param>
+        /// <param name="message"></param>
+        public GenericResponse<bool> ChatSendServerMessageToLogins(string message, IEnumerable<string> logins)
+        {
+            return ChatSendServerMessageToLogins(message, logins == null ? new string[] {} : logins.ToArray());
         }
 
         /// <summary>
@@ -1612,6 +1716,22 @@ namespace TMSPS.Core.Communication
         }
 
         /// <summary>
+        /// Display a notice on the clients with the specified logins. The parameters are the logins of the clients to which the notice is sent, the text message to display, and the login of the avatar to display next to it (or '' for no avatar), and an optional 'max duration' in seconds (default: 3). 
+        /// </summary>
+        public GenericResponse<bool> SendNoticeToLogins(string message, params string[] logins)
+        {
+            return SendNoticeToLogins(message, string.Empty, logins);
+        }
+
+        /// <summary>
+        /// Display a notice on the clients with the specified logins. The parameters are the logins of the clients to which the notice is sent, the text message to display, and the login of the avatar to display next to it (or '' for no avatar), and an optional 'max duration' in seconds (default: 3). 
+        /// </summary>
+        public GenericResponse<bool> SendNoticeToLogins(string message, IEnumerable<string> logins)
+        {
+            return SendNoticeToLogins(message, string.Empty, logins);
+        }
+
+        /// <summary>
         /// Display a notice on the client with the specified login. The parameters are the login of the client to whom the notice is sent, the text message to display, and the login of the avatar to display next to it (or '' for no avatar), and an optional 'max duration' in seconds (default: 3). 
         /// </summary>
         public GenericResponse<bool> SendNoticeToLogin(string login, string message, string avatarLogin)
@@ -1620,11 +1740,46 @@ namespace TMSPS.Core.Communication
         }
 
         /// <summary>
+        /// Display a notice on the clients with the specified logins. The parameters are the logins of the clients to which the notice is sent, the text message to display, and the login of the avatar to display next to it (or '' for no avatar), and an optional 'max duration' in seconds (default: 3). 
+        /// </summary>
+        public GenericResponse<bool> SendNoticeToLogins(string message, string avatarLogin, params string[] logins)
+        {
+            return SendNoticeToLogins(message, avatarLogin, 3, logins);
+        }
+
+        /// <summary>
+        /// Display a notice on the clients with the specified logins. The parameters are the logins of the clients to which the notice is sent, the text message to display, and the login of the avatar to display next to it (or '' for no avatar), and an optional 'max duration' in seconds (default: 3). 
+        /// </summary>
+        public GenericResponse<bool> SendNoticeToLogins(string message, string avatarLogin, IEnumerable<string> logins)
+        {
+            return SendNoticeToLogins(message, avatarLogin, 3, logins);
+        }
+
+        /// <summary>
         /// Display a notice on the client with the specified login. The parameters are the login of the client to whom the notice is sent, the text message to display, and the login of the avatar to display next to it (or '' for no avatar), and an optional 'max duration' in seconds (default: 3). 
         /// </summary>
         public GenericResponse<bool> SendNoticeToLogin(string login, string message, string avatarLogin, int maxDurationInSeconds)
         {
             return (GenericResponse<bool>)_client.SendMethod<GenericResponse<bool>>(TrackManiaMethod.SendNoticeToLogin.ToString(), login, message, avatarLogin, maxDurationInSeconds);
+        }
+
+        /// <summary>
+        /// Display a notice on the clients with the specified logins. The parameters are the logins of the clients to which the notice is sent, the text message to display, and the login of the avatar to display next to it (or '' for no avatar), and an optional 'max duration' in seconds (default: 3). 
+        /// </summary>
+        public GenericResponse<bool> SendNoticeToLogins(string message, string avatarLogin, int maxDurationInSeconds, params string[] logins)
+        {
+            if (logins == null || logins.Length == 0)
+                return new GenericResponse<bool> { Value = false };
+
+            return (GenericResponse<bool>)_client.SendMethod<GenericResponse<bool>>(TrackManiaMethod.SendNoticeToLogin.ToString(), string.Join(",", logins), message, avatarLogin, maxDurationInSeconds);
+        }
+
+        /// <summary>
+        /// Display a notice on the clients with the specified logins. The parameters are the logins of the clients to which the notice is sent, the text message to display, and the login of the avatar to display next to it (or '' for no avatar), and an optional 'max duration' in seconds (default: 3). 
+        /// </summary>
+        public GenericResponse<bool> SendNoticeToLogins(string message, string avatarLogin, int maxDurationInSeconds, IEnumerable<string> logins)
+        {
+            return SendNoticeToLogins(message, avatarLogin, maxDurationInSeconds, logins == null ? new string[] { } : logins.ToArray());
         }
 
 		/// <summary>
@@ -1652,7 +1807,7 @@ namespace TMSPS.Core.Communication
 		}
 
 		/// <summary>
-		/// Returns a struct containing the infos for the next challenge. The struct contains the following fields : Name, UId, FileName, Author, Environnement, Mood, BronzeTime, SilverTime, GoldTime, AuthorTime, CopperPrice and LapRace.
+        /// Returns a struct containing the infos for the next challenge. The struct contains the following fields : Name, UId, FileName, Author, Environnement, Mood, BronzeTime, SilverTime, GoldTime, AuthorTime, CopperPrice, LapRace, NbLaps and NbCheckpoints. NbLaps and NbCheckpoints are always set to -1.
 		/// </summary>
 		public GenericResponse<ChallengeInfo> GetNextChallengeInfo()
 		{
@@ -1660,7 +1815,7 @@ namespace TMSPS.Core.Communication
 		}
 
 		/// <summary>
-		/// Returns a struct containing the infos for the challenge with the specified filename. The struct contains the following fields : Name, UId, FileName, Author, Environnement, Mood, BronzeTime, SilverTime, GoldTime, AuthorTime, CopperPrice and LapRace.
+        /// Returns a struct containing the infos for the challenge with the specified filename. The struct contains the following fields : Name, UId, FileName, Author, Environnement, Mood, BronzeTime, SilverTime, GoldTime, AuthorTime, CopperPrice, LapRace, NbLaps and NbCheckpoints. NbLaps and NbCheckpoints are always set to -1.
 		/// </summary>
 		public GenericResponse<ChallengeInfo> GetChallengeInfo(string filename)
 		{
