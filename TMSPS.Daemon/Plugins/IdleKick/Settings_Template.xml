@@ -1,0 +1,12 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Settings>
+	<KickMode>Rounds</KickMode>
+	<IdleRoundsCount>5</IdleRoundsCount>
+	<IdleSecondsCount>1500</IdleSecondsCount>
+	<KickSpectators>true</KickSpectators>
+	<ResetOnFinish>true</ResetOnFinish>
+	<ResetOnChat>true</ResetOnChat>
+	<ResetOnCheckpoint>true</ResetOnCheckpoint>
+	<PublicKickMessage>{[#ServerStyle]}>> {[#HighlightStyle]}{[Nickname]} {[#MessageStyle]} got kicked for idling too long.</PublicKickMessage>
+	<PrivateKickMessage>You were kicked for idling too long.</PrivateKickMessage>
+</Settings>

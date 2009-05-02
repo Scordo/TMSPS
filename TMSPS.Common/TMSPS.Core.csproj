@@ -208,6 +208,9 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>UITemplates.resx</DependentUpon>
     </Compile>
+    <Compile Include="PluginSystem\Plugins\IdleKick\IdleKickMode.cs" />
+    <Compile Include="PluginSystem\Plugins\IdleKick\IdleKickPlugin.cs" />
+    <Compile Include="PluginSystem\Plugins\IdleKick\IdleKickPluginSettings.cs" />
     <Compile Include="PluginSystem\Plugins\KickUnrankedPlayerPlugin.cs" />
     <Compile Include="PluginSystem\Plugins\LiveRanking\LiveRankingPlugin.cs" />
     <Compile Include="PluginSystem\Plugins\LiveRanking\LiveRankingsSettings.cs" />
