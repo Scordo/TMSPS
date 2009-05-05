@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Reflection;
+using System.Text;
 using System.Text.RegularExpressions;
 using TMSPS.Core.Common;
 using TMSPS.Core.Logging;
@@ -17,6 +18,13 @@ namespace TMSPS.Core.PluginSystem
 
 		private PluginHostContext _context;
         private ushort _pluginID;
+        private static readonly char[] _knownFormattingChars =  new[]       {'i', 's', 't', 'w', 'n', 'm', 'g', 'z', 'h', 'l', 'p',
+                                                                             'I', 'S', 'T', 'W', 'N', 'M', 'G', 'Z', 'H', 'L', 'P'};
+
+        private static readonly char[] _knownColorAndFormattingChars = new[]{'i', 's', 't', 'w', 'n', 'm', 'g', 'z', 'h', 'l', 'p',
+                                                                             'I', 'S', 'T', 'W', 'N', 'M', 'G', 'Z', 'H', 'L', 'P',
+                                                                             '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 
+                                                                             'a', 'b', 'c', 'd', 'e', 'f', 'A', 'B', 'C', 'D', 'E', 'F'};
 
 		#endregion
 
@@ -218,38 +226,70 @@ namespace TMSPS.Core.PluginSystem
             return true;
         }
 
+        
+
+
         public static string StripTMColorsAndFormatting(string input)
         {
             if (input.IsNullOrTimmedEmpty())
                 return input;
 
-            input = input.Replace("$$", "\t");
-            input = Regex.Replace(input, @"\$[\da-f]{3}", string.Empty, RegexOptions.Singleline | RegexOptions.Compiled | RegexOptions.IgnoreCase);
-            input = Regex.Replace(input, @"\$[istwnmgzhl]{1}", string.Empty, RegexOptions.Singleline | RegexOptions.Compiled | RegexOptions.IgnoreCase);
+            string result = string.Empty;
+            bool previousCharIsDollar = false;
+            bool colorOrFormattingPhase = false;
+            short formatCharsCount = 0;
 
-            return input.Replace("\t", "$$");
-        }
+            foreach (char character in input)
+            {
+                if (character == '$')
+                {
+                    colorOrFormattingPhase = false;
 
-        public static string StripTMColors(string input)
-        {
-            if (input.IsNullOrTimmedEmpty())
-                return input;
+                    if (previousCharIsDollar)
+                        result = string.Concat(result, "$$");
 
-            input = input.Replace("$$", "\t");
-            input = Regex.Replace(input, @"\$[\da-f]{3}", string.Empty, RegexOptions.Singleline | RegexOptions.Compiled | RegexOptions.IgnoreCase);
-            
-            return input.Replace("\t", "$$");
-        }
+                    previousCharIsDollar = !previousCharIsDollar;
+                    continue;
+                }
 
-        public static string StripTMFormatting(string input)
-        {
-            if (input.IsNullOrTimmedEmpty())
-                return input;
+                if (previousCharIsDollar)
+                {
+                    colorOrFormattingPhase = true;
+                    formatCharsCount = 0;
+                    previousCharIsDollar = false;
+                }
 
-            input = input.Replace("$$", "\t");
-            input = Regex.Replace(input, @"\$[istwnmgzhl]{1}", string.Empty, RegexOptions.Singleline | RegexOptions.Compiled | RegexOptions.IgnoreCase);
+                if (!colorOrFormattingPhase)
+                {
+                    result = string.Concat(result, character);
+                    continue;
+                }
 
-            return input.Replace("\t", "$$");
+                // strip invalid formatting statements
+                if (formatCharsCount == 0 && Array.IndexOf(_knownColorAndFormattingChars, character) == -1)
+                {
+                    colorOrFormattingPhase = false;
+                    continue;
+                }
+
+                // strip formatting statements
+                if (formatCharsCount == 0 && Array.IndexOf(_knownFormattingChars, character) != -1)
+                {
+                    colorOrFormattingPhase = false;
+                    continue;
+                }
+
+                // color code is complete 
+                if (formatCharsCount == 2)
+                {
+                    colorOrFormattingPhase = false;
+                    continue;
+                }
+
+                formatCharsCount++;
+            }
+
+            return result;
         }
 
         protected string ReplaceMessageConstants(string message)
