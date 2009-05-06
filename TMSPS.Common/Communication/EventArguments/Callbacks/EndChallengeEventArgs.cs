@@ -17,5 +17,8 @@ namespace TMSPS.Core.Communication.EventArguments.Callbacks
 
         [RPCParam(3)]
         public bool MatchContinuesOnNextChallenge { get; set; }
+
+        [RPCParam(4)]
+        public bool IsRestartChallenge { get; set; }
     }
 }
