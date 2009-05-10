@@ -53,22 +53,22 @@ namespace TMSPS.Core.PluginSystem.Plugins
                 return;
             }
 
-            PlayerInfo playerInfo = GetPlayerInfoCached(login);
+            string nickname = GetNickname(login);
 
-            if (playerInfo == null)
+            if (nickname == null)
                 return;
 
             string loginToKick = command.PartsWithoutMainCommand[0].Trim();
-            PlayerInfo playerToKickInfo = GetPlayerInfoCached(loginToKick);
+            string nicknameToKick = GetNickname(loginToKick);
 
-            if (playerToKickInfo != null)
+            if (nicknameToKick != null)
             {
                 GenericResponse<bool> kickResponse = Context.RPCClient.Methods.Kick(loginToKick, "You were kicked because of wrong behaviour!");
 
                 if (!kickResponse.Erroneous && kickResponse.Value)
-                    SendFormattedMessage(Settings.KickMessage, "KickingNickname", StripTMColorsAndFormatting(playerInfo.NickName), "KickedNickname", StripTMColorsAndFormatting(playerToKickInfo.NickName));
+                    SendFormattedMessage(Settings.KickMessage, "KickingNickname", StripTMColorsAndFormatting(nickname), "KickedNickname", StripTMColorsAndFormatting(nicknameToKick));
                 else
-                    SendFormattedMessageToLogin(login, "{[#ServerStyle]}> {[#ErrorStyle]}Could not kick " + StripTMColorsAndFormatting(playerToKickInfo.NickName));
+                    SendFormattedMessageToLogin(login, "{[#ServerStyle]}> {[#ErrorStyle]}Could not kick " + StripTMColorsAndFormatting(nicknameToKick));
             }
             else
             {
@@ -87,22 +87,22 @@ namespace TMSPS.Core.PluginSystem.Plugins
                 return;
             }
 
-            PlayerInfo playerInfo = GetPlayerInfoCached(login);
+            string nickname = GetNickname(login);
 
-            if (playerInfo == null)
+            if (nickname == null)
                 return;
 
             string loginToBan = command.PartsWithoutMainCommand[0].Trim();
-            PlayerInfo playerToBanInfo = GetPlayerInfoCached(loginToBan);
+            string nickToBan = GetNickname(loginToBan);
 
-            if (playerToBanInfo != null)
+            if (nickToBan != null)
             {
                 GenericResponse<bool> banResponse = Context.RPCClient.Methods.Ban(loginToBan, "You were banned because of wrong behaviour!");
 
                 if (!banResponse.Erroneous && banResponse.Value)
-                    SendFormattedMessage(Settings.BanMessage, "BanningNickname", StripTMColorsAndFormatting(playerInfo.NickName), "BannedNickname", StripTMColorsAndFormatting(playerToBanInfo.NickName));
+                    SendFormattedMessage(Settings.BanMessage, "BanningNickname", StripTMColorsAndFormatting(nickname), "BannedNickname", StripTMColorsAndFormatting(nickToBan));
                 else
-                    SendFormattedMessageToLogin(login, "{[#ServerStyle]}> {[#ErrorStyle]}Could not ban " + StripTMColorsAndFormatting(playerToBanInfo.NickName));
+                    SendFormattedMessageToLogin(login, "{[#ServerStyle]}> {[#ErrorStyle]}Could not ban " + StripTMColorsAndFormatting(nickToBan));
             }
             else
             {
@@ -121,24 +121,24 @@ namespace TMSPS.Core.PluginSystem.Plugins
                 return;
             }
 
-            PlayerInfo playerInfo = GetPlayerInfoCached(login);
+            string nickname = GetNickname(login);
 
-            if (playerInfo == null)
+            if (nickname == null)
                 return;
 
             string loginToBlacklist = command.PartsWithoutMainCommand[0].Trim();
-            PlayerInfo playerToBlacklistInfo = GetPlayerInfoCached(loginToBlacklist);
+            string nicknameToBlacklist = GetNickname(loginToBlacklist);
 
-            if (playerToBlacklistInfo != null)
+            if (nicknameToBlacklist != null)
             {
                 GenericResponse<bool> blacklistResponse = Context.RPCClient.Methods.BlackList(loginToBlacklist);
 
                 if (!blacklistResponse.Erroneous && blacklistResponse.Value)
                 {
-                    SendFormattedMessage(Settings.BlackListMessage, "BlackListingNickname", StripTMColorsAndFormatting(playerInfo.NickName), "BlackListedNickname", StripTMColorsAndFormatting(playerToBlacklistInfo.NickName));
+                    SendFormattedMessage(Settings.BlackListMessage, "BlackListingNickname", StripTMColorsAndFormatting(nickname), "BlackListedNickname", StripTMColorsAndFormatting(nicknameToBlacklist));
                 }
                 else
-                    SendFormattedMessageToLogin(login, "{[#ServerStyle]}> {[#ErrorStyle]}Could not blacklist " + StripTMColorsAndFormatting(playerToBlacklistInfo.NickName));
+                    SendFormattedMessageToLogin(login, "{[#ServerStyle]}> {[#ErrorStyle]}Could not blacklist " + StripTMColorsAndFormatting(nicknameToBlacklist));
             }
             else
             {

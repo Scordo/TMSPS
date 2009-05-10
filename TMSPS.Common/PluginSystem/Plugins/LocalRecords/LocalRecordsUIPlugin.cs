@@ -284,8 +284,8 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
             {
                 if (Settings.ShowMessages)
                 {
-                    string message = FormatMessage(Settings.FirstLocalRankMessage, "Nickname", StripTMColorsAndFormatting(e.PlayerInfo.NickName), "Rank", e.NewPosition.ToString());
-                    Context.RPCClient.Methods.SendNotice(message, e.PlayerInfo.Login, Convert.ToInt32(Settings.NoticeDelayInSeconds));
+                    string message = FormatMessage(Settings.FirstLocalRankMessage, "Nickname", StripTMColorsAndFormatting(e.Nickname), "Rank", e.NewPosition.ToString());
+                    Context.RPCClient.Methods.SendNotice(message, e.Login, Convert.ToInt32(Settings.NoticeDelayInSeconds));
                     Context.RPCClient.Methods.ChatSendServerMessage(message);
                 }
             }
@@ -293,8 +293,8 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
             {
                 if (Settings.ShowMessages)
                 {
-                    string message = FormatMessage(Settings.NewLocalRankMessage, "Nickname", StripTMColorsAndFormatting(e.PlayerInfo.NickName), "OldRank", e.OldPosition.ToString(), "NewRank", e.NewPosition.ToString());
-                    Context.RPCClient.Methods.SendNotice(message, e.PlayerInfo.Login, Convert.ToInt32(Settings.NoticeDelayInSeconds));
+                    string message = FormatMessage(Settings.NewLocalRankMessage, "Nickname", StripTMColorsAndFormatting(e.Nickname), "OldRank", e.OldPosition.ToString(), "NewRank", e.NewPosition.ToString());
+                    Context.RPCClient.Methods.SendNotice(message, e.Login, Convert.ToInt32(Settings.NoticeDelayInSeconds));
                     Context.RPCClient.Methods.ChatSendServerMessage(message);
                 }
             }
@@ -302,14 +302,14 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
             {
                 if (Settings.ShowMessages)
                 {
-                    string message = FormatMessage(Settings.ImprovedLocalRankMessage, "Nickname", StripTMColorsAndFormatting(e.PlayerInfo.NickName), "Rank", e.NewPosition.ToString());
-                    Context.RPCClient.Methods.SendNotice(message, e.PlayerInfo.Login, Convert.ToInt32(Settings.NoticeDelayInSeconds));
+                    string message = FormatMessage(Settings.ImprovedLocalRankMessage, "Nickname", StripTMColorsAndFormatting(e.Nickname), "Rank", e.NewPosition.ToString());
+                    Context.RPCClient.Methods.SendNotice(message, e.Login, Convert.ToInt32(Settings.NoticeDelayInSeconds));
                     Context.RPCClient.Methods.ChatSendServerMessage(message);
                 }
             }
 
             if (Settings.ShowPBUserInterface)
-                SendPBManiaLinkPage(e.PlayerInfo.Login, Convert.ToUInt32(e.TimeOrScore));
+                SendPBManiaLinkPage(e.Login, Convert.ToUInt32(e.TimeOrScore));
 
 
 

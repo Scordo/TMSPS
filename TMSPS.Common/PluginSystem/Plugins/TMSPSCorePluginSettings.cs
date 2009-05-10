@@ -16,6 +16,8 @@ namespace TMSPS.Core.PluginSystem.Plugins
         public const string BAN_MESSAGE = "{[#ServerStyle]}>> {[#HighlightStyle]}{[BanningNickname]}{[#MessageStyle]} banned {[#HighlightStyle]}{[BannedNickname]}.";
         public const string BLACKLIST_MESSAGE = "{[#ServerStyle]}>> {[#HighlightStyle]}{[BlackListingNickname]}{[#MessageStyle]} blacklists {[#HighlightStyle]}{[BlackListedNickname]}.";
         public const string TRACKLIST_FILE = "tracklist.txt";
+        public const string NICKNAME_RESOLVER_CLASS = "TMSPS.Core.Common.FlatFileNicknameResolver";
+        public const string NICKNAME_RESOLVER_ASSEMBLY = "TMSPS.Core";
 
         #endregion
 
@@ -29,6 +31,9 @@ namespace TMSPS.Core.PluginSystem.Plugins
         public string BanMessage { get; private set; }
         public string BlackListMessage { get; private set; }
         public string TrackListFile { get; private set; }
+        public string NicknameResolverClass { get; private set; }
+        public string NicknameResolverAssemblyLocation { get; private set;}
+        public XElement NicknameResolverConfigElement { get; private set; }
 
         #endregion
 
@@ -52,7 +57,18 @@ namespace TMSPS.Core.PluginSystem.Plugins
             result.BanMessage = ReadConfigString(configDocument.Root, "BanMessage", BAN_MESSAGE, xmlConfigurationFile);
             result.BlackListMessage = ReadConfigString(configDocument.Root, "BlackListMessage", BLACKLIST_MESSAGE, xmlConfigurationFile);
             result.TrackListFile = ReadConfigString(configDocument.Root, "TrackListFile", TRACKLIST_FILE, xmlConfigurationFile);
-            
+
+            result.NicknameResolverClass = NICKNAME_RESOLVER_CLASS;
+            result.NicknameResolverAssemblyLocation = NICKNAME_RESOLVER_ASSEMBLY;
+            result.NicknameResolverConfigElement = null;
+            XElement nicknameResolverConfigElement = configDocument.Root.Element("NicknameResolver");
+
+            if (nicknameResolverConfigElement != null)
+            {
+                result.NicknameResolverClass = ReadConfigString(nicknameResolverConfigElement, "Class", NICKNAME_RESOLVER_CLASS, xmlConfigurationFile); 
+                result.NicknameResolverAssemblyLocation = ReadConfigString(nicknameResolverConfigElement, "Assembly", NICKNAME_RESOLVER_ASSEMBLY, xmlConfigurationFile);
+                result.NicknameResolverConfigElement = nicknameResolverConfigElement.Element("Config");
+            }
 
             return result;
         }
