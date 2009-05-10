@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using TMSPS.Core.Common;
 using TMSPS.Core.Communication.EventArguments.Callbacks;
 using TMSPS.Core.Communication.ProxyTypes;
 using PlayerInfo=TMSPS.Core.Communication.ProxyTypes.PlayerInfo;
@@ -46,7 +47,15 @@ namespace TMSPS.Core.PluginSystem.Plugins
         protected override void Init()
         {
             Settings = TMSPSCorePluginSettings.ReadFromFile(PluginSettingsFilePath);
-            GetPlayerList(); // cach all current player infos
+            NicknameResolverFactory.CreateSingleInstance(Settings, Context);
+
+            List<PlayerInfo> players =  GetPlayerList(); 
+
+            foreach (PlayerInfo playerInfo in players)
+            {
+                NicknameResolverFactory.Instance.Set(playerInfo.Login, playerInfo.NickName);
+            }
+
             GetCurrentChallengeInfo(); // cache the current challenge info
             GetServerOptions(); // cache currenr server options
             GetCurrentGameMode(); // cache current game mode
@@ -87,6 +96,13 @@ namespace TMSPS.Core.PluginSystem.Plugins
 
                 if (playerInfo == null)
                     return;
+
+                NicknameResolverFactory.Instance.Set(e.Login, playerInfo.NickName);
+
+                lock (_playerCountChangeLockObject)
+                {
+                    PlayersCount += 1;
+                }
 
                 if (playerInfo.NickName.IsNullOrTimmedEmpty())
                 {
@@ -134,13 +150,16 @@ namespace TMSPS.Core.PluginSystem.Plugins
 
                 if (Settings.EnableLeaveMessage)
                 {
-                    PlayerInfo playerInfo = GetPlayerInfoCached(e.Login);
+                    string nickname = GetNickname(e.Login);
 
-                    if (playerInfo != null)
-                        SendFormattedMessage(Settings.LeaveMessage, "Nickname", StripTMColorsAndFormatting(playerInfo.NickName));
+                    if (nickname != null)
+                        SendFormattedMessage(Settings.LeaveMessage, "Nickname", StripTMColorsAndFormatting(nickname));
                 }
 
-                RemoveCachedPlayerInfo(e.Login);
+                lock (_playerCountChangeLockObject)
+                {
+                    PlayersCount = (ushort) Math.Max(0, PlayersCount - 1);
+                }
             }, "Error in Callbacks_PlayerDisconnect Method.", true);
         }
 

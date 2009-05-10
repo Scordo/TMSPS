@@ -269,12 +269,12 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
 
 	            if (newBest)
 	            {
-	                PlayerInfo playerInfo = GetPlayerInfoCached(e.Login);
+                    string nickname = GetNickname(e.Login);
 
-	                if (playerInfo != null && newPosition <= Settings.MaxRecordsToReport && currentChallengeID == CurrentChallengeID)
+                    if (nickname != null && newPosition <= Settings.MaxRecordsToReport && currentChallengeID == CurrentChallengeID)
 	                {
                         DetermineLocalRecords();
-                        OnPlayerNewRecord(playerInfo, e.TimeOrScore, oldPosition, newPosition);
+                        OnPlayerNewRecord(e.Login, nickname, e.TimeOrScore, oldPosition, newPosition);
 	                }
 	            }
 
@@ -356,16 +356,16 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
 
 	        RunCatchLog(()=>
             {
-                PlayerInfo playerInfo = GetPlayerInfoCached(e.Login);
+                string nickname = GetNickname(e.Login);
 
-                if (playerInfo == null)
+                if (nickname == null)
                     return;
 
-                if (!playerInfo.NickName.IsNullOrTimmedEmpty())
+                if (!nickname.IsNullOrTimmedEmpty())
                 {
-                    Player player = new Player(playerInfo.Login, playerInfo.NickName);
+                    Player player = new Player(e.Login, nickname);
                     PlayerAdapter.CreateOrUpdate(player);
-                    OnPlayerCreatedOrUpdated(player, playerInfo);
+                    OnPlayerCreatedOrUpdated(player, nickname);
                 }
             }, "Error in Callbacks_PlayerConnect Method.", true);
 	    }
@@ -453,10 +453,10 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
 	            PlayerVoted(this, new PlayerVoteEventArgs(login, challengeID, voteValue, averageVoteValue));
 	    }
 
-	    protected void OnPlayerNewRecord(PlayerInfo playerInfo, int timeOrScore, uint? oldPosition, uint? newPosition)
+	    protected void OnPlayerNewRecord(string login, string nickname, int timeOrScore, uint? oldPosition, uint? newPosition)
 	    {
 	        if (PlayerNewRecord != null)
-	            PlayerNewRecord(this, new PlayerNewRecordEventArgs(playerInfo, timeOrScore, oldPosition, newPosition) );
+                PlayerNewRecord(this, new PlayerNewRecordEventArgs(login, nickname, timeOrScore, oldPosition, newPosition));
 	    }
 
 	    protected void OnPlayerWins(PlayerRank rankingInfo, uint wins)
@@ -465,10 +465,10 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
 	            PlayerWins(this, new PlayerWinEventArgs(rankingInfo, wins));
 	    }
 
-	    protected void OnPlayerCreatedOrUpdated(Player player, PlayerInfo playerInfo)
+        protected void OnPlayerCreatedOrUpdated(Player player, string nickname)
 	    {
 	        if (PlayerCreatedOrUpdated != null)
-	            PlayerCreatedOrUpdated(this, new PlayerCreatedOrUpdatedEventArgs(player, playerInfo));
+                PlayerCreatedOrUpdated(this, new PlayerCreatedOrUpdatedEventArgs(player, nickname));
 	    }
 
 	    protected void OnChallengeCreatedOrUpdated(ChallengeListSingleInfo challengeInfo, Challenge challenge)
@@ -514,7 +514,8 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
     {
         #region Properties
 
-        public PlayerInfo PlayerInfo { get; private set; }
+        public string Nickname { get; private set; }
+        public string Login { get; private set; }
         public int TimeOrScore { get; private set; }
         public uint? OldPosition { get; private set; }
         public uint? NewPosition { get; private set; }
@@ -523,9 +524,10 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
 
         #region Constructor
 
-        public PlayerNewRecordEventArgs(PlayerInfo playerInfo, int timeOrScore, uint? oldPosition, uint? newPosition)
+        public PlayerNewRecordEventArgs(string login, string nickname, int timeOrScore, uint? oldPosition, uint? newPosition)
         {
-            PlayerInfo = playerInfo;
+            Login = login;
+            Nickname = nickname;
             TimeOrScore = timeOrScore;
             OldPosition = oldPosition;
             NewPosition = newPosition;
@@ -559,16 +561,16 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
         #region Properties
 
         public Player Player { get; private set; }
-        public PlayerInfo PlayerInfo { get; private set; }
+        public string Nickname { get; private set; }
 
         #endregion
 
         #region Constructor
 
-        public PlayerCreatedOrUpdatedEventArgs(Player player, PlayerInfo playerInfo)
+        public PlayerCreatedOrUpdatedEventArgs(Player player, string nickname)
         {
             Player = player;
-            PlayerInfo = playerInfo;
+            Nickname = nickname;
         }
 
         #endregion

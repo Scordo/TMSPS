@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading;
+using TMSPS.Core.Common;
 using TMSPS.Core.Communication.EventArguments.Callbacks;
 using TMSPS.Core.Communication.ResponseHandling;
 using PlayerInfo=TMSPS.Core.Communication.ProxyTypes.PlayerInfo;
@@ -184,13 +185,13 @@ namespace TMSPS.Core.PluginSystem.Plugins.IdleKick
 
         private void KickLogin(string login)
         {
-            PlayerInfo playerInfo = GetPlayerInfoCached(login);
+            string nickname = GetNickname(login);
             GenericResponse<bool> kickResponse = Context.RPCClient.Methods.Kick(login, Settings.PrivateKickMessage);
 
-            if (kickResponse == null || !kickResponse.Value || playerInfo == null)
+            if (kickResponse == null || !kickResponse.Value || nickname == null)
                 return;
 
-            SendFormattedMessage(Settings.PublicKickMessage, "Nickname", StripTMColorsAndFormatting(playerInfo.NickName));
+            SendFormattedMessage(Settings.PublicKickMessage, "Nickname", StripTMColorsAndFormatting(nickname));
         }
 
         private void ResetValues(string login)

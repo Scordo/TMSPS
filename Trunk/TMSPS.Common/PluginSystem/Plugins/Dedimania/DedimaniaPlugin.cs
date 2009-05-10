@@ -117,7 +117,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.Dedimania
 
                     uint? oldRank = null;
                     uint? newRank = null;
-                    PlayerInfo playerInfo = null;
+                    string nickname = null;
 
                     if (ranking != null)
                     {
@@ -138,15 +138,15 @@ namespace TMSPS.Core.PluginSystem.Plugins.Dedimania
                     }
                     else
                     {
-                        playerInfo = GetPlayerInfoCached(e.Login);
+                        nickname = GetNickname(e.Login);
 
-                        if (playerInfo == null)
+                        if (nickname == null)
                             return;
 
                         lock (_rankingModifyLock)
                         {
                             List<DedimaniaRanking> newRankings = new List<DedimaniaRanking>(Rankings);
-                            DedimaniaRanking newRanking = new DedimaniaRanking(e.Login, playerInfo.NickName, Convert.ToUInt32(e.TimeOrScore), DateTime.Now);
+                            DedimaniaRanking newRanking = new DedimaniaRanking(e.Login, nickname, Convert.ToUInt32(e.TimeOrScore), DateTime.Now);
                             newRankings.Add(newRanking);
                             newRankings.Sort(DedimaniaRanking.Comparer);
                             newRank = Convert.ToUInt32(newRankings.IndexOf(newRanking)) + 1;
@@ -161,12 +161,12 @@ namespace TMSPS.Core.PluginSystem.Plugins.Dedimania
 
                         OnRankingsChanged(Rankings);
 
-                        playerInfo = playerInfo ?? GetPlayerInfoCached(e.Login);
+                        nickname = nickname ?? GetNickname(e.Login);
 
-                        if (playerInfo == null)
+                        if (nickname == null)
                             return;
 
-                        OnRankChanged(newRank.Value, oldRank, e.Login, playerInfo.NickName, Convert.ToUInt32(e.TimeOrScore));
+                        OnRankChanged(newRank.Value, oldRank, e.Login, nickname, Convert.ToUInt32(e.TimeOrScore));
                     }
                 }
             }, "Error in Callbacks_PlayerFinish Method.", true);
@@ -364,7 +364,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.Dedimania
                     if (playerRank.BestTime <= 0)
                         continue;
 
-                    PlayerInfo playerInfo = GetPlayerInfoCached(playerRank.Login);
+                    string nickname = GetNickname(playerRank.Login);
 
                     DedimaniaRanking existingRanking = rankings.Find(ranking => ranking.Login == playerRank.Login);
 
@@ -377,7 +377,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.Dedimania
                     }
                     else
                     {
-                        rankings.Add(new DedimaniaRanking(playerRank.Login, playerInfo.NickName,Convert.ToUInt32(playerRank.BestTime), DateTime.Now.AddMilliseconds(-1 * currentRankings.Count).AddMilliseconds(playerRank.Rank)));
+                        rankings.Add(new DedimaniaRanking(playerRank.Login, nickname, Convert.ToUInt32(playerRank.BestTime), DateTime.Now.AddMilliseconds(-1 * currentRankings.Count).AddMilliseconds(playerRank.Rank)));
                     }
                 }
             }

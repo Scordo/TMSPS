@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using TMSPS.Core.Common;
 using TMSPS.Core.Communication.ProxyTypes;
 using TMSPS.Core.Communication.ResponseHandling;
 
@@ -6,24 +7,17 @@ namespace TMSPS.Core.PluginSystem
 {
     public abstract partial class TMSPSPluginBase
     {
+        protected static readonly object _playerCountChangeLockObject = new object();
+
         #region Properties
 
-        private static Dictionary<string, PlayerInfo> PlayerInfoCache { get; set; }
         private static ChallengeInfo CurrentChallengeInfo { get; set; }
         private static ServerOptions CurrentServerOptions { get; set; }
         private static GameMode? CurrentGameMode { get; set; }
-        protected static ushort PlayersCount{ get { return (ushort)PlayerInfoCache.Count; }}
+        protected static ushort PlayersCount{ get; set; }
 
         #endregion
 
-        #region Static Constructor
-
-        static TMSPSPluginBase()
-        {
-            PlayerInfoCache = new Dictionary<string, PlayerInfo>();
-        }
-
-        #endregion
 
         #region Methods
 
@@ -78,10 +72,11 @@ namespace TMSPS.Core.PluginSystem
             return challengeResponse.Value;
         }
 
-        protected PlayerInfo GetPlayerInfoCached(string login)
+        protected static string GetNickname(string login)
         {
-            return PlayerInfoCache.ContainsKey(login) ? PlayerInfoCache[login] : GetPlayerInfo(login);
+            return NicknameResolverFactory.Instance.Get(login);
         }
+
 
         protected PlayerInfo GetPlayerInfo(string login)
         {
@@ -93,9 +88,6 @@ namespace TMSPS.Core.PluginSystem
                 Logger.ErrorToUI(string.Format("Error getting Playerinfo for player with login {0}", login));
                 return null;
             }
-
-            // cache the player info in the PlayerInfoCache
-            PlayerInfoCache[playerInfoResponse.Value.Login] = playerInfoResponse.Value;
 
             return playerInfoResponse.Value;
         }
@@ -116,8 +108,10 @@ namespace TMSPS.Core.PluginSystem
                 return null;
             }
 
-            // cache each player info in the PlayerInfoCache
-            playersResponse.Value.ForEach(info => PlayerInfoCache[info.Login] = info);
+            lock (_playerCountChangeLockObject)
+            {
+                PlayersCount = (ushort)playersResponse.Value.Count;    
+            }
 
             return playersResponse.Value;
         }
@@ -151,11 +145,6 @@ namespace TMSPS.Core.PluginSystem
             CurrentServerOptions = serverOptionsResponse.Value;
 
             return serverOptionsResponse.Value;
-        }
-
-        internal static void RemoveCachedPlayerInfo(string login)
-        {
-            PlayerInfoCache.Remove(login);
         }
 
         protected GameMode? GetCurrentGameModeCached()

@@ -7,7 +7,6 @@ using System.Xml.Linq;
 using TMSPS.Core.Common;
 using TMSPS.Core.Communication.EventArguments.Callbacks;
 using TMSPS.Core.Communication.ResponseHandling;
-using PlayerInfo=TMSPS.Core.Communication.ProxyTypes.PlayerInfo;
 
 namespace TMSPS.Core.PluginSystem.Plugins
 {
@@ -85,20 +84,20 @@ namespace TMSPS.Core.PluginSystem.Plugins
 			{
     			if (!ClanMembers.Contains(e.Login.ToLower()))
     			{
-    			    PlayerInfo playerInfo = GetPlayerInfoCached(e.Login);
+                    string nickname = GetNickname(e.Login);
 
-    				if (playerInfo != null)
+                    if (nickname != null)
     				{
-    					if (!Regex.IsMatch(playerInfo.NickName, Pattern, RegexOptions.Singleline | RegexOptions.IgnoreCase | RegexOptions.Compiled))
+                        if (!Regex.IsMatch(nickname, Pattern, RegexOptions.Singleline | RegexOptions.IgnoreCase | RegexOptions.Compiled))
     						return;
 
-    					GenericResponse<bool> kickResponse = Context.RPCClient.Methods.Kick(playerInfo.Login, KickReason);
+    					GenericResponse<bool> kickResponse = Context.RPCClient.Methods.Kick(e.Login, KickReason);
 
     					if (kickResponse != null && kickResponse.Value)
     					{
-    						Logger.InfoToUI(string.Format("Login {0} with player name {1} was kicked due to name abuse!", e.Login, playerInfo.NickName));
+                            Logger.InfoToUI(string.Format("Login {0} with player name {1} was kicked due to name abuse!", e.Login, nickname));
 
-                            SendFormattedMessage(PublicKickReason, "Nickname", StripTMColorsAndFormatting(playerInfo.NickName));
+                            SendFormattedMessage(PublicKickReason, "Nickname", StripTMColorsAndFormatting(nickname));
     					    e.Handled = true;
     					}
     				}

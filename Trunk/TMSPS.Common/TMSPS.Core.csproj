@@ -55,8 +55,13 @@
   <ItemGroup>
     <Compile Include="Common\ComparerFactory.cs" />
     <Compile Include="Common\EventArgs.cs" />
+    <Compile Include="Common\FlatFileNicknameResolver.cs" />
     <Compile Include="Common\GlobalConstants.cs" />
     <Compile Include="Common\IBaseAdapter.cs" />
+    <Compile Include="Common\INicknameResolver.cs" />
+    <Compile Include="Common\NicknameResolverBase.cs" />
+    <Compile Include="Common\NicknameResolverCacheEntry.cs" />
+    <Compile Include="Common\NicknameResolverFactory.cs" />
     <Compile Include="Common\ParameterlessMethodDelegate.cs" />
     <Compile Include="Common\ReadOnlyDictionary.cs" />
     <Compile Include="Common\SettingsBase.cs" />
