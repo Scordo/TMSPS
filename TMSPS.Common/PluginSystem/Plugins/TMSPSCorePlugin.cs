@@ -5,6 +5,7 @@ using TMSPS.Core.Communication.EventArguments.Callbacks;
 using TMSPS.Core.Communication.ProxyTypes;
 using PlayerInfo=TMSPS.Core.Communication.ProxyTypes.PlayerInfo;
 using Version=System.Version;
+using System.Linq;
 
 namespace TMSPS.Core.PluginSystem.Plugins
 {
@@ -64,6 +65,22 @@ namespace TMSPS.Core.PluginSystem.Plugins
             Context.RPCClient.Callbacks.PlayerDisconnect += Callbacks_PlayerDisconnect;
             Context.RPCClient.Callbacks.BeginChallenge += Callbacks_BeginChallenge;
             Context.RPCClient.Callbacks.PlayerChat += Callbacks_PlayerChat;
+            Context.RPCClient.Callbacks.EndRace += Callbacks_EndRace;
+        }
+
+        private void Callbacks_EndRace(object sender, EndRaceEventArgs e)
+        {
+            int top = Convert.ToInt32(Settings.SaveGhostReplayOfTop);
+
+            if (top < 100)
+            {
+                foreach (PlayerRank rank in e.Rankings.Take(top))
+                {
+                    Context.RPCClient.Methods.SaveBestGhostsReplay(rank.Login, string.Empty);
+                }
+            }
+            else
+                Context.RPCClient.Methods.SaveBestGhostsReplay(string.Empty, string.Empty);
         }
 
         private void Callbacks_PlayerChat(object sender, PlayerChatEventArgs e)
@@ -80,6 +97,7 @@ namespace TMSPS.Core.PluginSystem.Plugins
             Context.RPCClient.Callbacks.PlayerDisconnect -= Callbacks_PlayerDisconnect;
             Context.RPCClient.Callbacks.BeginChallenge -= Callbacks_BeginChallenge;
             Context.RPCClient.Callbacks.PlayerChat -= Callbacks_PlayerChat;
+            Context.RPCClient.Callbacks.EndRace -= Callbacks_EndRace;
         }
 
         private void Callbacks_PlayerConnect(object sender, PlayerConnectEventArgs e)
