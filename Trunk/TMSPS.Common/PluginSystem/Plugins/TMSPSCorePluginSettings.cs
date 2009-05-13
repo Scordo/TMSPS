@@ -18,6 +18,7 @@ namespace TMSPS.Core.PluginSystem.Plugins
         public const string TRACKLIST_FILE = "tracklist.txt";
         public const string NICKNAME_RESOLVER_CLASS = "TMSPS.Core.Common.FlatFileNicknameResolver";
         public const string NICKNAME_RESOLVER_ASSEMBLY = "TMSPS.Core";
+        public const uint SAVE_GHOST_REPLAY_OF_TOP = 3;
 
         #endregion
 
@@ -34,6 +35,7 @@ namespace TMSPS.Core.PluginSystem.Plugins
         public string NicknameResolverClass { get; private set; }
         public string NicknameResolverAssemblyLocation { get; private set;}
         public XElement NicknameResolverConfigElement { get; private set; }
+        public uint SaveGhostReplayOfTop { get; private set; }
 
         #endregion
 
@@ -57,6 +59,7 @@ namespace TMSPS.Core.PluginSystem.Plugins
             result.BanMessage = ReadConfigString(configDocument.Root, "BanMessage", BAN_MESSAGE, xmlConfigurationFile);
             result.BlackListMessage = ReadConfigString(configDocument.Root, "BlackListMessage", BLACKLIST_MESSAGE, xmlConfigurationFile);
             result.TrackListFile = ReadConfigString(configDocument.Root, "TrackListFile", TRACKLIST_FILE, xmlConfigurationFile);
+            result.SaveGhostReplayOfTop = ReadConfigUInt(configDocument.Root, "SaveGhostReplayOfTop", SAVE_GHOST_REPLAY_OF_TOP, xmlConfigurationFile);
 
             result.NicknameResolverClass = NICKNAME_RESOLVER_CLASS;
             result.NicknameResolverAssemblyLocation = NICKNAME_RESOLVER_ASSEMBLY;
