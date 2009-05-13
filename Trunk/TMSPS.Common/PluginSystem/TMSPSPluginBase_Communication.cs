@@ -84,8 +84,8 @@ namespace TMSPS.Core.PluginSystem
 
             if (playerInfoResponse.Erroneous)
             {
-                Logger.Error(string.Format("Error getting Playerinfo for player with login {0}: {1}", login, playerInfoResponse.Fault.FaultMessage));
-                Logger.ErrorToUI(string.Format("Error getting Playerinfo for player with login {0}", login));
+                Logger.Warn(string.Format("Error getting Playerinfo for player with login {0}: {1}", login, playerInfoResponse.Fault.FaultMessage));
+                Logger.WarnToUI(string.Format("Error getting Playerinfo for player with login {0}", login));
                 return null;
             }
 

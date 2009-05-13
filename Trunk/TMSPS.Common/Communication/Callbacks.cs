@@ -16,9 +16,7 @@ namespace TMSPS.Core.Communication
         public event EventHandler<PlayerConnectEventArgs> PlayerConnect;
         public event EventHandler<PlayerDisconnectEventArgs> PlayerDisconnect;
         public event EventHandler<PlayerChatEventArgs> PlayerChat;
-        [Obsolete("Please use BeginChallenge")]
         public event EventHandler<BeginRaceEventArgs> BeginRace;
-        [Obsolete("Please use EndChallenge")]
         public event EventHandler<EndRaceEventArgs> EndRace;
         public event EventHandler<PlayerManialinkPageAnswerEventArgs> PlayerManialinkPageAnswer;
         public event EventHandler<EchoEventArgs> Echo;
