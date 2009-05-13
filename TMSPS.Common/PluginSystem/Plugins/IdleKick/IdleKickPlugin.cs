@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading;
-using TMSPS.Core.Common;
 using TMSPS.Core.Communication.EventArguments.Callbacks;
 using TMSPS.Core.Communication.ResponseHandling;
 using PlayerInfo=TMSPS.Core.Communication.ProxyTypes.PlayerInfo;
@@ -59,10 +58,6 @@ namespace TMSPS.Core.PluginSystem.Plugins.IdleKick
             Settings = IdleKickPluginSettings.ReadFromFile(PluginSettingsFilePath);
             LoginRounds = new Dictionary<string, uint>();
             LoginTimes = new Dictionary<string, DateTime>();
-
-            if (Settings.KickMode == IdleKickMode.TIME)
-                IdleKickTimer = new Timer(KickIdlingPlayers, null, TimeSpan.FromSeconds(10), TimeSpan.FromSeconds(10));
-
             List<PlayerInfo> playerList = GetPlayerList();
 
             if (playerList != null)
@@ -73,12 +68,25 @@ namespace TMSPS.Core.PluginSystem.Plugins.IdleKick
                 }
             }
 
+            if (Settings.KickMode == IdleKickMode.TIME)
+                IdleKickTimer = new Timer(KickIdlingPlayers, null, TimeSpan.FromSeconds(10), TimeSpan.FromSeconds(10));
+
             Context.RPCClient.Callbacks.PlayerConnect += Callbacks_PlayerConnect;
             Context.RPCClient.Callbacks.PlayerDisconnect += Callbacks_PlayerDisconnect;
             Context.RPCClient.Callbacks.PlayerChat += Callbacks_PlayerChat;
             Context.RPCClient.Callbacks.PlayerCheckpoint += Callbacks_PlayerCheckpoint;
             Context.RPCClient.Callbacks.PlayerFinish += Callbacks_PlayerFinish;
-            Context.RPCClient.Callbacks.BeginChallenge += Callbacks_BeginChallenge;
+            Context.RPCClient.Callbacks.BeginRace += Callbacks_BeginRace;
+        }
+
+        protected override void Dispose(bool connectionLost)
+        {
+            Context.RPCClient.Callbacks.PlayerConnect -= Callbacks_PlayerConnect;
+            Context.RPCClient.Callbacks.PlayerDisconnect -= Callbacks_PlayerDisconnect;
+            Context.RPCClient.Callbacks.PlayerChat -= Callbacks_PlayerChat;
+            Context.RPCClient.Callbacks.PlayerCheckpoint -= Callbacks_PlayerCheckpoint;
+            Context.RPCClient.Callbacks.PlayerFinish -= Callbacks_PlayerFinish;
+            Context.RPCClient.Callbacks.BeginRace -= Callbacks_BeginRace;
         }
 
         private void Callbacks_PlayerConnect(object sender, PlayerConnectEventArgs e)
@@ -119,19 +127,19 @@ namespace TMSPS.Core.PluginSystem.Plugins.IdleKick
             RunCatchLog(() => ResetValues(e.Login), "Error in Callbacks_PlayerFinish Method.", true);
         }
 
-        private void Callbacks_BeginChallenge(object sender, BeginChallengeEventArgs e)
+        private void Callbacks_BeginRace(object sender, BeginRaceEventArgs e)
         {
             RunCatchLog(() =>
             {
                 if (Settings.KickMode != IdleKickMode.ROUNDS)
                     return;
 
-                foreach (string login in LoginRounds.Keys.ToArray())
-                    IncreaseLoginRounds(login);
-
                 IEnumerable<KeyValuePair<string, uint>> loginsToKick;
                 lock (_readWriteLockObject)
                 {
+                    foreach (string login in LoginRounds.Keys.ToArray())
+                        IncreaseLoginRounds(login);
+
                     loginsToKick = LoginRounds.Where(loginRound => loginRound.Value >= Settings.RoundsCount && !LoginHasRight(loginRound.Key, false, "NoIdleKick"));    
                 }
                 
@@ -157,9 +165,9 @@ namespace TMSPS.Core.PluginSystem.Plugins.IdleKick
         {
             RunCatchLog(() =>
             {
+                DateTime now = DateTime.Now;
                 IEnumerable<KeyValuePair<string, DateTime>> loginsToKick;
 
-                DateTime now = DateTime.Now;
                 lock (_readWriteLockObject)
                 {
                     loginsToKick = LoginTimes.Where(loginTime => (now - loginTime.Value).TotalSeconds >= Settings.SecondsCount && !LoginHasRight(loginTime.Key, false, "NoIdleKick"));    
@@ -194,6 +202,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.IdleKick
             SendFormattedMessage(Settings.PublicKickMessage, "Nickname", StripTMColorsAndFormatting(nickname));
         }
 
+
         private void ResetValues(string login)
         {
             if (Settings.KickMode == IdleKickMode.ROUNDS)
@@ -227,16 +236,6 @@ namespace TMSPS.Core.PluginSystem.Plugins.IdleKick
             {
                 LoginTimes[login] = DateTime.Now;
             }
-        }
-
-        protected override void Dispose(bool connectionLost)
-        {
-            Context.RPCClient.Callbacks.PlayerConnect -= Callbacks_PlayerConnect;
-            Context.RPCClient.Callbacks.PlayerDisconnect -= Callbacks_PlayerDisconnect;
-            Context.RPCClient.Callbacks.PlayerChat -= Callbacks_PlayerChat;
-            Context.RPCClient.Callbacks.PlayerCheckpoint -= Callbacks_PlayerCheckpoint;
-            Context.RPCClient.Callbacks.PlayerFinish -= Callbacks_PlayerFinish;
-            Context.RPCClient.Callbacks.BeginChallenge -= Callbacks_BeginChallenge;
         }
 
         #endregion
