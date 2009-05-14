@@ -44,17 +44,17 @@ namespace TMSPS.Core.PluginSystem.Plugins.StaticUI
             SendContentToAll();
 
             Context.RPCClient.Callbacks.PlayerConnect += Callbacks_PlayerConnect;
-            Context.RPCClient.Callbacks.BeginChallenge += Callbacks_BeginChallenge;
-            Context.RPCClient.Callbacks.EndChallenge += Callbacks_EndChallenge;
+            Context.RPCClient.Callbacks.BeginRace += Callbacks_BeginRace;
+            Context.RPCClient.Callbacks.EndRace += Callbacks_EndRace;
         }
 
-        private void Callbacks_EndChallenge(object sender, EndChallengeEventArgs e)
+        private void Callbacks_EndRace(object sender, EndRaceEventArgs e)
         {
             if (Settings.HidOnFinish)
                 SendEmptyManiaLinkPage("StaticUIPanel");
         }
 
-        private void Callbacks_BeginChallenge(object sender, BeginChallengeEventArgs e)
+        private void Callbacks_BeginRace(object sender, BeginRaceEventArgs e)
         {
             if (Settings.HidOnFinish)
                 SendContentToAll();
@@ -78,8 +78,8 @@ namespace TMSPS.Core.PluginSystem.Plugins.StaticUI
         protected override void Dispose(bool connectionLost)
         {
             Context.RPCClient.Callbacks.PlayerConnect -= Callbacks_PlayerConnect;
-            Context.RPCClient.Callbacks.BeginChallenge -= Callbacks_BeginChallenge;
-            Context.RPCClient.Callbacks.EndChallenge -= Callbacks_EndChallenge;
+            Context.RPCClient.Callbacks.BeginRace -= Callbacks_BeginRace;
+            Context.RPCClient.Callbacks.EndRace -= Callbacks_EndRace;
         }
 
         #endregion

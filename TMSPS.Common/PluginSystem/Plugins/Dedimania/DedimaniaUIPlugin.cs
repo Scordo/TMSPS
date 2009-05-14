@@ -44,10 +44,10 @@ namespace TMSPS.Core.PluginSystem.Plugins.Dedimania
             HostPlugin.RankChanged += HostPlugin_RankChanged;
             HostPlugin.RankingsChanged += HostPlugin_RankingsChanged;
             Context.RPCClient.Callbacks.PlayerConnect += Callbacks_PlayerConnect;
-            Context.RPCClient.Callbacks.EndChallenge += Callbacks_EndChallenge;
+            Context.RPCClient.Callbacks.EndRace += Callbacks_EndRace;
         }
 
-        private void Callbacks_EndChallenge(object sender, Core.Communication.EventArguments.Callbacks.EndChallengeEventArgs e)
+        private void Callbacks_EndRace(object sender, Core.Communication.EventArguments.Callbacks.EndRaceEventArgs e)
         {
             RunCatchLog(() =>
             {
@@ -325,7 +325,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.Dedimania
             HostPlugin.RankChanged -= HostPlugin_RankChanged;
             HostPlugin.RankingsChanged -= HostPlugin_RankingsChanged;
             Context.RPCClient.Callbacks.PlayerConnect -= Callbacks_PlayerConnect;
-            Context.RPCClient.Callbacks.EndChallenge -= Callbacks_EndChallenge;
+            Context.RPCClient.Callbacks.EndRace -= Callbacks_EndRace;
         }
     }
 }

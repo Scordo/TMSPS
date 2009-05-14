@@ -116,8 +116,8 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
 	        InitializePlugins();
 	        OnLocalRecordsDetermined(new List<RankEntry>(LocalRecords));
 
-            Context.RPCClient.Callbacks.BeginChallenge += Callbacks_BeginChallenge;
-            Context.RPCClient.Callbacks.EndChallenge += Callbacks_EndChallenge;
+            Context.RPCClient.Callbacks.BeginRace += Callbacks_BeginRace;
+            Context.RPCClient.Callbacks.EndRace += Callbacks_EndRace;
 	        Context.RPCClient.Callbacks.PlayerConnect += Callbacks_PlayerConnect;
 	        Context.RPCClient.Callbacks.PlayerDisconnect += Callbacks_PlayerDisconnect;
 	        Context.RPCClient.Callbacks.PlayerFinish += Callbacks_PlayerFinish;
@@ -282,7 +282,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
 	        }
 	    }
 
-        private void Callbacks_EndChallenge(object sender, EndChallengeEventArgs e)
+        private void Callbacks_EndRace(object sender, EndRaceEventArgs e)
 	    {
 	        if (e.Erroneous)
 	        {
@@ -370,7 +370,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
             }, "Error in Callbacks_PlayerConnect Method.", true);
 	    }
 
-        private void Callbacks_BeginChallenge(object sender, BeginChallengeEventArgs e)
+        private void Callbacks_BeginRace(object sender, BeginRaceEventArgs e)
 	    {
 	        if (e.Erroneous)
 	        {
@@ -440,8 +440,8 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
 
 	        DisposePlugins(connectionLost);
 
-            Context.RPCClient.Callbacks.BeginChallenge -= Callbacks_BeginChallenge;
-            Context.RPCClient.Callbacks.EndChallenge -= Callbacks_EndChallenge;
+            Context.RPCClient.Callbacks.BeginRace -= Callbacks_BeginRace;
+            Context.RPCClient.Callbacks.EndRace -= Callbacks_EndRace;
 	        Context.RPCClient.Callbacks.PlayerConnect -= Callbacks_PlayerConnect;
 	        Context.RPCClient.Callbacks.PlayerDisconnect -= Callbacks_PlayerDisconnect;
 	        Context.RPCClient.Callbacks.PlayerFinish -= Callbacks_PlayerFinish;
