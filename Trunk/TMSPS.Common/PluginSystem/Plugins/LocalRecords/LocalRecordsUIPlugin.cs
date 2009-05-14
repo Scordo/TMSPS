@@ -52,7 +52,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
             HostPlugin.PlayerNewRecord += HostPlugin_PlayerNewRecord;
             HostPlugin.LocalRecordsDetermined += HostPlugin_LocalRecordsDetermined;
             HostPlugin.PlayerWins += HostPlugin_PlayerWins;
-            Context.RPCClient.Callbacks.EndChallenge += Callbacks_EndChallenge;
+            Context.RPCClient.Callbacks.EndRace += Callbacks_EndRace;
             Context.RPCClient.Callbacks.PlayerConnect += Callbacks_PlayerConnect;
             Context.RPCClient.Callbacks.PlayerChat += Callbacks_PlayerChat;
 
@@ -255,7 +255,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
             return maniaLinkPage.ToString();
         }
 
-        private void Callbacks_EndChallenge(object sender, EndChallengeEventArgs e)
+        private void Callbacks_EndRace(object sender, EndRaceEventArgs e)
         {
             UpdateListTimer.Clear();
             UpdateLocalRecordTimer.Clear();
@@ -480,7 +480,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
             HostPlugin.PlayerVoted -= HostPlugin_PlayerVoted;
             HostPlugin.PlayerNewRecord -= HostPlugin_PlayerNewRecord;
             HostPlugin.LocalRecordsDetermined -= HostPlugin_LocalRecordsDetermined;
-            Context.RPCClient.Callbacks.EndChallenge -= Callbacks_EndChallenge;
+            Context.RPCClient.Callbacks.EndRace -= Callbacks_EndRace;
             Context.RPCClient.Callbacks.PlayerConnect -= Callbacks_PlayerConnect;
             Context.RPCClient.Callbacks.PlayerChat -= Callbacks_PlayerChat;
         }

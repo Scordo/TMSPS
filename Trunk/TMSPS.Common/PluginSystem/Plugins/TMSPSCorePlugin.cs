@@ -185,7 +185,7 @@ namespace TMSPS.Core.PluginSystem.Plugins
         {
             if (e.Erroneous)
             {
-                Logger.Error(string.Format("[Callbacks_BeginRace] Invalid Response: {0}[{1}]", e.Fault.FaultMessage, e.Fault.FaultCode));
+				Logger.Error(string.Format("[Callbacks_BeginChallenge] Invalid Response: {0}[{1}]", e.Fault.FaultMessage, e.Fault.FaultCode));
                 return;
             }
 
@@ -194,7 +194,7 @@ namespace TMSPS.Core.PluginSystem.Plugins
                 GetCurrentChallengeInfo(); // cache current challenge info
                 GetServerOptions(); // cache current server options
                 GetCurrentGameMode(); // cache current game mode
-            }, "Error in Callbacks_BeginRace Method.", true);
+			}, "Error in Callbacks_BeginChallenge Method.", true);
         }
     }
 }

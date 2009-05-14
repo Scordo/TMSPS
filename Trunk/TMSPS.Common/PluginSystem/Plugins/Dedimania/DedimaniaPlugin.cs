@@ -76,8 +76,8 @@ namespace TMSPS.Core.PluginSystem.Plugins.Dedimania
             }
 
             DedimaniaClient.Url = Settings.ReportUrl;
-            Context.RPCClient.Callbacks.BeginChallenge += Callbacks_BeginChallenge;
-            Context.RPCClient.Callbacks.EndChallenge += Callbacks_EndChallenge;
+            Context.RPCClient.Callbacks.BeginRace += Callbacks_BeginRace;
+            Context.RPCClient.Callbacks.EndRace += Callbacks_EndRace;
             Context.RPCClient.Callbacks.PlayerFinish += Callbacks_PlayerFinish;
 
             InitializePlugins();
@@ -204,9 +204,9 @@ namespace TMSPS.Core.PluginSystem.Plugins.Dedimania
         {
             DisposePlugins(connectionLost);
 
-            Context.RPCClient.Callbacks.BeginChallenge -= Callbacks_BeginChallenge;
+            Context.RPCClient.Callbacks.BeginRace -= Callbacks_BeginRace;
             Context.RPCClient.Callbacks.PlayerFinish -= Callbacks_PlayerFinish;
-            Context.RPCClient.Callbacks.EndChallenge -= Callbacks_EndChallenge;
+            Context.RPCClient.Callbacks.EndRace -= Callbacks_EndRace;
         }
 
         private static void UpdateServerPlayers(object state)
@@ -245,7 +245,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.Dedimania
             }, "Error in Callbacks_BeginRace Method.", true, plugin.Logger);
         }
 
-        private void Callbacks_BeginChallenge(object sender, BeginChallengeEventArgs e)
+        private void Callbacks_BeginRace(object sender, BeginRaceEventArgs e)
         {
             if (e.Erroneous)
             {
@@ -304,7 +304,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.Dedimania
                 Logger.WarnToUI("Error while calling CurrentChallenge!");   
         }
 
-        private void Callbacks_EndChallenge(object sender, EndChallengeEventArgs e)
+        private void Callbacks_EndRace(object sender, EndRaceEventArgs e)
         {
             if (e.Erroneous)
             {
