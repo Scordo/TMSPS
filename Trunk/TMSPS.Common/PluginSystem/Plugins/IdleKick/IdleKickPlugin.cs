@@ -134,13 +134,13 @@ namespace TMSPS.Core.PluginSystem.Plugins.IdleKick
                 if (Settings.KickMode != IdleKickMode.ROUNDS)
                     return;
 
-                IEnumerable<KeyValuePair<string, uint>> loginsToKick;
+                List<KeyValuePair<string, uint>> loginsToKick;
                 lock (_readWriteLockObject)
                 {
                     foreach (string login in LoginRounds.Keys.ToArray())
                         IncreaseLoginRounds(login);
 
-                    loginsToKick = LoginRounds.Where(loginRound => loginRound.Value >= Settings.RoundsCount && !LoginHasRight(loginRound.Key, false, "NoIdleKick"));    
+                    loginsToKick = LoginRounds.Where(loginRound => loginRound.Value >= Settings.RoundsCount && !LoginHasRight(loginRound.Key, false, "NoIdleKick")).ToList();    
                 }
                 
                 foreach (KeyValuePair<string, uint> loginRound in loginsToKick)
