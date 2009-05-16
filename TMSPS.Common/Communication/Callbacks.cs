@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Windows.Forms;
+using System.Threading;
 using System.Xml.Linq;
 using TMSPS.Core.Communication.EventArguments;
 using TMSPS.Core.Communication.EventArguments.Callbacks;
@@ -8,7 +8,6 @@ namespace TMSPS.Core.Communication
 {
     public class Callbacks
     {
-        private delegate void RaiseEventHandler(XElement messageElement);
         private const string TRACKMANIA_METHOD_PREFIX = "TrackMania.";
 
         #region Events
@@ -47,76 +46,74 @@ namespace TMSPS.Core.Communication
             if (!callback.HasValue)
                 return false;
 
-            
-
             bool result = true;
             switch (callback)
             {
                 case TrackManiaCallback.PlayerConnect:
-                    new RaiseEventHandler(OnPlayerConnect).BeginInvoke(messageElement, null, null);
+            		ThreadPool.QueueUserWorkItem(OnPlayerConnect, messageElement);
                     break;
                 case TrackManiaCallback.PlayerDisconnect:
-                    new RaiseEventHandler(OnPlayerDisconnect).BeginInvoke(messageElement, null, null);
+            		ThreadPool.QueueUserWorkItem(OnPlayerDisconnect, messageElement);
                     break;
                 case TrackManiaCallback.PlayerChat:
-                    new RaiseEventHandler(OnPlayerChat).BeginInvoke(messageElement, null, null);
+					ThreadPool.QueueUserWorkItem(OnPlayerChat, messageElement);
                     break;
                 case TrackManiaCallback.BeginRace:
-                    new RaiseEventHandler(OnBeginRace).BeginInvoke(messageElement, null, null);
+					ThreadPool.QueueUserWorkItem(OnBeginRace, messageElement);
                     break;
                 case TrackManiaCallback.EndRace:
-                    new RaiseEventHandler(OnEndRace).BeginInvoke(messageElement, null, null);
+					ThreadPool.QueueUserWorkItem(OnEndRace, messageElement);
                     break;
                 case TrackManiaCallback.PlayerManialinkPageAnswer:
-                    new RaiseEventHandler(OnPlayerManialinkPageAnswer).BeginInvoke(messageElement, null, null);
+					ThreadPool.QueueUserWorkItem(OnPlayerManialinkPageAnswer, messageElement);
                     break;
                 case TrackManiaCallback.Echo:
-                    new RaiseEventHandler(OnEcho).BeginInvoke(messageElement, null, null);
+					ThreadPool.QueueUserWorkItem(OnEcho, messageElement);
                     break;
                 case TrackManiaCallback.ServerStart:
-                    new MethodInvoker(OnServerStart).BeginInvoke(null, null);
+					ThreadPool.QueueUserWorkItem(OnServerStart, messageElement);
                     break;
                 case TrackManiaCallback.ServerStop:
-                    new MethodInvoker(OnServerStart).BeginInvoke(null, null);
+					ThreadPool.QueueUserWorkItem(OnServerStop, messageElement);
                     break;
                 case TrackManiaCallback.BeginRound:
-                    new MethodInvoker(OnServerStart).BeginInvoke(null, null);
+					ThreadPool.QueueUserWorkItem(OnBeginRound, messageElement);
                     break;
                 case TrackManiaCallback.EndRound:
-                    new MethodInvoker(OnServerStart).BeginInvoke(null, null);
+					ThreadPool.QueueUserWorkItem(OnEndRound, messageElement);
                     break;
                 case TrackManiaCallback.StatusChanged:
-                    new RaiseEventHandler(OnStatusChanged).BeginInvoke(messageElement, null, null);
+					ThreadPool.QueueUserWorkItem(OnStatusChanged, messageElement);
                     break;
                 case TrackManiaCallback.PlayerCheckpoint:
-                    new RaiseEventHandler(OnPlayerCheckpoint).BeginInvoke(messageElement, null, null);
+					ThreadPool.QueueUserWorkItem(OnPlayerCheckpoint, messageElement);
                     break;
                 case TrackManiaCallback.PlayerFinish:
-                    new RaiseEventHandler(OnPlayerFinish).BeginInvoke(messageElement, null, null);
+					ThreadPool.QueueUserWorkItem(OnPlayerFinish, messageElement);
                     break;
                 case TrackManiaCallback.PlayerIncoherence:
-                    new RaiseEventHandler(OnPlayerIncoherence).BeginInvoke(messageElement, null, null);
+					ThreadPool.QueueUserWorkItem(OnPlayerIncoherence, messageElement);
                     break;
                 case TrackManiaCallback.BillUpdated:
-                    new RaiseEventHandler(OnBillUpdated).BeginInvoke(messageElement, null, null);
+					ThreadPool.QueueUserWorkItem(OnBillUpdated, messageElement);
                     break;
                 case TrackManiaCallback.TunnelDataReceived:
-                    new RaiseEventHandler(OnTunnelDataReceived).BeginInvoke(messageElement, null, null);
+					ThreadPool.QueueUserWorkItem(OnTunnelDataReceived, messageElement);
                     break;
                 case TrackManiaCallback.ChallengeListModified:
-                    new RaiseEventHandler(OnChallengeListModified).BeginInvoke(messageElement, null, null);
+					ThreadPool.QueueUserWorkItem(OnChallengeListModified, messageElement);
                     break;
                 case TrackManiaCallback.PlayerInfoChanged:
-                    new RaiseEventHandler(OnPlayerInfoChanged).BeginInvoke(messageElement, null, null);
+					ThreadPool.QueueUserWorkItem(OnPlayerInfoChanged, messageElement);
                     break;
                 case TrackManiaCallback.ManualFlowControlTransition:
-                    new RaiseEventHandler(OnManualFlowControlTransition).BeginInvoke(messageElement, null, null);
+					ThreadPool.QueueUserWorkItem(OnManualFlowControlTransition, messageElement);
                     break;
                 case TrackManiaCallback.BeginChallenge:
-                    new RaiseEventHandler(OnBeginChallenge).BeginInvoke(messageElement, null, null);
+					ThreadPool.QueueUserWorkItem(OnBeginChallenge, messageElement);
                     break;
                 case TrackManiaCallback.EndChallenge:
-                    new RaiseEventHandler(OnEndChallenge).BeginInvoke(messageElement, null, null);
+					ThreadPool.QueueUserWorkItem(OnEndChallenge, messageElement);
                     break;
                 default:
                     result = false;
@@ -130,136 +127,136 @@ namespace TMSPS.Core.Communication
 
         #region Non Public Methods
 
-        protected void OnPlayerConnect(XElement messageElement)
+        protected void OnPlayerConnect(object messageElement)
         {
             if (PlayerConnect != null)
-                PlayerConnect(this, EventArgsBase<PlayerConnectEventArgs>.Parse(messageElement));
+                PlayerConnect(this, EventArgsBase<PlayerConnectEventArgs>.Parse((XElement) messageElement));
         }
 
-        protected void OnPlayerDisconnect(XElement messageElement)
+        protected void OnPlayerDisconnect(object messageElement)
         {
             if (PlayerDisconnect != null)
-                PlayerDisconnect(this, EventArgsBase<PlayerDisconnectEventArgs>.Parse(messageElement));
+                PlayerDisconnect(this, EventArgsBase<PlayerDisconnectEventArgs>.Parse((XElement) messageElement));
         }
 
-        protected void OnPlayerChat(XElement messageElement)
+        protected void OnPlayerChat(object messageElement)
         {
             if (PlayerChat != null)
-                PlayerChat(this, EventArgsBase<PlayerChatEventArgs>.Parse(messageElement));
+                PlayerChat(this, EventArgsBase<PlayerChatEventArgs>.Parse((XElement) messageElement));
         }
 
-        protected void OnBeginRace(XElement messageElement)
+        protected void OnBeginRace(object messageElement)
         {
             if (BeginRace != null)
-                BeginRace(this, EventArgsBase<BeginRaceEventArgs>.Parse(messageElement));
+                BeginRace(this, EventArgsBase<BeginRaceEventArgs>.Parse((XElement) messageElement));
         }
 
-        protected void OnEndRace(XElement messageElement)
+        protected void OnEndRace(object messageElement)
         {
             if (EndRace != null)
-                EndRace(this, EventArgsBase<EndRaceEventArgs>.Parse(messageElement));
+                EndRace(this, EventArgsBase<EndRaceEventArgs>.Parse((XElement) messageElement));
         }
 
-        protected void OnPlayerManialinkPageAnswer(XElement messageElement)
+        protected void OnPlayerManialinkPageAnswer(object messageElement)
         {
             if (PlayerManialinkPageAnswer != null)
-                PlayerManialinkPageAnswer(this, EventArgsBase<PlayerManialinkPageAnswerEventArgs>.Parse(messageElement));
+                PlayerManialinkPageAnswer(this, EventArgsBase<PlayerManialinkPageAnswerEventArgs>.Parse((XElement) messageElement));
         }
 
-        protected void OnEcho(XElement messageElement)
+        protected void OnEcho(object messageElement)
         {
             if (Echo != null)
-                Echo(this, EventArgsBase<EchoEventArgs>.Parse(messageElement));
+                Echo(this, EventArgsBase<EchoEventArgs>.Parse((XElement) messageElement));
         }
 
-        protected void OnServerStart()
+		protected void OnServerStart(object messageElement)
         {
             if (ServerStart != null)
                 ServerStart(this, EventArgs.Empty);
         }
 
-        protected void OnServerStop()
+		protected void OnServerStop(object messageElement)
         {
             if (ServerStop != null)
                 ServerStop(this, EventArgs.Empty);
         }
 
-        protected void OnBeginRound()
+		protected void OnBeginRound(object messageElement)
         {
             if (BeginRound != null)
                 BeginRound(this, EventArgs.Empty);
         }
 
-        protected void OnEndRound()
+		protected void OnEndRound(object messageElement)
         {
             if (EndRound != null)
                 EndRound(this, EventArgs.Empty);
         }
 
-        protected void OnStatusChanged(XElement messageElement)
+        protected void OnStatusChanged(object messageElement)
         {
             if (StatusChanged != null)
-                StatusChanged(this, EventArgsBase<StatusChangedEventArgs>.Parse(messageElement));
+                StatusChanged(this, EventArgsBase<StatusChangedEventArgs>.Parse((XElement) messageElement));
         }
 
-        protected void OnPlayerCheckpoint(XElement messageElement)
+        protected void OnPlayerCheckpoint(object messageElement)
         {
             if (PlayerCheckpoint != null)
-                PlayerCheckpoint(this, EventArgsBase<PlayerCheckpointEventArgs>.Parse(messageElement));
+                PlayerCheckpoint(this, EventArgsBase<PlayerCheckpointEventArgs>.Parse((XElement) messageElement));
         }
 
-        protected void OnPlayerFinish(XElement messageElement)
+        protected void OnPlayerFinish(object messageElement)
         {
             if (PlayerFinish != null)
-                PlayerFinish(this, EventArgsBase<PlayerFinishEventArgs>.Parse(messageElement));
+                PlayerFinish(this, EventArgsBase<PlayerFinishEventArgs>.Parse((XElement) messageElement));
         }
 
-        protected void OnPlayerIncoherence(XElement messageElement)
+        protected void OnPlayerIncoherence(object messageElement)
         {
             if (PlayerIncoherence != null)
-                PlayerIncoherence(this, EventArgsBase<PlayerIncoherenceEventArgs>.Parse(messageElement));
+                PlayerIncoherence(this, EventArgsBase<PlayerIncoherenceEventArgs>.Parse((XElement) messageElement));
         }
 
-        protected void OnBillUpdated(XElement messageElement)
+        protected void OnBillUpdated(object messageElement)
         {
             if (BillUpdated != null)
-                BillUpdated(this, EventArgsBase<BillUpdatedEventArgs>.Parse(messageElement));
+                BillUpdated(this, EventArgsBase<BillUpdatedEventArgs>.Parse((XElement) messageElement));
         }
 
-        protected void OnTunnelDataReceived(XElement messageElement)
+        protected void OnTunnelDataReceived(object messageElement)
         {
             if (TunnelDataReceived != null)
-                TunnelDataReceived(this, EventArgsBase<TunnelDataReceivedEventArgs>.Parse(messageElement));
+                TunnelDataReceived(this, EventArgsBase<TunnelDataReceivedEventArgs>.Parse((XElement) messageElement));
         }
 
-        protected void OnChallengeListModified(XElement messageElement)
+        protected void OnChallengeListModified(object messageElement)
         {
             if (ChallengeListModified != null)
-                ChallengeListModified(this, EventArgsBase<ChallengeListModifiedeventArgs>.Parse(messageElement));
+                ChallengeListModified(this, EventArgsBase<ChallengeListModifiedeventArgs>.Parse((XElement) messageElement));
         }
 
-        protected void OnPlayerInfoChanged(XElement messageElement)
+        protected void OnPlayerInfoChanged(object messageElement)
         {
             if (PlayerInfoChanged != null)
-                PlayerInfoChanged(this, EventArgsBase<PlayerInfoChangedEventArgs>.Parse(messageElement));
+                PlayerInfoChanged(this, EventArgsBase<PlayerInfoChangedEventArgs>.Parse((XElement) messageElement));
         }
 
-        protected void OnManualFlowControlTransition(XElement messageElement)
+        protected void OnManualFlowControlTransition(object messageElement)
         {
             if (ManualFlowControlTransition != null)
-                ManualFlowControlTransition(this, EventArgsBase<ManualFlowControlTransitionEventArgs>.Parse(messageElement));
+                ManualFlowControlTransition(this, EventArgsBase<ManualFlowControlTransitionEventArgs>.Parse((XElement) messageElement));
         }
 
-        protected void OnBeginChallenge(XElement messageElement)
+        protected void OnBeginChallenge(object messageElement)
         {
             if (BeginChallenge != null)
-                BeginChallenge(this, EventArgsBase<BeginChallengeEventArgs>.Parse(messageElement));
+                BeginChallenge(this, EventArgsBase<BeginChallengeEventArgs>.Parse((XElement) messageElement));
         }
 
-        protected void OnEndChallenge(XElement messageElement)
+        protected void OnEndChallenge(object messageElement)
         {
             if (EndChallenge != null)
-                EndChallenge(this, EventArgsBase<EndChallengeEventArgs>.Parse(messageElement));
+                EndChallenge(this, EventArgsBase<EndChallengeEventArgs>.Parse((XElement) messageElement));
         }
 
         private static TrackManiaCallback? TryParseCallback(XContainer messageElement)
