@@ -65,6 +65,7 @@
     <Compile Include="Common\ParameterlessMethodDelegate.cs" />
     <Compile Include="Common\ReadOnlyDictionary.cs" />
     <Compile Include="Common\SettingsBase.cs" />
+    <Compile Include="Common\SqlNicknameResolver.cs" />
     <Compile Include="Common\TimedVolatileExecutionQueue.cs" />
     <Compile Include="Communication\EventArguments\Callbacks\BeginChallengeEventArgs.cs" />
     <Compile Include="Communication\EventArguments\Callbacks\EndChallengeEventArgs.cs" />

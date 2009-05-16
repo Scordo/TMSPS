@@ -13,5 +13,6 @@
 		<Assembly>TMSPS.Core</Assembly>
 		<Class>TMSPS.Core.Common.FlatFileNicknameResolver</Class>
 		<Config filePath="users.cfg" />
+		<!--<Config filePath="users.cfg" connectionString="server=ServernameHere;database=DatabaseHere;uid=UserHere;pwd=PasswordHere;MultipleActiveResultSets=True" />-->
 	</NicknameResolver>
 </Settings>
