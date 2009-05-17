@@ -123,11 +123,15 @@
   <data name="PlayerTemplate" xml:space="preserve">
     <value>&lt;manialink id="{[ManiaLinkID]}"&gt;
 	&lt;frame posn="-62 -45.6 0"&gt;
-		&lt;quad sizen="12.9 2.5" style="Bgs1InRace" substyle="NavButton"/&gt;
+		&lt;quad sizen="21.5 2.5" style="Bgs1InRace" substyle="NavButton"/&gt;
 		&lt;quad posn="1 -0.4 2" sizen="1.7 1.7" style="Icons64x64_1" substyle="Refresh" action="{[RestartTrackImmediately]}"/&gt;
 		&lt;quad posn="4 -0.4 2" sizen="1.7 1.8" style="Icons64x64_1" substyle="Camera" action="{[KickSpectators]}"/&gt;
 		&lt;quad posn="7 -0.4 2" sizen="1.7 1.7" style="Icons64x64_1" substyle="ArrowLast" action="{[SwitchToNextTrack]}"/&gt;
 		&lt;quad posn="10.1 -0.4 2" sizen="1.7 1.7" style="Icons64x64_1" substyle="IconPlayers" action="{[ShowPlayerListWithAdminAbilities]}"/&gt;
+		&lt;quad posn="13 -0.4 2" sizen="1.7 1.7" style="Icons64x64_1" substyle="LvlGreen" action="{[ShowGuestList]}"/&gt;
+		&lt;quad posn="15 -0.4 2" sizen="1.7 1.7" style="Icons64x64_1" substyle="LvlYellow" action="{[ShowIgnoreList]}"/&gt;
+		&lt;quad posn="17 -0.4 2" sizen="1.7 1.7" style="Icons64x64_1" substyle="LvlRed" action="{[ShowBanList]}"/&gt;
+		&lt;quad posn="18.9 -0.1 2" sizen="2.3 2.3" style="Icons64x64_1" substyle="Check" action="{[ShowBlackList]}"/&gt;
 	&lt;/frame&gt;
 &lt;/manialink&gt;</value>
   </data>

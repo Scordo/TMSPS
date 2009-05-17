@@ -14,6 +14,8 @@ namespace TMSPS.Core.PluginSystem.Plugins
         public const bool ENABLE_LEAVE_MESSAGE = true;
         public const string KICK_MESSAGE = "{[#ServerStyle]}>> {[#HighlightStyle]}{[KickingNickname]}{[#MessageStyle]} kicked {[#HighlightStyle]}{[KickedNickname]}.";
         public const string BAN_MESSAGE = "{[#ServerStyle]}>> {[#HighlightStyle]}{[BanningNickname]}{[#MessageStyle]} banned {[#HighlightStyle]}{[BannedNickname]}.";
+        public const string IGNORE_MESSAGE = "{[#ServerStyle]}>> {[#HighlightStyle]}{[IgnoringNickname]}{[#MessageStyle]} added {[#HighlightStyle]}{[IgnoredNickname]}{[#MessageStyle]} to ignore list.";
+        public const string ADDGUEST_MESSAGE = "{[#ServerStyle]}>> {[#HighlightStyle]}{[AdminNickname]}{[#MessageStyle]} added {[#HighlightStyle]}{[GuestNickname]}{[#MessageStyle]} to guest list.";
         public const string BLACKLIST_MESSAGE = "{[#ServerStyle]}>> {[#HighlightStyle]}{[BlackListingNickname]}{[#MessageStyle]} blacklists {[#HighlightStyle]}{[BlackListedNickname]}.";
         public const string TRACKLIST_FILE = "tracklist.txt";
         public const string NICKNAME_RESOLVER_CLASS = "TMSPS.Core.Common.FlatFileNicknameResolver";
@@ -30,6 +32,8 @@ namespace TMSPS.Core.PluginSystem.Plugins
         public bool EnableLeaveMessage { get; private set; }
         public string KickMessage { get; private set; }
         public string BanMessage { get; private set; }
+        public string IgnoreMessage { get; private set; }
+        public string AddGuestMessage { get; private set; }
         public string BlackListMessage { get; private set; }
         public string TrackListFile { get; private set; }
         public string NicknameResolverClass { get; private set; }
@@ -57,6 +61,8 @@ namespace TMSPS.Core.PluginSystem.Plugins
             result.LeaveMessage = ReadConfigString(configDocument.Root, "LeaveMessage", LEAVE_MESSAGE, xmlConfigurationFile);
             result.KickMessage = ReadConfigString(configDocument.Root, "KickMessage", KICK_MESSAGE, xmlConfigurationFile);
             result.BanMessage = ReadConfigString(configDocument.Root, "BanMessage", BAN_MESSAGE, xmlConfigurationFile);
+            result.IgnoreMessage = ReadConfigString(configDocument.Root, "IgnoreMessage", IGNORE_MESSAGE, xmlConfigurationFile);
+            result.AddGuestMessage = ReadConfigString(configDocument.Root, "AddGuestMessage", ADDGUEST_MESSAGE, xmlConfigurationFile);
             result.BlackListMessage = ReadConfigString(configDocument.Root, "BlackListMessage", BLACKLIST_MESSAGE, xmlConfigurationFile);
             result.TrackListFile = ReadConfigString(configDocument.Root, "TrackListFile", TRACKLIST_FILE, xmlConfigurationFile);
             result.SaveGhostReplayOfTop = ReadConfigUInt(configDocument.Root, "SaveGhostReplayOfTop", SAVE_GHOST_REPLAY_OF_TOP, xmlConfigurationFile);

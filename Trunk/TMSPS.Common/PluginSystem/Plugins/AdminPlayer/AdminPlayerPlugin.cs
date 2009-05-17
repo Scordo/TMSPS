@@ -1,23 +1,20 @@
 ﻿using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using TMSPS.Core.Communication.ProxyTypes;
 using TMSPS.Core.ManiaLinking;
+using TMSPS.Core.PluginSystem.Configuration;
 using Version=System.Version;
 
 namespace TMSPS.Core.PluginSystem.Plugins.AdminPlayer
 {
-    public class AdminPlayerPlugin : TMSPSPlugin
+    public partial class AdminPlayerPlugin : TMSPSPlugin
     {
         #region Constants
 
         public const string RESTART_TRACK_IMMEDIATELY_RIGHT = "RestartTrack";
         public const string NEXT_TRACK_RIGHT = "NextTrack";
-
-        #endregion
-
-        #region Members
-
-        private readonly string _playerPanelID = "AdminPlayerPanelID"; //Guid.NewGuid().ToString("N");
+        private const string PLAYER_PANEL_ID = "AdminPlayerPanelID";
 
         #endregion
 
@@ -48,6 +45,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.AdminPlayer
             get { return "AdminPlayer"; }
         }
 
+
         #endregion
 
         #region Methods
@@ -55,6 +53,18 @@ namespace TMSPS.Core.PluginSystem.Plugins.AdminPlayer
         protected override void Init()
         {
             SendToAllLogins();
+
+            GuestListSettings = PagedUIDialogSettings.ReadFromFile(Path.Combine(PluginDirectory, "GuestListUITemplate.xml"));
+            GuestListActions = new PagedDialogActions(ID, (byte)Area.GuestListArea);
+
+            IgnoreListSettings = PagedUIDialogSettings.ReadFromFile(Path.Combine(PluginDirectory, "IgnoreListUITemplate.xml"));
+            IgnoreListActions = new PagedDialogActions(ID, (byte)Area.IgnoreListArea);
+
+            BanListSettings = PagedUIDialogSettings.ReadFromFile(Path.Combine(PluginDirectory, "BanListUITemplate.xml"));
+            BanListActions = new PagedDialogActions(ID, (byte)Area.BanListArea);
+
+            BlackListSettings = PagedUIDialogSettings.ReadFromFile(Path.Combine(PluginDirectory, "BlackListUITemplate.xml"));
+            BlackListActions = new PagedDialogActions(ID, (byte)Area.BlackListArea);
 
             Context.RPCClient.Callbacks.PlayerConnect += Callbacks_PlayerConnect;
         }
@@ -70,6 +80,18 @@ namespace TMSPS.Core.PluginSystem.Plugins.AdminPlayer
             {
                 case Area.MainArea:
                     HandleMainAreaActions(login, action);
+                    break;
+                case Area.GuestListArea:
+                    HandleGuestListAreaActions(login, action);
+                    break;
+                case Area.IgnoreListArea:
+                    HandleIgnoreListAreaActions(login, action);
+                    break;
+                case Area.BanListArea:
+                    HandleBanListAreaActions(login, action);
+                    break;
+                case Area.BlackListArea:
+                    HandleBlackListAreaActions(login, action);
                     break;
             }
         }
@@ -92,9 +114,20 @@ namespace TMSPS.Core.PluginSystem.Plugins.AdminPlayer
                 case MainAreaAction.ShowPlayerListWithAdminAbilities:
                     ShowPlayerListWithAdminAbilities(login);
                     break;
+                case MainAreaAction.ShowGuestList:
+                    SendGuestListPageToLogin(login, 0);
+                    break;
+                case MainAreaAction.ShowIgnoreList:
+                    SendIgnoreListPageToLogin(login, 0);
+                    break;
+                case MainAreaAction.ShowBanList:
+                    SendBanListPageToLogin(login, 0);
+                    break;
+                case MainAreaAction.ShowBlackList:
+                    SendBlackListPageToLogin(login, 0);
+                    break;
             }
         }
-
 
         private void KickSpectators(string login)
         {
@@ -170,11 +203,15 @@ namespace TMSPS.Core.PluginSystem.Plugins.AdminPlayer
             string result = ReplaceMessagePlaceHolders
             (
                 UITemplates.PlayerTemplate,
-                "ManiaLinkID", _playerPanelID,
+                "ManiaLinkID", PLAYER_PANEL_ID,
                 MainAreaAction.RestartTrackImmediately.ToString(), TMAction.CalculateActionID(ID, (int)Area.MainArea, (int)MainAreaAction.RestartTrackImmediately).ToString(),
                 MainAreaAction.KickSpectators.ToString(), TMAction.CalculateActionID(ID, (int)Area.MainArea, (int)MainAreaAction.KickSpectators).ToString(),
                 MainAreaAction.SwitchToNextTrack.ToString(), TMAction.CalculateActionID(ID, (int)Area.MainArea, (int)MainAreaAction.SwitchToNextTrack).ToString(),
-                MainAreaAction.ShowPlayerListWithAdminAbilities.ToString(), TMAction.CalculateActionID(ID, (int)Area.MainArea, (int)MainAreaAction.ShowPlayerListWithAdminAbilities).ToString()
+                MainAreaAction.ShowPlayerListWithAdminAbilities.ToString(), TMAction.CalculateActionID(ID, (int)Area.MainArea, (int)MainAreaAction.ShowPlayerListWithAdminAbilities).ToString(),
+                MainAreaAction.ShowGuestList.ToString(), TMAction.CalculateActionID(ID, (int)Area.MainArea, (int)MainAreaAction.ShowGuestList).ToString(),
+                MainAreaAction.ShowIgnoreList.ToString(), TMAction.CalculateActionID(ID, (int)Area.MainArea, (int)MainAreaAction.ShowIgnoreList).ToString(),
+                MainAreaAction.ShowBanList.ToString(), TMAction.CalculateActionID(ID, (int)Area.MainArea, (int)MainAreaAction.ShowBanList).ToString(),
+                MainAreaAction.ShowBlackList.ToString(), TMAction.CalculateActionID(ID, (int)Area.MainArea, (int)MainAreaAction.ShowBlackList).ToString()
             );
 
             return result;
@@ -190,10 +227,16 @@ namespace TMSPS.Core.PluginSystem.Plugins.AdminPlayer
         
         #endregion
 
+        #region Embedded Types
+
         private enum Area
         {
             MainArea = 1,
-            ManagePlayersArea = 2
+            ManagePlayersArea = 2,
+            GuestListArea = 3,
+            IgnoreListArea = 4,
+            BanListArea = 5,
+            BlackListArea = 6
         }
 
         private enum MainAreaAction
@@ -201,7 +244,32 @@ namespace TMSPS.Core.PluginSystem.Plugins.AdminPlayer
             RestartTrackImmediately = 1,
             KickSpectators = 2,
             SwitchToNextTrack = 3,
-            ShowPlayerListWithAdminAbilities = 4
+            ShowPlayerListWithAdminAbilities = 4,
+            ShowGuestList = 5,
+            ShowIgnoreList = 6,
+            ShowBanList = 7,
+            ShowBlackList = 8
         }
+
+
+        internal class PlayerListEntry
+        {
+            public ushort Position { get; set; }
+            public string Nickname { get; set; }
+            public string Login { get; set; }
+
+            public PlayerListEntry()
+            {
+            }
+
+            public PlayerListEntry(ushort position, string nickname, string login)
+            {
+                Position = position;
+                Nickname = nickname;
+                Login = login;
+            }
+        }
+
+        #endregion
     }
 }

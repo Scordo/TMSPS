@@ -10,6 +10,8 @@ namespace TMSPS.Core.PluginSystem.Plugins
         private const string COMMAND_KICK = "kick";
         private const string COMMAND_BAN = "ban";
         private const string COMMAND_BLACKLIST = "blacklist";
+        private const string COMMAND_IGNORE = "ignore";
+        private const string COMMAND_ADDGUEST = "addguest";
         private const string COMMAND_WRITE_TRACK_LIST = "writetracklist";
         private const string COMMAND_READ_TRACK_LIST = "readtracklist";
         private const string COMMAND_REMOVE_TRACK = "removetrack";
@@ -26,6 +28,12 @@ namespace TMSPS.Core.PluginSystem.Plugins
                     break;
                 case COMMAND_BLACKLIST:
                     HandleBlackListCommand(login, command);
+                    break;
+                case COMMAND_IGNORE:
+                    HandleIgnoreCommand(login, command);
+                    break;
+                case COMMAND_ADDGUEST:
+                    HandleAddGuestCommand(login, command);
                     break;
                 case COMMAND_WRITE_TRACK_LIST:
                     HandleWriteTrackListCommand(login, command);
@@ -110,6 +118,77 @@ namespace TMSPS.Core.PluginSystem.Plugins
             }
         }
 
+        private void HandleIgnoreCommand(string login, ServerCommand command)
+        {
+            if (command.PartsWithoutMainCommand.Count == 0)
+                return;
+
+            if (!Context.Credentials.UserHasAnyRight(login, COMMAND_IGNORE))
+            {
+                SendNoPermissionMessagetoLogin(login);
+                return;
+            }
+
+            string nickname = GetNickname(login);
+
+            if (nickname == null)
+                return;
+
+            string loginToIgnore = command.PartsWithoutMainCommand[0].Trim();
+            string nickToIgnore = GetNickname(loginToIgnore);
+
+            if (nickToIgnore != null)
+            {
+                GenericResponse<bool> ignoreResponse = Context.RPCClient.Methods.Ignore(loginToIgnore);
+
+                if (!ignoreResponse.Erroneous && ignoreResponse.Value)
+                    SendFormattedMessage(Settings.IgnoreMessage, "IgnoringNickname", StripTMColorsAndFormatting(nickname), "IgnoredNickname", StripTMColorsAndFormatting(nickToIgnore));
+                else
+                    SendFormattedMessageToLogin(login, "{[#ServerStyle]}> {[#ErrorStyle]}Could not ignore " + StripTMColorsAndFormatting(nickToIgnore));
+            }
+            else
+            {
+                SendNoPlayerWithLoginMessageToLogin(login, loginToIgnore);
+            }
+        }
+
+        private void HandleAddGuestCommand(string login, ServerCommand command)
+        {
+            if (command.PartsWithoutMainCommand.Count == 0)
+                return;
+
+            if (!Context.Credentials.UserHasAnyRight(login, COMMAND_ADDGUEST))
+            {
+                SendNoPermissionMessagetoLogin(login);
+                return;
+            }
+
+            string nickname = GetNickname(login);
+
+            if (nickname == null)
+                return;
+
+            string loginOfGuest = command.PartsWithoutMainCommand[0].Trim();
+            string nickofGuest = GetNickname(loginOfGuest);
+
+            if (nickofGuest != null)
+            {
+                GenericResponse<bool> ignoreResponse = Context.RPCClient.Methods.AddGuest(loginOfGuest);
+
+                if (!ignoreResponse.Erroneous && ignoreResponse.Value)
+                {
+                    Context.RPCClient.Methods.SaveGuestList("guestlist.txt");
+                    SendFormattedMessage(Settings.AddGuestMessage, "AdminNickname", StripTMColorsAndFormatting(nickname), "GuestNickname", StripTMColorsAndFormatting(nickofGuest));
+                }
+                else
+                    SendFormattedMessageToLogin(login, "{[#ServerStyle]}> {[#ErrorStyle]}Could not add " + StripTMColorsAndFormatting(nickofGuest) + "to guest list");
+            }
+            else
+            {
+                SendNoPlayerWithLoginMessageToLogin(login, loginOfGuest);
+            }
+        }
+
         private void HandleBlackListCommand(string login, ServerCommand command)
         {
             if (command.PartsWithoutMainCommand.Count == 0)
@@ -135,6 +214,7 @@ namespace TMSPS.Core.PluginSystem.Plugins
 
                 if (!blacklistResponse.Erroneous && blacklistResponse.Value)
                 {
+                    Context.RPCClient.Methods.SaveBlackList("blacklist.txt");
                     SendFormattedMessage(Settings.BlackListMessage, "BlackListingNickname", StripTMColorsAndFormatting(nickname), "BlackListedNickname", StripTMColorsAndFormatting(nicknameToBlacklist));
                 }
                 else

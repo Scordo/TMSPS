@@ -13,6 +13,8 @@ namespace TMSPS.Core.PluginSystem
         public uint PrevPageActionID { get; private set; }
         public uint NextPageActionID { get; private set; }
         public uint LastPageActionID { get; private set; }
+        public ushort PluginID { get; private set; }
+        public byte AreaID { get; private set; }
 
         #endregion
 
@@ -25,6 +27,9 @@ namespace TMSPS.Core.PluginSystem
 
         public PagedDialogActions(ushort pluginID, byte areaID, byte closeAction, byte firstPageAction, byte prevPageAction, byte nextPageAction, byte lastPageAction)
         {
+            PluginID = pluginID;
+            AreaID = areaID;
+
             CloseActionID = TMAction.CalculateActionID(pluginID, areaID, closeAction);
             FirstPageActionID = TMAction.CalculateActionID(pluginID, areaID, firstPageAction);
             PrevPageActionID = TMAction.CalculateActionID(pluginID, areaID, prevPageAction);
@@ -36,7 +41,7 @@ namespace TMSPS.Core.PluginSystem
 
         #region Methods
 
-        public string[] GetReplaceParameters()
+        public string[] GetReplaceParameters(params KeyValuePair<string, byte>[] actionNameValuePairs)
         {
             List<string> commands = new List<string>();
 
@@ -54,6 +59,15 @@ namespace TMSPS.Core.PluginSystem
 
             commands.Add("LastPageActionID");
             commands.Add(LastPageActionID.ToString(CultureInfo.InvariantCulture));
+
+            if (actionNameValuePairs != null)
+            {
+                foreach (KeyValuePair<string, byte> nameValuePair in actionNameValuePairs)
+                {
+                    commands.Add(nameValuePair.Key);
+                    commands.Add(TMAction.CalculateActionID(PluginID, AreaID, nameValuePair.Value).ToString(CultureInfo.InvariantCulture));
+                }
+            }
 
             return commands.ToArray();
         }

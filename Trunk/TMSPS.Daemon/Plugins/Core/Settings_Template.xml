@@ -6,6 +6,8 @@
 	<LeaveMessage>{[#ServerStyle]}>> {[#HighlightStyle]}{[Nickname]}{[#MessageStyle]} has left the game.</LeaveMessage>
 	<KickMessage>{[#ServerStyle]}>> {[#HighlightStyle]}{[KickingNickname]}{[#MessageStyle]} kicked {[#HighlightStyle]}{[KickedNickname]}.</KickMessage>
 	<BanMessage>{[#ServerStyle]}>> {[#HighlightStyle]}{[BanningNickname]}{[#MessageStyle]} banned {[#HighlightStyle]}{[BannedNickname]}.</BanMessage>
+	<IgnoreMessage>{[#ServerStyle]}>> {[#HighlightStyle]}{[IgnoringNickname]}{[#MessageStyle]} added {[#HighlightStyle]}{[IgnoredNickname]}{[#MessageStyle]} to ignore list.</IgnoreMessage>
+	<AddGuestMessage>{[#ServerStyle]}>> {[#HighlightStyle]}{[AdminNickname]}{[#MessageStyle]} added {[#HighlightStyle]}{[GuestNickname]}{[#MessageStyle]} to guest list.</AddGuestMessage>
 	<BlackListMessage>{[#ServerStyle=""]}>> {[#HighlightStyle]}{[BlackListingNickname]}{[#MessageStyle]} blacklists {[#HighlightStyle]}{[BlackListedNickname]}.</BlackListMessage>
 	<TrackListFile>tracklist.txt</TrackListFile>
 	<SaveGhostReplayOfTop>0</SaveGhostReplayOfTop>
