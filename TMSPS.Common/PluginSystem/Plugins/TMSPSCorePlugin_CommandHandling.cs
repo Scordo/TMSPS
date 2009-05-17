@@ -7,14 +7,14 @@ namespace TMSPS.Core.PluginSystem.Plugins
     internal partial class TMSPSCorePlugin
     {
         //const string COMMAND_RESTART_SERVER = "restartserver";
-        private const string COMMAND_KICK = "kick";
-        private const string COMMAND_BAN = "ban";
-        private const string COMMAND_BLACKLIST = "blacklist";
-        private const string COMMAND_IGNORE = "ignore";
-        private const string COMMAND_ADDGUEST = "addguest";
-        private const string COMMAND_WRITE_TRACK_LIST = "writetracklist";
-        private const string COMMAND_READ_TRACK_LIST = "readtracklist";
-        private const string COMMAND_REMOVE_TRACK = "removetrack";
+        public const string COMMAND_KICK = "kick";
+        public const string COMMAND_BAN = "ban";
+        public const string COMMAND_BLACKLIST = "blacklist";
+        public const string COMMAND_IGNORE = "ignore";
+        public const string COMMAND_ADDGUEST = "addguest";
+        public const string COMMAND_WRITE_TRACK_LIST = "writetracklist";
+        public const string COMMAND_READ_TRACK_LIST = "readtracklist";
+        public const string COMMAND_REMOVE_TRACK = "removetrack";
 
         private void HandleCommand(string login, ServerCommand command)
         {

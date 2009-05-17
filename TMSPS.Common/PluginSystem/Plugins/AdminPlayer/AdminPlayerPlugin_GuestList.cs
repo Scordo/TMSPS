@@ -103,6 +103,9 @@ namespace TMSPS.Core.PluginSystem.Plugins.AdminPlayer
 
         private void SendGuestListPageToLogin(string login, uint? pageIndex)
         {
+            if (!LoginHasAnyRight(login, true, TMSPSCorePlugin.COMMAND_ADDGUEST))
+                return;
+
             const int MAX_GUESTLIST_SIZE = 1000;
 
             GenericListResponse<LoginResponse> guestListResponse = Context.RPCClient.Methods.GetGuestList(MAX_GUESTLIST_SIZE, 0);
