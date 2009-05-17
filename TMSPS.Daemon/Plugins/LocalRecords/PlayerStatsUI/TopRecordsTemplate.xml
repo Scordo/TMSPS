@@ -2,7 +2,7 @@
 <Settings>
 	<FirstEntryTopMargin>-4.75</FirstEntryTopMargin>
 	<EntryHeight>2.75</EntryHeight>
-	<MaxEntriesPerPage>1</MaxEntriesPerPage>
+	<MaxEntriesPerPage>18</MaxEntriesPerPage>
 	
 	<Templates>
 		<EntryTemplate>

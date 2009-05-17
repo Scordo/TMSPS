@@ -168,6 +168,10 @@
     <Compile Include="PluginSystem\PagedDialogActions.cs" />
     <Compile Include="PluginSystem\PluginHostContext.cs" />
     <Compile Include="PluginSystem\Plugins\AdminPlayer\AdminPlayerPlugin.cs" />
+    <Compile Include="PluginSystem\Plugins\AdminPlayer\AdminPlayerPlugin_GuestList.cs" />
+    <Compile Include="PluginSystem\Plugins\AdminPlayer\AdminPlayerPlugin_IgnoreList.cs" />
+    <Compile Include="PluginSystem\Plugins\AdminPlayer\AdminPlayerPlugin_BanList.cs" />
+    <Compile Include="PluginSystem\Plugins\AdminPlayer\AdminPlayerPlugin_BlackList.cs" />
     <Compile Include="PluginSystem\Plugins\AdminPlayer\UITemplates.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
