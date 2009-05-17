@@ -102,6 +102,9 @@ namespace TMSPS.Core.PluginSystem.Plugins.AdminPlayer
 
         private void SendBlackListPageToLogin(string login, uint? pageIndex)
         {
+            if (!LoginHasAnyRight(login, true, TMSPSCorePlugin.COMMAND_BLACKLIST))
+                return;
+
             const int MAX_BlackLIST_SIZE = 1000;
 
             GenericListResponse<LoginResponse> BlackListResponse = Context.RPCClient.Methods.GetBlackList(MAX_BlackLIST_SIZE, 0);

@@ -222,7 +222,11 @@ namespace TMSPS.Core.PluginSystem.Plugins.AdminPlayer
             return LoginHasAnyRight(login, false,   RESTART_TRACK_IMMEDIATELY_RIGHT, 
                                                     NEXT_TRACK_RIGHT, 
                                                     SpectatorsPlugin.KICK_SPECTATORS_COMMAND1, 
-                                                    SpectatorsPlugin.KICK_SPECTATORS_COMMAND2);
+                                                    SpectatorsPlugin.KICK_SPECTATORS_COMMAND2,
+                                                    TMSPSCorePlugin.COMMAND_ADDGUEST,
+                                                    TMSPSCorePlugin.COMMAND_BAN,
+                                                    TMSPSCorePlugin.COMMAND_BLACKLIST,
+                                                    TMSPSCorePlugin.COMMAND_IGNORE);
         }
         
         #endregion

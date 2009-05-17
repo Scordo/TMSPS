@@ -92,6 +92,9 @@ namespace TMSPS.Core.PluginSystem.Plugins.AdminPlayer
 
         private void SendIgnoreListPageToLogin(string login, uint? pageIndex)
         {
+            if (!LoginHasAnyRight(login, true, TMSPSCorePlugin.COMMAND_IGNORE))
+                return;
+
             const int MAX_IGNORELIST_SIZE = 1000;
 
             GenericListResponse<LoginResponse> ignoreListResponse = Context.RPCClient.Methods.GetIgnoreList(MAX_IGNORELIST_SIZE, 0);

@@ -92,6 +92,9 @@ namespace TMSPS.Core.PluginSystem.Plugins.AdminPlayer
 
         private void SendBanListPageToLogin(string login, uint? pageIndex)
         {
+            if (!LoginHasAnyRight(login, true, TMSPSCorePlugin.COMMAND_BAN))
+                return;
+
             const int MAX_BANLIST_SIZE = 1000;
 
             GenericListResponse<BanEntry> BanListResponse = Context.RPCClient.Methods.GetBanList(MAX_BANLIST_SIZE, 0);
