@@ -90,7 +90,14 @@ namespace TMSPS.Core.PluginSystem.Plugins.Dedimania
                 {
                     foreach (PlayerInfo playerInfo in players)
                     {
-                        Context.RPCClient.Methods.SendDisplayManialinkPageToLogin(playerInfo.Login, GetRecordListManiaLinkPage(HostPlugin.Rankings, playerInfo.Login), 0, false);
+                        string maniaLinkPageContent = GetRecordListManiaLinkPage(HostPlugin.Rankings, playerInfo.Login);
+                        string hash = maniaLinkPageContent.ToHash();
+
+                        if (GetManiaLinkPageHash(playerInfo.Login, _dedimaniaRecordListManiaLinkPageID) != hash)
+                        {
+                            SetManiaLinkPageHash(playerInfo.Login, _dedimaniaRecordListManiaLinkPageID, hash);
+                            Context.RPCClient.Methods.SendDisplayManialinkPageToLogin(playerInfo.Login, maniaLinkPageContent, 0, false);
+                        }
                     }
                 }
                 else

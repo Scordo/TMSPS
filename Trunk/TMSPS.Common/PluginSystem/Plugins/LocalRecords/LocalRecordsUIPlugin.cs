@@ -136,7 +136,13 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
                 SendLocalRecordManiaLinkToLogin(e.Login);
 
             if (Settings.ShowLocalRecordListUserInterface)
-                Context.RPCClient.Methods.SendDisplayManialinkPageToLogin(e.Login, GetRecordListManiaLinkPage(LastRankings, PlayersCount < Settings.StaticModeStartLimit ? e.Login : null), 0, false);
+            {
+                string maniaLinkPageContent = GetRecordListManiaLinkPage(LastRankings, PlayersCount < Settings.StaticModeStartLimit ? e.Login : null);
+                string hash = maniaLinkPageContent.ToHash();
+                SetManiaLinkPageHash(e.Login, _localRecordListManiaLinkPageID, hash);
+
+                Context.RPCClient.Methods.SendDisplayManialinkPageToLogin(e.Login, maniaLinkPageContent, 0, false);
+            }
 
             if (Settings.ShowMessages)
                 SendServerRankMessageToLogin(e.Login);
@@ -170,7 +176,14 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
                 {
                     foreach (PlayerInfo playerInfo in players)
                     {
-                        Context.RPCClient.Methods.SendDisplayManialinkPageToLogin(playerInfo.Login, GetRecordListManiaLinkPage(rankings, playerInfo.Login), 0, false);
+                        string maniaLinkPageContent = GetRecordListManiaLinkPage(rankings, playerInfo.Login);
+                        string hash = maniaLinkPageContent.ToHash();
+
+                        if (GetManiaLinkPageHash(playerInfo.Login, _localRecordListManiaLinkPageID) != hash)
+                        {
+                            SetManiaLinkPageHash(playerInfo.Login, _localRecordListManiaLinkPageID, hash);
+                            Context.RPCClient.Methods.SendDisplayManialinkPageToLogin(playerInfo.Login, maniaLinkPageContent, 0, false);
+                        }
                     }
                 }
                 else

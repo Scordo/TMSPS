@@ -146,7 +146,13 @@ namespace TMSPS.Core.PluginSystem.Plugins.LiveRanking
         private void SendUIToPlayer(PlayerRank[] rankings, string login)
         {
 			string maniaLinkPageContent = GetRecordListManiaLinkPage(rankings, PlayersCount < Settings.StaticModeStartLimit ? login : null);
-			Context.RPCClient.Methods.SendDisplayManialinkPageToLogin(login, maniaLinkPageContent, 0, false);
+            string hash = maniaLinkPageContent.ToHash();
+
+            if (GetManiaLinkPageHash(login, LIVE_RANKING_LIST_MANIA_LINK_PAGE_ID) == hash)
+                return;
+
+            SetManiaLinkPageHash(login, LIVE_RANKING_LIST_MANIA_LINK_PAGE_ID, hash);
+            Context.RPCClient.Methods.SendDisplayManialinkPageToLogin(login, maniaLinkPageContent, 0, false);
         }
 
         private string GetRecordListManiaLinkPage(PlayerRank[] rankings, string login)
