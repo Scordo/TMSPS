@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Reflection;
-using System.Text;
 using System.Text.RegularExpressions;
 using TMSPS.Core.Common;
 using TMSPS.Core.Logging;
@@ -348,6 +347,11 @@ namespace TMSPS.Core.PluginSystem
             return new[] { startIndex, endIndex};
         }
 
+        protected PlayerSettings GetPlayerSettings(string login)
+        {
+            return Context.PlayerSettings.Get(login);
+        }
+
         protected PluginSettings GetPluginSettings(string login)
         {
             return Context.PlayerSettings.Get(login, ID);
@@ -356,6 +360,16 @@ namespace TMSPS.Core.PluginSystem
         public PluginAreaSettings GetAreaSettings(string login, byte areaID)
         {
             return Context.PlayerSettings.Get(login, ID, areaID);
+        }
+
+        public string GetManiaLinkPageHash(string login, string maniaLinkPageID)
+        {
+            return GetPlayerSettings(login).ManiaLinkPageHashStore.Get(maniaLinkPageID);
+        }
+
+        public void SetManiaLinkPageHash(string login, string maniaLinkPageID, string hash)
+        {
+            GetPlayerSettings(login).ManiaLinkPageHashStore[maniaLinkPageID] = hash;
         }
 
 		#endregion

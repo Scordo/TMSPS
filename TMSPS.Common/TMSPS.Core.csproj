@@ -153,6 +153,7 @@
     <Compile Include="PluginSystem\Configuration\Credentials.cs" />
     <Compile Include="PluginSystem\Configuration\CredentialsReader.cs" />
     <Compile Include="Common\Instancer.cs" />
+    <Compile Include="PluginSystem\Configuration\ManiaLinkPageHashStore.cs" />
     <Compile Include="PluginSystem\Configuration\PluginAreaSettings.cs" />
     <Compile Include="PluginSystem\Configuration\PluginAreaSettingsStore.cs" />
     <Compile Include="PluginSystem\Configuration\PluginConfigEntry.cs" />

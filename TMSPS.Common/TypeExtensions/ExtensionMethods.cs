@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.Security.Cryptography;
+using System.Text;
 using System.Xml.Linq;
 using System.Collections.Generic;
 using TMSPS.Core.Common;
@@ -10,6 +11,22 @@ namespace System
         public static bool IsNullOrTimmedEmpty(this string text)
         {
             return text == null || text.Trim().Length == 0;
+        }
+
+        /// <summary>
+        /// Extends the datatype string with the ability to convert the current instance into a sha1 hash
+        /// </summary>
+        /// <param name="text">The text to hash. If the text is null, the method will return null</param>
+        /// <returns></returns>
+        public static string ToHash(this string text)
+        {
+            if (text == null)
+                return null;
+
+            SHA1CryptoServiceProvider sha = new SHA1CryptoServiceProvider();
+            byte[] hash = sha.ComputeHash(Encoding.ASCII.GetBytes(text));
+
+            return BitConverter.ToString(hash).Replace("-", string.Empty);
         }
 
 		public static T Dequeue<T>(this Queue<T> queue, Predicate<T> predicate, object lockObject)
