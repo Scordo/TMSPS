@@ -37,18 +37,18 @@ namespace TMSPS.Core.PluginSystem.Plugins.AdminPlayer
                 switch (action)
                 {
                     case PagedDialogActions.DefaultDialogAction.CloseDialog:
-                        Context.PlayerSettings.Get(login, ID).AreaSettings.Reset((byte)Area.BanListArea);
+                        GetPluginSettings(login).AreaSettings.Reset((byte)Area.BanListArea);
                         SendEmptyManiaLinkPageToLogin(login, BANLIST_PANEL_ID);
                         break;
                     case PagedDialogActions.DefaultDialogAction.FirstPage:
                         SendBanListPageToLogin(login, 0);
                         break;
                     case PagedDialogActions.DefaultDialogAction.PrevPage:
-                        ushort prevPageIndex = Convert.ToUInt16(Math.Max(0, Context.PlayerSettings.Get(login, ID, (byte)Area.BanListArea).CurrentDialogPageIndex - 1));
+                        ushort prevPageIndex = Convert.ToUInt16(Math.Max(0, GetAreaSettings(login, (byte)Area.BanListArea).CurrentDialogPageIndex - 1));
                         SendBanListPageToLogin(login, prevPageIndex);
                         break;
                     case PagedDialogActions.DefaultDialogAction.NextPage:
-                        ushort nextPageIndex = Convert.ToUInt16(Context.PlayerSettings.Get(login, ID, (byte)Area.BanListArea).CurrentDialogPageIndex + 1);
+                        ushort nextPageIndex = Convert.ToUInt16(GetAreaSettings(login, (byte)Area.BanListArea).CurrentDialogPageIndex + 1);
                         SendBanListPageToLogin(login, nextPageIndex);
                         break;
                     case PagedDialogActions.DefaultDialogAction.LastPage:
@@ -71,7 +71,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.AdminPlayer
 
         private void RemoveBanListPlayer(string login, byte rowIndex)
         {
-            Dictionary<byte, string> visibleLogins = (Dictionary<byte, string>)Context.PlayerSettings.Get(login, ID).AreaSettings.Get((byte)Area.BanListArea).CustomData;
+            Dictionary<byte, string> visibleLogins = (Dictionary<byte, string>)GetAreaSettings(login, (byte)Area.BanListArea).CustomData;
 
             if (visibleLogins == null || !visibleLogins.ContainsKey(rowIndex))
                 return;
@@ -87,7 +87,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.AdminPlayer
             else
                 SendFormattedMessageToLogin(login, "{[#ServerStyle]}> {[#MessageStyle]} Successfully removed player {[#HighlightStyle]}{[Nickname]}{[#MessageStyle]} from ban list.", "Nickname", StripTMColorsAndFormatting(nickname));
 
-            SendBanListPageToLogin(login, Context.PlayerSettings.Get(login, ID).AreaSettings.Get((byte)Area.BanListArea).CurrentDialogPageIndex);
+            SendBanListPageToLogin(login, GetAreaSettings(login, (byte)Area.BanListArea).CurrentDialogPageIndex);
         }
 
         private void SendBanListPageToLogin(string login, uint? pageIndex)
@@ -113,7 +113,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.AdminPlayer
                 pageIndex = maxPageIndex;
 
             pageIndex = Convert.ToUInt16(Math.Min(Math.Max(0, (int)pageIndex), maxPageIndex));
-            Context.PlayerSettings.Get(login, ID).AreaSettings.Get((byte)Area.BanListArea).CurrentDialogPageIndex = (ushort)pageIndex;
+            GetAreaSettings(login, (byte)Area.BanListArea).CurrentDialogPageIndex = (ushort)pageIndex;
 
             int entriesToSkip = Convert.ToInt32(pageIndex * BanListSettings.MaxEntriesPerPage);
             int startPosition = entriesToSkip + 1;
@@ -128,7 +128,8 @@ namespace TMSPS.Core.PluginSystem.Plugins.AdminPlayer
             Dictionary<byte, string> rowSettings = new Dictionary<byte, string>();
             byte rowIndex = 0;
             playerListEntriesToShow.ForEach(p => { rowSettings[rowIndex] = p.Login; rowIndex++; });
-            Context.PlayerSettings.Get(login, ID).AreaSettings.Get((byte)Area.BanListArea).CustomData = rowSettings;
+
+            GetAreaSettings(login, (byte)Area.BanListArea).CustomData = rowSettings;
         }
 
         private string GetBanListManiaLinkPage(uint currentPage, uint maxPage, IEnumerable<PlayerListEntry> logins)

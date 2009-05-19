@@ -9,6 +9,7 @@ using TMSPS.Core.Common;
 using TMSPS.Core.Logging;
 using System.Linq;
 using TMSPS.Core.ManiaLinking;
+using TMSPS.Core.PluginSystem.Configuration;
 
 namespace TMSPS.Core.PluginSystem
 {
@@ -345,6 +346,16 @@ namespace TMSPS.Core.PluginSystem
             uint endIndex = Convert.ToUInt32(((pageIndex + 1) * entriesPerPage) - 1);
 
             return new[] { startIndex, endIndex};
+        }
+
+        protected PluginSettings GetPluginSettings(string login)
+        {
+            return Context.PlayerSettings.Get(login, ID);
+        }
+
+        public PluginAreaSettings GetAreaSettings(string login, byte areaID)
+        {
+            return Context.PlayerSettings.Get(login, ID, areaID);
         }
 
 		#endregion

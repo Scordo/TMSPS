@@ -37,18 +37,19 @@ namespace TMSPS.Core.PluginSystem.Plugins.AdminPlayer
                 switch (action)
                 {
                     case PagedDialogActions.DefaultDialogAction.CloseDialog:
-                        Context.PlayerSettings.Get(login, ID).AreaSettings.Reset((byte)Area.BlackListArea);
+                        GetPluginSettings(login).AreaSettings.Reset((byte)Area.BlackListArea);
                         SendEmptyManiaLinkPageToLogin(login, BLACKLIST_PANEL_ID);
                         break;
                     case PagedDialogActions.DefaultDialogAction.FirstPage:
                         SendBlackListPageToLogin(login, 0);
                         break;
                     case PagedDialogActions.DefaultDialogAction.PrevPage:
-                        ushort prevPageIndex = Convert.ToUInt16(Math.Max(0, Context.PlayerSettings.Get(login, ID, (byte)Area.BlackListArea).CurrentDialogPageIndex - 1));
+                        ushort prevPageIndex = Convert.ToUInt16(Math.Max(0, GetAreaSettings(login, (byte)Area.BlackListArea).CurrentDialogPageIndex - 1));
                         SendBlackListPageToLogin(login, prevPageIndex);
                         break;
                     case PagedDialogActions.DefaultDialogAction.NextPage:
-                        ushort nextPageIndex = Convert.ToUInt16(Context.PlayerSettings.Get(login, ID, (byte)Area.BlackListArea).CurrentDialogPageIndex + 1);
+
+                        ushort nextPageIndex = Convert.ToUInt16(GetAreaSettings(login, (byte)Area.BlackListArea).CurrentDialogPageIndex + 1);
                         SendBlackListPageToLogin(login, nextPageIndex);
                         break;
                     case PagedDialogActions.DefaultDialogAction.LastPage:
@@ -71,7 +72,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.AdminPlayer
 
         private void RemoveBlackListPlayer(string login, byte rowIndex)
         {
-            Dictionary<byte, string> visibleLogins = (Dictionary<byte, string>)Context.PlayerSettings.Get(login, ID).AreaSettings.Get((byte)Area.BlackListArea).CustomData;
+            Dictionary<byte, string> visibleLogins = (Dictionary<byte, string>)GetAreaSettings(login, (byte)Area.BlackListArea).CustomData;
 
             if (visibleLogins == null || !visibleLogins.ContainsKey(rowIndex))
                 return;
@@ -97,7 +98,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.AdminPlayer
                     SendFormattedMessageToLogin(login, "{[#ServerStyle]}> {[#MessageStyle]} Successfully removed player {[#HighlightStyle]}{[Nickname]}{[#MessageStyle]} from black list.", "Nickname", StripTMColorsAndFormatting(nickname));
             }
 
-            SendBlackListPageToLogin(login, Context.PlayerSettings.Get(login, ID).AreaSettings.Get((byte)Area.BlackListArea).CurrentDialogPageIndex);
+            SendBlackListPageToLogin(login, GetAreaSettings(login, (byte)Area.BlackListArea).CurrentDialogPageIndex);
         }
 
         private void SendBlackListPageToLogin(string login, uint? pageIndex)
@@ -123,7 +124,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.AdminPlayer
                 pageIndex = maxPageIndex;
 
             pageIndex = Convert.ToUInt16(Math.Min(Math.Max(0, (int)pageIndex), maxPageIndex));
-            Context.PlayerSettings.Get(login, ID).AreaSettings.Get((byte)Area.BlackListArea).CurrentDialogPageIndex = (ushort)pageIndex;
+            GetAreaSettings(login, (byte)Area.BlackListArea).CurrentDialogPageIndex = (ushort)pageIndex;
 
             int entriesToSkip = Convert.ToInt32(pageIndex * BlackListSettings.MaxEntriesPerPage);
             int startPosition = entriesToSkip + 1;
@@ -138,7 +139,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.AdminPlayer
             Dictionary<byte, string> rowSettings = new Dictionary<byte, string>();
             byte rowIndex = 0;
             playerListEntriesToShow.ForEach(p => { rowSettings[rowIndex] = p.Login; rowIndex++; });
-            Context.PlayerSettings.Get(login, ID).AreaSettings.Get((byte)Area.BlackListArea).CustomData = rowSettings;
+            GetAreaSettings(login, (byte)Area.BlackListArea).CustomData = rowSettings;
         }
 
         private string GetBlackListManiaLinkPage(uint currentPage, uint maxPage, IEnumerable<PlayerListEntry> logins)
