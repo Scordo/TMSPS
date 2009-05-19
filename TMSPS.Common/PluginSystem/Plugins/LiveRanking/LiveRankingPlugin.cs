@@ -4,8 +4,8 @@ using System.Globalization;
 using System.Linq;
 using System.Security;
 using System.Text;
-using System.Threading;
 using System.Xml.Linq;
+using TMSPS.Core.Common;
 using TMSPS.Core.Communication.ProxyTypes;
 using Version=System.Version;
 
@@ -13,9 +13,9 @@ namespace TMSPS.Core.PluginSystem.Plugins.LiveRanking
 {
     public class LiveRankingPlugin : TMSPSPlugin
     {
-        #region Members
+        #region Constants
 
-        private readonly string _liveRankingListManiaLinkPageID = "LiveRankingListPanelID"; //Guid.NewGuid().ToString("N");
+        private const string LIVE_RANKING_LIST_MANIA_LINK_PAGE_ID = "LiveRankingListPanelID";
 
         #endregion
 
@@ -46,9 +46,9 @@ namespace TMSPS.Core.PluginSystem.Plugins.LiveRanking
             get { return "LiveRanking"; }
         }
 
-        private Timer LiveRankingsTimer { get; set; }
         private LiveRankingsSettings Settings { get; set; }
         private PlayerRank[] LastRankings { get; set; }
+        private TimedVolatileExecutionQueue<LiveRankingPlugin> UpdateTimer { get; set; }
         private bool PodiumStage { get; set; }
 
         #endregion
@@ -61,10 +61,20 @@ namespace TMSPS.Core.PluginSystem.Plugins.LiveRanking
             Settings = LiveRankingsSettings.ReadFromFile(PluginSettingsFilePath);
             LastRankings = new PlayerRank[]{};
             UpdateUI(this);
+            UpdateTimer = new TimedVolatileExecutionQueue<LiveRankingPlugin>(TimeSpan.FromSeconds(Settings.UpdateInterval));
 
             Context.RPCClient.Callbacks.PlayerConnect += Callbacks_PlayerConnect;
             Context.RPCClient.Callbacks.BeginRace += Callbacks_BeginRace;
             Context.RPCClient.Callbacks.EndRace += Callbacks_EndRace;
+            Context.RPCClient.Callbacks.PlayerFinish += Callbacks_PlayerFinish;
+        }
+
+        private void Callbacks_PlayerFinish(object sender, Communication.EventArguments.Callbacks.PlayerFinishEventArgs e)
+        {
+            if (e.TimeOrScore <= 0)
+                return;
+
+            UpdateTimer.Enqueue(UpdateUI, this);
         }
 
         private void Callbacks_PlayerConnect(object sender, Communication.EventArguments.Callbacks.PlayerConnectEventArgs e)
@@ -78,21 +88,28 @@ namespace TMSPS.Core.PluginSystem.Plugins.LiveRanking
         private void Callbacks_BeginRace(object sender, Communication.EventArguments.Callbacks.BeginRaceEventArgs e)
         {
             PodiumStage = false;
-            RunCatchLog(() => UpdateUI(this), "Error in Callbacks_BeginRace Method.", true);
+            RunCatchLog(() => 
+            {
+                UpdateTimer.Clear();
+                UpdateUI(this);
+            }, "Error in Callbacks_BeginRace Method.", true);
         }
 
         private void Callbacks_EndRace(object sender, Communication.EventArguments.Callbacks.EndRaceEventArgs e)
         {
             PodiumStage = true;
-            RunCatchLog(() => UpdateUI(this), "Error in Callbacks_EndRace Method.", true);
+            
+            RunCatchLog(() =>
+            {
+                UpdateTimer.Clear();
+                UpdateUI(this);
+            }, "Error in Callbacks_EndRace Method.", true);
         }
 
         private void UpdateUI(object state)
         {
             RunCatchLog(() =>
             {
-                StopLiveRankingsTimer();
-
                 if (PodiumStage)
                 {
                     HideUI();
@@ -112,25 +129,24 @@ namespace TMSPS.Core.PluginSystem.Plugins.LiveRanking
                 if (players == null)
                     return;
 
-                if (PlayersCount < Settings.StaticModeStartLimit)
-                {
-                    foreach (PlayerInfo playerInfo in players)
-                    {
-                        SendUIToPlayer(rankingArray, playerInfo.Login);
-                    }
-                }
-                else
-                {
-                    Context.RPCClient.Methods.SendDisplayManialinkPage(GetRecordListManiaLinkPage(rankingArray, null), 0, false);
-                }
-
-                StartLiveRankingsTimer();
+				if (PlayersCount < Settings.StaticModeStartLimit)
+				{
+					foreach (PlayerInfo playerInfo in players)
+					{
+						SendUIToPlayer(rankingArray, playerInfo.Login);
+					}
+				}
+				else
+				{
+					Context.RPCClient.Methods.SendDisplayManialinkPage(GetRecordListManiaLinkPage(rankingArray, null), 0, false);
+				}
             }, "Error in UpdateUI Method.", true);
         }
 
         private void SendUIToPlayer(PlayerRank[] rankings, string login)
         {
-            Context.RPCClient.Methods.SendDisplayManialinkPageToLogin(login, GetRecordListManiaLinkPage(rankings, PlayersCount < Settings.StaticModeStartLimit ? login : null), 0, false);
+			string maniaLinkPageContent = GetRecordListManiaLinkPage(rankings, PlayersCount < Settings.StaticModeStartLimit ? login : null);
+			Context.RPCClient.Methods.SendDisplayManialinkPageToLogin(login, maniaLinkPageContent, 0, false);
         }
 
         private string GetRecordListManiaLinkPage(PlayerRank[] rankings, string login)
@@ -140,7 +156,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.LiveRanking
 
             double totalHeight = Math.Abs(Settings.RankingPlayerToContainerMarginY * 2) + Math.Abs(Settings.RankingPlayerRecordHeight * recordsToShow) + Math.Abs(Settings.RankingTop3Gap) + Math.Abs(Settings.RankingPlayerEndMargin);
 
-            XElement mainTemplate = XElement.Parse(Settings.RankingListTemplate.Replace("{[ManiaLinkID]}", _liveRankingListManiaLinkPageID).Replace("{[ContainerHeight}}", totalHeight.ToString(Context.Culture)));
+            XElement mainTemplate = XElement.Parse(Settings.RankingListTemplate.Replace("{[ManiaLinkID]}", LIVE_RANKING_LIST_MANIA_LINK_PAGE_ID).Replace("{[ContainerHeight}}", totalHeight.ToString(Context.Culture)));
             XElement rankingPlaceHolder = mainTemplate.Descendants("RankingPlaceHolder").First();
             double currentY = Settings.RankingPlayerStartMargin;
 
@@ -279,27 +295,19 @@ namespace TMSPS.Core.PluginSystem.Plugins.LiveRanking
 
         private void HideUI()
         {
-            SendEmptyManiaLinkPage(_liveRankingListManiaLinkPageID);
-        }
-
-        private void StopLiveRankingsTimer()
-        {
-            if (LiveRankingsTimer != null)
-                LiveRankingsTimer.Dispose();
-        }
-
-        private void StartLiveRankingsTimer()
-        {
-            LiveRankingsTimer = new Timer(UpdateUI, this, TimeSpan.FromSeconds(Settings.UpdateInterval), TimeSpan.FromSeconds(Settings.UpdateInterval));
+            SendEmptyManiaLinkPage(LIVE_RANKING_LIST_MANIA_LINK_PAGE_ID);
         }
 
         protected override void Dispose(bool connectionLost)
         {
-            Context.RPCClient.Callbacks.BeginRace += Callbacks_BeginRace;
-            Context.RPCClient.Callbacks.EndRace += Callbacks_EndRace;
+            UpdateTimer.Stop();
+
+            Context.RPCClient.Callbacks.PlayerConnect -= Callbacks_PlayerConnect;
+            Context.RPCClient.Callbacks.BeginRace -= Callbacks_BeginRace;
+            Context.RPCClient.Callbacks.EndRace -= Callbacks_EndRace;
+            Context.RPCClient.Callbacks.PlayerFinish -= Callbacks_PlayerFinish;
         }
 
         #endregion
-
     }
 }
