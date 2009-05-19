@@ -10,7 +10,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.CheckPoints
     {
         #region Members
 
-        private const string _maniaLinkPageID = "CheckPointsPanelID"; 
+        private const string MANIA_LINK_PAGE_ID = "CheckPointsPanelID"; 
         private readonly object _cpReadWriteLock = new object();
 
         #endregion
@@ -99,7 +99,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.CheckPoints
             string diffText = string.Concat(textStyle, sign, Math.Abs(secondsDiff).ToString("F2", CultureInfo.InvariantCulture));
             string cpText = string.Format("{0}{1}:", isFinish ? "FCP" : "CP", isFinish ? string.Empty : " " +(checkpointIndex + 1));
 
-            return FormatMessage(Settings.Template, "CheckPointText", cpText, "DiffText", diffText);
+            return FormatMessage(Settings.Template, "ManiaLinkID", MANIA_LINK_PAGE_ID, "CheckPointText", cpText, "DiffText", diffText);
         }
 
         private void SendCheckPointUIToLogin(string login, int diff, int checkpointIndex, bool isFinish)
@@ -122,14 +122,14 @@ namespace TMSPS.Core.PluginSystem.Plugins.CheckPoints
 
         private void Callbacks_EndChallenge(object sender, EndChallengeEventArgs e)
         {
-            SendEmptyManiaLinkPage(_maniaLinkPageID);
+            SendEmptyManiaLinkPage(MANIA_LINK_PAGE_ID);
         }
 
         private void Callbacks_PlayerCheckpoint(object sender, PlayerCheckpointEventArgs e)
         {
             if (e.TimeOrScore <= 0)
             {
-                SendEmptyManiaLinkPageToLogin(e.Login, _maniaLinkPageID);
+                SendEmptyManiaLinkPageToLogin(e.Login, MANIA_LINK_PAGE_ID);
                 return;
             }
 
@@ -138,14 +138,14 @@ namespace TMSPS.Core.PluginSystem.Plugins.CheckPoints
             if (diff.HasValue)
                 SendCheckPointUIToLogin(e.Login, diff.Value, e.CheckpointIndex, false);
             else
-                SendEmptyManiaLinkPageToLogin(e.Login, _maniaLinkPageID);
+                SendEmptyManiaLinkPageToLogin(e.Login, MANIA_LINK_PAGE_ID);
         }
 
         private void Callbacks_PlayerFinish(object sender, PlayerFinishEventArgs e)
         {
             if (e.TimeOrScore <= 0)
             {
-                SendEmptyManiaLinkPageToLogin(e.Login, _maniaLinkPageID);
+                SendEmptyManiaLinkPageToLogin(e.Login, MANIA_LINK_PAGE_ID);
                 return;
             }
 
@@ -156,7 +156,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.CheckPoints
         private void Callbacks_PlayerInfoChanged(object sender, PlayerInfoChangedEventArgs e)
         {
             if (e.PlayerInfo.SpectatorStatus != 0)
-                SendEmptyManiaLinkPageToLogin(e.PlayerInfo.Login, _maniaLinkPageID);
+                SendEmptyManiaLinkPageToLogin(e.PlayerInfo.Login, MANIA_LINK_PAGE_ID);
         }
 
         #endregion
