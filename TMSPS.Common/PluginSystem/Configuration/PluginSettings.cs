@@ -8,5 +8,10 @@
         {
             get { return _areaSettings; }
         }
+
+        public PluginAreaSettings GetAreaSettings(byte areaID)
+        {
+            return AreaSettings.Get(areaID);
+        }
     }
 }

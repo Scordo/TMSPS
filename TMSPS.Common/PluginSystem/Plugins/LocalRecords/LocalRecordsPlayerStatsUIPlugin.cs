@@ -58,7 +58,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
 
         private void SendTopSumsPageToLogin(string login, ushort pageIndex)
         {
-            Context.PlayerSettings.Get(login, ID).AreaSettings.Get((byte)Area.TopSums).CurrentDialogPageIndex = pageIndex;
+            GetAreaSettings(login, (byte)Area.TopSums).CurrentDialogPageIndex = pageIndex;
             uint[] pageIndeces = GetPageIndices(pageIndex, TopSumsSettings.MaxEntriesPerPage);
             uint topRanksCount = HostPlugin.RankingAdapter.GetTopRankingsCount();
             uint maxPage = Convert.ToUInt32(Math.Ceiling((double) topRanksCount/TopSumsSettings.MaxEntriesPerPage));
@@ -140,18 +140,18 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
             switch (dialogAction)
             {
                 case PagedDialogActions.DefaultDialogAction.CloseDialog:
-                    Context.PlayerSettings.Get(login, ID).AreaSettings.Reset((byte)Area.TopSums);
+                    GetPluginSettings(login).AreaSettings.Reset((byte)Area.TopSums);
                     SendEmptyManiaLinkPageToLogin(login, _topSumsManiaLinkPageID);
                     break;
                 case PagedDialogActions.DefaultDialogAction.FirstPage:
                     SendTopSumsPageToLogin(login, 0);
                     break;
                 case PagedDialogActions.DefaultDialogAction.PrevPage:
-                    ushort prevPageIndex = Convert.ToUInt16(Math.Max(0, Context.PlayerSettings.Get(login, ID, (byte)Area.TopSums).CurrentDialogPageIndex - 1));
+                    ushort prevPageIndex = Convert.ToUInt16(Math.Max(0, GetAreaSettings(login, (byte)Area.TopSums).CurrentDialogPageIndex - 1));
                     SendTopSumsPageToLogin(login, prevPageIndex);
                     break;
                 case PagedDialogActions.DefaultDialogAction.NextPage:
-                    ushort nextPageIndex = Convert.ToUInt16(Context.PlayerSettings.Get(login, ID, (byte)Area.TopSums).CurrentDialogPageIndex + 1);
+                    ushort nextPageIndex = Convert.ToUInt16(GetAreaSettings(login, (byte)Area.TopSums).CurrentDialogPageIndex + 1);
                     SendTopSumsPageToLogin(login, nextPageIndex);
                     break;
                 case PagedDialogActions.DefaultDialogAction.LastPage:
