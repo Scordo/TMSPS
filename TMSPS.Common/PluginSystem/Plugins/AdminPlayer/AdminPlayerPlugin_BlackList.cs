@@ -21,7 +21,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.AdminPlayer
 
         #region Properties
 
-        private PagedUIDialogSettings BlackListSettings { get; set; }
+        private PagedUIDialogSettingsBase<PagedUIDialogSettings> BlackListSettings { get; set; }
         private PagedDialogActions BlackListActions { get; set; }
 
         #endregion
@@ -78,26 +78,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.AdminPlayer
                 return;
 
             string loginToRemove = visibleLogins[rowIndex];
-
-            GenericResponse<bool> removeBlackResponse = Context.RPCClient.Methods.UnBlackList(loginToRemove);
-
-            string nickname = GetNickname(loginToRemove) ?? loginToRemove;
-
-            if (removeBlackResponse.Erroneous || !removeBlackResponse.Value)
-            {
-                SendFormattedMessageToLogin(login, "{[#ServerStyle]}> {[#ErrorStyle]} Could not remove " + StripTMColorsAndFormatting(nickname) + " from black list.");
-            }
-
-            if (!removeBlackResponse.Erroneous && removeBlackResponse.Value)
-            {
-                GenericResponse<bool> saveBlackListResponse = Context.RPCClient.Methods.SaveBlackList("Blacklist.txt");
-
-                if (saveBlackListResponse.Erroneous || !saveBlackListResponse.Value)
-                    SendFormattedMessageToLogin(login, "{[#ServerStyle]}> {[#ErrorStyle]} Could not update Blacklist.txt");
-                else
-                    SendFormattedMessageToLogin(login, "{[#ServerStyle]}> {[#MessageStyle]} Successfully removed player {[#HighlightStyle]}{[Nickname]}{[#MessageStyle]} from black list.", "Nickname", StripTMColorsAndFormatting(nickname));
-            }
-
+            Context.CorePlugin.RemoveBlackListLogin(login, loginToRemove);
             SendBlackListPageToLogin(login, GetAreaSettings(login, (byte)Area.BlackListArea).CurrentDialogPageIndex);
         }
 

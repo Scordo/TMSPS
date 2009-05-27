@@ -8,6 +8,7 @@ using TMSPS.Core.Communication.ResponseHandling;
 using TMSPS.Core.Logging;
 using TMSPS.Core.PluginSystem;
 using TMSPS.Core.PluginSystem.Configuration;
+using TMSPS.Core.PluginSystem.Plugins;
 using Version=TMSPS.Core.Communication.ProxyTypes.Version;
 
 namespace TMSPS.Daemon
@@ -191,7 +192,7 @@ namespace TMSPS.Daemon
             MessageStyles messageStyles = MessageStyles.ReadFromFileOrGetDefault(Path.Combine(ApplicationDirectory, "MessageStyles.xml"));
             MessageConstants messageConstants = MessageConstants.ReadFromFile(Path.Combine(ApplicationDirectory, "MessageConstants.xml"), _client);
 
-            return new PluginHostContext(_client, serverInfo, new Credentials(GetFullFilePath("Credentials.xml")), messageStyles, messageConstants);
+            return new PluginHostContext(_client, serverInfo, new Credentials(GetFullFilePath("Credentials.xml")), messageStyles, messageConstants, (TMSPSCorePlugin)Plugins[0]);
         }
 
         private void ReadConfigSettings()

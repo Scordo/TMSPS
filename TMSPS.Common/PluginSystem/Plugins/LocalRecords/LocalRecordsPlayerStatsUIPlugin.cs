@@ -21,7 +21,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
         public override string Description { get { return "Displays player related stats in userinterfaces."; } }
         public override string ShortName { get { return "PlayerStatsUI"; } }
 
-        protected PagedUIDialogSettings TopSumsSettings { get; private set; }
+        protected PagedUIDialogSettingsBase<PagedUIDialogSettings> TopSumsSettings { get; private set; }
         private const string _topSumsManiaLinkPageID = "TopSumsPanelID";
         private PagedDialogActions TopSumsActions { get; set; }
 
@@ -32,7 +32,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
         protected override void Init()
         {
             TopSumsActions = new PagedDialogActions(ID, (byte) Area.TopSums);
-            TopSumsSettings = PagedUIDialogSettings.ReadFromFile(Path.Combine(PluginDirectory, "TopRecordsTemplate.xml"));
+            TopSumsSettings = PagedUIDialogSettingsBase<PagedUIDialogSettings>.ReadFromFile(Path.Combine(PluginDirectory, "TopRecordsTemplate.xml"));
 
             Context.RPCClient.Callbacks.PlayerChat += Callbacks_PlayerChat;
         }

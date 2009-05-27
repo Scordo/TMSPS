@@ -21,7 +21,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.AdminPlayer
 
         #region Properties
 
-        private PagedUIDialogSettings IgnoreListSettings { get; set; }
+        private PagedUIDialogSettingsBase<PagedUIDialogSettings> IgnoreListSettings { get; set; }
         private PagedDialogActions IgnoreListActions { get; set; }
 
         #endregion
@@ -78,16 +78,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.AdminPlayer
                 return;
 
             string loginToRemove = visibleLogins[rowIndex];
-
-            GenericResponse<bool> removePlayerResponse = Context.RPCClient.Methods.UnIgnore(loginToRemove);
-
-            string nickname = GetNickname(loginToRemove) ?? loginToRemove;
-
-            if (removePlayerResponse.Erroneous || !removePlayerResponse.Value)
-                SendFormattedMessageToLogin(login, "{[#ServerStyle]}> {[#ErrorStyle]} Could not unignore " + StripTMColorsAndFormatting(nickname) + ".");
-            else
-                SendFormattedMessageToLogin(login, "{[#ServerStyle]}> {[#MessageStyle]} Successfully removed player {[#HighlightStyle]}{[Nickname]}{[#MessageStyle]} from ignore list.", "Nickname", StripTMColorsAndFormatting(nickname));
-
+            Context.CorePlugin.UnIgnoreLogin(login, loginToRemove);
             SendIgnoreListPageToLogin(login, GetAreaSettings(login, (byte)Area.IgnoreListArea).CurrentDialogPageIndex);
         }
 
