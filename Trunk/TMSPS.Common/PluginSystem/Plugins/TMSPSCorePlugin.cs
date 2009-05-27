@@ -9,7 +9,7 @@ using System.Linq;
 
 namespace TMSPS.Core.PluginSystem.Plugins
 {
-    internal partial class TMSPSCorePlugin : TMSPSPlugin
+    public partial class TMSPSCorePlugin : TMSPSPlugin
     {
         #region Properties
 

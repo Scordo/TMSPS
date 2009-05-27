@@ -54,17 +54,20 @@ namespace TMSPS.Core.PluginSystem.Plugins.AdminPlayer
         {
             SendToAllLogins();
 
-            GuestListSettings = PagedUIDialogSettings.ReadFromFile(Path.Combine(PluginDirectory, "GuestListUITemplate.xml"));
+            GuestListSettings = PagedUIDialogSettingsBase<PagedUIDialogSettings>.ReadFromFile(Path.Combine(PluginDirectory, "GuestListUITemplate.xml"));
             GuestListActions = new PagedDialogActions(ID, (byte)Area.GuestListArea);
 
-            IgnoreListSettings = PagedUIDialogSettings.ReadFromFile(Path.Combine(PluginDirectory, "IgnoreListUITemplate.xml"));
+            IgnoreListSettings = PagedUIDialogSettingsBase<PagedUIDialogSettings>.ReadFromFile(Path.Combine(PluginDirectory, "IgnoreListUITemplate.xml"));
             IgnoreListActions = new PagedDialogActions(ID, (byte)Area.IgnoreListArea);
 
-            BanListSettings = PagedUIDialogSettings.ReadFromFile(Path.Combine(PluginDirectory, "BanListUITemplate.xml"));
+            BanListSettings = PagedUIDialogSettingsBase<PagedUIDialogSettings>.ReadFromFile(Path.Combine(PluginDirectory, "BanListUITemplate.xml"));
             BanListActions = new PagedDialogActions(ID, (byte)Area.BanListArea);
 
-            BlackListSettings = PagedUIDialogSettings.ReadFromFile(Path.Combine(PluginDirectory, "BlackListUITemplate.xml"));
+            BlackListSettings = PagedUIDialogSettingsBase<PagedUIDialogSettings>.ReadFromFile(Path.Combine(PluginDirectory, "BlackListUITemplate.xml"));
             BlackListActions = new PagedDialogActions(ID, (byte)Area.BlackListArea);
+
+            LivePlayerSettings = LivePlayerUIDialogSettings.ReadFromFile(Path.Combine(PluginDirectory, "LivePlayerUITemplate.xml"));
+            LivePlayerActions = new PagedDialogActions(ID, (byte)Area.LivePlayersArea);
 
             Context.RPCClient.Callbacks.PlayerConnect += Callbacks_PlayerConnect;
         }
@@ -93,6 +96,9 @@ namespace TMSPS.Core.PluginSystem.Plugins.AdminPlayer
                 case Area.BlackListArea:
                     HandleBlackListAreaActions(login, action);
                     break;
+                case Area.LivePlayersArea:
+                    HandleLivePlayersAreaActions(login, action);
+                    break;
             }
         }
 
@@ -111,8 +117,8 @@ namespace TMSPS.Core.PluginSystem.Plugins.AdminPlayer
                 case MainAreaAction.SwitchToNextTrack:
                     SwitchToNextMap(login);
                     break;
-                case MainAreaAction.ShowPlayerListWithAdminAbilities:
-                    ShowPlayerListWithAdminAbilities(login);
+                case MainAreaAction.ShowLivePlayerList:
+                    SendLivePlayerListPageToLogin(login, 0);
                     break;
                 case MainAreaAction.ShowGuestList:
                     SendGuestListPageToLogin(login, 0);
@@ -169,11 +175,6 @@ namespace TMSPS.Core.PluginSystem.Plugins.AdminPlayer
             Context.RPCClient.Methods.NextChallenge();
         }
 
-        private void ShowPlayerListWithAdminAbilities(string login)
-        {
-
-        }
-
         private void Callbacks_PlayerConnect(object sender, Communication.EventArguments.Callbacks.PlayerConnectEventArgs e)
         {
             SendPlayerUIToLogin(e.Login);
@@ -207,7 +208,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.AdminPlayer
                 MainAreaAction.RestartTrackImmediately.ToString(), TMAction.CalculateActionID(ID, (int)Area.MainArea, (int)MainAreaAction.RestartTrackImmediately).ToString(),
                 MainAreaAction.KickSpectators.ToString(), TMAction.CalculateActionID(ID, (int)Area.MainArea, (int)MainAreaAction.KickSpectators).ToString(),
                 MainAreaAction.SwitchToNextTrack.ToString(), TMAction.CalculateActionID(ID, (int)Area.MainArea, (int)MainAreaAction.SwitchToNextTrack).ToString(),
-                MainAreaAction.ShowPlayerListWithAdminAbilities.ToString(), TMAction.CalculateActionID(ID, (int)Area.MainArea, (int)MainAreaAction.ShowPlayerListWithAdminAbilities).ToString(),
+                MainAreaAction.ShowLivePlayerList.ToString(), TMAction.CalculateActionID(ID, (int)Area.MainArea, (int)MainAreaAction.ShowLivePlayerList).ToString(),
                 MainAreaAction.ShowGuestList.ToString(), TMAction.CalculateActionID(ID, (int)Area.MainArea, (int)MainAreaAction.ShowGuestList).ToString(),
                 MainAreaAction.ShowIgnoreList.ToString(), TMAction.CalculateActionID(ID, (int)Area.MainArea, (int)MainAreaAction.ShowIgnoreList).ToString(),
                 MainAreaAction.ShowBanList.ToString(), TMAction.CalculateActionID(ID, (int)Area.MainArea, (int)MainAreaAction.ShowBanList).ToString(),
@@ -224,6 +225,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.AdminPlayer
                                                     SpectatorsPlugin.KICK_SPECTATORS_COMMAND1, 
                                                     SpectatorsPlugin.KICK_SPECTATORS_COMMAND2,
                                                     TMSPSCorePlugin.COMMAND_ADDGUEST,
+                                                    TMSPSCorePlugin.COMMAND_KICK,
                                                     TMSPSCorePlugin.COMMAND_BAN,
                                                     TMSPSCorePlugin.COMMAND_BLACKLIST,
                                                     TMSPSCorePlugin.COMMAND_IGNORE);
@@ -236,7 +238,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.AdminPlayer
         private enum Area
         {
             MainArea = 1,
-            ManagePlayersArea = 2,
+            LivePlayersArea = 2,
             GuestListArea = 3,
             IgnoreListArea = 4,
             BanListArea = 5,
@@ -248,7 +250,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.AdminPlayer
             RestartTrackImmediately = 1,
             KickSpectators = 2,
             SwitchToNextTrack = 3,
-            ShowPlayerListWithAdminAbilities = 4,
+            ShowLivePlayerList = 4,
             ShowGuestList = 5,
             ShowIgnoreList = 6,
             ShowBanList = 7,

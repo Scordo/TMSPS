@@ -21,7 +21,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.AdminPlayer
 
         #region Properties
 
-        private PagedUIDialogSettings BanListSettings { get; set; }
+        private PagedUIDialogSettingsBase<PagedUIDialogSettings> BanListSettings { get; set; }
         private PagedDialogActions BanListActions { get; set; }
 
         #endregion
@@ -77,16 +77,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.AdminPlayer
                 return;
 
             string loginToRemove = visibleLogins[rowIndex];
-
-            GenericResponse<bool> removePlayerResponse = Context.RPCClient.Methods.UnBan(loginToRemove);
-
-            string nickname = GetNickname(loginToRemove) ?? loginToRemove;
-
-            if (removePlayerResponse.Erroneous || !removePlayerResponse.Value)
-                SendFormattedMessageToLogin(login, "{[#ServerStyle]}> {[#ErrorStyle]} Could not unban " + StripTMColorsAndFormatting(nickname) + ".");
-            else
-                SendFormattedMessageToLogin(login, "{[#ServerStyle]}> {[#MessageStyle]} Successfully removed player {[#HighlightStyle]}{[Nickname]}{[#MessageStyle]} from ban list.", "Nickname", StripTMColorsAndFormatting(nickname));
-
+            Context.CorePlugin.UnBanLogin(login, loginToRemove);
             SendBanListPageToLogin(login, GetAreaSettings(login, (byte)Area.BanListArea).CurrentDialogPageIndex);
         }
 

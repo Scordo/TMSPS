@@ -154,6 +154,7 @@
     <Compile Include="PluginSystem\Configuration\CredentialsReader.cs" />
     <Compile Include="Common\Instancer.cs" />
     <Compile Include="PluginSystem\Configuration\ManiaLinkPageHashStore.cs" />
+    <Compile Include="PluginSystem\Configuration\PagedUIDialogSettingsBase.cs" />
     <Compile Include="PluginSystem\Configuration\PluginAreaSettings.cs" />
     <Compile Include="PluginSystem\Configuration\PluginAreaSettingsStore.cs" />
     <Compile Include="PluginSystem\Configuration\PluginConfigEntry.cs" />
@@ -173,6 +174,8 @@
     <Compile Include="PluginSystem\Plugins\AdminPlayer\AdminPlayerPlugin_IgnoreList.cs" />
     <Compile Include="PluginSystem\Plugins\AdminPlayer\AdminPlayerPlugin_BanList.cs" />
     <Compile Include="PluginSystem\Plugins\AdminPlayer\AdminPlayerPlugin_BlackList.cs" />
+    <Compile Include="PluginSystem\Plugins\AdminPlayer\AdminPlayerPlugin_LivePlayerList.cs" />
+    <Compile Include="PluginSystem\Plugins\AdminPlayer\LivePlayerUIDialogSettings.cs" />
     <Compile Include="PluginSystem\Plugins\AdminPlayer\UITemplates.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>

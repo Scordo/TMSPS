@@ -21,7 +21,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.AdminPlayer
 
         #region Properties
 
-        private PagedUIDialogSettings GuestListSettings { get; set; }
+        private PagedUIDialogSettingsBase<PagedUIDialogSettings> GuestListSettings { get; set; }
         private PagedDialogActions GuestListActions { get; set; }
 
         #endregion
@@ -78,27 +78,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.AdminPlayer
                 return;
 
             string loginToRemove = visibleLogins[rowIndex];
-
-            GenericResponse<bool> removeGuestResponse = Context.RPCClient.Methods.RemoveGuest(loginToRemove);
-
-            string nickname = GetNickname(loginToRemove) ?? loginToRemove;
-
-            if (removeGuestResponse.Erroneous || !removeGuestResponse.Value)
-            {
-                SendFormattedMessageToLogin(login, "{[#ServerStyle]}> {[#ErrorStyle]} Could not remove " + StripTMColorsAndFormatting(nickname) + " from guestlist.");
-            }
-
-            if (!removeGuestResponse.Erroneous && removeGuestResponse.Value)
-            {
-                GenericResponse<bool> saveGuestListResponse = Context.RPCClient.Methods.SaveGuestList("guestlist.txt");
-
-                if (saveGuestListResponse.Erroneous || !saveGuestListResponse.Value)
-                    SendFormattedMessageToLogin(login, "{[#ServerStyle]}> {[#ErrorStyle]} Could not update guest list.txt");
-                else
-                    SendFormattedMessageToLogin(login, "{[#ServerStyle]}> {[#MessageStyle]} Successfully removed player {[#HighlightStyle]}{[Nickname]}{[#MessageStyle]} from guest list.", "Nickname", StripTMColorsAndFormatting(nickname));
-            }
-
-
+            Context.CorePlugin.RemoveGuestLogin(login, loginToRemove);
             SendGuestListPageToLogin(login, GetAreaSettings(login, (byte)Area.GuestListArea).CurrentDialogPageIndex);
         }
 

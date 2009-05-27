@@ -105,6 +105,7 @@
     <Content Include="Plugins\AdminPlayer\BlackListUITemplate.xml" />
     <Content Include="Plugins\AdminPlayer\IgnoreListUITemplate.xml" />
     <Content Include="Plugins\AdminPlayer\GuestListUITemplate.xml" />
+    <Content Include="Plugins\AdminPlayer\LivePlayerUITemplate.xml" />
     <Content Include="Plugins\ChatBot\Settings.xml" />
     <Content Include="Plugins\ChatBot\Settings_Template.xml" />
     <Content Include="Plugins\CheckPoints\Settings_Template.xml" />

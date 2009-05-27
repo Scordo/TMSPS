@@ -4,14 +4,19 @@ using TMSPS.Core.Communication.ResponseHandling;
 
 namespace TMSPS.Core.PluginSystem.Plugins
 {
-    internal partial class TMSPSCorePlugin
+    public partial class TMSPSCorePlugin
     {
         //const string COMMAND_RESTART_SERVER = "restartserver";
         public const string COMMAND_KICK = "kick";
         public const string COMMAND_BAN = "ban";
+        public const string COMMAND_UNBAN = "unban";
         public const string COMMAND_BLACKLIST = "blacklist";
+        public const string COMMAND_UNBLACKLIST = "unblacklist";
         public const string COMMAND_IGNORE = "ignore";
+        public const string COMMAND_UNIGNORE = "unignore";
         public const string COMMAND_ADDGUEST = "addguest";
+        public const string COMMAND_REMOVEGUEST = "removeguest";
+        public const string COMMAND_FORCESPECTATOR = "forcespectator";
         public const string COMMAND_WRITE_TRACK_LIST = "writetracklist";
         public const string COMMAND_READ_TRACK_LIST = "readtracklist";
         public const string COMMAND_REMOVE_TRACK = "removetrack";
@@ -26,14 +31,29 @@ namespace TMSPS.Core.PluginSystem.Plugins
                 case COMMAND_BAN:
                     HandleBanCommand(login, command);
                     break;
+                case COMMAND_UNBAN:
+                    HandleUnBanCommand(login, command);
+                    break;
                 case COMMAND_BLACKLIST:
                     HandleBlackListCommand(login, command);
+                    break;
+                case COMMAND_UNBLACKLIST:
+                    HandleUnBlackListCommand(login, command);
                     break;
                 case COMMAND_IGNORE:
                     HandleIgnoreCommand(login, command);
                     break;
+                case COMMAND_UNIGNORE:
+                    HandleUnIgnoreCommand(login, command);
+                    break;
                 case COMMAND_ADDGUEST:
                     HandleAddGuestCommand(login, command);
+                    break;
+                case COMMAND_REMOVEGUEST:
+                    HandleRemoveGuestCommand(login, command);
+                    break;
+                case COMMAND_FORCESPECTATOR:
+                    HandleForceSpectatorCommand(login, command);
                     break;
                 case COMMAND_WRITE_TRACK_LIST:
                     HandleWriteTrackListCommand(login, command);
@@ -50,23 +70,71 @@ namespace TMSPS.Core.PluginSystem.Plugins
             }
         }
 
+        private void HandleForceSpectatorCommand(string login, ServerCommand command)
+        {
+            if (command.PartsWithoutMainCommand.Count == 0)
+                return;
+
+            string loginToForce = command.PartsWithoutMainCommand[0].Trim();
+            ForceSpectatorLogin(login, loginToForce);
+        }
+
+        public void ForceSpectatorLogin(string operatorLogin, string loginToForce)
+        {
+            if (!Context.Credentials.UserHasAnyRight(operatorLogin, COMMAND_FORCESPECTATOR))
+            {
+                SendNoPermissionMessagetoLogin(operatorLogin);
+                return;
+            }
+
+            string nickname = GetNickname(operatorLogin);
+
+            if (nickname == null)
+                return;
+
+
+            string nicknameToForce = GetNickname(loginToForce);
+
+            if (nicknameToForce != null)
+            {
+                GenericResponse<bool> forceResponse1 = Context.RPCClient.Methods.ForceSpectator(loginToForce, 1);
+                GenericResponse<bool> forceResponse2 = Context.RPCClient.Methods.ForceSpectator(loginToForce, 0);
+
+                if (!forceResponse1.Erroneous && forceResponse1.Value && !forceResponse2.Erroneous && forceResponse2.Value)
+                    SendFormattedMessageToLogin(operatorLogin, "{[#ServerStyle]}> {[#MessageStyle]} Successfully forced player {[#HighlightStyle]}{[Nickname]}{[#MessageStyle]} into spectator mode.", "Nickname", StripTMColorsAndFormatting(nicknameToForce));
+                else
+                    SendFormattedMessageToLogin(operatorLogin, "{[#ServerStyle]}> {[#ErrorStyle]}Could not force {[#HighlightStyle]}{[Nickname]}{[#ErrorStyle]} into spectator mode.", "Nickname", StripTMColorsAndFormatting(nicknameToForce));
+            }
+            else
+            {
+                SendNoPlayerWithLoginMessageToLogin(operatorLogin, loginToForce);
+            }
+        }
+
         private void HandleKickCommand(string login, ServerCommand command)
         {
             if (command.PartsWithoutMainCommand.Count == 0)
                 return;
 
-            if (!Context.Credentials.UserHasAnyRight(login, COMMAND_KICK))
+            string loginToKick = command.PartsWithoutMainCommand[0].Trim();
+
+            KickLogin(login, loginToKick);
+        }
+
+        public void KickLogin(string operatorLogin, string loginToKick)
+        {
+            if (!Context.Credentials.UserHasAnyRight(operatorLogin, COMMAND_KICK))
             {
-                SendNoPermissionMessagetoLogin(login);
+                SendNoPermissionMessagetoLogin(operatorLogin);
                 return;
             }
 
-            string nickname = GetNickname(login);
+            string nickname = GetNickname(operatorLogin);
 
             if (nickname == null)
                 return;
 
-            string loginToKick = command.PartsWithoutMainCommand[0].Trim();
+
             string nicknameToKick = GetNickname(loginToKick);
 
             if (nicknameToKick != null)
@@ -76,11 +144,11 @@ namespace TMSPS.Core.PluginSystem.Plugins
                 if (!kickResponse.Erroneous && kickResponse.Value)
                     SendFormattedMessage(Settings.KickMessage, "KickingNickname", StripTMColorsAndFormatting(nickname), "KickedNickname", StripTMColorsAndFormatting(nicknameToKick));
                 else
-                    SendFormattedMessageToLogin(login, "{[#ServerStyle]}> {[#ErrorStyle]}Could not kick " + StripTMColorsAndFormatting(nicknameToKick));
+                    SendFormattedMessageToLogin(operatorLogin, "{[#ServerStyle]}> {[#ErrorStyle]}Could not kick " + StripTMColorsAndFormatting(nicknameToKick));
             }
             else
             {
-                SendNoPlayerWithLoginMessageToLogin(login, loginToKick);
+                SendNoPlayerWithLoginMessageToLogin(operatorLogin, loginToKick);
             }
         }
 
@@ -89,18 +157,24 @@ namespace TMSPS.Core.PluginSystem.Plugins
             if (command.PartsWithoutMainCommand.Count == 0)
                 return;
 
-            if (!Context.Credentials.UserHasAnyRight(login, COMMAND_BAN))
+            string loginToBan = command.PartsWithoutMainCommand[0].Trim();
+            BanLogin(login, loginToBan);
+        }
+
+        public void BanLogin(string operatorLogin, string loginToBan)
+        {
+            if (!Context.Credentials.UserHasAnyRight(operatorLogin, COMMAND_BAN))
             {
-                SendNoPermissionMessagetoLogin(login);
+                SendNoPermissionMessagetoLogin(operatorLogin);
                 return;
             }
 
-            string nickname = GetNickname(login);
+            string nickname = GetNickname(operatorLogin);
 
             if (nickname == null)
                 return;
 
-            string loginToBan = command.PartsWithoutMainCommand[0].Trim();
+
             string nickToBan = GetNickname(loginToBan);
 
             if (nickToBan != null)
@@ -110,12 +184,39 @@ namespace TMSPS.Core.PluginSystem.Plugins
                 if (!banResponse.Erroneous && banResponse.Value)
                     SendFormattedMessage(Settings.BanMessage, "BanningNickname", StripTMColorsAndFormatting(nickname), "BannedNickname", StripTMColorsAndFormatting(nickToBan));
                 else
-                    SendFormattedMessageToLogin(login, "{[#ServerStyle]}> {[#ErrorStyle]}Could not ban " + StripTMColorsAndFormatting(nickToBan));
+                    SendFormattedMessageToLogin(operatorLogin, "{[#ServerStyle]}> {[#ErrorStyle]}Could not ban " + StripTMColorsAndFormatting(nickToBan));
             }
             else
             {
-                SendNoPlayerWithLoginMessageToLogin(login, loginToBan);
+                SendNoPlayerWithLoginMessageToLogin(operatorLogin, loginToBan);
             }
+        }
+
+        private void HandleUnBanCommand(string login, ServerCommand command)
+        {
+            if (command.PartsWithoutMainCommand.Count == 0)
+                return;
+
+            string loginToRemove = command.PartsWithoutMainCommand[0].Trim();
+            UnBanLogin(login, loginToRemove);
+        }
+
+        public void UnBanLogin(string operatorLogin, string loginToRemove)
+        {
+            if (!Context.Credentials.UserHasAnyRight(operatorLogin, COMMAND_BAN))
+            {
+                SendNoPermissionMessagetoLogin(operatorLogin);
+                return;
+            }
+
+            GenericResponse<bool> removePlayerResponse = Context.RPCClient.Methods.UnBan(loginToRemove);
+
+            string nickname = GetNickname(loginToRemove) ?? loginToRemove;
+
+            if (removePlayerResponse.Erroneous || !removePlayerResponse.Value)
+                SendFormattedMessageToLogin(operatorLogin, "{[#ServerStyle]}> {[#ErrorStyle]} Could not unban " + StripTMColorsAndFormatting(nickname) + ".");
+            else
+                SendFormattedMessageToLogin(operatorLogin, "{[#ServerStyle]}> {[#MessageStyle]} Successfully removed player {[#HighlightStyle]}{[Nickname]}{[#MessageStyle]} from ban list.", "Nickname", StripTMColorsAndFormatting(nickname));
         }
 
         private void HandleIgnoreCommand(string login, ServerCommand command)
@@ -123,18 +224,23 @@ namespace TMSPS.Core.PluginSystem.Plugins
             if (command.PartsWithoutMainCommand.Count == 0)
                 return;
 
-            if (!Context.Credentials.UserHasAnyRight(login, COMMAND_IGNORE))
+            string loginToIgnore = command.PartsWithoutMainCommand[0].Trim();
+            IgnoreLogin(login, loginToIgnore);
+        }
+
+        public void IgnoreLogin(string operatorLogin, string loginToIgnore)
+        {
+            if (!Context.Credentials.UserHasAnyRight(operatorLogin, COMMAND_IGNORE))
             {
-                SendNoPermissionMessagetoLogin(login);
+                SendNoPermissionMessagetoLogin(operatorLogin);
                 return;
             }
 
-            string nickname = GetNickname(login);
+            string nickname = GetNickname(operatorLogin);
 
             if (nickname == null)
                 return;
 
-            string loginToIgnore = command.PartsWithoutMainCommand[0].Trim();
             string nickToIgnore = GetNickname(loginToIgnore);
 
             if (nickToIgnore != null)
@@ -144,12 +250,39 @@ namespace TMSPS.Core.PluginSystem.Plugins
                 if (!ignoreResponse.Erroneous && ignoreResponse.Value)
                     SendFormattedMessage(Settings.IgnoreMessage, "IgnoringNickname", StripTMColorsAndFormatting(nickname), "IgnoredNickname", StripTMColorsAndFormatting(nickToIgnore));
                 else
-                    SendFormattedMessageToLogin(login, "{[#ServerStyle]}> {[#ErrorStyle]}Could not ignore " + StripTMColorsAndFormatting(nickToIgnore));
+                    SendFormattedMessageToLogin(operatorLogin, "{[#ServerStyle]}> {[#ErrorStyle]}Could not ignore " + StripTMColorsAndFormatting(nickToIgnore));
             }
             else
             {
-                SendNoPlayerWithLoginMessageToLogin(login, loginToIgnore);
+                SendNoPlayerWithLoginMessageToLogin(operatorLogin, loginToIgnore);
             }
+        }
+
+        private void HandleUnIgnoreCommand(string login, ServerCommand command)
+        {
+            if (command.PartsWithoutMainCommand.Count == 0)
+                return;
+
+            string loginToRemove = command.PartsWithoutMainCommand[0].Trim();
+            UnIgnoreLogin(login, loginToRemove);
+        }
+
+        public void UnIgnoreLogin(string operatorLogin, string loginToRemove)
+        {
+            if (!Context.Credentials.UserHasAnyRight(operatorLogin, COMMAND_IGNORE))
+            {
+                SendNoPermissionMessagetoLogin(operatorLogin);
+                return;
+            }
+
+            GenericResponse<bool> removePlayerResponse = Context.RPCClient.Methods.UnIgnore(loginToRemove);
+
+            string nickname = GetNickname(loginToRemove) ?? loginToRemove;
+
+            if (removePlayerResponse.Erroneous || !removePlayerResponse.Value)
+                SendFormattedMessageToLogin(operatorLogin, "{[#ServerStyle]}> {[#ErrorStyle]} Could not unignore " + StripTMColorsAndFormatting(nickname) + ".");
+            else
+                SendFormattedMessageToLogin(operatorLogin, "{[#ServerStyle]}> {[#MessageStyle]} Successfully removed player {[#HighlightStyle]}{[Nickname]}{[#MessageStyle]} from ignore list.", "Nickname", StripTMColorsAndFormatting(nickname));
         }
 
         private void HandleAddGuestCommand(string login, ServerCommand command)
@@ -157,18 +290,24 @@ namespace TMSPS.Core.PluginSystem.Plugins
             if (command.PartsWithoutMainCommand.Count == 0)
                 return;
 
-            if (!Context.Credentials.UserHasAnyRight(login, COMMAND_ADDGUEST))
+            string loginOfGuest = command.PartsWithoutMainCommand[0].Trim();
+            AddGuestLogin(login, loginOfGuest);
+        }
+
+        public void AddGuestLogin(string operatorLogin, string loginOfGuest)
+        {
+            if (!Context.Credentials.UserHasAnyRight(operatorLogin, COMMAND_ADDGUEST))
             {
-                SendNoPermissionMessagetoLogin(login);
+                SendNoPermissionMessagetoLogin(operatorLogin);
                 return;
             }
 
-            string nickname = GetNickname(login);
+            string nickname = GetNickname(operatorLogin);
 
             if (nickname == null)
                 return;
 
-            string loginOfGuest = command.PartsWithoutMainCommand[0].Trim();
+
             string nickofGuest = GetNickname(loginOfGuest);
 
             if (nickofGuest != null)
@@ -181,11 +320,47 @@ namespace TMSPS.Core.PluginSystem.Plugins
                     SendFormattedMessage(Settings.AddGuestMessage, "AdminNickname", StripTMColorsAndFormatting(nickname), "GuestNickname", StripTMColorsAndFormatting(nickofGuest));
                 }
                 else
-                    SendFormattedMessageToLogin(login, "{[#ServerStyle]}> {[#ErrorStyle]}Could not add " + StripTMColorsAndFormatting(nickofGuest) + "to guest list");
+                    SendFormattedMessageToLogin(operatorLogin, "{[#ServerStyle]}> {[#ErrorStyle]}Could not add " + StripTMColorsAndFormatting(nickofGuest) + "to guest list");
             }
             else
             {
-                SendNoPlayerWithLoginMessageToLogin(login, loginOfGuest);
+                SendNoPlayerWithLoginMessageToLogin(operatorLogin, loginOfGuest);
+            }
+        }
+
+        private void HandleRemoveGuestCommand(string login, ServerCommand command)
+        {
+            if (command.PartsWithoutMainCommand.Count == 0)
+                return;
+
+            string loginToRemove = command.PartsWithoutMainCommand[0].Trim();
+            RemoveGuestLogin(login, loginToRemove);
+        }
+
+        public void RemoveGuestLogin(string operatorLogin, string loginToRemove)
+        {
+            if (!Context.Credentials.UserHasAnyRight(operatorLogin, COMMAND_ADDGUEST))
+            {
+                SendNoPermissionMessagetoLogin(operatorLogin);
+                return;
+            }
+
+            GenericResponse<bool> removeGuestResponse = Context.RPCClient.Methods.RemoveGuest(loginToRemove);
+            string nickname = GetNickname(loginToRemove) ?? loginToRemove;
+
+            if (removeGuestResponse.Erroneous || !removeGuestResponse.Value)
+            {
+                SendFormattedMessageToLogin(operatorLogin, "{[#ServerStyle]}> {[#ErrorStyle]} Could not remove " + StripTMColorsAndFormatting(nickname) + " from guestlist.");
+            }
+
+            if (!removeGuestResponse.Erroneous && removeGuestResponse.Value)
+            {
+                GenericResponse<bool> saveGuestListResponse = Context.RPCClient.Methods.SaveGuestList("guestlist.txt");
+
+                if (saveGuestListResponse.Erroneous || !saveGuestListResponse.Value)
+                    SendFormattedMessageToLogin(operatorLogin, "{[#ServerStyle]}> {[#ErrorStyle]} Could not update guest list.txt");
+                else
+                    SendFormattedMessageToLogin(operatorLogin, "{[#ServerStyle]}> {[#MessageStyle]} Successfully removed player {[#HighlightStyle]}{[Nickname]}{[#MessageStyle]} from guest list.", "Nickname", StripTMColorsAndFormatting(nickname));
             }
         }
 
@@ -194,18 +369,24 @@ namespace TMSPS.Core.PluginSystem.Plugins
             if (command.PartsWithoutMainCommand.Count == 0)
                 return;
 
-            if (!Context.Credentials.UserHasAnyRight(login, COMMAND_BLACKLIST))
+            string loginToBlacklist = command.PartsWithoutMainCommand[0].Trim();
+            AddBlackListLogin(login, loginToBlacklist);
+        }
+
+        public void AddBlackListLogin(string operatorLogin, string loginToBlacklist)
+        {
+            if (!Context.Credentials.UserHasAnyRight(operatorLogin, COMMAND_BLACKLIST))
             {
-                SendNoPermissionMessagetoLogin(login);
+                SendNoPermissionMessagetoLogin(operatorLogin);
                 return;
             }
 
-            string nickname = GetNickname(login);
+            string nickname = GetNickname(operatorLogin);
 
             if (nickname == null)
                 return;
 
-            string loginToBlacklist = command.PartsWithoutMainCommand[0].Trim();
+
             string nicknameToBlacklist = GetNickname(loginToBlacklist);
 
             if (nicknameToBlacklist != null)
@@ -218,11 +399,48 @@ namespace TMSPS.Core.PluginSystem.Plugins
                     SendFormattedMessage(Settings.BlackListMessage, "BlackListingNickname", StripTMColorsAndFormatting(nickname), "BlackListedNickname", StripTMColorsAndFormatting(nicknameToBlacklist));
                 }
                 else
-                    SendFormattedMessageToLogin(login, "{[#ServerStyle]}> {[#ErrorStyle]}Could not blacklist " + StripTMColorsAndFormatting(nicknameToBlacklist));
+                    SendFormattedMessageToLogin(operatorLogin, "{[#ServerStyle]}> {[#ErrorStyle]}Could not blacklist " + StripTMColorsAndFormatting(nicknameToBlacklist));
             }
             else
             {
-                SendNoPlayerWithLoginMessageToLogin(login, loginToBlacklist);
+                SendNoPlayerWithLoginMessageToLogin(operatorLogin, loginToBlacklist);
+            }
+        }
+
+        private void HandleUnBlackListCommand(string login, ServerCommand command)
+        {
+            if (command.PartsWithoutMainCommand.Count == 0)
+                return;
+
+            string loginToRemove = command.PartsWithoutMainCommand[0].Trim();
+            RemoveBlackListLogin(login, loginToRemove);
+        }
+
+        public void RemoveBlackListLogin(string operatorLogin, string loginToRemove)
+        {
+            if (!Context.Credentials.UserHasAnyRight(operatorLogin, COMMAND_BLACKLIST))
+            {
+                SendNoPermissionMessagetoLogin(operatorLogin);
+                return;
+            }
+
+            GenericResponse<bool> removeBlackResponse = Context.RPCClient.Methods.UnBlackList(loginToRemove);
+
+            string nickname = GetNickname(loginToRemove) ?? loginToRemove;
+
+            if (removeBlackResponse.Erroneous || !removeBlackResponse.Value)
+            {
+                SendFormattedMessageToLogin(operatorLogin, "{[#ServerStyle]}> {[#ErrorStyle]} Could not remove " + StripTMColorsAndFormatting(nickname) + " from black list.");
+            }
+
+            if (!removeBlackResponse.Erroneous && removeBlackResponse.Value)
+            {
+                GenericResponse<bool> saveBlackListResponse = Context.RPCClient.Methods.SaveBlackList("Blacklist.txt");
+
+                if (saveBlackListResponse.Erroneous || !saveBlackListResponse.Value)
+                    SendFormattedMessageToLogin(operatorLogin, "{[#ServerStyle]}> {[#ErrorStyle]} Could not update Blacklist.txt");
+                else
+                    SendFormattedMessageToLogin(operatorLogin, "{[#ServerStyle]}> {[#MessageStyle]} Successfully removed player {[#HighlightStyle]}{[Nickname]}{[#MessageStyle]} from black list.", "Nickname", StripTMColorsAndFormatting(nickname));
             }
         }
 

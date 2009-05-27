@@ -28,30 +28,33 @@
 		</frame>
 
 		<frame posn="0.25 -8 0.1">
-			<label posn="0.75 -2 0.1" valign="center" sizen="5 2.5" textsize="2" style="TextRaceChat" text="1"/>
-			<label posn="7 -2 0.1" valign="center" sizen="24 2.5" textsize="2" text="$9f0[ηωο]$fff$f00 傘 $nᄽ$9f0ᆢ$f00ᄿ$m 傘"/>
-			<label posn="31 -2 0.1" valign="center" sizen="24 2.5" textsize="2" text="Scordo"/>
+			<format textsize="2"/>
 
+			<label posn="0.75 -2 0.1" valign="center" sizen="5 2.5" style="TextRaceChat" text="1"/>
+			<label posn="7 -2 0.1" valign="center" sizen="24 2.5" text="$9f0[???]$fff$f00 ? $n?$9f0?$f00?$m ?"/>
+			<label posn="31 -2 0.1" valign="center" sizen="24 2.5" text="Scordo"/>
+
+			<format textsize="1"/>
 			<quad posn="58.25 -2.5 0.2" halign="center" valign="center" sizen="6 3" style="Bgs1" substyle="BgList"/>
-			<label posn="58.5 -2.25 0.2" halign="center" valign="center" textsize="1" textcolor="FF7F" text="$oWarn "/>
+			<label posn="58.5 -2.25 0.2" sizen="5 1" halign="center" valign="center" textcolor="FF7F" text="$oWarn "/>
 
 			<quad posn="65 -2.5 0.1" sizen="6 3" halign="center" valign="center" style="Bgs1" substyle="BgList"/>
-			<label posn="65.25 -2.25 0.2" halign="center" valign="center" textsize="1" textcolor="DA6F" text="$oIgnore "/>
+			<label posn="65.25 -2.25 0.2" sizen="5 1" halign="center" valign="center" textcolor="DA6F" text="$oIgnore "/>
 
 			<quad posn="71.5 -2.5 0.1" sizen="5 3" halign="center" valign="center" style="Bgs1" substyle="BgList"/>
-			<label posn="71.75 -2.25 0.2" halign="center" valign="center" textsize="1" textcolor="B3CF" text="$oKick "/>
+			<label posn="71.75 -2.25 0.2" sizen="4 1" halign="center" valign="center" textcolor="B3CF" text="$oKick "/>
 
 			<quad posn="77 -2.5 0.1" sizen="4.5 3" halign="center" valign="center" style="Bgs1" substyle="BgList"/>
-			<label posn="77.25 -2.25 0.2" halign="center" valign="center" textsize="1" textcolor="E31F" text="$oBan "/>
+			<label posn="77.25 -2.25 0.2" sizen="3.5 1" halign="center" valign="center" textcolor="E31F" text="$oUnBan "/>
 
 			<quad posn="82.5 -2.5 0.1" sizen="5.5 3" halign="center" valign="center" style="Bgs1" substyle="BgList"/>
-			<label posn="82.75 -2.25 0.2" halign="center" valign="center" textsize="1" textcolor="C14F" text="$oBlack "/>
+			<label posn="82.75 -2.25 0.2" sizen="4.5 1" halign="center" valign="center" textcolor="C14F" text="$oBlack "/>
 
 			<quad posn="89 -2.5 0.1" sizen="6 3" halign="center" valign="center" style="Bgs1" substyle="BgList"/>
-			<label posn="89.25 -2.25 0.2" halign="center" valign="center" textsize="1" textcolor="4D4F" text="$oGuest "/>
+			<label posn="89.25 -2.25 0.2" sizen="5 1" halign="center" valign="center" textcolor="4D4F" text="$oGuest "/>
 
 			<quad posn="95.5 -2.5 0.1" sizen="5 3" halign="center" valign="center" style="Bgs1" substyle="BgList"/>
-			<label posn="95.75 -2.25 0.2" halign="center" valign="center" textsize="1" textcolor="4AEF" text="$oSpec "/>
+			<label posn="95.75 -2.25 0.2" sizen="4 1" halign="center" valign="center" textcolor="4AEF" text="$oSpec "/>
 		</frame>
 
 		<!-- Footer Row -->

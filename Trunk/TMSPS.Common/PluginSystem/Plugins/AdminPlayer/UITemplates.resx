@@ -127,7 +127,7 @@
 		&lt;quad posn="1 -0.4 2" sizen="1.7 1.7" style="Icons64x64_1" substyle="Refresh" action="{[RestartTrackImmediately]}"/&gt;
 		&lt;quad posn="4 -0.4 2" sizen="1.7 1.8" style="Icons64x64_1" substyle="Camera" action="{[KickSpectators]}"/&gt;
 		&lt;quad posn="7 -0.4 2" sizen="1.7 1.7" style="Icons64x64_1" substyle="ArrowLast" action="{[SwitchToNextTrack]}"/&gt;
-		&lt;quad posn="10.1 -0.4 2" sizen="1.7 1.7" style="Icons64x64_1" substyle="IconPlayers" action="{[ShowPlayerListWithAdminAbilities]}"/&gt;
+		&lt;quad posn="10.1 -0.4 2" sizen="1.7 1.7" style="Icons64x64_1" substyle="IconPlayers" action="{[ShowLivePlayerList]}"/&gt;
 		&lt;quad posn="13 -0.4 2" sizen="1.7 1.7" style="Icons64x64_1" substyle="LvlGreen" action="{[ShowGuestList]}"/&gt;
 		&lt;quad posn="15 -0.4 2" sizen="1.7 1.7" style="Icons64x64_1" substyle="LvlYellow" action="{[ShowIgnoreList]}"/&gt;
 		&lt;quad posn="17 -0.4 2" sizen="1.7 1.7" style="Icons64x64_1" substyle="LvlRed" action="{[ShowBanList]}"/&gt;
