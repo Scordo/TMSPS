@@ -318,9 +318,10 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\SQLScripts\StoredProcedures\Challenge\Challenge_Create.sql" />
-    <None Include="Resources\SQLScripts\StoredProcedures\Challenge\Challenge_DeleteTracksNotInProvidedList.sql" />
+    <None Include="Resources\SQLScripts\StoredProcedures\Challenge\Challenge_Delete.sql" />
     <None Include="Resources\SQLScripts\StoredProcedures\Challenge\Challenge_Deserialize_ByID.sql" />
     <None Include="Resources\SQLScripts\StoredProcedures\Challenge\Challenge_Deserialize_ByUniqueID.sql" />
+    <None Include="Resources\SQLScripts\StoredProcedures\Challenge\Challenge_GetAllUniqueTrackIDs.sql" />
     <None Include="Resources\SQLScripts\StoredProcedures\Challenge\Challenge_IncreaseRaces_ByChallenge.sql" />
     <None Include="Resources\SQLScripts\StoredProcedures\Challenge\Challenge_IncreaseRaces_ByID.sql" />
     <None Include="Resources\SQLScripts\StoredProcedures\Challenge\Challenge_IncreaseRaces_ByUniqueID.sql" />

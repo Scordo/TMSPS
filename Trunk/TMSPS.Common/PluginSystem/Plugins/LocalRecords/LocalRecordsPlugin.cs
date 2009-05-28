@@ -86,7 +86,16 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
 	        if (challenges == null)
 	            return;
 
-	        ChallengeAdapter.DeleteTracksNotInProvidedList(challenges.ConvertAll(c => c.UId));
+	    	try
+	    	{
+				Logger.InfoToUI("Starting to delete data of missing tracks");
+				int amountOfDeletedTracks = ChallengeAdapter.DeleteTracksNotInProvidedList(challenges.ConvertAll(c => c.UId));
+				Logger.InfoToUI(string.Format("Data of {0} Track(s) has been deleted.", amountOfDeletedTracks));
+	    	}
+	    	catch (Exception ex)
+	    	{
+	    		Logger.ErrorToUI("Couldn't delete data of missing tracks.", ex);
+	    	}
 
 	        List<PlayerInfo> players = GetPlayerList();
 	        if (players == null)

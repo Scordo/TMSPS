@@ -28,7 +28,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords.SQL
 
         #region Public Methods
 
-        public void TryCreate(Challenge challenge)
+    	public void TryCreate(Challenge challenge)
         {
             if (challenge == null)
                 throw new ArgumentNullException("challenge");
@@ -70,7 +70,8 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords.SQL
             return SqlHelper.ExecuteClassQuery<Challenge>("Challenge_Deserialize_ByUniqueID", ChallengeFromDataRow, "UniqueID", uniqueID);
         }
 
-		public void IncreaseRaces(Challenge challenge)
+    	/// <exception cref="ArgumentNullException"><c>challenge</c> is null.</exception>
+    	public void IncreaseRaces(Challenge challenge)
 		{
 			if (challenge == null)
 				throw new ArgumentNullException("challenge");
@@ -110,20 +111,33 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords.SQL
 			return SqlHelper.ExecuteScalar<int?>("Challenge_IncreaseRaces_ByUniqueID", "UniqueID", uniqueID);
 		}
 
-        public void DeleteTracksNotInProvidedList(List<string> uniqueTrackIDs)
+        public int DeleteTracksNotInProvidedList(List<string> uniqueTrackIDs)
         {
             // do not delete all maps
             if (uniqueTrackIDs == null || uniqueTrackIDs.Count == 0)
-                return;
+                return 0;
 
-            SqlHelper.ExecuteNonQuery("Challenge_DeleteTracksNotInProvidedList", "uniqueTrackIDs", uniqueTrackIDs.ToXmlListString()); 
+			HashSet<string> uniqueTrackIDsFromDB = new HashSet<string>(SqlHelper.ExecuteClassListQuery("Challenge_GetAllUniqueTrackIDs", (DataRow row) => Convert.ToString(row["UniqueID"])));
+            uniqueTrackIDsFromDB.ExceptWith(uniqueTrackIDs);
+
+        	foreach (string uniqueTrackID in uniqueTrackIDsFromDB)
+        	{
+        		DeleteTrack(uniqueTrackID);
+        	}
+
+            return uniqueTrackIDsFromDB.Count;
         }
+
+		public void DeleteTrack(string uniqueChallengeID)
+		{
+			SqlHelper.ExecuteNonQuery("Challenge_Delete", "challengeUniqueID", uniqueChallengeID);
+		}
 
         #endregion
 
         #region Non Public Methods
 
-		private static void ValidateChallenge(Challenge challenge)
+    	private static void ValidateChallenge(Challenge challenge)
 		{
 			if (challenge.UniqueID.IsNullOrTimmedEmpty())
 				throw new ArgumentException("UniqueID is null or empty.");
