@@ -11,6 +11,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
 		int? IncreaseRaces(int challengeID);
 		int? IncreaseRaces(string uniqueID);
     	void IncreaseRaces(Challenge challenge);
-        void DeleteTracksNotInProvidedList(List<string> uniqueTrackIDs);
+        int DeleteTracksNotInProvidedList(List<string> uniqueTrackIDs);
+    	void DeleteTrack(string uniqueChallengeID);
     }
 }
