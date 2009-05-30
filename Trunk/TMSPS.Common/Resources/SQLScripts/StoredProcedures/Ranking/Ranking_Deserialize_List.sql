@@ -1,4 +1,9 @@
-﻿CREATE PROCEDURE [dbo].[Ranking_Deserialize_List]
+﻿set ANSI_NULLS ON
+set QUOTED_IDENTIFIER ON
+go
+
+
+ALTER PROCEDURE [dbo].[Ranking_Deserialize_List]
 	@amountOfRankings int
 AS
 BEGIN
@@ -28,4 +33,6 @@ BEGIN
 		MainQuery M with(nolock)
 	INNER JOIN
 		Player P with(nolock) on P.ID = m.PlayerID
+	Order by
+		Rank Asc
 END
