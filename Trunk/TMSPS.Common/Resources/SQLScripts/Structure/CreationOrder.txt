@@ -5,3 +5,6 @@
 5. Rating.sql
 6. Session.sql
 7. Ranking.sql
+8. Rank.sql
+
+Create a Sql-Job that executes the Stored Proceudre dbo.Ranking_ReCreateRanks at least once each round.
