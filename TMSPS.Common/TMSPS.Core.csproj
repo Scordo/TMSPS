@@ -341,6 +341,7 @@
     <None Include="Resources\SQLScripts\StoredProcedures\Ranking\Ranking_GetTopRankings.sql" />
     <None Include="Resources\SQLScripts\StoredProcedures\Ranking\Ranking_GetTopRankingsCount.sql" />
     <None Include="Resources\SQLScripts\StoredProcedures\Ranking\Ranking_ReCreateAll.sql" />
+    <None Include="Resources\SQLScripts\StoredProcedures\Ranking\Ranking_ReCreateRanks.sql" />
     <None Include="Resources\SQLScripts\StoredProcedures\Ranking\Ranking_UpdateForChallenge.sql" />
     <None Include="Resources\SQLScripts\StoredProcedures\Ranking\Ranking_UpdateForChallenge_ByChallengeUID.sql" />
     <None Include="Resources\SQLScripts\StoredProcedures\Rating\Rating_Vote.sql" />
@@ -351,6 +352,7 @@
     <None Include="Resources\SQLScripts\Structure\Challenge.sql" />
     <None Include="Resources\SQLScripts\Structure\Player.sql" />
     <None Include="Resources\SQLScripts\Structure\Position.sql" />
+    <None Include="Resources\SQLScripts\Structure\Rank.sql" />
     <None Include="Resources\SQLScripts\Structure\Ranking.sql" />
     <None Include="Resources\SQLScripts\Structure\Rating.sql" />
     <None Include="Resources\SQLScripts\Structure\Record.sql" />
