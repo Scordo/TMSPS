@@ -1312,6 +1312,22 @@ namespace TMSPS.Core.Communication
         }
 
         /// <summary>
+        /// Pass the login of the spectator. A spectator that once was a player keeps his player slot, so that he can go back to race mode. Calling this function frees this slot for an other player to connect. Only available to Admin.
+        /// </summary>
+        public GenericResponse<bool> SpectatorReleasePlayerSlot(string login)
+        {
+            return (GenericResponse<bool>)_client.SendMethod<GenericResponse<bool>>(TrackManiaMethod.SpectatorReleasePlayerSlot.ToString(), login);
+        }
+
+        /// <summary>
+        /// Pass the playerid of the spectator. A spectator that once was a player keeps his player slot, so that he can go back to race mode. Calling this function frees this slot for an other player to connect. Only available to Admin.
+        /// </summary>
+        public GenericResponse<bool> SpectatorReleasePlayerSlotId(int playerID)
+        {
+            return (GenericResponse<bool>)_client.SendMethod<GenericResponse<bool>>(TrackManiaMethod.SpectatorReleasePlayerSlotId.ToString(), playerID);
+        }
+
+        /// <summary>
         /// Enable control of the game flow: the game will wait for the caller to validate state transitions.
         /// </summary>
         public GenericResponse<bool> ManualFlowControlEnable(bool setEnabled)

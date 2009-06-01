@@ -217,6 +217,8 @@
         ForceSpectatorId,
         ForceSpectatorTarget,
         ForceSpectatorTargetId,
+        SpectatorReleasePlayerSlot,
+        SpectatorReleasePlayerSlotId,
         ManualFlowControlEnable,
         ManualFlowControlProceed,
         ManualFlowControlIsEnabled,
