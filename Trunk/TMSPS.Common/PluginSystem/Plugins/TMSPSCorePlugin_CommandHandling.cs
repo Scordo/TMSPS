@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using TMSPS.Core.Common;
 using TMSPS.Core.Communication.ProxyTypes;
 using TMSPS.Core.Communication.ResponseHandling;
 
@@ -7,66 +8,52 @@ namespace TMSPS.Core.PluginSystem.Plugins
 {
     public partial class TMSPSCorePlugin
     {
-        //const string COMMAND_RESTART_SERVER = "restartserver";
-        public const string COMMAND_KICK = "kick";
-        public const string COMMAND_BAN = "ban";
-        public const string COMMAND_UNBAN = "unban";
-        public const string COMMAND_BLACKLIST = "blacklist";
-        public const string COMMAND_UNBLACKLIST = "unblacklist";
-        public const string COMMAND_IGNORE = "ignore";
-        public const string COMMAND_UNIGNORE = "unignore";
-        public const string COMMAND_ADD_GUEST = "addguest";
-        public const string COMMAND_REMOVE_GUEST = "removeguest";
-        public const string COMMAND_FORCE_SPECTATOR = "forcespectator";
-        public const string COMMAND_WRITE_TRACK_LIST = "writetracklist";
-        public const string COMMAND_READ_TRACK_LIST = "readtracklist";
-        public const string COMMAND_REMOVE_TRACK = "removetrack";
-        public const string COMMAND_READ_CREDENTIALS = "readcredentials";
+        
 
         private void HandleCommand(string login, ServerCommand command)
         {
             switch (command.MainCommand.ToLower(Context.Culture))
             {
-                case COMMAND_KICK:
+                case Command.KICK:
                     HandleKickCommand(login, command);
                     break;
-                case COMMAND_BAN:
+                case Command.BAN:
                     HandleBanCommand(login, command);
                     break;
-                case COMMAND_UNBAN:
+                case Command.UNBAN:
                     HandleUnBanCommand(login, command);
                     break;
-                case COMMAND_BLACKLIST:
+                case Command.BLACKLIST:
                     HandleBlackListCommand(login, command);
                     break;
-                case COMMAND_UNBLACKLIST:
+                case Command.UNBLACKLIST:
                     HandleUnBlackListCommand(login, command);
                     break;
-                case COMMAND_IGNORE:
+                case Command.IGNORE:
                     HandleIgnoreCommand(login, command);
                     break;
-                case COMMAND_UNIGNORE:
+                case Command.UNIGNORE:
                     HandleUnIgnoreCommand(login, command);
                     break;
-                case COMMAND_ADD_GUEST:
+                case Command.ADD_GUEST:
                     HandleAddGuestCommand(login, command);
                     break;
-                case COMMAND_REMOVE_GUEST:
+                case Command.REMOVE_GUEST:
                     HandleRemoveGuestCommand(login, command);
                     break;
-                case COMMAND_FORCE_SPECTATOR:
+                case Command.FORCE_SPECTATOR:
                     HandleForceSpectatorCommand(login, command);
                     break;
-                case COMMAND_WRITE_TRACK_LIST:
+                case Command.WRITE_TRACK_LIST:
                     HandleWriteTrackListCommand(login, command);
                     break;
-                case COMMAND_READ_TRACK_LIST:
+                case Command.READ_TRACK_LIST:
                     HandleReadTrackListCommand(login, command);
                     break;
-                case COMMAND_REMOVE_TRACK:
+                case Command.REMOVE_CURRENT_TRACK:
                     HandleRemoveTrackCommand(login);
                     break;
-                case COMMAND_READ_CREDENTIALS:
+                case Command.READ_CREDENTIALS:
                     HandleReadCredentialsCommand(login);
                     break;
                 //case COMMAND_RESTART_SERVER:
@@ -77,7 +64,7 @@ namespace TMSPS.Core.PluginSystem.Plugins
 
         private void HandleReadCredentialsCommand(string login)
         {
-            if (!Context.Credentials.UserHasAnyRight(login, COMMAND_READ_CREDENTIALS))
+            if (!Context.Credentials.UserHasAnyRight(login, Command.READ_CREDENTIALS))
             {
                 SendNoPermissionMessagetoLogin(login);
                 return;
@@ -107,7 +94,7 @@ namespace TMSPS.Core.PluginSystem.Plugins
 
         public void ForceSpectatorLogin(string operatorLogin, string loginToForce)
         {
-            if (!Context.Credentials.UserHasAnyRight(operatorLogin, COMMAND_FORCE_SPECTATOR))
+            if (!Context.Credentials.UserHasAnyRight(operatorLogin, Command.FORCE_SPECTATOR))
             {
                 SendNoPermissionMessagetoLogin(operatorLogin);
                 return;
@@ -149,7 +136,7 @@ namespace TMSPS.Core.PluginSystem.Plugins
 
         public void KickLogin(string operatorLogin, string loginToKick)
         {
-            if (!Context.Credentials.UserHasAnyRight(operatorLogin, COMMAND_KICK))
+            if (!Context.Credentials.UserHasAnyRight(operatorLogin, Command.KICK))
             {
                 SendNoPermissionMessagetoLogin(operatorLogin);
                 return;
@@ -189,7 +176,7 @@ namespace TMSPS.Core.PluginSystem.Plugins
 
         public void BanLogin(string operatorLogin, string loginToBan)
         {
-            if (!Context.Credentials.UserHasAnyRight(operatorLogin, COMMAND_BAN))
+            if (!Context.Credentials.UserHasAnyRight(operatorLogin, Command.BAN))
             {
                 SendNoPermissionMessagetoLogin(operatorLogin);
                 return;
@@ -229,7 +216,7 @@ namespace TMSPS.Core.PluginSystem.Plugins
 
         public void UnBanLogin(string operatorLogin, string loginToRemove)
         {
-            if (!Context.Credentials.UserHasAnyRight(operatorLogin, COMMAND_BAN))
+            if (!Context.Credentials.UserHasAnyRight(operatorLogin, Command.BAN))
             {
                 SendNoPermissionMessagetoLogin(operatorLogin);
                 return;
@@ -256,7 +243,7 @@ namespace TMSPS.Core.PluginSystem.Plugins
 
         public void IgnoreLogin(string operatorLogin, string loginToIgnore)
         {
-            if (!Context.Credentials.UserHasAnyRight(operatorLogin, COMMAND_IGNORE))
+            if (!Context.Credentials.UserHasAnyRight(operatorLogin, Command.IGNORE))
             {
                 SendNoPermissionMessagetoLogin(operatorLogin);
                 return;
@@ -295,7 +282,7 @@ namespace TMSPS.Core.PluginSystem.Plugins
 
         public void UnIgnoreLogin(string operatorLogin, string loginToRemove)
         {
-            if (!Context.Credentials.UserHasAnyRight(operatorLogin, COMMAND_IGNORE))
+            if (!Context.Credentials.UserHasAnyRight(operatorLogin, Command.IGNORE))
             {
                 SendNoPermissionMessagetoLogin(operatorLogin);
                 return;
@@ -322,7 +309,7 @@ namespace TMSPS.Core.PluginSystem.Plugins
 
         public void AddGuestLogin(string operatorLogin, string loginOfGuest)
         {
-            if (!Context.Credentials.UserHasAnyRight(operatorLogin, COMMAND_ADD_GUEST))
+            if (!Context.Credentials.UserHasAnyRight(operatorLogin, Command.ADD_GUEST))
             {
                 SendNoPermissionMessagetoLogin(operatorLogin);
                 return;
@@ -365,7 +352,7 @@ namespace TMSPS.Core.PluginSystem.Plugins
 
         public void RemoveGuestLogin(string operatorLogin, string loginToRemove)
         {
-            if (!Context.Credentials.UserHasAnyRight(operatorLogin, COMMAND_ADD_GUEST))
+            if (!Context.Credentials.UserHasAnyRight(operatorLogin, Command.ADD_GUEST))
             {
                 SendNoPermissionMessagetoLogin(operatorLogin);
                 return;
@@ -401,7 +388,7 @@ namespace TMSPS.Core.PluginSystem.Plugins
 
         public void AddBlackListLogin(string operatorLogin, string loginToBlacklist)
         {
-            if (!Context.Credentials.UserHasAnyRight(operatorLogin, COMMAND_BLACKLIST))
+            if (!Context.Credentials.UserHasAnyRight(operatorLogin, Command.BLACKLIST))
             {
                 SendNoPermissionMessagetoLogin(operatorLogin);
                 return;
@@ -444,7 +431,7 @@ namespace TMSPS.Core.PluginSystem.Plugins
 
         public void RemoveBlackListLogin(string operatorLogin, string loginToRemove)
         {
-            if (!Context.Credentials.UserHasAnyRight(operatorLogin, COMMAND_BLACKLIST))
+            if (!Context.Credentials.UserHasAnyRight(operatorLogin, Command.BLACKLIST))
             {
                 SendNoPermissionMessagetoLogin(operatorLogin);
                 return;
@@ -472,7 +459,7 @@ namespace TMSPS.Core.PluginSystem.Plugins
 
         private void HandleWriteTrackListCommand(string login, ServerCommand command)
         {
-            if (!Context.Credentials.UserHasAnyRight(login, COMMAND_WRITE_TRACK_LIST))
+            if (!Context.Credentials.UserHasAnyRight(login, Command.WRITE_TRACK_LIST))
             {
                 SendNoPermissionMessagetoLogin(login);
                 return;
@@ -493,7 +480,7 @@ namespace TMSPS.Core.PluginSystem.Plugins
 
         private void HandleReadTrackListCommand(string login, ServerCommand command)
         {
-            if (!Context.Credentials.UserHasAnyRight(login, COMMAND_READ_TRACK_LIST))
+            if (!Context.Credentials.UserHasAnyRight(login, Command.READ_TRACK_LIST))
             {
                 SendNoPermissionMessagetoLogin(login);
                 return;
@@ -514,7 +501,7 @@ namespace TMSPS.Core.PluginSystem.Plugins
 
         private void HandleRemoveTrackCommand(string login)
         {
-            if (!Context.Credentials.UserHasAnyRight(login, COMMAND_REMOVE_TRACK))
+            if (!Context.Credentials.UserHasAnyRight(login, Command.REMOVE_CURRENT_TRACK))
             {
                 SendNoPermissionMessagetoLogin(login);
                 return;

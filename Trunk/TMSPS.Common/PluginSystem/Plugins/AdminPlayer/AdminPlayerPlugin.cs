@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using TMSPS.Core.Common;
 using TMSPS.Core.Communication.ProxyTypes;
 using TMSPS.Core.ManiaLinking;
 using TMSPS.Core.PluginSystem.Configuration;
@@ -12,8 +13,6 @@ namespace TMSPS.Core.PluginSystem.Plugins.AdminPlayer
     {
         #region Constants
 
-        public const string RESTART_TRACK_IMMEDIATELY_RIGHT = "RestartTrack";
-        public const string NEXT_TRACK_RIGHT = "NextTrack";
         private const string PLAYER_PANEL_ID = "AdminPlayerPanelID";
 
         #endregion
@@ -137,7 +136,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.AdminPlayer
 
         private void KickSpectators(string login)
         {
-            if (!LoginHasAnyRight(login, true, SpectatorsPlugin.KICK_SPECTATORS_COMMAND1, SpectatorsPlugin.KICK_SPECTATORS_COMMAND2))
+            if (!LoginHasAnyRight(login, true, Command.KICK_SPECTATORS1, Command.KICK_SPECTATORS2))
                 return;
 
             List<PlayerInfo> players = GetPlayerList();
@@ -161,7 +160,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.AdminPlayer
 
         private void RestartTrackImmediately(string login)
         {
-            if (!LoginHasAnyRight(login, true, RESTART_TRACK_IMMEDIATELY_RIGHT))
+            if (!LoginHasAnyRight(login, true, Command.RESTART_TRACK_IMMEDIATELY))
                 return;
 
             Context.RPCClient.Methods.RestartChallenge();
@@ -169,7 +168,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.AdminPlayer
 
         private void SwitchToNextMap(string login)
         {
-            if (!LoginHasAnyRight(login, true, NEXT_TRACK_RIGHT))
+            if (!LoginHasAnyRight(login, true, Command.NEXT_TRACK))
                 return;
           
             Context.RPCClient.Methods.NextChallenge();
@@ -220,15 +219,15 @@ namespace TMSPS.Core.PluginSystem.Plugins.AdminPlayer
 
         private bool LoginHasAnyAdminPlayerRight(string login)
         {
-            return LoginHasAnyRight(login, false,   RESTART_TRACK_IMMEDIATELY_RIGHT, 
-                                                    NEXT_TRACK_RIGHT, 
-                                                    SpectatorsPlugin.KICK_SPECTATORS_COMMAND1, 
-                                                    SpectatorsPlugin.KICK_SPECTATORS_COMMAND2,
-                                                    TMSPSCorePlugin.COMMAND_ADD_GUEST,
-                                                    TMSPSCorePlugin.COMMAND_KICK,
-                                                    TMSPSCorePlugin.COMMAND_BAN,
-                                                    TMSPSCorePlugin.COMMAND_BLACKLIST,
-                                                    TMSPSCorePlugin.COMMAND_IGNORE);
+            return LoginHasAnyRight(login, false,   Command.RESTART_TRACK_IMMEDIATELY,
+                                                    Command.NEXT_TRACK, 
+                                                    Command.KICK_SPECTATORS1,
+                                                    Command.KICK_SPECTATORS2,
+                                                    Command.ADD_GUEST,
+                                                    Command.KICK,
+                                                    Command.BAN,
+                                                    Command.BLACKLIST,
+                                                    Command.IGNORE);
         }
         
         #endregion

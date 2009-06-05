@@ -4,6 +4,7 @@ using System.Globalization;
 using System.Linq;
 using System.Security;
 using System.Xml.Linq;
+using TMSPS.Core.Common;
 using TMSPS.Core.Communication.ProxyTypes;
 using TMSPS.Core.Communication.ResponseHandling;
 using TMSPS.Core.ManiaLinking;
@@ -84,7 +85,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.AdminPlayer
 
         private void SendBlackListPageToLogin(string login, uint? pageIndex)
         {
-            if (!LoginHasAnyRight(login, true, TMSPSCorePlugin.COMMAND_BLACKLIST))
+            if (!LoginHasAnyRight(login, true, Command.BLACKLIST))
                 return;
 
             const int MAX_BlackLIST_SIZE = 1000;

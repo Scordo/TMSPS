@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using TMSPS.Core.Common;
 using TMSPS.Core.Communication.EventArguments.Callbacks;
 using PlayerInfo=TMSPS.Core.Communication.ProxyTypes.PlayerInfo;
 
@@ -8,16 +9,6 @@ namespace TMSPS.Core.PluginSystem.Plugins
 {
     public class SpectatorsPlugin : TMSPSPlugin
     {
-        #region Constants
-
-        public const string GET_SPECTATORS_COMMAND1 = "GetSpectators";
-        public const string GET_SPECTATORS_COMMAND2 = "Specs";
-
-        public const string KICK_SPECTATORS_COMMAND1 = "KickSpectators";
-        public const string KICK_SPECTATORS_COMMAND2 = "KickSpecs";
-
-        #endregion
-
         #region Properties
 
         public override Version Version
@@ -78,9 +69,9 @@ namespace TMSPS.Core.PluginSystem.Plugins
 
         private bool CheckForGetSpectatorsCommand(PlayerChatEventArgs e)
         {
-            if (ServerCommand.Parse(e.Text).IsMainCommandAnyOf(GET_SPECTATORS_COMMAND1, GET_SPECTATORS_COMMAND2))
+            if (ServerCommand.Parse(e.Text).IsMainCommandAnyOf(Command.GET_SPECTATORS1, Command.GET_SPECTATORS2))
             {
-                if (Context.Credentials.UserHasAnyRight(e.Login, GET_SPECTATORS_COMMAND1, GET_SPECTATORS_COMMAND2))
+                if (Context.Credentials.UserHasAnyRight(e.Login, Command.GET_SPECTATORS1, Command.GET_SPECTATORS2))
                 {
                     List<PlayerInfo> players = GetPlayerList();
 
@@ -110,9 +101,9 @@ namespace TMSPS.Core.PluginSystem.Plugins
 
         private bool CheckForKickSpectatorsCommand(PlayerChatEventArgs e)
         {
-            if (ServerCommand.Parse(e.Text).IsMainCommandAnyOf(KICK_SPECTATORS_COMMAND1, KICK_SPECTATORS_COMMAND2))
+            if (ServerCommand.Parse(e.Text).IsMainCommandAnyOf(Command.KICK_SPECTATORS1, Command.KICK_SPECTATORS2))
             {
-                if (Context.Credentials.UserHasAnyRight(e.Login, KICK_SPECTATORS_COMMAND1, KICK_SPECTATORS_COMMAND2))
+                if (Context.Credentials.UserHasAnyRight(e.Login, Command.KICK_SPECTATORS1, Command.KICK_SPECTATORS2))
                 {
                     List<PlayerInfo> players = GetPlayerList();
 

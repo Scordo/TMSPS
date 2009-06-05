@@ -72,7 +72,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
 
         private bool CheckForServerRankCommand(PlayerChatEventArgs args)
         {
-            if (string.Compare(args.Text, "/sr", StringComparison.InvariantCultureIgnoreCase) != 0 && string.Compare(args.Text, "/rank", StringComparison.InvariantCultureIgnoreCase) != 0)
+            if (string.Compare(args.Text, Command.SERVER_RANK1, StringComparison.InvariantCultureIgnoreCase) != 0 && string.Compare(args.Text, Command.SERVER_RANK2, StringComparison.InvariantCultureIgnoreCase) != 0)
                 return false;
 
             SendServerRankMessageToLogin(args.Login);
@@ -82,10 +82,10 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
 
         private bool CheckForInfoCommand(PlayerChatEventArgs args)
         {
-            if (string.Compare(args.Text, "/info", StringComparison.InvariantCultureIgnoreCase) != 0 &&
-                string.Compare(args.Text, "/wins", StringComparison.InvariantCultureIgnoreCase) != 0 &&
-                string.Compare(args.Text, "/played", StringComparison.InvariantCultureIgnoreCase) != 0 &&
-                string.Compare(args.Text, "/visit", StringComparison.InvariantCultureIgnoreCase) != 0)
+            if (string.Compare(args.Text, Command.Info, StringComparison.InvariantCultureIgnoreCase) != 0 &&
+                string.Compare(args.Text, Command.Wins, StringComparison.InvariantCultureIgnoreCase) != 0 &&
+                string.Compare(args.Text, Command.Played, StringComparison.InvariantCultureIgnoreCase) != 0 &&
+                string.Compare(args.Text, Command.Visit, StringComparison.InvariantCultureIgnoreCase) != 0)
                 return false;
 
             SendInfoMessageToLogin(args.Login);

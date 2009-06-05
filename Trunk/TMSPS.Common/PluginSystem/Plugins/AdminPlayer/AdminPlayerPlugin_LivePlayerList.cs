@@ -4,6 +4,7 @@ using System.Globalization;
 using System.Linq;
 using System.Security;
 using System.Xml.Linq;
+using TMSPS.Core.Common;
 using TMSPS.Core.Communication.ProxyTypes;
 using TMSPS.Core.Communication.ResponseHandling;
 using TMSPS.Core.ManiaLinking;
@@ -160,7 +161,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.AdminPlayer
 
         private void SendLivePlayerListPageToLogin(string login, uint? pageIndex)
         {
-            if (!LoginHasAnyRight(login, true, TMSPSCorePlugin.COMMAND_KICK, TMSPSCorePlugin.COMMAND_BAN, TMSPSCorePlugin.COMMAND_BLACKLIST, TMSPSCorePlugin.COMMAND_IGNORE, TMSPSCorePlugin.COMMAND_ADD_GUEST))
+            if (!LoginHasAnyRight(login, true, Command.KICK, Command.BAN, Command.BLACKLIST, Command.IGNORE, Command.ADD_GUEST))
                 return;
 
             HashSet<string> ignoreList = GetIgnoreList();
