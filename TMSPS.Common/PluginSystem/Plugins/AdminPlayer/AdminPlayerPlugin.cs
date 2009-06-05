@@ -169,7 +169,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.AdminPlayer
 
         private void SwitchToNextMap(string login)
         {
-            if (!LoginHasAnyRight(login, true, RESTART_TRACK_IMMEDIATELY_RIGHT))
+            if (!LoginHasAnyRight(login, true, NEXT_TRACK_RIGHT))
                 return;
           
             Context.RPCClient.Methods.NextChallenge();
@@ -224,7 +224,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.AdminPlayer
                                                     NEXT_TRACK_RIGHT, 
                                                     SpectatorsPlugin.KICK_SPECTATORS_COMMAND1, 
                                                     SpectatorsPlugin.KICK_SPECTATORS_COMMAND2,
-                                                    TMSPSCorePlugin.COMMAND_ADDGUEST,
+                                                    TMSPSCorePlugin.COMMAND_ADD_GUEST,
                                                     TMSPSCorePlugin.COMMAND_KICK,
                                                     TMSPSCorePlugin.COMMAND_BAN,
                                                     TMSPSCorePlugin.COMMAND_BLACKLIST,

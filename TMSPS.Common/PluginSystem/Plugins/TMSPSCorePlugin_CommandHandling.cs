@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using TMSPS.Core.Communication.ProxyTypes;
 using TMSPS.Core.Communication.ResponseHandling;
 
@@ -14,12 +15,13 @@ namespace TMSPS.Core.PluginSystem.Plugins
         public const string COMMAND_UNBLACKLIST = "unblacklist";
         public const string COMMAND_IGNORE = "ignore";
         public const string COMMAND_UNIGNORE = "unignore";
-        public const string COMMAND_ADDGUEST = "addguest";
-        public const string COMMAND_REMOVEGUEST = "removeguest";
-        public const string COMMAND_FORCESPECTATOR = "forcespectator";
+        public const string COMMAND_ADD_GUEST = "addguest";
+        public const string COMMAND_REMOVE_GUEST = "removeguest";
+        public const string COMMAND_FORCE_SPECTATOR = "forcespectator";
         public const string COMMAND_WRITE_TRACK_LIST = "writetracklist";
         public const string COMMAND_READ_TRACK_LIST = "readtracklist";
         public const string COMMAND_REMOVE_TRACK = "removetrack";
+        public const string COMMAND_READ_CREDENTIALS = "readcredentials";
 
         private void HandleCommand(string login, ServerCommand command)
         {
@@ -46,13 +48,13 @@ namespace TMSPS.Core.PluginSystem.Plugins
                 case COMMAND_UNIGNORE:
                     HandleUnIgnoreCommand(login, command);
                     break;
-                case COMMAND_ADDGUEST:
+                case COMMAND_ADD_GUEST:
                     HandleAddGuestCommand(login, command);
                     break;
-                case COMMAND_REMOVEGUEST:
+                case COMMAND_REMOVE_GUEST:
                     HandleRemoveGuestCommand(login, command);
                     break;
-                case COMMAND_FORCESPECTATOR:
+                case COMMAND_FORCE_SPECTATOR:
                     HandleForceSpectatorCommand(login, command);
                     break;
                 case COMMAND_WRITE_TRACK_LIST:
@@ -62,11 +64,35 @@ namespace TMSPS.Core.PluginSystem.Plugins
                     HandleReadTrackListCommand(login, command);
                     break;
                 case COMMAND_REMOVE_TRACK:
-                    HandleRemoveTrackCommand(login, command);
+                    HandleRemoveTrackCommand(login);
+                    break;
+                case COMMAND_READ_CREDENTIALS:
+                    HandleReadCredentialsCommand(login);
                     break;
                 //case COMMAND_RESTART_SERVER:
                 //    HandleRestartServerCommand(command);
                 //    break;
+            }
+        }
+
+        private void HandleReadCredentialsCommand(string login)
+        {
+            if (!Context.Credentials.UserHasAnyRight(login, COMMAND_READ_CREDENTIALS))
+            {
+                SendNoPermissionMessagetoLogin(login);
+                return;
+            }
+
+            try
+            {
+                Context.Credentials.ReReadFromFile();
+                SendFormattedMessageToLogin(login, "{[#ServerStyle]}>{[#MessageStyle]} Credentials were successfully read from file!");
+            }
+            catch (Exception ex)
+            {
+                SendFormattedMessageToLogin(login, "{[#ServerStyle]}>{[#ErrorStyle]} Error reading credentials from file.");
+                Logger.Error("Error reading credentials from file.", ex);
+                throw;
             }
         }
 
@@ -81,7 +107,7 @@ namespace TMSPS.Core.PluginSystem.Plugins
 
         public void ForceSpectatorLogin(string operatorLogin, string loginToForce)
         {
-            if (!Context.Credentials.UserHasAnyRight(operatorLogin, COMMAND_FORCESPECTATOR))
+            if (!Context.Credentials.UserHasAnyRight(operatorLogin, COMMAND_FORCE_SPECTATOR))
             {
                 SendNoPermissionMessagetoLogin(operatorLogin);
                 return;
@@ -296,7 +322,7 @@ namespace TMSPS.Core.PluginSystem.Plugins
 
         public void AddGuestLogin(string operatorLogin, string loginOfGuest)
         {
-            if (!Context.Credentials.UserHasAnyRight(operatorLogin, COMMAND_ADDGUEST))
+            if (!Context.Credentials.UserHasAnyRight(operatorLogin, COMMAND_ADD_GUEST))
             {
                 SendNoPermissionMessagetoLogin(operatorLogin);
                 return;
@@ -339,7 +365,7 @@ namespace TMSPS.Core.PluginSystem.Plugins
 
         public void RemoveGuestLogin(string operatorLogin, string loginToRemove)
         {
-            if (!Context.Credentials.UserHasAnyRight(operatorLogin, COMMAND_ADDGUEST))
+            if (!Context.Credentials.UserHasAnyRight(operatorLogin, COMMAND_ADD_GUEST))
             {
                 SendNoPermissionMessagetoLogin(operatorLogin);
                 return;
@@ -486,7 +512,7 @@ namespace TMSPS.Core.PluginSystem.Plugins
                 SendFormattedMessageToLogin(login, "{[#ServerStyle]}> {[#ErrorStyle]} error reading tracklist.");
         }
 
-        private void HandleRemoveTrackCommand(string login, ServerCommand command)
+        private void HandleRemoveTrackCommand(string login)
         {
             if (!Context.Credentials.UserHasAnyRight(login, COMMAND_REMOVE_TRACK))
             {

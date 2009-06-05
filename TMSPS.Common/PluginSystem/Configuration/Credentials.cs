@@ -5,61 +5,80 @@ namespace TMSPS.Core.PluginSystem.Configuration
 {
 	public class Credentials
 	{
-		private readonly Dictionary<string, HashSet<string>> _credentials;
+	    #region Members
 
-		public Credentials(IEnumerable<KeyValuePair<string, HashSet<string>>> credentials)
-		{
-			_credentials = new Dictionary<string, HashSet<string>>();
+	    private Dictionary<string, HashSet<string>> _credentials;
+	    private readonly string _filePath;
 
-			foreach (KeyValuePair<string, HashSet<string>> credential in credentials)
-			{
-				_credentials[credential.Key] = new HashSet<string>(credential.Value);
-			}
-		}
+	    #endregion
 
-		public Credentials(string filePath)
-		{
-			_credentials = CredentialsReader.ReadCredentialsFromConfigFile(filePath);
-		}
+	    #region Constructors
 
-		public bool UserHasRight(string user, string right)
-		{
-		    return UserHasAnyRight(user, right);
-		}
+	    public Credentials(IEnumerable<KeyValuePair<string, HashSet<string>>> credentials)
+	    {
+	        _credentials = new Dictionary<string, HashSet<string>>();
 
-        public bool UserHasAnyRight(string user, params string[] rights)
+	        foreach (KeyValuePair<string, HashSet<string>> credential in credentials)
+	        {
+	            _credentials[credential.Key] = new HashSet<string>(credential.Value);
+	        }
+	    }
+
+	    public Credentials(string filePath)
+	    {
+	        _filePath = filePath;
+	        ReReadFromFile();
+	    }
+
+	    #endregion
+
+	    #region Public Methods
+
+        public void ReReadFromFile()
         {
-            if (user == null)
-                throw new ArgumentNullException("user");
-
-            if (rights == null)
-                return true;
-
-            user = user.ToLower();
-
-            if (!_credentials.ContainsKey(user))
-                return false;
-
-            foreach (string right in rights)
-            {
-                if (right == null)
-                    continue;
-
-                if (_credentials[user].Contains(right.ToLower()))
-                    return true;
-            }
-
-            return false;
+            _credentials = CredentialsReader.ReadCredentialsFromConfigFile(_filePath);
         }
 
-		public HashSet<string> GetAllUserRights(string user)
-		{
-			if (user == null)
-				throw new ArgumentNullException("user");
+	    public bool UserHasRight(string user, string right)
+	    {
+	        return UserHasAnyRight(user, right);
+	    }
 
-			user = user.ToLower();
+	    public bool UserHasAnyRight(string user, params string[] rights)
+	    {
+	        if (user == null)
+	            throw new ArgumentNullException("user");
 
-			return (!_credentials.ContainsKey(user)) ? new HashSet<string>() : new HashSet<string>(_credentials[user]);
-		}
+	        if (rights == null)
+	            return true;
+
+	        user = user.ToLower();
+
+	        if (!_credentials.ContainsKey(user))
+	            return false;
+
+	        foreach (string right in rights)
+	        {
+	            if (right == null)
+	                continue;
+
+	            if (_credentials[user].Contains(right.ToLower()))
+	                return true;
+	        }
+
+	        return false;
+	    }
+
+	    public HashSet<string> GetAllUserRights(string user)
+	    {
+	        if (user == null)
+	            throw new ArgumentNullException("user");
+
+	        user = user.ToLower();
+
+	        return (!_credentials.ContainsKey(user)) ? new HashSet<string>() : new HashSet<string>(_credentials[user]);
+	    }
+
+	    #endregion
 	}
 }
