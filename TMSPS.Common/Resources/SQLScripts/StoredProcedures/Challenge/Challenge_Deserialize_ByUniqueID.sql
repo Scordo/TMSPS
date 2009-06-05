@@ -1,5 +1,5 @@
 ﻿CREATE PROCEDURE dbo.Challenge_Deserialize_ByUniqueID
-	@UniqueID char(27)
+	@UniqueID varchar(27)
 AS
 BEGIN
 	Select

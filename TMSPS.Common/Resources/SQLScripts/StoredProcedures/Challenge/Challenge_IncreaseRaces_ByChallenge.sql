@@ -1,8 +1,8 @@
-﻿CREATE PROCEDURE dbo.Challenge_IncreaseRaces_ByChallenge
+﻿ALTER PROCEDURE [dbo].[Challenge_IncreaseRaces_ByChallenge]
 	@ID int,
-	@UniqueID char(27),
+	@UniqueID varchar(27),
 	@Name nvarchar(100),
-	@Author nvarchar(100),
+	@Author nvarchar(50),
 	@Environment nvarchar(20)
 AS
 BEGIN
@@ -57,4 +57,3 @@ BEGIN
 	
 	Select * FROM @InsertedValues
 END
-

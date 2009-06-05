@@ -1,5 +1,5 @@
 ﻿CREATE PROCEDURE dbo.Challenge_Delete
-	@challengeUniqueID char(27)
+	@challengeUniqueID varchar(27)
 AS
 	declare @challengeID int
 	SET @challengeID = (Select Top 1 ID FROM dbo.Challenge with(nolock) WHERE UniqueID = @challengeUniqueID)

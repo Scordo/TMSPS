@@ -1,6 +1,6 @@
 ﻿CREATE TABLE [dbo].[Challenge](
 	[ID] [int] IDENTITY(1,1) NOT NULL,
-	[UniqueID] [char](27) NOT NULL,
+	[UniqueID] [varchar](27) NOT NULL,
 	[Name] [nvarchar](100) NOT NULL,
 	[Author] [nvarchar](100) NOT NULL,
 	[Environment] [nvarchar](20) NOT NULL,

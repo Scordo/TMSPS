@@ -1,5 +1,5 @@
 ﻿CREATE PROCEDURE dbo.Challenge_IncreaseRaces_ByUniqueID
-	@UniqueID char(27)
+	@UniqueID varchar(27)
 AS
 BEGIN
 	declare @races int
