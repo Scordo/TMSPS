@@ -12,12 +12,6 @@ namespace TMSPS.Core.PluginSystem.Plugins
 {
     public class NameProtectionBotPlugin : TMSPSPlugin
     {
-        #region Constants
-
-        public const string COMMAND_READCLANTAG_SETTINGS = "ReadClanTagSettings";
-
-        #endregion
-
         #region Properties
 
         public override Version Version
@@ -119,10 +113,10 @@ namespace TMSPS.Core.PluginSystem.Plugins
             if (command == null)
                 return;
 
-            if (string.Compare(command.MainCommand, COMMAND_READCLANTAG_SETTINGS, StringComparison.InvariantCultureIgnoreCase) != 0)
+            if (string.Compare(command.MainCommand, Command.READCLANTAG_SETTINGS, StringComparison.InvariantCultureIgnoreCase) != 0)
                 return;
 
-            if (!Context.Credentials.UserHasAnyRight(e.Login, COMMAND_READCLANTAG_SETTINGS))
+            if (!Context.Credentials.UserHasAnyRight(e.Login, Command.READCLANTAG_SETTINGS))
             {
                 SendNoPermissionMessagetoLogin(e.Login);
                 return;

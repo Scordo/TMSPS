@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using TMSPS.Core.Common;
 using TMSPS.Core.Communication.EventArguments.Callbacks;
 using TMSPS.Core.Communication.ProxyTypes;
 using Version=System.Version;
@@ -9,13 +10,6 @@ namespace TMSPS.Core.PluginSystem.Plugins.TMX
 {
     public class TMXPlugin : TMSPSPlugin
     {
-        #region Constants
-
-        public const string TMX_INFO_COMMAND = "tmxinfo";
-        public const string TMX_ADD_TRACK_COMMAND = "addtrack";
-
-        #endregion
-
         #region Properties
 
         public override Version Version
@@ -78,7 +72,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.TMX
         {
             ServerCommand command = ServerCommand.Parse(e.Text);
 
-            if (command.IsMainCommandAnyOf(TMX_INFO_COMMAND))
+            if (command.IsMainCommandAnyOf(Command.TMX_INFO))
             {
                 if (command.PartsWithoutMainCommand.Count > 0)
                 {
@@ -112,10 +106,10 @@ namespace TMSPS.Core.PluginSystem.Plugins.TMX
         {
             ServerCommand command = ServerCommand.Parse(e.Text);
 
-            if (!command.IsMainCommandAnyOf(TMX_ADD_TRACK_COMMAND))
+            if (!command.IsMainCommandAnyOf(Command.TMX_ADD_TRACK))
                 return false;
 
-            if (!Context.Credentials.UserHasRight(e.Login, TMX_ADD_TRACK_COMMAND))
+            if (!Context.Credentials.UserHasRight(e.Login, Command.TMX_ADD_TRACK))
             {
                 SendNoPermissionMessagetoLogin(e.Login);
                 return true;

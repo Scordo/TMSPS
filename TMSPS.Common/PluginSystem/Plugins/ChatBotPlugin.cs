@@ -11,12 +11,6 @@ namespace TMSPS.Core.PluginSystem.Plugins
 {
     public class ChatBotPlugin : TMSPSPlugin
     {
-    	#region Constants
-
-    	public const string READ_SETTINGS_COMMAND = "ReadChatBotSettings";
-
-    	#endregion
-
     	#region Properties
 
     	public override Version Version
@@ -108,9 +102,9 @@ namespace TMSPS.Core.PluginSystem.Plugins
 
     	private bool CheckForReadSettingsCommand(PlayerChatEventArgs e)
     	{
-            if (ServerCommand.Parse(e.Text).IsMainCommandAnyOf(READ_SETTINGS_COMMAND))
+            if (ServerCommand.Parse(e.Text).IsMainCommandAnyOf(Command.READ_CHATBOT_SETTINGS))
     		{
-                if (Context.Credentials.UserHasRight(e.Login, READ_SETTINGS_COMMAND))
+                if (Context.Credentials.UserHasRight(e.Login, Command.READ_CHATBOT_SETTINGS))
 				{
 					if (ReadSettings())
                         SendFormattedMessageToLogin(e.Login, "{[#ServerStyle]}> {[#MessageStyle]}ChatBot-Settings successfully read!");

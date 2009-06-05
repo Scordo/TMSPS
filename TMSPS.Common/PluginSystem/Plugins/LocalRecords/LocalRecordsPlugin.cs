@@ -16,13 +16,6 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
 {
 	public class LocalRecordsPlugin : TMSPSPlugin
 	{
-	    #region Constants
-
-	    private const string DELETE_CHEATER_COMMAND = "DeleteCheater";
-        private const string GET_LOCAL_LOGINS_COMMAND = "GetLocalLogins";
-
-	    #endregion
-
 	    #region Properties
 
 	    public override Version Version { get { return new Version("1.0.0.0"); } }
@@ -200,12 +193,12 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
 
 	        ServerCommand command = ServerCommand.Parse(args.Text);
 
-	        if (command == null || !command.IsMainCommandAnyOf(DELETE_CHEATER_COMMAND) || command.PartsWithoutMainCommand.Count < 1)
+	        if (command == null || !command.IsMainCommandAnyOf(Command.DELETE_CHEATER) || command.PartsWithoutMainCommand.Count < 1)
 	            return false;
 
 	        string login = command.PartsWithoutMainCommand[0];
 
-            if (Context.Credentials.UserHasRight(args.Login, DELETE_CHEATER_COMMAND))
+            if (Context.Credentials.UserHasRight(args.Login, Command.DELETE_CHEATER))
             {
                 if (PlayerAdapter.RemoveAllStatsForLogin(login))
                 {
@@ -234,7 +227,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
 
             ServerCommand command = ServerCommand.Parse(args.Text);
 
-            if (command == null || !command.IsMainCommandAnyOf(GET_LOCAL_LOGINS_COMMAND))
+            if (command == null || !command.IsMainCommandAnyOf(Command.GET_LOCAL_LOGINS))
                 return false;
 
             DetermineLocalRecords();

@@ -53,6 +53,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Common\Command.cs" />
     <Compile Include="Common\ComparerFactory.cs" />
     <Compile Include="Common\EventArgs.cs" />
     <Compile Include="Common\FlatFileNicknameResolver.cs" />

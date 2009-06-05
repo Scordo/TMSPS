@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Security;
 using System.Xml.Linq;
+using TMSPS.Core.Common;
 using TMSPS.Core.Communication.EventArguments.Callbacks;
 using TMSPS.Core.ManiaLinking;
 using TMSPS.Core.PluginSystem.Configuration;
@@ -48,8 +49,9 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
 
         private bool CheckForTopSumsCommand(PlayerChatEventArgs args)
         {
-            if (string.Compare(args.Text, "/topsums", StringComparison.InvariantCultureIgnoreCase) != 0 && string.Compare(args.Text, "/summary", StringComparison.InvariantCultureIgnoreCase) != 0)
+            if (string.Compare(args.Text, Command.TOPSUMS, StringComparison.InvariantCultureIgnoreCase) != 0 && string.Compare(args.Text, Command.Summary, StringComparison.InvariantCultureIgnoreCase) != 0)
                 return false;
+
 
             SendTopSumsPageToLogin(args.Login, 0);
 

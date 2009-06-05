@@ -4,6 +4,7 @@ using System.Globalization;
 using System.Linq;
 using System.Security;
 using System.Xml.Linq;
+using TMSPS.Core.Common;
 using TMSPS.Core.Communication.ProxyTypes;
 using TMSPS.Core.Communication.ResponseHandling;
 using TMSPS.Core.ManiaLinking;
@@ -83,7 +84,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.AdminPlayer
 
         private void SendBanListPageToLogin(string login, uint? pageIndex)
         {
-            if (!LoginHasAnyRight(login, true, TMSPSCorePlugin.COMMAND_BAN))
+            if (!LoginHasAnyRight(login, true, Command.BAN))
                 return;
 
             const int MAX_BANLIST_SIZE = 1000;
