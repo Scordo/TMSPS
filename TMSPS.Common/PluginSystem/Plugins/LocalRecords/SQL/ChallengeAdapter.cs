@@ -117,7 +117,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords.SQL
             if (uniqueTrackIDs == null || uniqueTrackIDs.Count == 0)
                 return 0;
 
-			HashSet<string> uniqueTrackIDsFromDB = new HashSet<string>(SqlHelper.ExecuteClassListQuery("Challenge_GetAllUniqueTrackIDs", (DataRow row) => Convert.ToString(row["UniqueID"])));
+			HashSet<string> uniqueTrackIDsFromDB = new HashSet<string>(SqlHelper.ExecuteClassListQuery("Challenge_GetAllUniqueTrackIDs", (DataRow row) => Convert.ToString(row["UniqueID"])), StringComparer.Ordinal);
             uniqueTrackIDsFromDB.ExceptWith(uniqueTrackIDs);
 
         	foreach (string uniqueTrackID in uniqueTrackIDsFromDB)
