@@ -241,6 +241,7 @@
     <Compile Include="PluginSystem\Plugins\LocalRecords\LocalRecordsUISettings.cs" />
     <Compile Include="PluginSystem\Configuration\PagedUIDialogSettings.cs" />
     <Compile Include="PluginSystem\Plugins\LocalRecords\RankEntry.cs" />
+    <Compile Include="PluginSystem\Plugins\LocalRecords\RatingUIPlugin.cs" />
     <Compile Include="PluginSystem\Plugins\LocalRecords\TopRankingEntry.cs" />
     <Compile Include="PluginSystem\Plugins\LocalRecords\UITemplates.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -314,6 +315,7 @@
     <Content Include="Components\log4net.dll" />
     <Content Include="Components\log4net.xml" />
     <Content Include="Resources\ManiaLinkPageLayouts\AdminPlayer\UserView.xml" />
+    <Content Include="Resources\ManiaLinkPageLayouts\LocalRecords\Rating.xml" />
     <Content Include="Resources\ManiaLinkPageLayouts\StaticUI\TMSPSAdvertise.xml" />
     <Content Include="Resources\SQLScripts\Structure\CreationOrder.txt" />
   </ItemGroup>
@@ -345,6 +347,8 @@
     <None Include="Resources\SQLScripts\StoredProcedures\Ranking\Ranking_ReCreateRanks.sql" />
     <None Include="Resources\SQLScripts\StoredProcedures\Ranking\Ranking_UpdateForChallenge.sql" />
     <None Include="Resources\SQLScripts\StoredProcedures\Ranking\Ranking_UpdateForChallenge_ByChallengeUID.sql" />
+    <None Include="Resources\SQLScripts\StoredProcedures\Rating\Rating_GetAverageVot.sql" />
+    <None Include="Resources\SQLScripts\StoredProcedures\Rating\Rating_GetVoteByLogin.sql" />
     <None Include="Resources\SQLScripts\StoredProcedures\Rating\Rating_Vote.sql" />
     <None Include="Resources\SQLScripts\StoredProcedures\Record\Record_GetBest.sql" />
     <None Include="Resources\SQLScripts\StoredProcedures\Record\Record_GetTopRecords.sql" />

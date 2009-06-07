@@ -181,7 +181,7 @@ namespace TMSPS.Core.SQL
 
             if (typeof(TReturnType).IsGenericType && typeof(TReturnType).GetGenericTypeDefinition() == typeof(Nullable<>).GetGenericTypeDefinition())
             {
-                if (result == null)
+                if (result == null || result == DBNull.Value)
                     return default(TReturnType);
 
                 convertToType = typeof (TReturnType).GetGenericArguments()[0];

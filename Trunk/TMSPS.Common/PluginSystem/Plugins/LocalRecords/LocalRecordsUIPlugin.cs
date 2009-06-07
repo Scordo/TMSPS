@@ -48,7 +48,6 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
             UpdateLocalRecordTimer = new TimedVolatileExecutionQueue<string>(TimeSpan.FromSeconds(Settings.UpdateInterval));
 
             //SendPBManiaLinkPageToAll(null);
-            HostPlugin.PlayerVoted += HostPlugin_PlayerVoted;
             HostPlugin.PlayerNewRecord += HostPlugin_PlayerNewRecord;
             HostPlugin.LocalRecordsDetermined += HostPlugin_LocalRecordsDetermined;
             HostPlugin.PlayerWins += HostPlugin_PlayerWins;
@@ -283,13 +282,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
                 SendEmptyManiaLinkPage(_localRecordListManiaLinkPageID);
         }
 
-        private void HostPlugin_PlayerVoted(object sender, PlayerVoteEventArgs e)
-        {
-            if (Settings.ShowMessages)
-            {
-                SendFormattedMessageToLogin(e.Login, Settings.VoteAcceptedMessage, "AverageVote", e.AverageVoteValue.ToString("F", CultureInfo.InvariantCulture));
-            }
-        }
+        
 
         private void HostPlugin_PlayerNewRecord(object sender, PlayerNewRecordEventArgs e)
         {
@@ -490,7 +483,6 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
             UpdateListTimer.Stop();
             UpdateLocalRecordTimer.Stop();
 
-            HostPlugin.PlayerVoted -= HostPlugin_PlayerVoted;
             HostPlugin.PlayerNewRecord -= HostPlugin_PlayerNewRecord;
             HostPlugin.LocalRecordsDetermined -= HostPlugin_LocalRecordsDetermined;
             Context.RPCClient.Callbacks.EndRace -= Callbacks_EndRace;

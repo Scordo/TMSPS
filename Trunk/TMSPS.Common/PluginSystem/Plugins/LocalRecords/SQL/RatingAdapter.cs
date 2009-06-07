@@ -45,6 +45,26 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords.SQL
             return SqlHelper.ExecuteScalar<double?>("Rating_Vote", parameters);
         }
 
+        public double? GetVoteByLogin(string login, int challengeID)
+        {
+            if (login.IsNullOrTimmedEmpty())
+                throw new ArgumentException("Login is null or empty.");
+
+            Dictionary<string, object> parameters = new Dictionary<string, object>
+            {
+                {"Login", login.Trim()},
+                {"ChallengeID", challengeID}
+            };
+
+            return SqlHelper.ExecuteScalar<double?>("Rating_GetVoteByLogin", parameters);
+        }
+
+        public double? GetAverageVote(int challengeID)
+        {
+            return SqlHelper.ExecuteScalar<double?>("Rating_GetAverageVote", "ChallengeID", challengeID);
+        }
+
+
         #endregion
 
     }
