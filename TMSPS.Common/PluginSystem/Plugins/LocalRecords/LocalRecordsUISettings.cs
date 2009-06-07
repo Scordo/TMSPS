@@ -10,7 +10,6 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
         #region Constants
 
         public const uint MAX_RECORDS_TO_SHOW = 20;
-        public const string VOTE_ACCEPTED_MESSAGE = "{[#ServerStyle]}> {[#MessageStyle]}Vote accepted! Average vote is: {[#HighlightStyle]}{[AverageVote]}";
         public const string FIRST_LOCAL_RANK_MESSAGE = "{[#ServerStyle]}>> {[#HighlightStyle]}{[Nickname]}$z{[#RecordStyle]} gained the {[#RankStyle]}{[Rank]}{[#RecordStyle]}. Local Record!";
         public const string NEW_LOCAL_RANK_MESSAGE = "{[#ServerStyle]}>> {[#HighlightStyle]}{[Nickname]}$z{[#RecordStyle]} claimed the {[#RankStyle]}{[NewRank]}{[#RecordStyle]}. Local Record!";
         public const string IMPROVED_LOCAL_RANK_MESSAGE = "{[#ServerStyle]}>> {[#HighlightStyle]}{[Nickname]}$z{[#RecordStyle]} secured his/her {[#RankStyle]}{[Rank]}{[#RecordStyle]}. Local Record!";
@@ -48,7 +47,6 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
         public uint UpdateInterval { get; set; }
         public uint StaticModeStartLimit { get; private set; }
 
-        public string VoteAcceptedMessage { get; private set; }
         public string FirstLocalRankMessage { get; private set; }
         public string NewLocalRankMessage { get; private set; }
         public string ImprovedLocalRankMessage { get; private set; }
@@ -91,7 +89,6 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
             result.ShowLocalRecordUserInterface = ReadConfigBool(configDocument.Root, "ShowLRUI", SHOW_LOCAL_RECORD_UI, xmlConfigurationFile);
             result.ShowLocalRecordListUserInterface = ReadConfigBool(configDocument.Root, "ShowLRListUI", SHOW_LOCAL_RECORD_LIST_UI, xmlConfigurationFile);
             result.HideRecordListUIOnFinish = ReadConfigBool(configDocument.Root, "HideLRListUIOnFinish", HIDE_RECORD_LIST_UI_ON_FINISH, xmlConfigurationFile);
-            result.VoteAcceptedMessage = ReadConfigString(configDocument.Root, "VoteAcceptedMessage", VOTE_ACCEPTED_MESSAGE, xmlConfigurationFile);
             result.FirstLocalRankMessage = ReadConfigString(configDocument.Root, "FirstLocalRankMessage", FIRST_LOCAL_RANK_MESSAGE, xmlConfigurationFile);
             result.NewLocalRankMessage = ReadConfigString(configDocument.Root, "NewLocalRankMessage", NEW_LOCAL_RANK_MESSAGE, xmlConfigurationFile);
             result.ImprovedLocalRankMessage = ReadConfigString(configDocument.Root, "ImprovedLocalRankMessage", IMPROVED_LOCAL_RANK_MESSAGE, xmlConfigurationFile);

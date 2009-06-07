@@ -1,0 +1,43 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Settings>
+	<VoteAcceptedMessage>{[#ServerStyle]}> {[#MessageStyle]}Vote accepted! Average vote is: {[#HighlightStyle]}{[AverageVote]}</VoteAcceptedMessage>
+	<OwnVoteTemplate>
+		<manialink id="{[ManiaLinkID]}">
+			<frame posn="49 32.65 0">
+				<frame posn="1 -1.67 0.1">
+					<quad posn="-1 0 0" sizen="7.5 5" style="Bgs1InRace" substyle="NavButton"/>
+					<label posn="-0.5 -0.5 0.2" sizen="3 1" text="Yours" textsize="1" />
+					<quad posn="0.0 -3.0 0.2"	sizen="0.8 1.5" style="Icons64x64_1" substyle="{[0]}" action="{[A0]}"/>
+					<quad posn="0.5 -2.7 0.2" sizen="0.9 1.8" style="Icons64x64_1" substyle="{[1]}" action="{[A1]}"/>
+					<quad posn="1.0 -2.4 0.2" sizen="1.0 2.1" style="Icons64x64_1" substyle="{[2]}" action="{[A2]}"/>
+					<quad posn="1.6 -2.1 0.2" sizen="1.1 2.4" style="Icons64x64_1" substyle="{[3]}" action="{[A3]}"/>
+					<quad posn="2.2 -1.8 0.2" sizen="1.2 2.7" style="Icons64x64_1" substyle="{[4]}" action="{[A4]}"/>
+					<quad posn="2.8 -1.5 0.2" sizen="1.3 3.0" style="Icons64x64_1" substyle="{[5]}" action="{[A5]}"/>
+					<quad posn="3.4 -1.2 0.2" sizen="1.4 3.3" style="Icons64x64_1" substyle="{[6]}" action="{[A6]}"/>
+					<quad posn="4.1 -0.9 0.2" sizen="1.5 3.6" style="Icons64x64_1" substyle="{[7]}" action="{[A7]}"/>
+					<quad posn="4.8 -0.6 0.2" sizen="1.6 3.9" style="Icons64x64_1" substyle="{[8]}" action="{[A8]}"/>
+				</frame>
+			</frame>
+		</manialink>
+	</OwnVoteTemplate>
+	<AllVoteTemplate>
+		<manialink id="{[ManiaLinkID]}">
+			<frame posn="49 32.65 0">
+				<label posn="7.5 0" halign="center" text="Track Rating" textsize="1" textcolor="000F"/>
+				<frame posn="8.5 -1.65 0.1">
+					<quad posn="-1 0 0" sizen="7.5 5" style="Bgs1InRace" substyle="NavButton"/>
+					<label posn="-0.5 -0.5 0.2" sizen="3 1" text="AII" textsize="1" />
+					<quad posn="0.0 -3.0 0.2"	sizen="0.8 1.5" style="Icons64x64_1" substyle="{[0]}"/>
+					<quad posn="0.5 -2.7 0.2" sizen="0.9 1.8" style="Icons64x64_1" substyle="{[1]}"/>
+					<quad posn="1.0 -2.4 0.2" sizen="1.0 2.1" style="Icons64x64_1" substyle="{[2]}"/>
+					<quad posn="1.6 -2.1 0.2" sizen="1.1 2.4" style="Icons64x64_1" substyle="{[3]}"/>
+					<quad posn="2.2 -1.8 0.2" sizen="1.2 2.7" style="Icons64x64_1" substyle="{[4]}"/>
+					<quad posn="2.8 -1.5 0.2" sizen="1.3 3.0" style="Icons64x64_1" substyle="{[5]}"/>
+					<quad posn="3.4 -1.2 0.2" sizen="1.4 3.3" style="Icons64x64_1" substyle="{[6]}"/>
+					<quad posn="4.1 -0.9 0.2" sizen="1.5 3.6" style="Icons64x64_1" substyle="{[7]}"/>
+					<quad posn="4.8 -0.6 0.2" sizen="1.6 3.9" style="Icons64x64_1" substyle="{[8]}"/>
+				</frame>
+			</frame>
+		</manialink>
+	</AllVoteTemplate>
+</Settings>

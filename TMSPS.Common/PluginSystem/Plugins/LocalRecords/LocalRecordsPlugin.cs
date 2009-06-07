@@ -42,12 +42,12 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
 
 	    #region Events
 
-	    public event EventHandler<PlayerVoteEventArgs> PlayerVoted;
 	    public event EventHandler<PlayerNewRecordEventArgs> PlayerNewRecord;
 	    public event EventHandler<PlayerWinEventArgs> PlayerWins;
 	    public event EventHandler<PlayerCreatedOrUpdatedEventArgs> PlayerCreatedOrUpdated;
 	    public event EventHandler<ChallengeCreatedOrUpdatedEventArgs> ChallengeCreatedOrUpdated;
 	    public event EventHandler<EventArgs<RankEntry[]>> LocalRecordsDetermined;
+	    public event EventHandler ChallengeChanged;
 
 	    #endregion
 
@@ -149,9 +149,6 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
 
 	        RunCatchLog(()=>
             {
-                if (CheckForVotingCommand(e))
-                    return;
-
                 if (CheckForDeleteCheaterCommand(e))
                     return;
 
@@ -159,31 +156,6 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
                     return;
 
             }, "Error in Callbacks_PlayerChat Method.", true);
-	    }
-
-	    private bool CheckForVotingCommand(PlayerChatEventArgs args)
-	    {
-	        if (args.IsServerMessage || args.Text.IsNullOrTimmedEmpty() || args.IsRegisteredCommand)
-	            return false;
-
-	        string message = args.Text.Trim();
-	        ushort? voteValue;
-
-	        Dictionary<string, ushort?> voteValues = new Dictionary<string, ushort?> {{ "++", 8 }, { "--", 0 }, { "+-", 4 }, { "-+", 4 }, 
-	                                                                                  { "+1", 1 }, { "+2", 2 }, { "+3", 3 }, { "+4", 4 }, 
-	                                                                                  { "+5", 5 }, { "+6", 6 }, { "+7", 7 }, { "+8", 8 }};
-
-	        voteValues.TryGetValue(message, out voteValue);
-
-	        if (voteValue.HasValue)
-	        {
-	            double? averageVote = RatingAdapter.Vote(args.Login, CurrentChallengeID, voteValue.Value);
-
-	            if (averageVote.HasValue)
-	                OnPlayerVoted(args.Login, CurrentChallengeID, voteValue.Value, averageVote.Value);
-	        }
-
-	        return true;
 	    }
 
 	    private bool CheckForDeleteCheaterCommand(PlayerChatEventArgs args)
@@ -385,6 +357,9 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
                 EnsureChallengeExistsInStorage(e.ChallengeInfo);
                 DetermineLocalRecords();
                 OnLocalRecordsDetermined(new List<RankEntry>(LocalRecords));
+
+                if (ChallengeChanged != null)
+                    ChallengeChanged(this, EventArgs.Empty);
             }, "Error in Callbacks_BeginRace Method.", true);
 	    }
 
@@ -449,12 +424,6 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
 	        Context.RPCClient.Callbacks.PlayerFinish -= Callbacks_PlayerFinish;
 	    }
 
-	    protected void OnPlayerVoted(string login, int challengeID, ushort voteValue, double averageVoteValue)
-	    {
-	        if (PlayerVoted != null)
-	            PlayerVoted(this, new PlayerVoteEventArgs(login, challengeID, voteValue, averageVoteValue));
-	    }
-
 	    protected void OnPlayerNewRecord(string login, string nickname, int timeOrScore, uint? oldPosition, uint? newPosition)
 	    {
 	        if (PlayerNewRecord != null)
@@ -487,30 +456,6 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
 
 	    #endregion
 	}
-
-    public class PlayerVoteEventArgs : EventArgs
-    {
-        #region Properties
-
-        public string Login { get; private set; }
-        public int ChallengeID { get; private set; }
-        public ushort VoteValue { get; private set; }
-        public double AverageVoteValue { get; private set; }
-
-        #endregion
-
-        #region Constructor
-
-        public PlayerVoteEventArgs(string login, int challengeID, ushort voteValue, double averageVoteValue)
-        {
-            Login = login;
-            ChallengeID = challengeID;
-            VoteValue = voteValue;
-            AverageVoteValue = averageVoteValue;
-        }
-
-        #endregion
-    }
 
     public class PlayerNewRecordEventArgs: EventArgs
     {

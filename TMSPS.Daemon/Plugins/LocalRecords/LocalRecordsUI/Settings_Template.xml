@@ -7,7 +7,6 @@
 	<ShowLRUI>true</ShowLRUI>
 	<ShowLRListUI>true</ShowLRListUI>
 	<HideLRListUIOnFinish>true</HideLRListUIOnFinish>
-	<VoteAcceptedMessage>$zHey, $zVote accepted! Average vote is: {[AverageVote]}</VoteAcceptedMessage>
 	<FirstLocalRankMessage>$zHey, {[Nickname]}$z got his first local rank: $w$s$0f0{[Rank]}$z!</FirstLocalRankMessage>
 	<NewLocalRankMessage>$zHey, {[Nickname]}$z achieved local rank: $w$s$0f0{[NewRank]}$z. Old rank: $w$s{[OldRank]}</NewLocalRankMessage>
 	<ImprovedLocalRankMessage>$zHey, {[Nickname]}$z improved his/her local rank: $w$s$0f0{[Rank]}$z</ImprovedLocalRankMessage>
