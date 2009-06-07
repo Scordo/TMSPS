@@ -59,6 +59,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
         {
             _lastAverageVoteValue = HostPlugin.RatingAdapter.GetAverageVote(HostPlugin.CurrentChallengeID);
             SendAllVoteManiaLinkPage(_lastAverageVoteValue);
+            SendOwnVoteManiaLinkPageToAll(HostPlugin.CurrentChallengeID);
         }
 
         private void Callbacks_PlayerChat(object sender, Communication.EventArguments.Callbacks.PlayerChatEventArgs e)
