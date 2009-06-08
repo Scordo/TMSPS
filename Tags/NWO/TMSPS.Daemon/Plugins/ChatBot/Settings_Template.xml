@@ -1,9 +1,0 @@
-﻿<?xml version="1.0" encoding="utf-8" ?>
-<Settings>
-	<Botname>$w$f00[Scordo's Bot] $z</Botname>
-	<Phrases>
-		<Phrase values="test|dev" answer="Don't bother me"/>
-		<Phrase values="scordo|tst|sco" answer="Yepp that's my master!"/>
-		<Phrase values="brb" answer="Dont be slow!!!!"/>
-	</Phrases>
-</Settings>
