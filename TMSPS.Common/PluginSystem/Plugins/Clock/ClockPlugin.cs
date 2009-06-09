@@ -60,6 +60,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.Clock
 
         protected override void Dispose(bool connectionLost)
         {
+            Context.RPCClient.Callbacks.PlayerConnect -= Callbacks_PlayerConnect;
             StopClockTimer();
         }
 
