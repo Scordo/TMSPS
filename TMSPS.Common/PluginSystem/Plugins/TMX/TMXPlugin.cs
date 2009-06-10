@@ -4,6 +4,7 @@ using System.IO;
 using TMSPS.Core.Common;
 using TMSPS.Core.Communication.EventArguments.Callbacks;
 using TMSPS.Core.Communication.ProxyTypes;
+using TMSPS.Core.Communication.ResponseHandling;
 using Version=System.Version;
 
 namespace TMSPS.Core.PluginSystem.Plugins.TMX
@@ -91,17 +92,6 @@ namespace TMSPS.Core.PluginSystem.Plugins.TMX
             return false;
         }
 
-        private void WriteTMXTrack(byte[] content, string trackID)
-        {
-            string targetFilePath = TMXInfo.GetTMXFilePath(Context.ServerInfo.TrackDirectory, trackID);
-            string targetDirectory = Path.GetDirectoryName(targetFilePath);
-
-            if (!Directory.Exists(targetDirectory))
-                Directory.CreateDirectory(targetDirectory);
-
-            File.WriteAllBytes(targetFilePath, content);
-        }
-
         private bool CheckForTMXAddTrackCommand(PlayerChatEventArgs e)
         {
             ServerCommand command = ServerCommand.Parse(e.Text);
@@ -145,11 +135,23 @@ namespace TMSPS.Core.PluginSystem.Plugins.TMX
 
             if (trackData != null)
             {
-                string targetTrackFilePath = tmxInfo.GetTMXFilePath(Context.ServerInfo.TrackDirectory);
+                string targetTrackFilePath = tmxInfo.GetRelativeFilePath();
 
+                GenericResponse<bool> writeFileResponse = Context.RPCClient.Methods.WriteFile(targetTrackFilePath, trackData);
 
-                WriteTMXTrack(trackData, trackID);
-                Context.RPCClient.Methods.AddChallenge(targetTrackFilePath);
+                if (writeFileResponse.Erroneous || !writeFileResponse.Value)
+                {
+                    SendFormattedMessageToLogin(e.Login, "{[#ServerStyle]}>{[#ErrorStyle] Could write track {[#HighlightStyle]}{[Trackname]}{[#ErrorStyle]} with trackid {[#HighlightStyle]}{[TrackID]}.", "Trackname", tmxInfo.Name, "TrackID", trackID);
+                    return true;
+                }
+
+                GenericResponse<bool> addtrackResponse = Context.RPCClient.Methods.AddChallenge(targetTrackFilePath);
+
+                if (addtrackResponse.Erroneous || !addtrackResponse.Value)
+                {
+                    SendFormattedMessageToLogin(e.Login, "{[#ServerStyle]}>{[#ErrorStyle] Could add track {[#HighlightStyle]}{[Trackname]}{[#ErrorStyle]} with trackid {[#HighlightStyle]}{[TrackID]}.", "Trackname", tmxInfo.Name, "TrackID", trackID);
+                    return true;
+                }
 
                 SendFormattedMessageToLogin(e.Login, "{[#ServerStyle]}> {[#MessageStyle]}Track {[#HighlightStyle]}{[Trackname]}{[#MessageStyle]} with trackid {[#HighlightStyle]}{[TrackID]}{[#MessageStyle]} added to tracklist.", "Trackname", tmxInfo.Name, "TrackID", trackID);
 
