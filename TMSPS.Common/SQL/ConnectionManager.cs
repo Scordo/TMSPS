@@ -152,10 +152,7 @@ namespace TMSPS.Core.SQL
         public void CommitTransaction(bool transactionExisted)
         {
             if (!transactionExisted)
-            {
                 _transaction.Commit();
-                CloseConnection();
-            }
         }
 
         /// <summary>
@@ -172,10 +169,7 @@ namespace TMSPS.Core.SQL
         public void RollbackTransaction(bool transactionExisted)
         {
             if (!transactionExisted)
-            {
                 _transaction.Rollback();
-                CloseConnection();
-            }
         }
 
         /// <summary>
@@ -184,9 +178,7 @@ namespace TMSPS.Core.SQL
         public void CloseConnection()
         {
             if (_connection != null && _connection.State == ConnectionState.Open)
-            {
                 _connection.Close();
-            }
         }
 
         /// <summary>
