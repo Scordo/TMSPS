@@ -71,10 +71,20 @@ namespace TMSPS.Core.PluginSystem
         	string mainDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
 			string pluginsSettingsFile = Path.Combine(mainDirectory, @"Plugins\Settings.xml");
 			
-            List<ITMSPSPlugin> result = new List<ITMSPSPlugin>();
-            result.Add(new TMSPSCorePlugin());
+            List<ITMSPSPlugin> result = new List<ITMSPSPlugin> {new TMSPSCorePlugin()};
 
-			foreach (PluginConfigEntry pluginConfigEntry in PluginUtil.GetEnabledPlugins(pluginsSettingsFile))
+            PluginConfigEntryCollection pluginConfigEntries;
+
+            try
+            {
+                pluginConfigEntries = PluginUtil.GetEnabledPlugins(pluginsSettingsFile);
+            }
+            catch (Exception ex)
+            {
+                throw new ConfigurationErrorsException("Error while reading the list of plugins from Settings.xml", ex);
+            }
+
+            foreach (PluginConfigEntry pluginConfigEntry in pluginConfigEntries)
             {
                 _log.Debug(string.Format("Instantiating ITMSPSPlugin {0}", pluginConfigEntry.PluginClass));
                 result.Add(Instancer.GetInstanceOfInterface<ITMSPSPlugin>(pluginConfigEntry.AssemblyName, pluginConfigEntry.PluginClass));
