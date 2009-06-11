@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Xml.Linq;
-using TMSPS.Core.Communication.ProxyTypes;
 using TMSPS.Core.PluginSystem;
 
 namespace TMSPS.Core.Common
@@ -14,7 +13,6 @@ namespace TMSPS.Core.Common
         protected Dictionary<string, NicknameResolverCacheEntry> NicknameCache { get; private set; }
 
         #endregion
-
 
         #region INicknameResolver Members
 

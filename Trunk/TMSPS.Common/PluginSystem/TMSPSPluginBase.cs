@@ -4,7 +4,6 @@ using System.Globalization;
 using System.IO;
 using System.Reflection;
 using System.Text.RegularExpressions;
-using TMSPS.Core.Common;
 using TMSPS.Core.Logging;
 using System.Linq;
 using TMSPS.Core.ManiaLinking;
@@ -92,72 +91,72 @@ namespace TMSPS.Core.PluginSystem
             
         }
 
-		protected void RunCatchLog(ParameterlessMethodDelegate logic)
+        protected void RunCatchLog(Action logic)
 		{
 			RunCatchLog(logic, null, false);
 		}
 
-		protected static void RunCatchLog(ParameterlessMethodDelegate logic, IUILogger logger)
+        protected static void RunCatchLog(Action logic, IUILogger logger)
 		{
 			RunCatchLog(logic, null, false, logger);
 		}
 
-		protected void RunCatchLog(ParameterlessMethodDelegate logic, string additionalMessage)
+        protected void RunCatchLog(Action logic, string additionalMessage)
 		{
 			RunCatchLog(logic, additionalMessage, false);
 		}
 
-		protected static void RunCatchLog(ParameterlessMethodDelegate logic, string additionalMessage, IUILogger logger)
+        protected static void RunCatchLog(Action logic, string additionalMessage, IUILogger logger)
 		{
 			RunCatchLog(logic, additionalMessage, false, logger);
 		}
 
-		protected void RunCatchLog(ParameterlessMethodDelegate logic, string additionalMessage, bool msgToUI)
+        protected void RunCatchLog(Action logic, string additionalMessage, bool msgToUI)
 		{
 			RunCatchLogThrow(logic, additionalMessage, msgToUI, false);
 		}
 
-		protected static void RunCatchLog(ParameterlessMethodDelegate logic, string additionalMessage, bool msgToUI, IUILogger logger)
+        protected static void RunCatchLog(Action logic, string additionalMessage, bool msgToUI, IUILogger logger)
 		{
 			RunCatchLogThrow(logic, additionalMessage, msgToUI, false, logger);
 		}
 
-		protected void RunCatchLogReThrow(ParameterlessMethodDelegate logic)
+        protected void RunCatchLogReThrow(Action logic)
 		{
 			RunCatchLogReThrow(logic, null, false);
 		}
 
-		protected static void RunCatchLogReThrow(ParameterlessMethodDelegate logic, IUILogger logger)
+        protected static void RunCatchLogReThrow(Action logic, IUILogger logger)
 		{
 			RunCatchLogReThrow(logic, null, false, logger);
 		}
 
-		protected void RunCatchLogReThrow(ParameterlessMethodDelegate logic, string additionalMessage)
+        protected void RunCatchLogReThrow(Action logic, string additionalMessage)
 		{
 			RunCatchLogReThrow(logic, additionalMessage, false);
 		}
 
-		protected static void RunCatchLogReThrow(ParameterlessMethodDelegate logic, string additionalMessage, IUILogger logger)
+        protected static void RunCatchLogReThrow(Action logic, string additionalMessage, IUILogger logger)
 		{
 			RunCatchLogReThrow(logic, additionalMessage, false, logger);
 		}
 
-		protected void RunCatchLogReThrow(ParameterlessMethodDelegate logic, string additionalMessage, bool msgToUI)
+        protected void RunCatchLogReThrow(Action logic, string additionalMessage, bool msgToUI)
 		{
 			RunCatchLogThrow(logic, additionalMessage, msgToUI, true);
 		}
 
-		protected static void RunCatchLogReThrow(ParameterlessMethodDelegate logic, string additionalMessage, bool msgToUI, IUILogger logger)
+        protected static void RunCatchLogReThrow(Action logic, string additionalMessage, bool msgToUI, IUILogger logger)
 		{
 			RunCatchLogThrow(logic, additionalMessage, msgToUI, true, logger);
 		}
 
-		private void RunCatchLogThrow(ParameterlessMethodDelegate logic, string additionalMessage, bool msgToUI, bool rethrowException)
+        private void RunCatchLogThrow(Action logic, string additionalMessage, bool msgToUI, bool rethrowException)
 		{
 			RunCatchLogThrow(logic, additionalMessage, msgToUI, rethrowException, Logger);
 		}
 
-		protected static void RunCatchLogThrow(ParameterlessMethodDelegate logic, string additionalMessage, bool msgToUI, bool rethrowException, IUILogger logger)
+        protected static void RunCatchLogThrow(Action logic, string additionalMessage, bool msgToUI, bool rethrowException, IUILogger logger)
 		{
 			if (logger == null)
 				throw new ArgumentNullException("logger");
