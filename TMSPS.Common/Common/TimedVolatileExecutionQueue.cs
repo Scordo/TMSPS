@@ -4,8 +4,6 @@ using System.Collections.Generic;
 
 namespace TMSPS.Core.Common
 {
-    public delegate void ParameterizedMethod<T>(T parameter);
-
     public class TimedVolatileExecutionQueue<TMethodParameter>
     {
         #region Non Public Members
@@ -39,7 +37,7 @@ namespace TMSPS.Core.Common
 
         #region Public Methods
 
-        public void Enqueue(ParameterizedMethod<TMethodParameter> methodToExecute, TMethodParameter methodParameter)
+        public void Enqueue(Action<TMethodParameter> methodToExecute, TMethodParameter methodParameter)
         {
             lock (_stackModifyLockObject)
             {
@@ -89,18 +87,17 @@ namespace TMSPS.Core.Common
         {
             #region Properties
 
-            public ParameterizedMethod<TParameter> MethodToExecute { get; private set; }
+            public Action<TParameter> MethodToExecute { get; private set; }
             public TParameter MethodParameter { get; private set; }
 
             #endregion
 
             #region Constructor
 
-            public TimedVolatileExecutionQueueItem(ParameterizedMethod<TParameter> methodToExecute, TParameter methodParameter)
+            public TimedVolatileExecutionQueueItem(Action<TParameter> methodToExecute, TParameter methodParameter)
             {
                 if (methodToExecute == null)
                     throw new ArgumentNullException("methodToExecute");
-
 
                 MethodToExecute = methodToExecute;
                 MethodParameter = methodParameter;
