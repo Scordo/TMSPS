@@ -121,7 +121,7 @@ namespace TMSPS.Core.SQL
         /// Executes the provided logic in an transaction and conditionally does a rollback and commit
         /// </summary>
         /// <param name="delLogic">The logic to execute in an transaction</param>
-        public void RunInTransaction(ParameterlessMethodDelegate delLogic)
+        public void RunInTransaction(Action delLogic)
         {
             ConnectionManager.RunInTransaction(delLogic);
         }

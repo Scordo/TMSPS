@@ -63,7 +63,6 @@
     <Compile Include="Common\NicknameResolverBase.cs" />
     <Compile Include="Common\NicknameResolverCacheEntry.cs" />
     <Compile Include="Common\NicknameResolverFactory.cs" />
-    <Compile Include="Common\ParameterlessMethodDelegate.cs" />
     <Compile Include="Common\ReadOnlyDictionary.cs" />
     <Compile Include="Common\SettingsBase.cs" />
     <Compile Include="Common\SqlNicknameResolver.cs" />

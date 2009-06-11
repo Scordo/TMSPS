@@ -1,4 +1,6 @@
-﻿namespace TMSPS.Core.Common
+﻿using System;
+
+namespace TMSPS.Core.Common
 {
     /// <summary>
     /// The inetrface each adapter should implement
@@ -37,7 +39,7 @@
         /// Executes the provided logic in an transaction and conditionally does a rollback and commit
         /// </summary>
         /// <param name="delLogic">The logic to execute in an transaction</param>
-        void RunInTransaction(ParameterlessMethodDelegate delLogic);
+        void RunInTransaction(Action delLogic);
 
         /// <summary>
         /// Copies the context from <paramref name="adapter"/> to the current instance. A context is for example a connection for db-adapter or something simmilar.
