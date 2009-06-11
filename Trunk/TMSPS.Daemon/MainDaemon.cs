@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 using TMSPS.Core.Common;
@@ -146,16 +147,32 @@ namespace TMSPS.Daemon
 
         private void ReadyForSendingCommands(object sender, EventArgs e)
         {
-            GenericResponse<bool> authResponse = _client.Methods.Authenticate("SuperAdmin", ConfigSettings.SuperAdminPassword);
-            
-            if (authResponse == null || authResponse.Erroneous || !authResponse.Value)
-                Log.FatalToUI("Authentication failed!");
-            else
+            try
             {
-                Log.InfoToUI("Authentication successfull");
-                _client.Methods.EnableCallbacks(true);
+                GenericResponse<bool> authResponse = _client.Methods.Authenticate("SuperAdmin", ConfigSettings.SuperAdminPassword);
 
-                InitializePlugins();    
+                if (authResponse == null || authResponse.Erroneous || !authResponse.Value)
+                    Log.FatalToUI("Authentication failed!");
+                else
+                {
+                    Log.InfoToUI("Authentication successfull");
+
+                    GenericResponse<bool> enableCallbacksResponse = _client.Methods.EnableCallbacks(true);
+
+                    if (enableCallbacksResponse.Erroneous || !enableCallbacksResponse.Value)
+                    {
+                        Log.ErrorToUI("Error enabling callbacks!");
+                        Process.GetCurrentProcess().Close();
+                        return;
+                    }
+
+                    InitializePlugins();
+                }
+            }
+            catch (Exception ex)
+            {
+                Log.ErrorToUI("An exception was thrown during ReadyForSendingCommands stage!", ex);
+                throw;
             }
         }
 
