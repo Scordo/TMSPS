@@ -337,9 +337,11 @@
     <None Include="Resources\SQLScripts\StoredProcedures\Position\Position_Add.sql" />
     <None Include="Resources\SQLScripts\StoredProcedures\Position\Position_Deserialize_List_ByMost.sql" />
     <None Include="Resources\SQLScripts\StoredProcedures\Ranking\Ranking_Deserialize_ByLogin.sql" />
+    <None Include="Resources\SQLScripts\StoredProcedures\Ranking\Ranking_Deserialize_ByRank.sql" />
     <None Include="Resources\SQLScripts\StoredProcedures\Ranking\Ranking_Deserialize_List.sql" />
     <None Include="Resources\SQLScripts\StoredProcedures\Ranking\Ranking_Deserialize_List_ByMost.sql" />
     <None Include="Resources\SQLScripts\StoredProcedures\Ranking\Ranking_GetAmountOfRank.sql" />
+    <None Include="Resources\SQLScripts\StoredProcedures\Ranking\Ranking_GetNextRank.sql" />
     <None Include="Resources\SQLScripts\StoredProcedures\Ranking\Ranking_GetTopRankings.sql" />
     <None Include="Resources\SQLScripts\StoredProcedures\Ranking\Ranking_GetTopRankingsCount.sql" />
     <None Include="Resources\SQLScripts\StoredProcedures\Ranking\Ranking_ReCreateAll.sql" />

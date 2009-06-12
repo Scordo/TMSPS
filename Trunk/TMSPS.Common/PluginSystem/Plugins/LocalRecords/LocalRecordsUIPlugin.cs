@@ -64,6 +64,9 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
                 if (CheckForServerRankCommand(e))
                     return;
 
+                if (CheckForNextServerRankCommand(e))
+                    return;
+
                 if (CheckForInfoCommand(e))
                     return;
             }, "Error in Callbacks_PlayerChat Method.", true);
@@ -75,6 +78,16 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
                 return false;
 
             SendServerRankMessageToLogin(args.Login);
+
+            return true;
+        }
+
+        private bool CheckForNextServerRankCommand(PlayerChatEventArgs args)
+        {
+            if (string.Compare(args.Text, Command.NEXT_SERVER_RANK1, StringComparison.InvariantCultureIgnoreCase) != 0 && string.Compare(args.Text, Command.NEXT_SERVER_RANK2, StringComparison.InvariantCultureIgnoreCase) != 0)
+                return false;
+
+            SendNextServerRankMessageToLogin(args.Login);
 
             return true;
         }
@@ -97,6 +110,11 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
             ThreadPool.QueueUserWorkItem(SendServerRankMessageToLogin, login);
         }
 
+        private void SendNextServerRankMessageToLogin(string login)
+        {
+            ThreadPool.QueueUserWorkItem(SendNextServerRankMessageToLogin, login);
+        }
+
         private void SendServerRankMessageToLogin(object state)
         {
             string login = (string) state;
@@ -104,6 +122,17 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
 
             if (ranking != null)
                 SendFormattedMessageToLogin(login, Settings.RankingMessage, "Rank", ranking.CurrentRank.ToString("F0", CultureInfo.InvariantCulture), "Average", ranking.AverageRank.ToString("F1", CultureInfo.InvariantCulture), "Score", ranking.Score.ToString("F1", CultureInfo.InvariantCulture), "Tracks", ranking.RecordsCount.ToString("F0", CultureInfo.InvariantCulture), "TracksCount", ranking.ChallengesCount.ToString("F0", CultureInfo.InvariantCulture));
+        }
+
+        private void SendNextServerRankMessageToLogin(object state)
+        {
+            string login = (string)state;
+            Ranking ranking = HostPlugin.RankingAdapter.GetNextRank(login);
+
+            if (ranking != null)
+                SendFormattedMessageToLogin(login, Settings.NextRankMessage, "Nickname", StripTMColorsAndFormatting(ranking.Nickname), "Rank", ranking.CurrentRank.ToString("F0", CultureInfo.InvariantCulture), "Average", ranking.AverageRank.ToString("F1", CultureInfo.InvariantCulture), "Score", ranking.Score.ToString("F1", CultureInfo.InvariantCulture), "Tracks", ranking.RecordsCount.ToString("F0", CultureInfo.InvariantCulture), "TracksCount", ranking.ChallengesCount.ToString("F0", CultureInfo.InvariantCulture));
+            else
+                SendFormattedMessageToLogin(login, Settings.NoBetterRankMessage);
         }
 
         private void SendInfoMessageToLogin(string login)
