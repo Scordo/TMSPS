@@ -1,5 +1,5 @@
-﻿CREATE PROCEDURE dbo.Rating_Vote
-	@Login nvarchar(100),
+﻿CREATE PROCEDURE Rating_Vote
+	@Login nvarchar(50),
 	@ChallengeID int,
 	@Rating tinyint
 AS
@@ -38,7 +38,7 @@ BEGIN
 	END
 	
 	Select
-		Top 1 AVG(Value)
+		Top 1 AVG(Cast(Value as float))
 	FROM
 		dbo.Rating with(nolock)
 	WHERE
