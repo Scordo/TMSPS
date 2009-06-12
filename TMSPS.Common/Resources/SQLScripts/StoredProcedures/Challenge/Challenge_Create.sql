@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE dbo.Challenge_Create
+﻿CREATE PROCEDURE [dbo].[Challenge_Create]
 	@UniqueID varchar(27),
 	@Name nvarchar(100),
 	@Author nvarchar(100),
@@ -50,4 +50,3 @@ BEGIN
 			ID = @ID
 	END
 END
-

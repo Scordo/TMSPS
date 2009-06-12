@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE dbo.Challenge_Deserialize_ByID
+﻿CREATE PROCEDURE [dbo].[Challenge_Deserialize_ByID]
 	@ID int
 AS
 BEGIN

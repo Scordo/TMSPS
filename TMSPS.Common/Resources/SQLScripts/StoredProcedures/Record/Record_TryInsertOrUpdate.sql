@@ -1,4 +1,4 @@
-﻿alter PROCEDURE Record_TryInsertOrUpdate
+﻿CREATE PROCEDURE [dbo].[Record_TryInsertOrUpdate]
 	@Login nvarchar(100),
 	@ChallengeID int,
 	@TimeOrScore int

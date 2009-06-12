@@ -1,4 +1,4 @@
-﻿ALTER PROCEDURE dbo.Position_Deserialize_List_ByMost
+﻿CREATE PROCEDURE [dbo].[Position_Deserialize_List_ByMost]
 	@top int,
 	@positionLimit int
 AS

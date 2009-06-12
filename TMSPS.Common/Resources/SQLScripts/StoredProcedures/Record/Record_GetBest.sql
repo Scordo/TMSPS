@@ -1,5 +1,5 @@
-﻿CREATE PROCEDURE dbo.Record_GetBest
-	@Login nvarchar(100),
+﻿CREATE PROCEDURE [dbo].[Record_GetBest]
+	@Login nvarchar(50),
 	@ChallengeID int
 AS
 BEGIN

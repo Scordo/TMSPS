@@ -5,7 +5,7 @@ BEGIN
 	Select
 		*
 	FROM
-		dbo.Player
+		dbo.Player with(nolock)
 	WHERE
 		[Login] = @login
 END

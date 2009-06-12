@@ -351,11 +351,13 @@
     <None Include="Resources\SQLScripts\StoredProcedures\Ranking\Ranking_ReCreateRanks.sql" />
     <None Include="Resources\SQLScripts\StoredProcedures\Ranking\Ranking_UpdateForChallenge.sql" />
     <None Include="Resources\SQLScripts\StoredProcedures\Ranking\Ranking_UpdateForChallenge_ByChallengeUID.sql" />
-    <None Include="Resources\SQLScripts\StoredProcedures\Rating\Rating_GetAverageVot.sql" />
+    <None Include="Resources\SQLScripts\StoredProcedures\Rating\Rating_GetAverageVote.sql" />
     <None Include="Resources\SQLScripts\StoredProcedures\Rating\Rating_GetVoteByLogin.sql" />
     <None Include="Resources\SQLScripts\StoredProcedures\Rating\Rating_Vote.sql" />
+    <None Include="Resources\SQLScripts\StoredProcedures\Record\Record_DeleteFalseRecords.sql" />
     <None Include="Resources\SQLScripts\StoredProcedures\Record\Record_GetBest.sql" />
     <None Include="Resources\SQLScripts\StoredProcedures\Record\Record_GetTopRecords.sql" />
+    <None Include="Resources\SQLScripts\StoredProcedures\Record\Record_RestoreFromSessionData.sql" />
     <None Include="Resources\SQLScripts\StoredProcedures\Record\Record_TryInsertOrUpdate.sql" />
     <None Include="Resources\SQLScripts\StoredProcedures\Session\Session_Add.sql" />
     <None Include="Resources\SQLScripts\Structure\Challenge.sql" />

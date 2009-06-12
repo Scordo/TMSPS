@@ -1,5 +1,5 @@
-﻿CREATE PROCEDURE dbo.Player_UpdateTimePlayed
-	@Login nvarchar(100)
+﻿CREATE PROCEDURE [dbo].[Player_UpdateTimePlayed]
+	@Login nvarchar(50)
 AS
 BEGIN
 	declare @currentdate datetime
@@ -19,5 +19,6 @@ BEGIN
 	WHERE
 		[Login] = @Login
 		
-	Select * From @InsertedValues		
+	Select * From @InsertedValues
+		
 END

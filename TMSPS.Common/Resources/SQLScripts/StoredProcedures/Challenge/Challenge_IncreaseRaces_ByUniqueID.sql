@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE dbo.Challenge_IncreaseRaces_ByUniqueID
+﻿CREATE PROCEDURE [dbo].[Challenge_IncreaseRaces_ByUniqueID]
 	@UniqueID varchar(27)
 AS
 BEGIN

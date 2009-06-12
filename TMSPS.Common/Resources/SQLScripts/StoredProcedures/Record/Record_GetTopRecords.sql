@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE dbo.Record_GetTopRecords
+﻿CREATE PROCEDURE [dbo].[Record_GetTopRecords]
 	@ChallengeID int,
 	@MaxRecords int
 AS

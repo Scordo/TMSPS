@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE dbo.Challenge_Delete
+﻿CREATE PROCEDURE [dbo].[Challenge_Delete]
 	@challengeUniqueID varchar(27)
 AS
 	declare @challengeID int

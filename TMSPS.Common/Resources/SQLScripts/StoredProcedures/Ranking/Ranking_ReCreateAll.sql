@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE Ranking_ReCreateAll
+﻿CREATE PROCEDURE [dbo].[Ranking_ReCreateAll]
 AS
 BEGIN
 	declare @challengeID int
