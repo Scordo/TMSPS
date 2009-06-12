@@ -36,6 +36,19 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords.SQL
             return SqlHelper.ExecuteClassQuery<Ranking>("Ranking_Deserialize_ByLogin", RankingFromDataRow, "login", login);
         }
 
+        public Ranking Deserialize_ByRank(int rank)
+        {
+            return SqlHelper.ExecuteClassQuery<Ranking>("Ranking_Deserialize_ByRank", RankingFromDataRow, "rank", rank);
+        }
+
+        public Ranking GetNextRank(string login)
+        {
+            if (login == null)
+                throw new ArgumentNullException("login");
+
+            return SqlHelper.ExecuteClassQuery<Ranking>("Ranking_GetNextRank", RankingFromDataRow, "login", login);
+        }
+
         public List<Ranking> Deserialize_List(uint top)
         {
             return SqlHelper.ExecuteClassListQuery<Ranking>("Ranking_Deserialize_List", RankingFromDataRow, "amountOfRankings", (int) top);

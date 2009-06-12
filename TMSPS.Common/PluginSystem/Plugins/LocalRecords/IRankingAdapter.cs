@@ -6,6 +6,8 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
     public interface IRankingAdapter : IBaseAdapter
     {
         Ranking Deserialize_ByLogin(string login);
+        Ranking Deserialize_ByRank(int rank);
+        Ranking GetNextRank(string login);
         List<Ranking> Deserialize_List(uint top);
         List<RankingStats> DeserializeListByMost(uint top, uint rankLimit);
         void ReCreateAll();

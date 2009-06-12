@@ -37,5 +37,7 @@
         public const string NEXT_TRACK = "nexttrack";
         public const string SERVER_RANK1 = "/sr";
         public const string SERVER_RANK2 = "/rank";
+        public const string NEXT_SERVER_RANK1 = "/nsr";
+        public const string NEXT_SERVER_RANK2 = "/nextrank";
     }
 }
