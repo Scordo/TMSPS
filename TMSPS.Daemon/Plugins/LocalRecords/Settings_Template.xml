@@ -8,6 +8,9 @@
 
 	<Plugins>
 		<Plugin enabled="true" assemblyName="TMSPS.Core" pluginClass="TMSPS.Core.PluginSystem.Plugins.LocalRecords.LocalRecordsUIPlugin" />
+		<Plugin enabled="true" assemblyName="TMSPS.Core" pluginClass="TMSPS.Core.PluginSystem.Plugins.LocalRecords.RatingUIPlugin" />
+		<Plugin enabled="true" assemblyName="TMSPS.Core" pluginClass="TMSPS.Core.PluginSystem.Plugins.LocalRecords.LocalRecordsPlayerStatsUIPlugin" />
+		<Plugin enabled="true" assemblyName="TMSPS.Core" pluginClass="TMSPS.Core.PluginSystem.Plugins.LocalRecords.LocalRecordsTopRanksUIPlugin" />
 		<Plugin enabled="true" assemblyName="TMSPS.Core" pluginClass="TMSPS.Core.PluginSystem.Plugins.PodiumPlugins.TopRankingsPodiumPlugin" />
 		<Plugin enabled="true" assemblyName="TMSPS.Core" pluginClass="TMSPS.Core.PluginSystem.Plugins.PodiumPlugins.HoursPlayedPodiumPlugin" />
 		<Plugin enabled="true" assemblyName="TMSPS.Core" pluginClass="TMSPS.Core.PluginSystem.Plugins.PodiumPlugins.TopWinnersPodiumPlugin" />

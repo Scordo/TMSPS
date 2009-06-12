@@ -26,6 +26,8 @@
         public const string TMX_INFO = "tmxinfo";
         public const string TMX_ADD_TRACK = "addtrack";
         public const string TOPSUMS = "/topsums";
+        public const string TOPRANKS = "/topranks";
+        public const string RANKS = "/ranks";
         public const string Summary = "/summary";
         public const string Info = "/info";
         public const string Wins = "/wins";

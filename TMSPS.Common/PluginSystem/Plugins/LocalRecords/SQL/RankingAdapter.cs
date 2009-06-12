@@ -54,6 +54,11 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords.SQL
             return SqlHelper.ExecuteClassListQuery<Ranking>("Ranking_Deserialize_List", RankingFromDataRow, "amountOfRankings", (int) top);
         }
 
+        public List<Ranking> Deserialize_PagedList(uint startIndex, uint endIndex)
+        {
+            return SqlHelper.ExecuteClassListQuery<Ranking>("Ranking_Deserialize_PagedList", RankingFromDataRow, "startIndex", (int)startIndex, "endIndex", (int)endIndex);
+        }
+
         public List<RankingStats> DeserializeListByMost(uint top, uint rankLimit)
         {
             return SqlHelper.ExecuteClassListQuery<RankingStats>("Ranking_Deserialize_List_ByMost", RankingStatsFromDataRow, "top", (int)top, "rankLimit", (int)rankLimit);
@@ -62,6 +67,11 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords.SQL
         public void ReCreateAll()
         {
             SqlHelper.ExecuteNonQuery("Ranking_ReCreateAll");
+        }
+
+        public uint GetRanksCount()
+        {
+            return Convert.ToUInt32(SqlHelper.ExecuteScalar<int>("Ranking_GetRanksCount"));
         }
 
         public uint GetTopRankingsCount()

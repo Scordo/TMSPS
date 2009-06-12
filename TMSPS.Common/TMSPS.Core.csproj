@@ -236,6 +236,7 @@
     <Compile Include="PluginSystem\Plugins\LocalRecords\ILocalRecordsPluginPlugin.cs" />
     <Compile Include="PluginSystem\Plugins\LocalRecords\LocalRecordsPlayerStatsUIPlugin.cs" />
     <Compile Include="PluginSystem\Plugins\LocalRecords\LocalRecordsPluginPlugin.cs" />
+    <Compile Include="PluginSystem\Plugins\LocalRecords\LocalRecordsTopRanksUIPlugin.cs" />
     <Compile Include="PluginSystem\Plugins\LocalRecords\LocalRecordsUIPlugin.cs" />
     <Compile Include="PluginSystem\Plugins\LocalRecords\LocalRecordsUISettings.cs" />
     <Compile Include="PluginSystem\Configuration\PagedUIDialogSettings.cs" />
@@ -340,8 +341,10 @@
     <None Include="Resources\SQLScripts\StoredProcedures\Ranking\Ranking_Deserialize_ByRank.sql" />
     <None Include="Resources\SQLScripts\StoredProcedures\Ranking\Ranking_Deserialize_List.sql" />
     <None Include="Resources\SQLScripts\StoredProcedures\Ranking\Ranking_Deserialize_List_ByMost.sql" />
+    <None Include="Resources\SQLScripts\StoredProcedures\Ranking\Ranking_Deserialize_PagedList.sql" />
     <None Include="Resources\SQLScripts\StoredProcedures\Ranking\Ranking_GetAmountOfRank.sql" />
     <None Include="Resources\SQLScripts\StoredProcedures\Ranking\Ranking_GetNextRank.sql" />
+    <None Include="Resources\SQLScripts\StoredProcedures\Ranking\Ranking_GetRanksCount.sql" />
     <None Include="Resources\SQLScripts\StoredProcedures\Ranking\Ranking_GetTopRankings.sql" />
     <None Include="Resources\SQLScripts\StoredProcedures\Ranking\Ranking_GetTopRankingsCount.sql" />
     <None Include="Resources\SQLScripts\StoredProcedures\Ranking\Ranking_ReCreateAll.sql" />
