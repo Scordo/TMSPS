@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE Rating_Vote
+﻿CREATE PROCEDURE [dbo].[Rating_Vote]
 	@Login nvarchar(50),
 	@ChallengeID int,
 	@Rating tinyint

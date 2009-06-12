@@ -1,11 +1,11 @@
-﻿CREATE PROCEDURE dbo.Player_DeserializeList
+﻿CREATE PROCEDURE [dbo].[Player_DeserializeList]
 	@top int,
 	@sorting int,
 	@asc bit
 AS
 BEGIN
 	declare @sql nvarchar(max)
-	set @sql = 'Select top ' + Cast(@top as nvarchar(max)) + ' * from dbo.Player'
+	set @sql = 'Select top ' + Cast(@top as nvarchar(max)) + ' * from dbo.Player with(nolock)'
 	
 	if @sorting = 0
 		set @sql = @sql + ' order by Wins'

@@ -1,4 +1,4 @@
-﻿ALTER PROCEDURE [dbo].[Ranking_Deserialize_List]
+﻿CREATE PROCEDURE [dbo].[Ranking_Deserialize_List]
 	@amountOfRankings int
 AS
 BEGIN

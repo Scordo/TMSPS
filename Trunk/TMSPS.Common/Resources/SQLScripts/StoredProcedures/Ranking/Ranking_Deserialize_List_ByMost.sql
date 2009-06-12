@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE dbo.Ranking_Deserialize_List_ByMost
+﻿CREATE PROCEDURE [dbo].[Ranking_Deserialize_List_ByMost]
 	@top int,
 	@rankLimit int
 AS

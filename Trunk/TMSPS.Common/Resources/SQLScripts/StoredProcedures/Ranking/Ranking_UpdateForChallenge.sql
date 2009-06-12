@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE Ranking_UpdateForChallenge
+﻿CREATE PROCEDURE [dbo].[Ranking_UpdateForChallenge]
 	@ChallengeID int
 AS
 BEGIN

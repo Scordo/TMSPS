@@ -1,6 +1,6 @@
-﻿CREATE PROCEDURE dbo.Player_CreateOrUpdate
-	@Login nvarchar(100),
-	@Nickname nvarchar(100)
+﻿CREATE PROCEDURE [dbo].[Player_CreateOrUpdate]
+	@Login nvarchar(50),
+	@Nickname nvarchar(50)
 AS
 BEGIN
 	declare @ID int

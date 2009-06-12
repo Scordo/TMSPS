@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE Rating_GetAverageVote
+﻿CREATE PROCEDURE [dbo].[Rating_GetAverageVote]
 	@ChallengeID int
 AS
 BEGIN

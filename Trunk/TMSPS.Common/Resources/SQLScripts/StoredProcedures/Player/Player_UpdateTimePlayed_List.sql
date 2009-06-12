@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE [dbo].[Player_UpdateTimePlayed_List]
+﻿CREATE PROCEDURE [dbo].[Player_UpdateTimePlayed_list]
 	@Logins nvarchar(max)
 AS
 BEGIN
@@ -13,7 +13,7 @@ BEGIN
 		LastTimePlayedChanged = @currentdate,
 		LastChanged = @currentdate
 	FROM
-		dbo.Player P
+		dbo.Player P with(nolock)
 	INNER JOIN
 	(
 		SELECT 

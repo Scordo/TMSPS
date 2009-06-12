@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE dbo.Player_RemoveAllStatsForLogin
+﻿CREATE PROCEDURE [dbo].[Player_RemoveAllStatsForLogin]
 	@login nvarchar(100)
 AS
 BEGIN

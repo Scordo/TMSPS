@@ -1,4 +1,4 @@
-﻿ALTER PROCEDURE [dbo].[Ranking_Deserialize_ByLogin]
+﻿CREATE PROCEDURE [dbo].[Ranking_Deserialize_ByLogin]
 	@login nvarchar(50)
 AS
 BEGIN

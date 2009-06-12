@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE dbo.Ranking_GetTopRankings
+﻿CREATE PROCEDURE [dbo].[Ranking_GetTopRankings]
 	@startIndex int,
 	@endIndex int
 AS

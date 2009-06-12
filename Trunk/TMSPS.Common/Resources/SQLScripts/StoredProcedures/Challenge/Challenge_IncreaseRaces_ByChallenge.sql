@@ -1,4 +1,4 @@
-﻿ALTER PROCEDURE [dbo].[Challenge_IncreaseRaces_ByChallenge]
+﻿CREATE PROCEDURE [dbo].[Challenge_IncreaseRaces_ByChallenge]
 	@ID int,
 	@UniqueID varchar(27),
 	@Name nvarchar(100),

@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE dbo.Challenge_IncreaseRaces_ByID
+﻿CREATE PROCEDURE [dbo].[Challenge_IncreaseRaces_ByID]
 	@ID int
 AS
 BEGIN

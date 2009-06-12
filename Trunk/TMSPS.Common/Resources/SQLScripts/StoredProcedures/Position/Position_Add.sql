@@ -1,5 +1,5 @@
-﻿CREATE PROCEDURE dbo.Position_Add
-	@Login nvarchar(100),
+﻿CREATE PROCEDURE [dbo].[Position_Add]
+	@Login nvarchar(50),
 	@UniqueChallengeID char(27),
 	@Position  smallint,
 	@MaxPosition  smallint

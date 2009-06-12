@@ -2,7 +2,7 @@
 	[ID] [int] IDENTITY(1,1) NOT NULL,
 	[UniqueID] [varchar](27) NOT NULL,
 	[Name] [nvarchar](100) NOT NULL,
-	[Author] [nvarchar](100) NOT NULL,
+	[Author] [nvarchar](50) NOT NULL,
 	[Environment] [nvarchar](20) NOT NULL,
 	[Races] [int] NOT NULL,
 	[Created] [datetime] NOT NULL,
@@ -12,12 +12,9 @@
 	[ID] ASC
 )WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY]
 ) ON [PRIMARY]
-
 GO
 
 ALTER TABLE [dbo].[Challenge] ADD  CONSTRAINT [DF_Challenge_Created]  DEFAULT (getdate()) FOR [Created]
-GO
-
 GO
 
 CREATE NONCLUSTERED INDEX [IX_UniqueID] ON [dbo].[Challenge] 

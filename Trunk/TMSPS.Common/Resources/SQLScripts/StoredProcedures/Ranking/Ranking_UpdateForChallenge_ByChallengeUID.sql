@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE dbo.Ranking_UpdateForChallenge_ByChallengeUID
+﻿CREATE PROCEDURE [dbo].[Ranking_UpdateForChallenge_ByChallengeUID]
 	@UniqueID char(27)
 AS
 BEGIN
