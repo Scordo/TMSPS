@@ -11,6 +11,10 @@
 	<BlackListMessage>{[#ServerStyle=""]}>> {[#HighlightStyle]}{[BlackListingNickname]}{[#MessageStyle]} blacklists {[#HighlightStyle]}{[BlackListedNickname]}.</BlackListMessage>
 	<TrackListFile>tracklist.txt</TrackListFile>
 	<SaveGhostReplayOfTop>0</SaveGhostReplayOfTop>
+	<EnableDedimaniaBlackListSync>true</EnableDedimaniaBlackListSync>
+	<DedimaniaBlackListSyncInterval>60</DedimaniaBlackListSyncInterval> <!-- in minutes -->
+	<DedimaniaBlackListUrl>http://www.gamers.org/tmf/dedimania_blacklist.txt</DedimaniaBlackListUrl>
+
 	<NicknameResolver>
 		<Assembly>TMSPS.Core</Assembly>
 		<Class>TMSPS.Core.Common.FlatFileNicknameResolver</Class>

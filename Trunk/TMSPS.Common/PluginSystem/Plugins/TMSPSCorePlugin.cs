@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading;
 using TMSPS.Core.Common;
 using TMSPS.Core.Communication.EventArguments.Callbacks;
 using TMSPS.Core.Communication.ProxyTypes;
+using TMSPS.Core.Communication.ResponseHandling;
 using PlayerInfo=TMSPS.Core.Communication.ProxyTypes.PlayerInfo;
 using Version=System.Version;
 using System.Linq;
@@ -43,6 +45,8 @@ namespace TMSPS.Core.PluginSystem.Plugins
             get; set;
         }
 
+        private Timer DedimaniaBlackListSyncTimer { get; set; }
+
         #endregion
 
         protected override void Init()
@@ -61,11 +65,79 @@ namespace TMSPS.Core.PluginSystem.Plugins
             GetServerOptions(); // cache currenr server options
             GetCurrentGameMode(); // cache current game mode
 
+            if (Settings.EnableDedimaniaBlackListSync)
+                DedimaniaBlackListSyncTimer = new Timer(SyncBlackListWithDedimania, null, TimeSpan.Zero, Settings.DedimaniaBlackListSyncInterval);
+
             Context.RPCClient.Callbacks.PlayerConnect += Callbacks_PlayerConnect;
             Context.RPCClient.Callbacks.PlayerDisconnect += Callbacks_PlayerDisconnect;
             Context.RPCClient.Callbacks.BeginChallenge += Callbacks_BeginChallenge;
             Context.RPCClient.Callbacks.PlayerChat += Callbacks_PlayerChat;
             Context.RPCClient.Callbacks.EndRace += Callbacks_EndRace;
+        }
+
+        protected override void Dispose(bool connectionLost)
+        {
+            if (Settings.EnableDedimaniaBlackListSync)
+                DedimaniaBlackListSyncTimer.Dispose();
+
+            Context.RPCClient.Callbacks.PlayerConnect -= Callbacks_PlayerConnect;
+            Context.RPCClient.Callbacks.PlayerDisconnect -= Callbacks_PlayerDisconnect;
+            Context.RPCClient.Callbacks.BeginChallenge -= Callbacks_BeginChallenge;
+            Context.RPCClient.Callbacks.PlayerChat -= Callbacks_PlayerChat;
+            Context.RPCClient.Callbacks.EndRace -= Callbacks_EndRace;
+        }
+
+        private void SyncBlackListWithDedimania(object state)
+        {
+            RunCatchLogReThrow(() =>
+            {
+                GenericListResponse<LoginResponse> getBlackListResponse = Context.RPCClient.Methods.GetBlackList(10000, 0);   
+
+                if (getBlackListResponse.Erroneous)
+                {
+                    Logger.ErrorToUI(string.Format("Error while calling GetBlackList: {0}({1})", getBlackListResponse.Fault.FaultMessage, getBlackListResponse.Fault.FaultCode));
+                    return;
+                }
+
+                HashSet<string> localBlackListLogins = new HashSet<string>(getBlackListResponse.Value.ConvertAll(x => x.Login));
+                HashSet<string> dedimaniaBlackListLogins = BlackListReader.GetBlackListedLogins(new Uri(Settings.DedimaniaBlackListUrl));
+                
+                Logger.Debug(string.Format("Found {0} login(s) in local blacklist and {1} login(s) in dedimania blacklist.", localBlackListLogins.Count, dedimaniaBlackListLogins.Count));
+                dedimaniaBlackListLogins.ExceptWith(localBlackListLogins);
+                Logger.Debug(string.Format("{0} login(s) in will be added to blacklist.", dedimaniaBlackListLogins.Count));
+
+                foreach (string login in dedimaniaBlackListLogins)
+                {
+                    GenericResponse<bool> blackListResponse = Context.RPCClient.Methods.BlackList(login);
+
+                    if (blackListResponse.Erroneous)
+                    {
+                        Logger.Error(string.Format("Error while calling BlackList for login {0}: {1}({2})", login, blackListResponse.Fault.FaultMessage, blackListResponse.Fault.FaultCode));
+                        continue;
+                    }
+
+                    if (blackListResponse.Value)
+                        Logger.Debug(string.Format("Added login {0} to blacklist.", login));
+                    else
+                        Logger.Debug(string.Format("Could not add login {0} to blacklist.", login));
+                }
+
+                if (dedimaniaBlackListLogins.Count > 0)
+                {
+                    Logger.InfoToUI(string.Format("Added {0} login(s) from dedimania blacklist to local blacklist.", dedimaniaBlackListLogins.Count));
+                    GenericResponse<bool> saveBlackListResponse = Context.RPCClient.Methods.SaveBlackList("blacklist.txt");
+
+                    if (saveBlackListResponse.Erroneous)
+                    {
+                        Logger.Error(string.Format("Error while calling SaveBlackList: {0}({1})", saveBlackListResponse.Fault.FaultMessage, saveBlackListResponse.Fault.FaultCode));
+                        return;
+                    }
+
+                    if (!saveBlackListResponse.Value)
+                        Logger.Error("Could not save blacklist.");
+                }
+            }
+            , "Errror in SyncBlackListWithDedimania", true);
         }
 
         private void Callbacks_EndRace(object sender, EndRaceEventArgs e)
@@ -91,14 +163,7 @@ namespace TMSPS.Core.PluginSystem.Plugins
                 HandleCommand(e.Login, command);
         }
 
-        protected override void Dispose(bool connectionLost)
-        {
-            Context.RPCClient.Callbacks.PlayerConnect -= Callbacks_PlayerConnect;
-            Context.RPCClient.Callbacks.PlayerDisconnect -= Callbacks_PlayerDisconnect;
-            Context.RPCClient.Callbacks.BeginChallenge -= Callbacks_BeginChallenge;
-            Context.RPCClient.Callbacks.PlayerChat -= Callbacks_PlayerChat;
-            Context.RPCClient.Callbacks.EndRace -= Callbacks_EndRace;
-        }
+        
 
         private void Callbacks_PlayerConnect(object sender, PlayerConnectEventArgs e)
         {
