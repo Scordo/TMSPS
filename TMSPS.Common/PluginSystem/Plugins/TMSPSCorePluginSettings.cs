@@ -1,4 +1,5 @@
-﻿using System.Configuration;
+﻿using System;
+using System.Configuration;
 using System.Xml.Linq;
 using SettingsBase=TMSPS.Core.Common.SettingsBase;
 
@@ -21,6 +22,9 @@ namespace TMSPS.Core.PluginSystem.Plugins
         public const string NICKNAME_RESOLVER_CLASS = "TMSPS.Core.Common.FlatFileNicknameResolver";
         public const string NICKNAME_RESOLVER_ASSEMBLY = "TMSPS.Core";
         public const uint SAVE_GHOST_REPLAY_OF_TOP = 3;
+        public const bool ENABLE_DEDIMANIA_BLACKLIST_SYNC = true;
+        public const uint DEDIMANIA_BLACKLIST_SYNC_INTERVAL = 60; // minutes
+        public const string DEDIMANIA_BLACKLIST_URL = "http://www.gamers.org/tmf/dedimania_blacklist.txt";
 
         #endregion
 
@@ -40,6 +44,9 @@ namespace TMSPS.Core.PluginSystem.Plugins
         public string NicknameResolverAssemblyLocation { get; private set;}
         public XElement NicknameResolverConfigElement { get; private set; }
         public uint SaveGhostReplayOfTop { get; private set; }
+        public bool EnableDedimaniaBlackListSync { get; private set; }
+        public TimeSpan DedimaniaBlackListSyncInterval { get; private set; }
+        public string DedimaniaBlackListUrl { get; private set; }
 
         #endregion
 
@@ -66,6 +73,9 @@ namespace TMSPS.Core.PluginSystem.Plugins
             result.BlackListMessage = ReadConfigString(configDocument.Root, "BlackListMessage", BLACKLIST_MESSAGE, xmlConfigurationFile);
             result.TrackListFile = ReadConfigString(configDocument.Root, "TrackListFile", TRACKLIST_FILE, xmlConfigurationFile);
             result.SaveGhostReplayOfTop = ReadConfigUInt(configDocument.Root, "SaveGhostReplayOfTop", SAVE_GHOST_REPLAY_OF_TOP, xmlConfigurationFile);
+            result.EnableDedimaniaBlackListSync = ReadConfigBool(configDocument.Root, "EnableDedimaniaBlackListSync", ENABLE_DEDIMANIA_BLACKLIST_SYNC, xmlConfigurationFile);
+            result.DedimaniaBlackListSyncInterval = TimeSpan.FromMinutes(ReadConfigUInt(configDocument.Root, "DedimaniaBlackListSyncInterval", DEDIMANIA_BLACKLIST_SYNC_INTERVAL, xmlConfigurationFile));
+            result.DedimaniaBlackListUrl = ReadConfigString(configDocument.Root, "DedimaniaBlackListUrl", DEDIMANIA_BLACKLIST_URL, xmlConfigurationFile);
 
             result.NicknameResolverClass = NICKNAME_RESOLVER_CLASS;
             result.NicknameResolverAssemblyLocation = NICKNAME_RESOLVER_ASSEMBLY;
