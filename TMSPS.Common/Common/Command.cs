@@ -25,6 +25,10 @@
         public const string READ_CHATBOT_SETTINGS = "readchatbotsettings";
         public const string TMX_INFO = "tmxinfo";
         public const string TMX_ADD_TRACK = "addtrack";
+        public const string DELETE_CHEATER = "deletecheater";
+        public const string GET_LOCAL_LOGINS = "getlocallogins";
+        public const string RESTART_TRACK_IMMEDIATELY = "restarttrack";
+        public const string NEXT_TRACK = "nexttrack";
         public const string TOPSUMS = "/topsums";
         public const string TOPRANKS = "/topranks";
         public const string RANKS = "/ranks";
@@ -33,10 +37,7 @@
         public const string Wins = "/wins";
         public const string Played = "/played";
         public const string Visit = "/visit";
-        public const string DELETE_CHEATER = "deletecheater";
-        public const string GET_LOCAL_LOGINS = "getlocallogins";
-        public const string RESTART_TRACK_IMMEDIATELY = "restarttrack";
-        public const string NEXT_TRACK = "nexttrack";
+        public const string DONATE = "/donate";
         public const string SERVER_RANK1 = "/sr";
         public const string SERVER_RANK2 = "/rank";
         public const string NEXT_SERVER_RANK1 = "/nsr";

@@ -223,6 +223,8 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>UITemplates.resx</DependentUpon>
     </Compile>
+    <Compile Include="PluginSystem\Plugins\Donation\DonationPlugin.cs" />
+    <Compile Include="PluginSystem\Plugins\Donation\DonationPluginSettings.cs" />
     <Compile Include="PluginSystem\Plugins\IdleKick\IdleKickMode.cs" />
     <Compile Include="PluginSystem\Plugins\IdleKick\IdleKickPlugin.cs" />
     <Compile Include="PluginSystem\Plugins\IdleKick\IdleKickPluginSettings.cs" />

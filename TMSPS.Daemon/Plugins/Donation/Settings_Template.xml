@@ -1,0 +1,12 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Settings>
+	<!-- leave empty to take the server as the copper recipient -->
+	<DonationTargetLogin></DonationTargetLogin>
+	<MinDonationValue>10</MinDonationValue>
+	<DonationToSmallMessage>{[#ServerStyle]}>{[#ErrorStyle]} The amount of coppers is to small, you must donate at least {[Coppers]} coppers.</DonationToSmallMessage>
+	<PlayerHasNoUnitedAccountMessage>{[#ServerStyle]}>{[#ErrorStyle]} You can not donate coppers, because you do not have a united account.</PlayerHasNoUnitedAccountMessage>
+	<DonationHint>Please press yes to confirm your donation.</DonationHint>
+	<RefuseMessage>{[#ServerStyle]}>{[#MessageStyle]} You have chosen to refuse donation, that's sad :(</RefuseMessage>
+	<DonationErrorMessage>{[#ServerStyle]}>{[#ErrorStyle]} Error during donation: {[ErrorMessage]}</DonationErrorMessage>
+	<DonationThanksMessage>{[#ServerStyle]}>{[#MessageStyle]} Thank you for donating {[Coppers]} coppers!</DonationThanksMessage>
+</Settings>

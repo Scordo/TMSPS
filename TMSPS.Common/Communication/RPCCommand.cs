@@ -229,7 +229,7 @@ namespace TMSPS.Core.Communication
 
         private static string GetElementValueName(Type type)
         {
-            if (type == typeof(int) || type == typeof(uint) || type == typeof(short) | type == typeof(ushort) || type == typeof(byte) || type == typeof(sbyte) || type == typeof(long) || type == typeof(long))
+            if (type.IsEnum || type == typeof(int) || type == typeof(uint) || type == typeof(short) | type == typeof(ushort) || type == typeof(byte) || type == typeof(sbyte) || type == typeof(long) || type == typeof(long))
                 return "i4";
 
             if (type == typeof(float) || type == typeof(double) || type == typeof(decimal))
@@ -263,6 +263,9 @@ namespace TMSPS.Core.Communication
 
             if (type == typeof(byte[]))
                 return Convert.FromBase64String(value);
+
+            if (type.IsEnum)
+                return Enum.Parse(type, value);
 
             return Convert.ChangeType(value, type, CultureInfo.InvariantCulture);
         }
