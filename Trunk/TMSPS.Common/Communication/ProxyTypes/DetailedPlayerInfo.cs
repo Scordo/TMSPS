@@ -40,5 +40,7 @@ namespace TMSPS.Core.Communication.ProxyTypes
 
         [RPCParam("OnlineRights")]
         public int OnlineRights { get; set; }
+
+        public bool IsUnitedAccount { get { return OnlineRights == 3; } }
     }
 }

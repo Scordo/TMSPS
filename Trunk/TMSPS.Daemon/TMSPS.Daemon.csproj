@@ -119,6 +119,8 @@
     <Content Include="Plugins\Dedimania\DedimaniaUI\Settings_Template.xml" />
     <Content Include="Plugins\Dedimania\Settings_Template.xml" />
     <Content Include="Plugins\Dedimania\Settings.xml" />
+    <Content Include="Plugins\Donation\Settings.xml" />
+    <Content Include="Plugins\Donation\Settings_Template.xml" />
     <Content Include="Plugins\IdleKick\Settings.xml" />
     <Content Include="Plugins\IdleKick\Settings_Template.xml" />
     <Content Include="Plugins\KickUnrankedPlayers\Settings.xml" />

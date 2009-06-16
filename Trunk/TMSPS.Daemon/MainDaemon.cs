@@ -5,6 +5,7 @@ using System.IO;
 using System.Reflection;
 using TMSPS.Core.Common;
 using TMSPS.Core.Communication;
+using TMSPS.Core.Communication.ProxyTypes;
 using TMSPS.Core.Communication.ResponseHandling;
 using TMSPS.Core.Logging;
 using TMSPS.Core.PluginSystem;
@@ -125,7 +126,10 @@ namespace TMSPS.Daemon
             HostContext = GetHostContext();
 
             if (HostContext == null)
+            {
+                Log.ErrorToUI("Could not create HostContext, stopping TMSPS!");
                 return;
+            }
 
             Log.InfoToUI(string.Format("{0} Plugins found, starting to initialize plugins.", Plugins.Count));
 
@@ -182,8 +186,7 @@ namespace TMSPS.Daemon
 
             if (packMaskResponse.Erroneous)
             {
-                Log.WarnToUI("Error retrieving ServerPackMask: " + packMaskResponse.Fault.FaultMessage);
-                Log.WarnToUI("Plugins initialization skipped!");
+                Log.ErrorToUI("Error retrieving ServerPackMask: " + packMaskResponse.Fault.FaultMessage);
                 return null;
             }
 
@@ -191,8 +194,7 @@ namespace TMSPS.Daemon
 
             if (versionResponse.Erroneous)
             {
-                Log.WarnToUI("Error retrieving VersionInfo: " + packMaskResponse.Fault.FaultMessage);
-                Log.WarnToUI("Plugins initialization skipped!");
+                Log.ErrorToUI("Error retrieving VersionInfo: " + packMaskResponse.Fault.FaultMessage);
                 return null;
             }
 
@@ -200,12 +202,20 @@ namespace TMSPS.Daemon
 
             if (directoryResponse.Erroneous)
             {
-                Log.WarnToUI("Error retrieving TracksDirectory: " + directoryResponse.Fault.FaultMessage);
-                Log.WarnToUI("Plugins initialization skipped!");
+                Log.ErrorToUI("Error retrieving TracksDirectory: " + directoryResponse.Fault.FaultMessage);
                 return null;
             }
 
-            ServerInfo serverInfo = new ServerInfo(ConfigSettings, packMaskResponse.Value, versionResponse.Value, directoryResponse.Value);
+            GenericResponse<DetailedPlayerInfo> serverPlayerInfo = _client.Methods.GetDetailedPlayerInfo(ConfigSettings.ServerLogin);
+
+            if (serverPlayerInfo.Erroneous)
+            {
+                Log.ErrorToUI("Error retrieving server player details: " + serverPlayerInfo.Fault.FaultMessage);
+                return null;
+            }
+
+
+            ServerInfo serverInfo = new ServerInfo(ConfigSettings, packMaskResponse.Value, versionResponse.Value, directoryResponse.Value, serverPlayerInfo.Value);
             MessageStyles messageStyles = MessageStyles.ReadFromFileOrGetDefault(Path.Combine(ApplicationDirectory, "MessageStyles.xml"));
             MessageConstants messageConstants = MessageConstants.ReadFromFile(Path.Combine(ApplicationDirectory, "MessageConstants.xml"), _client);
 

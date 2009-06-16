@@ -1,4 +1,5 @@
 ﻿using System;
+using TMSPS.Core.Communication.ProxyTypes;
 using Version=TMSPS.Core.Communication.ProxyTypes.Version;
 
 namespace TMSPS.Core.PluginSystem
@@ -14,8 +15,9 @@ namespace TMSPS.Core.PluginSystem
         public string ServerPackMask { get; private set; }
         public Version Version { get; private set; }
         public string TrackDirectory { get; private set; }
+        public DetailedPlayerInfo PlayerInfo { get; private set; }
 
-        public ServerInfo(ConfigSettingsConfigurationSection configSection, string serverPackMask, Version version, string trackDirectory)
+        public ServerInfo(ConfigSettingsConfigurationSection configSection, string serverPackMask, Version version, string trackDirectory, DetailedPlayerInfo serverPlayerInfo)
         {
             if (configSection == null)
                 throw new ArgumentNullException("configSection");
@@ -29,6 +31,9 @@ namespace TMSPS.Core.PluginSystem
             if (trackDirectory == null)
                 throw new ArgumentNullException("trackDirectory");
 
+            if (serverPlayerInfo == null)
+                throw new ArgumentNullException("serverPlayerInfo");
+
             ServerAddress = configSection.ServerAddress;
             ServerXMLRpcPort = configSection.ServerXMLRPCPort;
             SuperAdminPassword = configSection.SuperAdminPassword;
@@ -38,6 +43,7 @@ namespace TMSPS.Core.PluginSystem
             ServerPackMask = serverPackMask;
             Version = version.Clone();
             TrackDirectory = trackDirectory;
+            PlayerInfo = serverPlayerInfo;
         }
     }
 }
