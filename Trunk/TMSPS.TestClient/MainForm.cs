@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Configuration;
 using System.Windows.Forms;
+using TMSPS.Core.Common;
 using TMSPS.Core.Communication;
 
 namespace TMSPS.TestClient
