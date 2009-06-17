@@ -11,6 +11,9 @@ namespace TMSPS.Core.Communication.EventArguments.Callbacks
 
     public class PlayerInfo : IDump
     {
+        private int _spectatorStatus;
+        private int _flags;
+
         [RPCParam("Login")]
         public string Login { get; set; }
         [RPCParam("NickName")]
@@ -20,10 +23,32 @@ namespace TMSPS.Core.Communication.EventArguments.Callbacks
         [RPCParam("TeamId")]
         public int TeamID { get; set; }
         [RPCParam("SpectatorStatus")]
-        public int SpectatorStatus { get; set; }
+        public int SpectatorStatus
+        {
+            get { return _spectatorStatus; }
+            set 
+            { 
+                _spectatorStatus = value;
+                SpectatorStatusObject = PlayerSpectatorStatus.Parse(value);
+
+            }
+        }
+
+        public PlayerSpectatorStatus SpectatorStatusObject { get; set; }
+
         [RPCParam("LadderRanking")]
         public int LadderRanking { get; set; }
         [RPCParam("Flags")]
-        public int Flags { get; set; }
+        public int Flags
+        {
+            get { return _flags; }
+            set
+            {
+                _flags = value;
+                FlagsObject = PlayerFlags.Parse(value);
+            }
+        }
+
+        public PlayerFlags FlagsObject { get; set; }
     }
 }
