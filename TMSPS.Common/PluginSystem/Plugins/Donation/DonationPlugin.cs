@@ -4,6 +4,7 @@ using System.Globalization;
 using TMSPS.Core.Common;
 using TMSPS.Core.Communication.ProxyTypes;
 using TMSPS.Core.Communication.ResponseHandling;
+using TMSPS.Core.PluginSystem.Configuration;
 using BillState=TMSPS.Core.Communication.EventArguments.Callbacks.BillState;
 using Version=System.Version;
 
@@ -92,9 +93,19 @@ namespace TMSPS.Core.PluginSystem.Plugins.Donation
                 return;
             }
 
-            DetailedPlayerInfo playerInfo = GetDetailedPlayerInfo(e.Login);
-            
-            if (!playerInfo.IsUnitedAccount)
+            PlayerSettings playerSettings = GetPlayerSettings(e.Login);
+
+            bool isUnitedAccount = playerSettings.IsUnitedAccount;
+
+            if (!playerSettings.DetailMode.HasDetailedPlayerInfo())
+            {
+                DetailedPlayerInfo playerInfo = GetDetailedPlayerInfo(e.Login);
+
+                if (playerInfo != null)
+                    isUnitedAccount = playerInfo.IsUnitedAccount;
+            }
+
+            if (!isUnitedAccount)
             {
                 SendFormattedMessageToLogin(e.Login, Settings.PlayerHasNoUnitedAccountMessage);
                 return;

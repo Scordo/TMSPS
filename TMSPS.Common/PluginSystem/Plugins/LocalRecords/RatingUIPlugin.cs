@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.Globalization;
 using System.Xml.Linq;
-using TMSPS.Core.Communication.ProxyTypes;
 using TMSPS.Core.ManiaLinking;
+using TMSPS.Core.PluginSystem.Configuration;
 using SettingsBase=TMSPS.Core.Common.SettingsBase;
 using Version=System.Version;
 
@@ -87,15 +87,10 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
 
         private void SendOwnVoteManiaLinkPageToAll(int currentChallengeID)
         {
-            List<PlayerInfo> playerList = GetPlayerList();
-
-            if (playerList == null)
-                return;
-
-            foreach (PlayerInfo playerInfo in playerList)
+            foreach (PlayerSettings playerSettings in Context.PlayerSettings.GetAllAsList())
             {
-                double? voteValue = HostPlugin.RatingAdapter.GetVoteByLogin(playerInfo.Login, currentChallengeID);
-                SendOwnVoteManiaLinkPageToLogin(playerInfo.Login, voteValue);
+                double? voteValue = HostPlugin.RatingAdapter.GetVoteByLogin(playerSettings.Login, currentChallengeID);
+                SendOwnVoteManiaLinkPageToLogin(playerSettings.Login, voteValue);
             }
         }
 

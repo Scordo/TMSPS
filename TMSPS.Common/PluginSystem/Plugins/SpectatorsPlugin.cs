@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using TMSPS.Core.Common;
 using TMSPS.Core.Communication.EventArguments.Callbacks;
+using TMSPS.Core.PluginSystem.Configuration;
 using PlayerInfo=TMSPS.Core.Communication.ProxyTypes.PlayerInfo;
 
 namespace TMSPS.Core.PluginSystem.Plugins
@@ -73,13 +74,9 @@ namespace TMSPS.Core.PluginSystem.Plugins
             {
                 if (Context.Credentials.UserHasAnyRight(e.Login, Command.GET_SPECTATORS1, Command.GET_SPECTATORS2))
                 {
-                    List<PlayerInfo> players = GetPlayerList();
 
-                    if (players == null)
-                        return true;
-
-                    List<string> spectators = players.Where(playerInfo => playerInfo.IsSpectator)
-                        .Select(playerInfo => StripTMColorsAndFormatting(playerInfo.NickName) + "[{[#HighlightStyle]}" + playerInfo.Login +"{[#MessageStyle]}]")
+                    List<string> spectators = Context.PlayerSettings.GetAsList(playerSettings => playerSettings.SpectatorStatus.IsSpectator)
+                        .Select(playerSettings => StripTMColorsAndFormatting(playerSettings.NickName) + "[{[#HighlightStyle]}" + playerSettings.Login + "{[#MessageStyle]}]")
                         .ToList();
 
                     if (spectators.Count > 0)
@@ -105,23 +102,18 @@ namespace TMSPS.Core.PluginSystem.Plugins
             {
                 if (Context.Credentials.UserHasAnyRight(e.Login, Command.KICK_SPECTATORS1, Command.KICK_SPECTATORS2))
                 {
-                    List<PlayerInfo> players = GetPlayerList();
+                    List<PlayerSettings> playerSettings = Context.PlayerSettings.GetAsList(playerSetting => playerSetting.SpectatorStatus.IsSpectator);
 
-                    if (players == null)
-                        return true;
-
-                    List<PlayerInfo> logins = players.Where(playerInfo => playerInfo.IsSpectator).ToList();
-
-                    foreach (PlayerInfo playerInfo in logins)
+                    foreach (PlayerSettings playerSetting in playerSettings)
                     {
-                        Context.RPCClient.Methods.Kick(playerInfo.Login, "Kicked for spectating without asking.");
-                        SendFormattedMessage("{[#ServerStyle]}>> {[#HighlightStyle]}" + StripTMColorsAndFormatting(playerInfo.NickName) + " {[#MessageStyle]}got kicked for spectating without asking.");
+                        Context.RPCClient.Methods.Kick(playerSetting.Login, "Kicked for spectating without asking.");
+                        SendFormattedMessage("{[#ServerStyle]}>> {[#HighlightStyle]}" + StripTMColorsAndFormatting(playerSetting.NickName) + " {[#MessageStyle]}got kicked for spectating without asking.");
                     }
 
-                    if (logins.Count == 0)
+                    if (playerSettings.Count == 0)
                         SendFormattedMessageToLogin(e.Login, "{[#ServerStyle]}> {[#MessageStyle]} No one is spectating!");
                     else
-                        SendFormattedMessageToLogin(e.Login, "{[#ServerStyle]}> {[#MessageStyle]}Kicked {[#HighlightStyle]}" + logins.Count + "{[#MessageStyle]} player for spectating without asking.");
+                        SendFormattedMessageToLogin(e.Login, "{[#ServerStyle]}> {[#MessageStyle]}Kicked {[#HighlightStyle]}" + playerSettings.Count + "{[#MessageStyle]} player for spectating without asking.");
                 }
                 else
                 {
