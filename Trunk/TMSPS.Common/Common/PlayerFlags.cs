@@ -4,6 +4,8 @@ namespace TMSPS.Core.Common
 {
     public class PlayerFlags : IDump
     {
+        #region Properties
+
         public bool HasPlayerSlot { get; set; }
         public bool IsServer { get; set; }
         public bool IsManagedByAnOtherServer { get; set; }
@@ -11,6 +13,10 @@ namespace TMSPS.Core.Common
         public bool IsPodiumReady { get; set; }
         public bool IsReferee { get; set; }
         public ForceSpectatorState ForceSpectator { get; set; }
+
+        #endregion
+
+        #region Public Methods
 
         public static PlayerFlags Parse(int spectatorStatus)
         {
@@ -38,5 +44,12 @@ namespace TMSPS.Core.Common
 
             return result;
         }
+
+        public PlayerFlags Clone()
+        {
+            return (PlayerFlags) MemberwiseClone();
+        }
+
+        #endregion
     }
 }

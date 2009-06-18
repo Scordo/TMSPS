@@ -6,7 +6,7 @@ using System.Text;
 using System.Xml.Linq;
 using System.Linq;
 using TMSPS.Core.Common;
-using TMSPS.Core.Communication.ProxyTypes;
+using TMSPS.Core.PluginSystem.Configuration;
 using Version=System.Version;
 
 namespace TMSPS.Core.PluginSystem.Plugins.Dedimania
@@ -79,24 +79,19 @@ namespace TMSPS.Core.PluginSystem.Plugins.Dedimania
 
         private void SendRecordListToAllPlayers(ICollection<DedimaniaRanking> rankings)
         {
-            List<PlayerInfo> players = GetPlayerList(this);
-
-            if (players == null)
-                return;
-
             if (rankings != null && rankings.Count > 0)
             {
                 if (PlayersCount < Settings.StaticModeStartLimit)
                 {
-                    foreach (PlayerInfo playerInfo in players)
+                    foreach (PlayerSettings playerSettings in Context.PlayerSettings.GetAllAsList())
                     {
-                        string maniaLinkPageContent = GetRecordListManiaLinkPage(HostPlugin.Rankings, playerInfo.Login);
+                        string maniaLinkPageContent = GetRecordListManiaLinkPage(HostPlugin.Rankings, playerSettings.Login);
                         string hash = maniaLinkPageContent.ToHash();
 
-                        if (GetManiaLinkPageHash(playerInfo.Login, _dedimaniaRecordListManiaLinkPageID) != hash)
+                        if (GetManiaLinkPageHash(playerSettings.Login, _dedimaniaRecordListManiaLinkPageID) != hash)
                         {
-                            SetManiaLinkPageHash(playerInfo.Login, _dedimaniaRecordListManiaLinkPageID, hash);
-                            Context.RPCClient.Methods.SendDisplayManialinkPageToLogin(playerInfo.Login, maniaLinkPageContent, 0, false);
+                            SetManiaLinkPageHash(playerSettings.Login, _dedimaniaRecordListManiaLinkPageID, hash);
+                            Context.RPCClient.Methods.SendDisplayManialinkPageToLogin(playerSettings.Login, maniaLinkPageContent, 0, false);
                         }
                     }
                 }

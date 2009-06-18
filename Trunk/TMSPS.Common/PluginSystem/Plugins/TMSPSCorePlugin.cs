@@ -73,6 +73,7 @@ namespace TMSPS.Core.PluginSystem.Plugins
             Context.RPCClient.Callbacks.BeginChallenge += Callbacks_BeginChallenge;
             Context.RPCClient.Callbacks.PlayerChat += Callbacks_PlayerChat;
             Context.RPCClient.Callbacks.EndRace += Callbacks_EndRace;
+            Context.RPCClient.Callbacks.PlayerInfoChanged += Callbacks_PlayerInfoChanged;
         }
 
         protected override void Dispose(bool connectionLost)
@@ -85,6 +86,12 @@ namespace TMSPS.Core.PluginSystem.Plugins
             Context.RPCClient.Callbacks.BeginChallenge -= Callbacks_BeginChallenge;
             Context.RPCClient.Callbacks.PlayerChat -= Callbacks_PlayerChat;
             Context.RPCClient.Callbacks.EndRace -= Callbacks_EndRace;
+            Context.RPCClient.Callbacks.PlayerInfoChanged -= Callbacks_PlayerInfoChanged;
+        }
+
+        private void Callbacks_PlayerInfoChanged(object sender, PlayerInfoChangedEventArgs e)
+        {
+            GetPlayerSettings(e.PlayerInfo.Login).UpdateFromPlayerInfo(e.PlayerInfo);
         }
 
         private void SyncBlackListWithDedimania(object state)
@@ -163,8 +170,6 @@ namespace TMSPS.Core.PluginSystem.Plugins
                 HandleCommand(e.Login, command);
         }
 
-        
-
         private void Callbacks_PlayerConnect(object sender, PlayerConnectEventArgs e)
         {
             if (e.Erroneous)
@@ -181,11 +186,6 @@ namespace TMSPS.Core.PluginSystem.Plugins
                     return;
 
                 NicknameResolverFactory.Instance.Set(e.Login, playerInfo.NickName);
-
-                lock (_playerCountChangeLockObject)
-                {
-                    PlayersCount += 1;
-                }
 
                 if (playerInfo.NickName.IsNullOrTimmedEmpty())
                 {
@@ -237,11 +237,6 @@ namespace TMSPS.Core.PluginSystem.Plugins
 
                     if (nickname != null)
                         SendFormattedMessage(Settings.LeaveMessage, "Nickname", StripTMColorsAndFormatting(nickname));
-                }
-
-                lock (_playerCountChangeLockObject)
-                {
-                    PlayersCount = (ushort) Math.Max(0, PlayersCount - 1);
                 }
             }, "Error in Callbacks_PlayerDisconnect Method.", true);
         }

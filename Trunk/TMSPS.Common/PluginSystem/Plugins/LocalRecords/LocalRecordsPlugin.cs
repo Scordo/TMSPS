@@ -7,9 +7,9 @@ using TMSPS.Core.Common;
 using TMSPS.Core.Communication.EventArguments.Callbacks;
 using TMSPS.Core.Communication.ProxyTypes;
 using TMSPS.Core.Logging;
+using TMSPS.Core.PluginSystem.Configuration;
 using Version=System.Version;
 using System.Linq;
-using PlayerInfo=TMSPS.Core.Communication.ProxyTypes.PlayerInfo;
 using Timer=System.Timers.Timer;
 
 namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
@@ -90,14 +90,11 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
 	    		Logger.ErrorToUI("Couldn't delete data of missing tracks.", ex);
 	    	}
 
-	        List<PlayerInfo> players = GetPlayerList();
-	        if (players == null)
-	            return;
 
-	        foreach (PlayerInfo playerInfo in players)
+	        foreach (PlayerSettings playerSettings in Context.PlayerSettings.GetAllAsList())
 	        {
-	            if (!playerInfo.NickName.IsNullOrTimmedEmpty())
-	                PlayerAdapter.CreateOrUpdate(new Player(playerInfo.Login, playerInfo.NickName));
+	            if (!playerSettings.NickName.IsNullOrTimmedEmpty())
+	                PlayerAdapter.CreateOrUpdate(new Player(playerSettings.Login, playerSettings.NickName));
 	        }
 
 	        ChallengeInfo currentChallengeInfo = GetCurrentChallengeInfoCached();
@@ -374,12 +371,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
 
 	    private void UpdateTimePlayedForAllCurrentPlayers()
 	    {
-	        List<PlayerInfo> players = GetPlayerList();
-
-	        if (players == null)
-	            return;
-
-            PlayerAdapter.UpdateTimePlayed(players.ConvertAll(p => p.Login));  
+            PlayerAdapter.UpdateTimePlayed(Context.PlayerSettings.GetAllAsList().ConvertAll(p => p.Login));  
 	    }
 
 	    private void InitializePlugins()

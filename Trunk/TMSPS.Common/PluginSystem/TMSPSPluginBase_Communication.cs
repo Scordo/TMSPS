@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using TMSPS.Core.Common;
 using TMSPS.Core.Communication.ProxyTypes;
 using TMSPS.Core.Communication.ResponseHandling;
@@ -7,17 +8,14 @@ namespace TMSPS.Core.PluginSystem
 {
     public abstract partial class TMSPSPluginBase
     {
-        protected static readonly object _playerCountChangeLockObject = new object();
-
         #region Properties
 
         private static ChallengeInfo CurrentChallengeInfo { get; set; }
         private static ServerOptions CurrentServerOptions { get; set; }
         private static GameMode? CurrentGameMode { get; set; }
-        protected static ushort PlayersCount{ get; set; }
+        protected int PlayersCount { get { return Context.PlayerSettings.Count; } }
 
         #endregion
-
 
         #region Methods
 
@@ -89,6 +87,9 @@ namespace TMSPS.Core.PluginSystem
                 return null;
             }
 
+            if (!login.Equals(Context.ServerInfo.ServerLogin, StringComparison.OrdinalIgnoreCase))
+                GetPlayerSettings(login).UpdateFromPlayerInfo(playerInfoResponse.Value);
+
             return playerInfoResponse.Value;
         }
 
@@ -108,9 +109,9 @@ namespace TMSPS.Core.PluginSystem
                 return null;
             }
 
-            lock (_playerCountChangeLockObject)
+            foreach (PlayerInfo playerInfo in  playersResponse.Value)
             {
-                PlayersCount = (ushort)playersResponse.Value.Count;    
+                plugin.GetPlayerSettings(playerInfo.Login).UpdateFromPlayerInfo(playerInfo);
             }
 
             return playersResponse.Value;
@@ -188,6 +189,9 @@ namespace TMSPS.Core.PluginSystem
                 Logger.ErrorToUI(string.Format("Error getting detailed Playerinfo for player with login {0}", login));
                 return null;
             }
+
+            if (!login.Equals(Context.ServerInfo.ServerLogin, StringComparison.OrdinalIgnoreCase))
+                GetPlayerSettings(login).UpdateFromPlayerInfo(playerInfoResponse.Value);
 
             return playerInfoResponse.Value;
         }

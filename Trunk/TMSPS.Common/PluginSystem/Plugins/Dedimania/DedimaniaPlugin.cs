@@ -4,8 +4,8 @@ using TMSPS.Core.Common;
 using TMSPS.Core.Communication.EventArguments.Callbacks;
 using TMSPS.Core.Communication.ProxyTypes;
 using TMSPS.Core.Logging;
+using TMSPS.Core.PluginSystem.Configuration;
 using TMSPS.Core.PluginSystem.Plugins.Dedimania.Communication;
-using PlayerInfo=TMSPS.Core.Communication.ProxyTypes.PlayerInfo;
 using Timer=System.Threading.Timer;
 using Version=System.Version;
 
@@ -30,7 +30,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.Dedimania
 
         #region Properties
 
-        public override Version Version { get { return new Version("0.1"); }}
+        public override Version Version { get { return new Version("0.2"); }}
         public override string Author { get { return "Jens Hofmann"; } }
         public override string Name{ get { return "DedimaniaPlugin"; } }
         public override string Description { get { return "Saves records in dedimania database."; } }
@@ -87,9 +87,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.Dedimania
             if (currentRankings == null)
                 return;
 
-            List<PlayerInfo> playerList = GetPlayerList();
-            if (playerList == null)
-                return;
+            List<PlayerSettings> playerList = Context.PlayerSettings.GetAllAsList();
 
             foreach (PlayerRank rank in currentRankings.ToArray())
             {
@@ -222,18 +220,14 @@ namespace TMSPS.Core.PluginSystem.Plugins.Dedimania
                 if (!currentGameMode.HasValue)
                     return;
 
-                List<PlayerInfo> playerList = GetPlayerList(plugin);
-                if (playerList == null)
-                    return;
+                List<PlayerSettings> currentPlayers = plugin.Context.PlayerSettings.GetAllAsList();
 
-                List<PlayerInfo> currentPlayers = playerList;
-
-                List<PlayerInfo> nonSpectators = currentPlayers.FindAll(player => !player.IsSpectator);
+                List<PlayerSettings> nonSpectators = currentPlayers.FindAll(player => !player.SpectatorStatus.IsSpectator);
                 List<DedimaniaPlayerInfo> playersToReport = new List<DedimaniaPlayerInfo>();
 
-                foreach (PlayerInfo player in nonSpectators)
+                foreach (PlayerSettings playerSettings in nonSpectators)
                 {
-                    playersToReport.Add(new DedimaniaPlayerInfo(player.Login, string.Empty, string.Empty, player.TeamId, player.IsSpectator, player.LadderRanking, player.IsInOfficialMode));
+                    playersToReport.Add(new DedimaniaPlayerInfo(playerSettings.Login, string.Empty, string.Empty, playerSettings.TeamID, playerSettings.SpectatorStatus.IsSpectator, playerSettings.LadderRanking, playerSettings.IsInOfficialMode));
                 }
 
                 int playersCount = playersToReport.Count;
@@ -274,18 +268,14 @@ namespace TMSPS.Core.PluginSystem.Plugins.Dedimania
             if (currentChallenge == null)
                 return;
 
-            List<PlayerInfo> playerList = GetPlayerList(this);
-            if (playerList == null)
-                return;
+            List<PlayerSettings> currentPlayers = Context.PlayerSettings.GetAllAsList();
 
-            List<PlayerInfo> currentPlayers = playerList;
-
-            List<PlayerInfo> nonSpectators = currentPlayers.FindAll(player => !player.IsSpectator);
+            List<PlayerSettings> nonSpectators = currentPlayers.FindAll(player => !player.SpectatorStatus.IsSpectator);
             List<DedimaniaPlayerInfo> playersToReport = new List<DedimaniaPlayerInfo>();
 
-            foreach (PlayerInfo player in nonSpectators)
+            foreach (PlayerSettings playerSettings in nonSpectators)
             {
-                playersToReport.Add(new DedimaniaPlayerInfo(player.Login, string.Empty, string.Empty, player.TeamId, player.IsSpectator, player.LadderRanking, player.IsInOfficialMode));
+                playersToReport.Add(new DedimaniaPlayerInfo(playerSettings.Login, string.Empty, string.Empty, playerSettings.TeamID, playerSettings.SpectatorStatus.IsSpectator, playerSettings.LadderRanking, playerSettings.IsInOfficialMode));
             }
 
             int playersCount = playersToReport.Count;

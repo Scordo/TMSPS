@@ -7,6 +7,7 @@ using System.Text;
 using System.Xml.Linq;
 using TMSPS.Core.Common;
 using TMSPS.Core.Communication.ProxyTypes;
+using TMSPS.Core.PluginSystem.Configuration;
 using Version=System.Version;
 
 namespace TMSPS.Core.PluginSystem.Plugins.LiveRanking
@@ -125,15 +126,12 @@ namespace TMSPS.Core.PluginSystem.Plugins.LiveRanking
                 PlayerRank[] rankingArray = rankings.ToArray();
                 LastRankings = rankingArray;
 
-                List<PlayerInfo> players = GetPlayerList();
-                if (players == null)
-                    return;
 
 				if (PlayersCount < Settings.StaticModeStartLimit)
 				{
-					foreach (PlayerInfo playerInfo in players)
+					foreach (PlayerSettings playerSettings in Context.PlayerSettings.GetAllAsList())
 					{
-						SendUIToPlayer(rankingArray, playerInfo.Login);
+						SendUIToPlayer(rankingArray, playerSettings.Login);
 					}
 				}
 				else

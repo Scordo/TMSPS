@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading;
 using TMSPS.Core.Communication.EventArguments.Callbacks;
 using TMSPS.Core.Communication.ResponseHandling;
+using TMSPS.Core.PluginSystem.Configuration;
 using PlayerInfo=TMSPS.Core.Communication.ProxyTypes.PlayerInfo;
 using System.Linq;
 
@@ -58,14 +59,10 @@ namespace TMSPS.Core.PluginSystem.Plugins.IdleKick
             Settings = IdleKickPluginSettings.ReadFromFile(PluginSettingsFilePath);
             LoginRounds = new Dictionary<string, uint>();
             LoginTimes = new Dictionary<string, DateTime>();
-            List<PlayerInfo> playerList = GetPlayerList();
 
-            if (playerList != null)
+            foreach (PlayerSettings playerSettings in Context.PlayerSettings.GetAllAsList())
             {
-                foreach (PlayerInfo playerInfo in playerList)
-                {
-                    ResetValues(playerInfo.Login);
-                }
+                ResetValues(playerSettings.Login);
             }
 
             if (Settings.KickMode == IdleKickMode.TIME)

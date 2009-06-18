@@ -2,6 +2,7 @@
 using System.Configuration;
 using TMSPS.Core.Communication.EventArguments.Callbacks;
 using TMSPS.Core.Communication.ProxyTypes;
+using TMSPS.Core.PluginSystem.Configuration;
 using SettingsBase=TMSPS.Core.Common.SettingsBase;
 using Version=System.Version;
 
@@ -50,22 +51,33 @@ namespace TMSPS.Core.PluginSystem.Plugins
 
         private void Callbacks_PlayerConnect(object sender, PlayerConnectEventArgs e)
         {
-            DetailedPlayerInfo detailedPlayerInfo = GetDetailedPlayerInfo(e.Login);
+            PlayerSettings playerSettings = GetPlayerSettings(e.Login);
+            int ladderRanking;
 
-            if (detailedPlayerInfo == null)
-                return;
-
-            PlayerRanking worldRanking = detailedPlayerInfo.LadderStats.PlayerRankings.Find(ranking => ranking.Path == "World");
-
-            if (worldRanking == null)
-                return;
-
-            if (worldRanking.Ranking == -1)
+            if (!playerSettings.DetailMode.HasDetailedPlayerInfo())
             {
-                Context.RPCClient.Methods.Kick(e.Login, Settings.PersonalKickMessage);
-                SendFormattedMessage(Settings.PublicKickMessage, "Nickname", StripTMColorsAndFormatting(detailedPlayerInfo.NickName));
-                e.Handled = true;
+                DetailedPlayerInfo detailedPlayerInfo = GetDetailedPlayerInfo(e.Login);
+
+                if (detailedPlayerInfo == null)
+                    return;
+
+                PlayerRanking worldRanking = detailedPlayerInfo.LadderStats.PlayerRankings.Find(ranking => ranking.Path == "World");
+
+                if (worldRanking == null)
+                    return;
+
+                ladderRanking = worldRanking.Ranking;
             }
+            else
+                ladderRanking = playerSettings.LadderRanking;
+            
+
+            if (ladderRanking != -1)
+                return;
+
+            Context.RPCClient.Methods.Kick(e.Login, Settings.PersonalKickMessage);
+            SendFormattedMessage(Settings.PublicKickMessage, "Nickname", StripTMColorsAndFormatting(playerSettings.NickName));
+            e.Handled = true;
         }
 
         protected override void Dispose(bool connectionLost)

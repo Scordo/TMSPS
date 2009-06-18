@@ -139,23 +139,18 @@ namespace TMSPS.Core.PluginSystem.Plugins.AdminPlayer
             if (!LoginHasAnyRight(login, true, Command.KICK_SPECTATORS1, Command.KICK_SPECTATORS2))
                 return;
 
-            List<PlayerInfo> players = GetPlayerList();
+            List<PlayerSettings> playerSettings = Context.PlayerSettings.GetAsList(playerSetting => playerSetting.SpectatorStatus.IsSpectator);
 
-            if (players == null)
-                return;
-
-            List<PlayerInfo> logins = players.Where(playerInfo => playerInfo.IsSpectator).ToList();
-
-            foreach (PlayerInfo playerInfo in logins)
+            foreach (PlayerSettings playerSetting in playerSettings)
             {
-                Context.RPCClient.Methods.Kick(playerInfo.Login, "Kicked for spectating without asking.");
-                SendFormattedMessage("{[#ServerStyle]}>> {[#HighlightStyle]}" + StripTMColorsAndFormatting(playerInfo.NickName) + " {[#MessageStyle]}got kicked for spectating without asking.");
+                Context.RPCClient.Methods.Kick(playerSetting.Login, "Kicked for spectating without asking.");
+                SendFormattedMessage("{[#ServerStyle]}>> {[#HighlightStyle]}" + StripTMColorsAndFormatting(playerSetting.NickName) + " {[#MessageStyle]}got kicked for spectating without asking.");
             }
 
-            if (logins.Count == 0)
+            if (playerSettings.Count == 0)
                 SendFormattedMessageToLogin(login, "{[#ServerStyle]}> {[#MessageStyle]} No one is spectating!");
             else
-                SendFormattedMessageToLogin(login, "{[#ServerStyle]}> {[#MessageStyle]}Kicked {[#HighlightStyle]}" + logins.Count + "{[#MessageStyle]} player for spectating without asking.");
+                SendFormattedMessageToLogin(login, "{[#ServerStyle]}> {[#MessageStyle]}Kicked {[#HighlightStyle]}" + playerSettings.Count + "{[#MessageStyle]} player for spectating without asking.");
         }
 
         private void RestartTrackImmediately(string login)
@@ -181,13 +176,9 @@ namespace TMSPS.Core.PluginSystem.Plugins.AdminPlayer
 
         private void SendToAllLogins()
         {
-            List<PlayerInfo> players = GetPlayerList();
-            if (players  == null)
-                return;
-
-            foreach (PlayerInfo player in players)
+            foreach (PlayerSettings playerSetting in Context.PlayerSettings.GetAllAsList())
             {
-                SendPlayerUIToLogin(player.Login);
+                SendPlayerUIToLogin(playerSetting.Login);
             }
         }
 

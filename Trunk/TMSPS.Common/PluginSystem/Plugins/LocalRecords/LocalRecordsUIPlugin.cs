@@ -8,7 +8,7 @@ using System.Threading;
 using System.Xml.Linq;
 using TMSPS.Core.Common;
 using TMSPS.Core.Communication.EventArguments.Callbacks;
-using PlayerInfo = TMSPS.Core.Communication.ProxyTypes.PlayerInfo;
+using TMSPS.Core.PluginSystem.Configuration;
 using Version = System.Version;
 
 namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
@@ -193,24 +193,19 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
 
         private void SendRecordListToAllPlayers(RankEntry[] rankings)
         {
-            List<PlayerInfo> players = GetPlayerList(this);
-
-            if (players == null)
-                return;
-
             if (rankings != null && rankings.Length > 0)
             {
                 if (PlayersCount < Settings.StaticModeStartLimit)
                 {
-                    foreach (PlayerInfo playerInfo in players)
+                    foreach (PlayerSettings playerSettings in Context.PlayerSettings.GetAllAsList())
                     {
-                        string maniaLinkPageContent = GetRecordListManiaLinkPage(rankings, playerInfo.Login);
+                        string maniaLinkPageContent = GetRecordListManiaLinkPage(rankings, playerSettings.Login);
                         string hash = maniaLinkPageContent.ToHash();
 
-                        if (GetManiaLinkPageHash(playerInfo.Login, _localRecordListManiaLinkPageID) != hash)
+                        if (GetManiaLinkPageHash(playerSettings.Login, _localRecordListManiaLinkPageID) != hash)
                         {
-                            SetManiaLinkPageHash(playerInfo.Login, _localRecordListManiaLinkPageID, hash);
-                            Context.RPCClient.Methods.SendDisplayManialinkPageToLogin(playerInfo.Login, maniaLinkPageContent, 0, false);
+                            SetManiaLinkPageHash(playerSettings.Login, _localRecordListManiaLinkPageID, hash);
+                            Context.RPCClient.Methods.SendDisplayManialinkPageToLogin(playerSettings.Login, maniaLinkPageContent, 0, false);
                         }
                     }
                 }
@@ -225,25 +220,20 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
 
         private void SendPBManiaLinkPageToAll(RankEntry[] rankEntries)
         {
-            List<PlayerInfo> players = GetPlayerList();
-
-            if (players == null)
-                return;
-
             if (rankEntries == null)
                 rankEntries = new RankEntry[] { };
 
-            foreach (PlayerInfo playerInfo in players)
+            foreach (PlayerSettings playerSettings in Context.PlayerSettings.GetAllAsList())
             {
-                RankEntry rank = Array.Find(rankEntries, rankEntry => rankEntry.Login == playerInfo.Login);
+                RankEntry rank = Array.Find(rankEntries, rankEntry => rankEntry.Login == playerSettings.Login);
 
                 uint? personalBest = rank == null ? null : (uint?)rank.TimeOrScore;
 
                 if (!personalBest.HasValue)
-                    personalBest = HostPlugin.RecordAdapter.GetBestTime(playerInfo.Login, HostPlugin.CurrentChallengeID);
+                    personalBest = HostPlugin.RecordAdapter.GetBestTime(playerSettings.Login, HostPlugin.CurrentChallengeID);
 
 
-                SendPBManiaLinkPage(playerInfo.Login, personalBest);
+                SendPBManiaLinkPage(playerSettings.Login, personalBest);
             }
         }
 
