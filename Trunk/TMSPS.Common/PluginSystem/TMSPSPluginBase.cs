@@ -351,6 +351,11 @@ namespace TMSPS.Core.PluginSystem
             return Context.PlayerSettings.Get(login);
         }
 
+        protected PlayerSettings GetPlayerSettings(string login, bool createOnDemand)
+        {
+            return Context.PlayerSettings.Get(login, createOnDemand);
+        }
+
         protected PluginSettings GetPluginSettings(string login)
         {
             return Context.PlayerSettings.Get(login, ID);
