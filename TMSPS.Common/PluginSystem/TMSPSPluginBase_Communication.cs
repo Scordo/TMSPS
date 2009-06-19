@@ -88,7 +88,7 @@ namespace TMSPS.Core.PluginSystem
             }
 
             if (!login.Equals(Context.ServerInfo.ServerLogin, StringComparison.OrdinalIgnoreCase))
-                GetPlayerSettings(login).UpdateFromPlayerInfo(playerInfoResponse.Value);
+                GetPlayerSettings(login, true).UpdateFromPlayerInfo(playerInfoResponse.Value);
 
             return playerInfoResponse.Value;
         }
@@ -111,7 +111,7 @@ namespace TMSPS.Core.PluginSystem
 
             foreach (PlayerInfo playerInfo in  playersResponse.Value)
             {
-                plugin.GetPlayerSettings(playerInfo.Login).UpdateFromPlayerInfo(playerInfo);
+                plugin.GetPlayerSettings(playerInfo.Login, true).UpdateFromPlayerInfo(playerInfo);
             }
 
             return playersResponse.Value;
@@ -191,7 +191,7 @@ namespace TMSPS.Core.PluginSystem
             }
 
             if (!login.Equals(Context.ServerInfo.ServerLogin, StringComparison.OrdinalIgnoreCase))
-                GetPlayerSettings(login).UpdateFromPlayerInfo(playerInfoResponse.Value);
+                GetPlayerSettings(login, true).UpdateFromPlayerInfo(playerInfoResponse.Value);
 
             return playerInfoResponse.Value;
         }

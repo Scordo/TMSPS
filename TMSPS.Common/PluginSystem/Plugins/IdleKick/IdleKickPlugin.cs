@@ -4,7 +4,6 @@ using System.Threading;
 using TMSPS.Core.Communication.EventArguments.Callbacks;
 using TMSPS.Core.Communication.ResponseHandling;
 using TMSPS.Core.PluginSystem.Configuration;
-using PlayerInfo=TMSPS.Core.Communication.ProxyTypes.PlayerInfo;
 using System.Linq;
 
 namespace TMSPS.Core.PluginSystem.Plugins.IdleKick
@@ -144,9 +143,9 @@ namespace TMSPS.Core.PluginSystem.Plugins.IdleKick
                 {
                     if (!Settings.KickSpectators)
                     {
-                        PlayerInfo playerInfo = GetPlayerInfo(loginRound.Key);
+                        PlayerSettings playerSettings = GetPlayerSettings(loginRound.Key);
 
-                        if (playerInfo == null || playerInfo.IsSpectator)
+                        if (playerSettings == null || playerSettings.SpectatorStatus.IsSpectator)
                         {
                             ResetLoginRounds(loginRound.Key);
                             continue;
@@ -174,9 +173,9 @@ namespace TMSPS.Core.PluginSystem.Plugins.IdleKick
                 {
                     if (!Settings.KickSpectators)
                     {
-                        PlayerInfo playerInfo = GetPlayerInfo(loginTime.Key);
+                        PlayerSettings playerSettings = GetPlayerSettings(loginTime.Key);
 
-                        if (playerInfo == null || playerInfo.IsSpectator)
+                        if (playerSettings == null || playerSettings.SpectatorStatus.IsSpectator)
                         {
                             ResetLoginsTime(loginTime.Key);
                             continue;

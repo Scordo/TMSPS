@@ -10,7 +10,15 @@ namespace TMSPS.Core.PluginSystem.Configuration
 
         public PlayerSettings Get(string login)
         {
-            return !ContainsKey(login.ToLower()) ? Reset(login) : this[login.ToLower()];
+            return Get(login, false);
+        }
+
+        public PlayerSettings Get(string login, bool createOnDemand)
+        {
+            if (ContainsKey(login.ToLower()))
+                return this[login.ToLower()];
+
+            return createOnDemand ? Reset(login) : null;
         }
 
         public PluginSettings Get(string login, ushort pluginID)
