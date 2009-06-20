@@ -91,7 +91,7 @@ namespace TMSPS.Core.PluginSystem.Plugins
 
         private void Callbacks_PlayerInfoChanged(object sender, PlayerInfoChangedEventArgs e)
         {
-            GetPlayerSettings(e.PlayerInfo.Login).UpdateFromPlayerInfo(e.PlayerInfo);
+            GetPlayerSettings(e.PlayerInfo.Login, true).UpdateFromPlayerInfo(e.PlayerInfo);
         }
 
         private void SyncBlackListWithDedimania(object state)
