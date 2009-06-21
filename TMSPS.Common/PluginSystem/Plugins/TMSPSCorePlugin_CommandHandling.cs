@@ -101,11 +101,13 @@ namespace TMSPS.Core.PluginSystem.Plugins
                 return;
             }
 
+            if (LoginHasRight(loginToForce, false, CommandOrRight.FORCE_SPECTATOR_PROTECTION))
+                return;
+
             string nickname = GetNickname(operatorLogin);
 
             if (nickname == null)
                 return;
-
 
             string nicknameToForce = GetNickname(loginToForce);
 
@@ -142,6 +144,9 @@ namespace TMSPS.Core.PluginSystem.Plugins
                 SendNoPermissionMessagetoLogin(operatorLogin);
                 return;
             }
+
+            if (LoginHasRight(loginToKick, false, CommandOrRight.KICK_PROTECTION))
+                return;
 
             string nickname = GetNickname(operatorLogin);
 
@@ -182,6 +187,9 @@ namespace TMSPS.Core.PluginSystem.Plugins
                 SendNoPermissionMessagetoLogin(operatorLogin);
                 return;
             }
+
+            if (LoginHasRight(loginToBan, false, CommandOrRight.BAN_PROTECTION))
+                return;
 
             string nickname = GetNickname(operatorLogin);
 
@@ -249,6 +257,9 @@ namespace TMSPS.Core.PluginSystem.Plugins
                 SendNoPermissionMessagetoLogin(operatorLogin);
                 return;
             }
+
+            if (LoginHasRight(loginToIgnore, false, CommandOrRight.IGNORE_PROTECTION))
+                return;
 
             string nickname = GetNickname(operatorLogin);
 
@@ -395,6 +406,9 @@ namespace TMSPS.Core.PluginSystem.Plugins
                 return;
             }
 
+            if (LoginHasRight(loginToBlacklist, false, CommandOrRight.BLACKLIST_PROTECTION))
+                return;
+
             string nickname = GetNickname(operatorLogin);
 
             if (nickname == null)
@@ -530,17 +544,22 @@ namespace TMSPS.Core.PluginSystem.Plugins
                 return;
 
             List<PlayerSettings> playerSettings = Context.PlayerSettings.GetAsList(playerSetting => playerSetting.SpectatorStatus.IsSpectator);
+            int playersKickedCount = 0;
 
             foreach (PlayerSettings playerSetting in playerSettings)
             {
+                if (LoginHasRight(playerSetting.Login, false, CommandOrRight.KICK_PROTECTION))
+                    continue;
+
                 Context.RPCClient.Methods.Kick(playerSetting.Login, "Kicked for spectating without asking.");
                 SendFormattedMessage("{[#ServerStyle]}>> {[#HighlightStyle]}" + StripTMColorsAndFormatting(playerSetting.NickName) + "{[#MessageStyle]} got kicked for spectating without asking.");
+                playersKickedCount++;
             }
 
-            if (playerSettings.Count == 0)
+            if (playersKickedCount == 0)
                 SendFormattedMessageToLogin(login, "{[#ServerStyle]}>{[#MessageStyle]} No one is spectating!");
             else
-                SendFormattedMessageToLogin(login, "{[#ServerStyle]}>{[#MessageStyle]} Kicked {[#HighlightStyle]}" + playerSettings.Count + "{[#MessageStyle]} player for spectating without asking.");
+                SendFormattedMessageToLogin(login, "{[#ServerStyle]}>{[#MessageStyle]} Kicked {[#HighlightStyle]}" + playersKickedCount + "{[#MessageStyle]} player for spectating without asking.");
         }
 
         public void KickSpectatorsOf(string login, int playerID)
@@ -549,17 +568,22 @@ namespace TMSPS.Core.PluginSystem.Plugins
                 return;
 
             List<PlayerSettings> playerSettings = Context.PlayerSettings.GetAsList(playerSetting => playerSetting.SpectatorStatus.IsSpectator && playerSetting.SpectatorStatus.CurrentPlayerTargetID == playerID);
+            int playersKickedCount = 0;
 
             foreach (PlayerSettings playerSetting in playerSettings)
             {
+                if (LoginHasRight(playerSetting.Login, false, CommandOrRight.KICK_PROTECTION))
+                    continue;
+
                 Context.RPCClient.Methods.Kick(playerSetting.Login, "Kicked for spectating without asking.");
                 SendFormattedMessage("{[#ServerStyle]}>> {[#HighlightStyle]}" + StripTMColorsAndFormatting(playerSetting.NickName) + "{[#MessageStyle]} got kicked for spectating without asking.");
+                playersKickedCount++;
             }
 
-            if (playerSettings.Count == 0)
+            if (playersKickedCount == 0)
                 SendFormattedMessageToLogin(login, "{[#ServerStyle]}>{[#MessageStyle]} No one is spectating you!");
             else
-                SendFormattedMessageToLogin(login, "{[#ServerStyle]}>{[#MessageStyle]} Kicked {[#HighlightStyle]}" + playerSettings.Count + "{[#MessageStyle]} player for spectating without asking.");
+                SendFormattedMessageToLogin(login, "{[#ServerStyle]}>{[#MessageStyle]} Kicked {[#HighlightStyle]}" + playersKickedCount + "{[#MessageStyle]} player for spectating without asking.");
         }
 
         //private void HandleRestartServerCommand(ServerCommand command)
