@@ -70,9 +70,9 @@ namespace TMSPS.Core.PluginSystem.Plugins
 
         private bool CheckForGetSpectatorsCommand(PlayerChatEventArgs e)
         {
-            if (ServerCommand.Parse(e.Text).IsMainCommandAnyOf(Command.GET_SPECTATORS1, Command.GET_SPECTATORS2))
+            if (ServerCommand.Parse(e.Text).IsMainCommandAnyOf(CommandOrRight.GET_SPECTATORS1, CommandOrRight.GET_SPECTATORS2))
             {
-                if (Context.Credentials.UserHasAnyRight(e.Login, Command.GET_SPECTATORS1, Command.GET_SPECTATORS2))
+                if (Context.Credentials.UserHasAnyRight(e.Login, CommandOrRight.GET_SPECTATORS1, CommandOrRight.GET_SPECTATORS2))
                 {
 
                     List<string> spectators = Context.PlayerSettings.GetAsList(playerSettings => playerSettings.SpectatorStatus.IsSpectator)
@@ -98,9 +98,9 @@ namespace TMSPS.Core.PluginSystem.Plugins
 
         private bool CheckForKickSpectatorsCommand(PlayerChatEventArgs e)
         {
-            if (ServerCommand.Parse(e.Text).IsMainCommandAnyOf(Command.KICK_SPECTATORS1, Command.KICK_SPECTATORS2))
+            if (ServerCommand.Parse(e.Text).IsMainCommandAnyOf(CommandOrRight.KICK_SPECTATORS1, CommandOrRight.KICK_SPECTATORS2))
             {
-                if (Context.Credentials.UserHasAnyRight(e.Login, Command.KICK_SPECTATORS1, Command.KICK_SPECTATORS2))
+                if (Context.Credentials.UserHasAnyRight(e.Login, CommandOrRight.KICK_SPECTATORS1, CommandOrRight.KICK_SPECTATORS2))
                 {
                     List<PlayerSettings> playerSettings = Context.PlayerSettings.GetAsList(playerSetting => playerSetting.SpectatorStatus.IsSpectator);
 

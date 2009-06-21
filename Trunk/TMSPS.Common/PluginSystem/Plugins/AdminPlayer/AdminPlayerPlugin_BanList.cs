@@ -84,7 +84,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.AdminPlayer
 
         private void SendBanListPageToLogin(string login, uint? pageIndex)
         {
-            if (!LoginHasAnyRight(login, true, Command.BAN))
+            if (!LoginHasAnyRight(login, true, CommandOrRight.BAN))
                 return;
 
             const int MAX_BANLIST_SIZE = 1000;

@@ -85,7 +85,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.AdminPlayer
 
         private void SendGuestListPageToLogin(string login, uint? pageIndex)
         {
-            if (!LoginHasAnyRight(login, true, Command.ADD_GUEST))
+            if (!LoginHasAnyRight(login, true, CommandOrRight.ADD_GUEST))
                 return;
 
             const int MAX_GUESTLIST_SIZE = 1000;

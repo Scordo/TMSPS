@@ -79,12 +79,12 @@ namespace TMSPS.Core.PluginSystem.Plugins.Donation
 
         private void Callbacks_PlayerChat(object sender, Communication.EventArguments.Callbacks.PlayerChatEventArgs e)
         {
-            if (e.Text == null || !e.Text.StartsWith(Command.DONATE, StringComparison.OrdinalIgnoreCase))
+            if (e.Text == null || !e.Text.StartsWith(CommandOrRight.DONATE, StringComparison.OrdinalIgnoreCase))
                 return;
 
             int coppers;
 
-            if (!int.TryParse(e.Text.Substring(Command.DONATE.Length).Trim(), NumberStyles.None, CultureInfo.InvariantCulture,  out coppers) || coppers <= 0)
+            if (!int.TryParse(e.Text.Substring(CommandOrRight.DONATE.Length).Trim(), NumberStyles.None, CultureInfo.InvariantCulture,  out coppers) || coppers <= 0)
                 return;
 
             if (coppers < Settings.MinDonationValue)

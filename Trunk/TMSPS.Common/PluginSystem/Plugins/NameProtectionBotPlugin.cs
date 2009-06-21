@@ -113,10 +113,10 @@ namespace TMSPS.Core.PluginSystem.Plugins
             if (command == null)
                 return;
 
-            if (string.Compare(command.MainCommand, Command.READCLANTAG_SETTINGS, StringComparison.InvariantCultureIgnoreCase) != 0)
+            if (string.Compare(command.MainCommand, CommandOrRight.READCLANTAG_SETTINGS, StringComparison.InvariantCultureIgnoreCase) != 0)
                 return;
 
-            if (!Context.Credentials.UserHasAnyRight(e.Login, Command.READCLANTAG_SETTINGS))
+            if (!Context.Credentials.UserHasAnyRight(e.Login, CommandOrRight.READCLANTAG_SETTINGS))
             {
                 SendNoPermissionMessagetoLogin(e.Login);
                 return;

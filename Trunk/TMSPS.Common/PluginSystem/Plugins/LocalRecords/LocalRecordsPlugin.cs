@@ -162,12 +162,12 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
 
 	        ServerCommand command = ServerCommand.Parse(args.Text);
 
-	        if (command == null || !command.IsMainCommandAnyOf(Command.DELETE_CHEATER) || command.PartsWithoutMainCommand.Count < 1)
+	        if (command == null || !command.IsMainCommandAnyOf(CommandOrRight.DELETE_CHEATER) || command.PartsWithoutMainCommand.Count < 1)
 	            return false;
 
 	        string login = command.PartsWithoutMainCommand[0];
 
-            if (Context.Credentials.UserHasRight(args.Login, Command.DELETE_CHEATER))
+            if (Context.Credentials.UserHasRight(args.Login, CommandOrRight.DELETE_CHEATER))
             {
                 if (PlayerAdapter.RemoveAllStatsForLogin(login))
                 {
@@ -196,7 +196,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
 
             ServerCommand command = ServerCommand.Parse(args.Text);
 
-            if (command == null || !command.IsMainCommandAnyOf(Command.GET_LOCAL_LOGINS))
+            if (command == null || !command.IsMainCommandAnyOf(CommandOrRight.GET_LOCAL_LOGINS))
                 return false;
 
             DetermineLocalRecords();

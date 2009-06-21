@@ -74,7 +74,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
 
         private bool CheckForServerRankCommand(PlayerChatEventArgs args)
         {
-            if (string.Compare(args.Text, Command.SERVER_RANK1, StringComparison.InvariantCultureIgnoreCase) != 0 && string.Compare(args.Text, Command.SERVER_RANK2, StringComparison.InvariantCultureIgnoreCase) != 0)
+            if (string.Compare(args.Text, CommandOrRight.SERVER_RANK1, StringComparison.InvariantCultureIgnoreCase) != 0 && string.Compare(args.Text, CommandOrRight.SERVER_RANK2, StringComparison.InvariantCultureIgnoreCase) != 0)
                 return false;
 
             SendServerRankMessageToLogin(args.Login);
@@ -84,7 +84,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
 
         private bool CheckForNextServerRankCommand(PlayerChatEventArgs args)
         {
-            if (string.Compare(args.Text, Command.NEXT_SERVER_RANK1, StringComparison.InvariantCultureIgnoreCase) != 0 && string.Compare(args.Text, Command.NEXT_SERVER_RANK2, StringComparison.InvariantCultureIgnoreCase) != 0)
+            if (string.Compare(args.Text, CommandOrRight.NEXT_SERVER_RANK1, StringComparison.InvariantCultureIgnoreCase) != 0 && string.Compare(args.Text, CommandOrRight.NEXT_SERVER_RANK2, StringComparison.InvariantCultureIgnoreCase) != 0)
                 return false;
 
             SendNextServerRankMessageToLogin(args.Login);
@@ -94,10 +94,10 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
 
         private bool CheckForInfoCommand(PlayerChatEventArgs args)
         {
-            if (string.Compare(args.Text, Command.Info, StringComparison.InvariantCultureIgnoreCase) != 0 &&
-                string.Compare(args.Text, Command.Wins, StringComparison.InvariantCultureIgnoreCase) != 0 &&
-                string.Compare(args.Text, Command.Played, StringComparison.InvariantCultureIgnoreCase) != 0 &&
-                string.Compare(args.Text, Command.Visit, StringComparison.InvariantCultureIgnoreCase) != 0)
+            if (string.Compare(args.Text, CommandOrRight.Info, StringComparison.InvariantCultureIgnoreCase) != 0 &&
+                string.Compare(args.Text, CommandOrRight.Wins, StringComparison.InvariantCultureIgnoreCase) != 0 &&
+                string.Compare(args.Text, CommandOrRight.Played, StringComparison.InvariantCultureIgnoreCase) != 0 &&
+                string.Compare(args.Text, CommandOrRight.Visit, StringComparison.InvariantCultureIgnoreCase) != 0)
                 return false;
 
             SendInfoMessageToLogin(args.Login);
