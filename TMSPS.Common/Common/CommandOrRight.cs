@@ -19,8 +19,12 @@
         public const string READ_CREDENTIALS = "readcredentials";
         public const string GET_SPECTATORS1 = "getspectators";
         public const string GET_SPECTATORS2 = "specs";
+        public const string GET_MY_SPECTATORS1 = "getmyspectators";
+        public const string GET_MY_SPECTATORS2 = "myspecs";
         public const string KICK_SPECTATORS1 = "kickspectators";
         public const string KICK_SPECTATORS2 = "kickspecs";
+        public const string KICK_MY_SPECTATORS1 = "kickmyspectators";
+        public const string KICK_MY_SPECTATORS2 = "kickmyspecs";
         public const string READCLANTAG_SETTINGS = "readclantagsettings";
         public const string READ_CHATBOT_SETTINGS = "readchatbotsettings";
         public const string TMX_INFO = "tmxinfo";

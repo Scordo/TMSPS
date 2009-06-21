@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using TMSPS.Core.Common;
 using TMSPS.Core.Communication.EventArguments.Callbacks;
-using TMSPS.Core.PluginSystem.Configuration;
-using PlayerInfo=TMSPS.Core.Communication.ProxyTypes.PlayerInfo;
 
 namespace TMSPS.Core.PluginSystem.Plugins
 {
@@ -59,35 +57,58 @@ namespace TMSPS.Core.PluginSystem.Plugins
                 if (e.IsServerMessage || e.Text.IsNullOrTimmedEmpty())
                     return;
 
-                if (CheckForGetSpectatorsCommand(e))
+                if (CheckForGetAllSpectatorsCommand(e))
                     return;
 
-                if (CheckForKickSpectatorsCommand(e))
+                if (CheckForGetMySpectatorsCommand(e))
+                    return;
+
+                if (CheckForKickAllSpectatorsCommand(e))
+                    return;
+
+                if (CheckForKickMySpectatorsCommand(e))
                     return;
 
             }, "Error in Callbacks_PlayerChat Method.", true);
         }
 
-        private bool CheckForGetSpectatorsCommand(PlayerChatEventArgs e)
+        private bool CheckForGetAllSpectatorsCommand(PlayerChatEventArgs e)
         {
             if (ServerCommand.Parse(e.Text).IsMainCommandAnyOf(CommandOrRight.GET_SPECTATORS1, CommandOrRight.GET_SPECTATORS2))
             {
-                if (Context.Credentials.UserHasAnyRight(e.Login, CommandOrRight.GET_SPECTATORS1, CommandOrRight.GET_SPECTATORS2))
-                {
+                if (!LoginHasAnyRight(e.Login, true, CommandOrRight.GET_SPECTATORS1, CommandOrRight.GET_SPECTATORS2))
+                    return true;
 
-                    List<string> spectators = Context.PlayerSettings.GetAsList(playerSettings => playerSettings.SpectatorStatus.IsSpectator)
-                        .Select(playerSettings => StripTMColorsAndFormatting(playerSettings.NickName) + "[{[#HighlightStyle]}" + playerSettings.Login + "{[#MessageStyle]}]")
-                        .ToList();
+                List<string> spectators = Context.PlayerSettings.GetAsList(playerSettings => playerSettings.SpectatorStatus.IsSpectator)
+                    .Select(playerSettings => StripTMColorsAndFormatting(playerSettings.NickName) + "[{[#HighlightStyle]}" + playerSettings.Login + "{[#MessageStyle]}]")
+                    .ToList();
 
-                    if (spectators.Count > 0)
-                        SendFormattedMessageToLogin(e.Login, "{[#ServerStyle]}> {[#HighlightStyle]}" + spectators.Count + " Spectator(s): {[#MessageStyle]}" + string.Join(", ", spectators.ToArray()));
-                    else
-                        SendFormattedMessageToLogin(e.Login, "{[#ServerStyle]}> Currently no spectators!");
-                }
+                if (spectators.Count > 0)
+                    SendFormattedMessageToLogin(e.Login, "{[#ServerStyle]}> {[#HighlightStyle]}" + spectators.Count + " Spectator(s): {[#MessageStyle]}" + string.Join(", ", spectators.ToArray()));
                 else
-                {
-                    SendNoPermissionMessagetoLogin(e.Login);
-                }
+                    SendFormattedMessageToLogin(e.Login, "{[#ServerStyle]}> Currently no spectators!");
+
+                return true;
+            }
+
+            return false;
+        }
+
+        private bool CheckForGetMySpectatorsCommand(PlayerChatEventArgs e)
+        {
+            if (ServerCommand.Parse(e.Text).IsMainCommandAnyOf(CommandOrRight.GET_MY_SPECTATORS1, CommandOrRight.GET_MY_SPECTATORS2))
+            {
+                if (!LoginHasAnyRight(e.Login, true, CommandOrRight.GET_SPECTATORS1, CommandOrRight.GET_SPECTATORS2))
+                    return true;
+
+                List<string> spectators = Context.PlayerSettings.GetAsList(playerSettings => playerSettings.SpectatorStatus.IsSpectator && playerSettings.SpectatorStatus.CurrentPlayerTargetID == e.PlayerID)
+                    .Select(playerSettings => StripTMColorsAndFormatting(playerSettings.NickName) + "[{[#HighlightStyle]}" + playerSettings.Login + "{[#MessageStyle]}]")
+                    .ToList();
+
+                if (spectators.Count > 0)
+                    SendFormattedMessageToLogin(e.Login, "{[#ServerStyle]}> {[#HighlightStyle]}" + spectators.Count + " Spectator(s): {[#MessageStyle]}" + string.Join(", ", spectators.ToArray()));
+                else
+                    SendFormattedMessageToLogin(e.Login, "{[#ServerStyle]}> Currently no one is spectating you!");
 
                 return true;
             }
@@ -96,30 +117,22 @@ namespace TMSPS.Core.PluginSystem.Plugins
             return false;
         }
 
-        private bool CheckForKickSpectatorsCommand(PlayerChatEventArgs e)
+        private bool CheckForKickAllSpectatorsCommand(PlayerChatEventArgs e)
         {
             if (ServerCommand.Parse(e.Text).IsMainCommandAnyOf(CommandOrRight.KICK_SPECTATORS1, CommandOrRight.KICK_SPECTATORS2))
             {
-                if (Context.Credentials.UserHasAnyRight(e.Login, CommandOrRight.KICK_SPECTATORS1, CommandOrRight.KICK_SPECTATORS2))
-                {
-                    List<PlayerSettings> playerSettings = Context.PlayerSettings.GetAsList(playerSetting => playerSetting.SpectatorStatus.IsSpectator);
+                Context.CorePlugin.KickAllSpectators(e.Login);
+                return true;
+            }
 
-                    foreach (PlayerSettings playerSetting in playerSettings)
-                    {
-                        Context.RPCClient.Methods.Kick(playerSetting.Login, "Kicked for spectating without asking.");
-                        SendFormattedMessage("{[#ServerStyle]}>> {[#HighlightStyle]}" + StripTMColorsAndFormatting(playerSetting.NickName) + " {[#MessageStyle]}got kicked for spectating without asking.");
-                    }
+            return false;
+        }
 
-                    if (playerSettings.Count == 0)
-                        SendFormattedMessageToLogin(e.Login, "{[#ServerStyle]}> {[#MessageStyle]} No one is spectating!");
-                    else
-                        SendFormattedMessageToLogin(e.Login, "{[#ServerStyle]}> {[#MessageStyle]}Kicked {[#HighlightStyle]}" + playerSettings.Count + "{[#MessageStyle]} player for spectating without asking.");
-                }
-                else
-                {
-                    SendNoPermissionMessagetoLogin(e.Login);
-                }
-
+        private bool CheckForKickMySpectatorsCommand(PlayerChatEventArgs e)
+        {
+            if (ServerCommand.Parse(e.Text).IsMainCommandAnyOf(CommandOrRight.KICK_MY_SPECTATORS1, CommandOrRight.KICK_MY_SPECTATORS2))
+            {
+                Context.CorePlugin.KickSpectatorsOf(e.Login, e.PlayerID);
                 return true;
             }
 
