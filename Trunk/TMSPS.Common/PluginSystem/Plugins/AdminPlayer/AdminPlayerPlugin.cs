@@ -1,8 +1,5 @@
-﻿using System.Collections.Generic;
-using System.IO;
-using System.Linq;
+﻿using System.IO;
 using TMSPS.Core.Common;
-using TMSPS.Core.Communication.ProxyTypes;
 using TMSPS.Core.ManiaLinking;
 using TMSPS.Core.PluginSystem.Configuration;
 using Version=System.Version;
@@ -81,7 +78,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.AdminPlayer
             switch ((Area)action.AreaID)
             {
                 case Area.MainArea:
-                    HandleMainAreaActions(login, action);
+                    HandleMainAreaActions(login, playerID, action);
                     break;
                 case Area.GuestListArea:
                     HandleGuestListAreaActions(login, action);
@@ -101,14 +98,14 @@ namespace TMSPS.Core.PluginSystem.Plugins.AdminPlayer
             }
         }
 
-        private void HandleMainAreaActions(string login, TMAction areaAction)
+        private void HandleMainAreaActions(string login,  int playerID, TMAction areaAction)
         {
             MainAreaAction action = (MainAreaAction) areaAction.AreaActionID;
 
             switch (action)
             {
                 case MainAreaAction.KickSpectators:
-                    KickSpectators(login);
+                    Context.CorePlugin.KickAllSpectators(login);
                     break;
                 case MainAreaAction.RestartTrackImmediately:
                     RestartTrackImmediately(login);
@@ -131,26 +128,10 @@ namespace TMSPS.Core.PluginSystem.Plugins.AdminPlayer
                 case MainAreaAction.ShowBlackList:
                     SendBlackListPageToLogin(login, 0);
                     break;
+                case MainAreaAction.KickMySpectators:
+                    Context.CorePlugin.KickSpectatorsOf(login, playerID);
+                    break;
             }
-        }
-
-        private void KickSpectators(string login)
-        {
-            if (!LoginHasAnyRight(login, true, CommandOrRight.KICK_SPECTATORS1, CommandOrRight.KICK_SPECTATORS2))
-                return;
-
-            List<PlayerSettings> playerSettings = Context.PlayerSettings.GetAsList(playerSetting => playerSetting.SpectatorStatus.IsSpectator);
-
-            foreach (PlayerSettings playerSetting in playerSettings)
-            {
-                Context.RPCClient.Methods.Kick(playerSetting.Login, "Kicked for spectating without asking.");
-                SendFormattedMessage("{[#ServerStyle]}>> {[#HighlightStyle]}" + StripTMColorsAndFormatting(playerSetting.NickName) + " {[#MessageStyle]}got kicked for spectating without asking.");
-            }
-
-            if (playerSettings.Count == 0)
-                SendFormattedMessageToLogin(login, "{[#ServerStyle]}> {[#MessageStyle]} No one is spectating!");
-            else
-                SendFormattedMessageToLogin(login, "{[#ServerStyle]}> {[#MessageStyle]}Kicked {[#HighlightStyle]}" + playerSettings.Count + "{[#MessageStyle]} player for spectating without asking.");
         }
 
         private void RestartTrackImmediately(string login)
@@ -202,7 +183,8 @@ namespace TMSPS.Core.PluginSystem.Plugins.AdminPlayer
                 MainAreaAction.ShowGuestList.ToString(), TMAction.CalculateActionID(ID, (int)Area.MainArea, (int)MainAreaAction.ShowGuestList).ToString(),
                 MainAreaAction.ShowIgnoreList.ToString(), TMAction.CalculateActionID(ID, (int)Area.MainArea, (int)MainAreaAction.ShowIgnoreList).ToString(),
                 MainAreaAction.ShowBanList.ToString(), TMAction.CalculateActionID(ID, (int)Area.MainArea, (int)MainAreaAction.ShowBanList).ToString(),
-                MainAreaAction.ShowBlackList.ToString(), TMAction.CalculateActionID(ID, (int)Area.MainArea, (int)MainAreaAction.ShowBlackList).ToString()
+                MainAreaAction.ShowBlackList.ToString(), TMAction.CalculateActionID(ID, (int)Area.MainArea, (int)MainAreaAction.ShowBlackList).ToString(),
+                MainAreaAction.KickMySpectators.ToString(), TMAction.CalculateActionID(ID, (int)Area.MainArea, (int)MainAreaAction.KickMySpectators).ToString()
             );
 
             return result;
@@ -218,7 +200,9 @@ namespace TMSPS.Core.PluginSystem.Plugins.AdminPlayer
                                                     CommandOrRight.KICK,
                                                     CommandOrRight.BAN,
                                                     CommandOrRight.BLACKLIST,
-                                                    CommandOrRight.IGNORE);
+                                                    CommandOrRight.IGNORE,
+                                                    CommandOrRight.KICK_MY_SPECTATORS1,
+                                                    CommandOrRight.KICK_MY_SPECTATORS2);
         }
         
         #endregion
@@ -244,7 +228,8 @@ namespace TMSPS.Core.PluginSystem.Plugins.AdminPlayer
             ShowGuestList = 5,
             ShowIgnoreList = 6,
             ShowBanList = 7,
-            ShowBlackList = 8
+            ShowBlackList = 8,
+            KickMySpectators = 9
         }
 
 

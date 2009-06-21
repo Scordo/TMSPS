@@ -72,7 +72,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.AdminPlayer {
         /// <summary>
         ///   Looks up a localized string similar to &lt;manialink id=&quot;{[ManiaLinkID]}&quot;&gt;
         ///	&lt;frame posn=&quot;-62 -45.6 0&quot;&gt;
-        ///		&lt;quad sizen=&quot;21.5 2.5&quot; style=&quot;Bgs1InRace&quot; substyle=&quot;NavButton&quot;/&gt;
+        ///		&lt;quad sizen=&quot;23.6 2.5&quot; style=&quot;Bgs1InRace&quot; substyle=&quot;NavButton&quot;/&gt;
         ///		&lt;quad posn=&quot;1 -0.4 2&quot; sizen=&quot;1.7 1.7&quot; style=&quot;Icons64x64_1&quot; substyle=&quot;Refresh&quot; action=&quot;{[RestartTrackImmediately]}&quot;/&gt;
         ///		&lt;quad posn=&quot;4 -0.4 2&quot; sizen=&quot;1.7 1.8&quot; style=&quot;Icons64x64_1&quot; substyle=&quot;Camera&quot; action=&quot;{[KickSpectators]}&quot;/&gt;
         ///		&lt;quad posn=&quot;7 -0.4 2&quot; sizen=&quot;1.7 1.7&quot; style=&quot;Icons64x64_1&quot; substyle=&quot;ArrowLast&quot; action=&quot;{[SwitchToNextTrack]}&quot;/&gt;

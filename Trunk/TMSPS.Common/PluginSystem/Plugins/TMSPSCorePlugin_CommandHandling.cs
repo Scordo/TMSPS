@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using TMSPS.Core.Common;
 using TMSPS.Core.Communication.ProxyTypes;
 using TMSPS.Core.Communication.ResponseHandling;
+using TMSPS.Core.PluginSystem.Configuration;
 
 namespace TMSPS.Core.PluginSystem.Plugins
 {
@@ -520,6 +522,44 @@ namespace TMSPS.Core.PluginSystem.Plugins
                 SendFormattedMessageToLogin(login, "{[#ServerStyle]}> {[#MessageStyle]} Removed track {[#HighlightStyle]}{[Track]}{[#MessageStyle]}. Use {[#HighlightStyle]}WriteTrackList{[#MessageStyle]} command to save the changes!", "Track", StripTMColorsAndFormatting(challengeInfo.Name));
             else
                 SendFormattedMessageToLogin(login, "{[#ServerStyle]}> {[#ErrorStyle]} Error removing current track.");
+        }
+
+        public void KickAllSpectators(string login)
+        {
+            if (!LoginHasAnyRight(login, true, CommandOrRight.KICK_SPECTATORS1, CommandOrRight.KICK_SPECTATORS2))
+                return;
+
+            List<PlayerSettings> playerSettings = Context.PlayerSettings.GetAsList(playerSetting => playerSetting.SpectatorStatus.IsSpectator);
+
+            foreach (PlayerSettings playerSetting in playerSettings)
+            {
+                Context.RPCClient.Methods.Kick(playerSetting.Login, "Kicked for spectating without asking.");
+                SendFormattedMessage("{[#ServerStyle]}>> {[#HighlightStyle]}" + StripTMColorsAndFormatting(playerSetting.NickName) + "{[#MessageStyle]} got kicked for spectating without asking.");
+            }
+
+            if (playerSettings.Count == 0)
+                SendFormattedMessageToLogin(login, "{[#ServerStyle]}>{[#MessageStyle]} No one is spectating!");
+            else
+                SendFormattedMessageToLogin(login, "{[#ServerStyle]}>{[#MessageStyle]} Kicked {[#HighlightStyle]}" + playerSettings.Count + "{[#MessageStyle]} player for spectating without asking.");
+        }
+
+        public void KickSpectatorsOf(string login, int playerID)
+        {
+            if (!LoginHasAnyRight(login, true, CommandOrRight.KICK_MY_SPECTATORS1, CommandOrRight.KICK_MY_SPECTATORS2))
+                return;
+
+            List<PlayerSettings> playerSettings = Context.PlayerSettings.GetAsList(playerSetting => playerSetting.SpectatorStatus.IsSpectator && playerSetting.SpectatorStatus.CurrentPlayerTargetID == playerID);
+
+            foreach (PlayerSettings playerSetting in playerSettings)
+            {
+                Context.RPCClient.Methods.Kick(playerSetting.Login, "Kicked for spectating without asking.");
+                SendFormattedMessage("{[#ServerStyle]}>> {[#HighlightStyle]}" + StripTMColorsAndFormatting(playerSetting.NickName) + "{[#MessageStyle]} got kicked for spectating without asking.");
+            }
+
+            if (playerSettings.Count == 0)
+                SendFormattedMessageToLogin(login, "{[#ServerStyle]}>{[#MessageStyle]} No one is spectating you!");
+            else
+                SendFormattedMessageToLogin(login, "{[#ServerStyle]}>{[#MessageStyle]} Kicked {[#HighlightStyle]}" + playerSettings.Count + "{[#MessageStyle]} player for spectating without asking.");
         }
 
         //private void HandleRestartServerCommand(ServerCommand command)
