@@ -153,7 +153,7 @@ namespace TMSPS.Core.PluginSystem.Plugins
 
             if (top < 100)
             {
-                foreach (PlayerRank rank in e.Rankings.Take(top))
+                foreach (PlayerRank rank in e.Rankings.Take(top).Where(x => x.BestTime > 0))
                 {
                     Context.RPCClient.Methods.SaveBestGhostsReplay(rank.Login, string.Empty);
                 }
