@@ -507,7 +507,7 @@ namespace TMSPS.Core.PluginSystem.Plugins
                 return;
             }
 
-            ChallengeListSingleInfo challengeInfo = GetCurrentChallengeInfo();
+            ChallengeListSingleInfo challengeInfo = GetCurrentChallengeInfoCached();
 
             if (challengeInfo == null)
             {

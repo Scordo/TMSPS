@@ -30,7 +30,7 @@ namespace TMSPS.Core.Communication.ResponseHandling
             {
                 result = (T)Activator.CreateInstance(typeof(T));
                 result.Fault = FaultResponse.GetFromXml(faultElement);
-                CoreLogger.UniqueInstance.Debug(string.Format("Fault element detected: \nFaultMessage: {0}\nFaultCode: {1}\nRawXML: {2}", result.Fault.FaultMessage, result.Fault.FaultCode, messageElement));
+                CoreLogger.UniqueInstance.Debug(string.Format(" Fault element detected: \nFaultMessage: {0}\nFaultCode: {1}\nRawXML: {2}\nStackTrace:\n{3}", result.Fault.FaultMessage, result.Fault.FaultCode, messageElement, StackTraceHelper.GetCurrentStackTrace()));
             }
             else
             {
@@ -46,7 +46,7 @@ namespace TMSPS.Core.Communication.ResponseHandling
             AddDumpString(result, 0, this);
 
             return result.ToString();
-        }
+        }       
 
         #endregion
 

@@ -202,7 +202,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
                         string maniaLinkPageContent = GetRecordListManiaLinkPage(rankings, playerSettings.Login);
                         string hash = maniaLinkPageContent.ToHash();
 
-                        if (GetManiaLinkPageHash(playerSettings.Login, _localRecordListManiaLinkPageID) != hash)
+                        if (playerSettings.ManiaLinkPageHashStore.Get(_localRecordListManiaLinkPageID) != hash)
                         {
                             SetManiaLinkPageHash(playerSettings.Login, _localRecordListManiaLinkPageID, hash);
                             Context.RPCClient.Methods.SendDisplayManialinkPageToLogin(playerSettings.Login, maniaLinkPageContent, 0, false);

@@ -95,7 +95,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.Dedimania
                     currentRankings.Remove(rank);
             }
 
-            ReportCurrentChallenge(currentRankings);
+            ReportCurrentChallenge(currentRankings, GetCurrentChallengeInfoCached());
         }
 
         private void Callbacks_PlayerFinish(object sender, PlayerFinishEventArgs e)
@@ -250,22 +250,21 @@ namespace TMSPS.Core.PluginSystem.Plugins.Dedimania
             RunCatchLog(()=>
             {
                 ResetUpdateServerPlayersTimer();
-                ReportCurrentChallenge(null);
+                ReportCurrentChallenge(null, e.ChallengeInfo);
             }, "Error in Callbacks_BeginChallenge Method.", true);
         }
 
-        private void ReportCurrentChallenge(ICollection<PlayerRank> currentRankings)
+        private void ReportCurrentChallenge(ICollection<PlayerRank> currentRankings, ChallengeListSingleInfo currentChallenge)
         {
+            if (currentChallenge == null)
+                return;
+
             ServerOptions serverOptions = GetServerOptionsCached(this);
             if (serverOptions == null)
                 return;
 
             GameMode? currentGameMode = GetCurrentGameModeCached(this);
             if (!currentGameMode.HasValue)
-                return;
-
-            ChallengeInfo currentChallenge = GetCurrentChallengeInfoCached();
-            if (currentChallenge == null)
                 return;
 
             List<PlayerSettings> currentPlayers = Context.PlayerSettings.GetAllAsList();

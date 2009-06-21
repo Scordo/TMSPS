@@ -10,7 +10,7 @@ namespace TMSPS.Core.PluginSystem
     {
         #region Properties
 
-        private static ChallengeInfo CurrentChallengeInfo { get; set; }
+        internal static ChallengeInfo CurrentChallengeInfo { get; set; }
         private static ServerOptions CurrentServerOptions { get; set; }
         private static GameMode? CurrentGameMode { get; set; }
         protected int PlayersCount { get { return Context.PlayerSettings.Count; } }
