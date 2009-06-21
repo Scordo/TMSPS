@@ -1,5 +1,4 @@
 ﻿using System;
-using System.IO;
 using TMSPS.Core.Common;
 using TMSPS.Core.Communication.ProxyTypes;
 using TMSPS.Core.Communication.ResponseHandling;
@@ -518,7 +517,7 @@ namespace TMSPS.Core.PluginSystem.Plugins
             GenericResponse<bool> response = Context.RPCClient.Methods.RemoveChallenge(challengeInfo.FileName);
 
             if (!response.Erroneous && response.Value)
-                SendFormattedMessageToLogin(login, "{[#ServerStyle]}> {[#MessageStyle]} Removed track {[#HighlightStyle]}{[Track]}{[#MessageStyle]}. Use {[#HighlightStyle]}WriteTrackList{[#MessageStyle]} command to save the changes!", "Track", StripTMColorsAndFormatting(Path.GetFileNameWithoutExtension(Path.GetFileNameWithoutExtension(challengeInfo.FileName))));
+                SendFormattedMessageToLogin(login, "{[#ServerStyle]}> {[#MessageStyle]} Removed track {[#HighlightStyle]}{[Track]}{[#MessageStyle]}. Use {[#HighlightStyle]}WriteTrackList{[#MessageStyle]} command to save the changes!", "Track", StripTMColorsAndFormatting(challengeInfo.Name));
             else
                 SendFormattedMessageToLogin(login, "{[#ServerStyle]}> {[#ErrorStyle]} Error removing current track.");
         }
