@@ -251,7 +251,7 @@ namespace TMSPS.Core.PluginSystem.Plugins
 
             RunCatchLog(() =>
             {
-                GetCurrentChallengeInfo(); // cache current challenge info
+                CurrentChallengeInfo = e.ChallengeInfo; // cache current challenge info
                 GetServerOptions(); // cache current server options
                 GetCurrentGameMode(); // cache current game mode
 			}, "Error in Callbacks_BeginChallenge Method.", true);

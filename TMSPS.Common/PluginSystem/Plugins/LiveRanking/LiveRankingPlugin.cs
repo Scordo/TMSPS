@@ -83,7 +83,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.LiveRanking
             if (e.Handled)
                 return;
 
-            RunCatchLog(() => SendUIToPlayer(LastRankings, e.Login), "Error in Callbacks_PlayerConnect Method.", true);
+            RunCatchLog(() => SendUIToPlayer(LastRankings, GetPlayerSettings(e.Login)), "Error in Callbacks_PlayerConnect Method.", true);
         }
 
         private void Callbacks_BeginRace(object sender, Communication.EventArguments.Callbacks.BeginRaceEventArgs e)
@@ -131,7 +131,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.LiveRanking
 				{
 					foreach (PlayerSettings playerSettings in Context.PlayerSettings.GetAllAsList())
 					{
-						SendUIToPlayer(rankingArray, playerSettings.Login);
+						SendUIToPlayer(rankingArray, playerSettings);
 					}
 				}
 				else
@@ -141,16 +141,19 @@ namespace TMSPS.Core.PluginSystem.Plugins.LiveRanking
             }, "Error in UpdateUI Method.", true);
         }
 
-        private void SendUIToPlayer(PlayerRank[] rankings, string login)
+        private void SendUIToPlayer(PlayerRank[] rankings, PlayerSettings playerSettings)
         {
-			string maniaLinkPageContent = GetRecordListManiaLinkPage(rankings, PlayersCount < Settings.StaticModeStartLimit ? login : null);
-            string hash = maniaLinkPageContent.ToHash();
-
-            if (GetManiaLinkPageHash(login, LIVE_RANKING_LIST_MANIA_LINK_PAGE_ID) == hash)
+            if (playerSettings == null)
                 return;
 
-            SetManiaLinkPageHash(login, LIVE_RANKING_LIST_MANIA_LINK_PAGE_ID, hash);
-            Context.RPCClient.Methods.SendDisplayManialinkPageToLogin(login, maniaLinkPageContent, 0, false);
+            string maniaLinkPageContent = GetRecordListManiaLinkPage(rankings, PlayersCount < Settings.StaticModeStartLimit ? playerSettings.Login : null);
+            string hash = maniaLinkPageContent.ToHash();
+
+            if (playerSettings.ManiaLinkPageHashStore.Get(LIVE_RANKING_LIST_MANIA_LINK_PAGE_ID) == hash)
+                return;
+
+            playerSettings.ManiaLinkPageHashStore[LIVE_RANKING_LIST_MANIA_LINK_PAGE_ID] = hash; 
+            Context.RPCClient.Methods.SendDisplayManialinkPageToLogin(playerSettings.Login, maniaLinkPageContent, 0, false);
         }
 
         private string GetRecordListManiaLinkPage(PlayerRank[] rankings, string login)

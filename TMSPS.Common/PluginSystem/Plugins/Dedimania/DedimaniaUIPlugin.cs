@@ -77,18 +77,18 @@ namespace TMSPS.Core.PluginSystem.Plugins.Dedimania
             }, "Error in Callbacks_PlayerConnect Method.", false);
         }
 
-        private void SendRecordListToAllPlayers(ICollection<DedimaniaRanking> rankings)
+        private void SendRecordListToAllPlayers(DedimaniaRanking[] rankings)
         {
-            if (rankings != null && rankings.Count > 0)
+            if (rankings != null && rankings.Length > 0)
             {
                 if (PlayersCount < Settings.StaticModeStartLimit)
                 {
                     foreach (PlayerSettings playerSettings in Context.PlayerSettings.GetAllAsList())
                     {
-                        string maniaLinkPageContent = GetRecordListManiaLinkPage(HostPlugin.Rankings, playerSettings.Login);
+                        string maniaLinkPageContent = GetRecordListManiaLinkPage(rankings, playerSettings.Login);
                         string hash = maniaLinkPageContent.ToHash();
 
-                        if (GetManiaLinkPageHash(playerSettings.Login, _dedimaniaRecordListManiaLinkPageID) != hash)
+                        if (playerSettings.ManiaLinkPageHashStore.Get(_dedimaniaRecordListManiaLinkPageID) != hash)
                         {
                             SetManiaLinkPageHash(playerSettings.Login, _dedimaniaRecordListManiaLinkPageID, hash);
                             Context.RPCClient.Methods.SendDisplayManialinkPageToLogin(playerSettings.Login, maniaLinkPageContent, 0, false);
@@ -97,7 +97,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.Dedimania
                 }
                 else
                 {
-                    Context.RPCClient.Methods.SendDisplayManialinkPage(GetRecordListManiaLinkPage(HostPlugin.Rankings, null), 0, false);
+                    Context.RPCClient.Methods.SendDisplayManialinkPage(GetRecordListManiaLinkPage(rankings, null), 0, false);
                 }
             }
             else
