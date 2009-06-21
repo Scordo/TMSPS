@@ -8,14 +8,16 @@ namespace TMSPS.Core.PluginSystem.Configuration
 {
 	public class CredentialsReader
 	{
-		public static Dictionary<string, HashSet<string>> ReadCredentialsFromConfigFile(string filePath)
+
+		public static Dictionary<string, HashSet<string>> ReadCredentials(string filePathOrFileContent, bool isFilePath)
 		{
-			if (!File.Exists(filePath))
+            if (isFilePath && !File.Exists(filePathOrFileContent))
 				return new Dictionary<string, HashSet<string>>();
 
-			Util.WaitUntilReadable(filePath, 10000);
+            if (isFilePath)
+                Util.WaitUntilReadable(filePathOrFileContent, 10000);
 
-			XDocument settingsFile = XDocument.Load(filePath);
+            XDocument settingsFile = isFilePath ? XDocument.Load(filePathOrFileContent) : XDocument.Parse(filePathOrFileContent);
 
 			if (settingsFile.Root == null || settingsFile.Root.Name != "Settings")
 				return new Dictionary<string, HashSet<string>>();
