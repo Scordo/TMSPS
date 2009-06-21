@@ -368,12 +368,17 @@ namespace TMSPS.Core.PluginSystem
 
         public string GetManiaLinkPageHash(string login, string maniaLinkPageID)
         {
-            return GetPlayerSettings(login).ManiaLinkPageHashStore.Get(maniaLinkPageID);
+            PlayerSettings playerSettings = GetPlayerSettings(login);
+
+            return playerSettings != null ? playerSettings.ManiaLinkPageHashStore.Get(maniaLinkPageID) : null;
         }
 
-        public void SetManiaLinkPageHash(string login, string maniaLinkPageID, string hash)
+	    public void SetManiaLinkPageHash(string login, string maniaLinkPageID, string hash)
         {
-            GetPlayerSettings(login).ManiaLinkPageHashStore[maniaLinkPageID] = hash;
+            PlayerSettings playerSettings = GetPlayerSettings(login);
+
+            if (playerSettings != null)
+                playerSettings.ManiaLinkPageHashStore[maniaLinkPageID] = hash;
         }
 
 		#endregion
