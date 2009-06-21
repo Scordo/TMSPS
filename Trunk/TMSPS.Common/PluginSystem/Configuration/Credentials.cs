@@ -36,7 +36,7 @@ namespace TMSPS.Core.PluginSystem.Configuration
 
         public void ReReadFromFile()
         {
-            _credentials = CredentialsReader.ReadCredentialsFromConfigFile(_filePath);
+            _credentials = CredentialsReader.ReadCredentials(_filePath, true);
         }
 
 	    public bool UserHasRight(string user, string right)

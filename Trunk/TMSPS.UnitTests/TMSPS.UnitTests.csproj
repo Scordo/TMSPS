@@ -48,6 +48,12 @@
     <Compile Include="Core\ManiaLinking\TMActionUTC.cs" />
     <Compile Include="Core\PluginSystem\Plugins\Dedimania\DedimaniaUIPluginUTC.cs" />
     <Compile Include="Core\PluginSystem\Plugins\TMX\TMXInfoUTC.cs" />
+    <Compile Include="PluginSystem\Configuration\CredentialsReaderUTC.cs" />
+    <Compile Include="PluginSystem\Configuration\CredentialsReaderUTCSampleData.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>CredentialsReaderUTCSampleData.resx</DependentUpon>
+    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -55,6 +61,12 @@
       <Project>{07AB0407-3EB7-4DA1-B3C6-DE074A7760C7}</Project>
       <Name>TMSPS.Core</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="PluginSystem\Configuration\CredentialsReaderUTCSampleData.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>CredentialsReaderUTCSampleData.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
