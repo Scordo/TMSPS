@@ -136,7 +136,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.AdminPlayer
 
         private void KickSpectators(string login)
         {
-            if (!LoginHasAnyRight(login, true, Command.KICK_SPECTATORS1, Command.KICK_SPECTATORS2))
+            if (!LoginHasAnyRight(login, true, CommandOrRight.KICK_SPECTATORS1, CommandOrRight.KICK_SPECTATORS2))
                 return;
 
             List<PlayerSettings> playerSettings = Context.PlayerSettings.GetAsList(playerSetting => playerSetting.SpectatorStatus.IsSpectator);
@@ -155,7 +155,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.AdminPlayer
 
         private void RestartTrackImmediately(string login)
         {
-            if (!LoginHasAnyRight(login, true, Command.RESTART_TRACK_IMMEDIATELY))
+            if (!LoginHasAnyRight(login, true, CommandOrRight.RESTART_TRACK_IMMEDIATELY))
                 return;
 
             Context.RPCClient.Methods.RestartChallenge();
@@ -163,7 +163,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.AdminPlayer
 
         private void SwitchToNextMap(string login)
         {
-            if (!LoginHasAnyRight(login, true, Command.NEXT_TRACK))
+            if (!LoginHasAnyRight(login, true, CommandOrRight.NEXT_TRACK))
                 return;
           
             Context.RPCClient.Methods.NextChallenge();
@@ -210,15 +210,15 @@ namespace TMSPS.Core.PluginSystem.Plugins.AdminPlayer
 
         private bool LoginHasAnyAdminPlayerRight(string login)
         {
-            return LoginHasAnyRight(login, false,   Command.RESTART_TRACK_IMMEDIATELY,
-                                                    Command.NEXT_TRACK, 
-                                                    Command.KICK_SPECTATORS1,
-                                                    Command.KICK_SPECTATORS2,
-                                                    Command.ADD_GUEST,
-                                                    Command.KICK,
-                                                    Command.BAN,
-                                                    Command.BLACKLIST,
-                                                    Command.IGNORE);
+            return LoginHasAnyRight(login, false,   CommandOrRight.RESTART_TRACK_IMMEDIATELY,
+                                                    CommandOrRight.NEXT_TRACK, 
+                                                    CommandOrRight.KICK_SPECTATORS1,
+                                                    CommandOrRight.KICK_SPECTATORS2,
+                                                    CommandOrRight.ADD_GUEST,
+                                                    CommandOrRight.KICK,
+                                                    CommandOrRight.BAN,
+                                                    CommandOrRight.BLACKLIST,
+                                                    CommandOrRight.IGNORE);
         }
         
         #endregion

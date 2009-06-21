@@ -54,7 +54,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
 
         private bool CheckForTopRanksCommand(PlayerChatEventArgs args)
         {
-            if (string.Compare(args.Text, Command.TOPRANKS, StringComparison.InvariantCultureIgnoreCase) != 0 && string.Compare(args.Text, Command.RANKS, StringComparison.InvariantCultureIgnoreCase) != 0)
+            if (string.Compare(args.Text, CommandOrRight.TOPRANKS, StringComparison.InvariantCultureIgnoreCase) != 0 && string.Compare(args.Text, CommandOrRight.RANKS, StringComparison.InvariantCultureIgnoreCase) != 0)
                 return false;
 
             SendTopRanksPageToLogin(args.Login, 0);

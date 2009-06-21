@@ -161,7 +161,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.AdminPlayer
 
         private void SendLivePlayerListPageToLogin(string login, uint? pageIndex)
         {
-            if (!LoginHasAnyRight(login, true, Command.KICK, Command.BAN, Command.BLACKLIST, Command.IGNORE, Command.ADD_GUEST))
+            if (!LoginHasAnyRight(login, true, CommandOrRight.KICK, CommandOrRight.BAN, CommandOrRight.BLACKLIST, CommandOrRight.IGNORE, CommandOrRight.ADD_GUEST))
                 return;
 
             HashSet<string> ignoreList = GetIgnoreList();

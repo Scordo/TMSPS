@@ -102,9 +102,9 @@ namespace TMSPS.Core.PluginSystem.Plugins
 
     	private bool CheckForReadSettingsCommand(PlayerChatEventArgs e)
     	{
-            if (ServerCommand.Parse(e.Text).IsMainCommandAnyOf(Command.READ_CHATBOT_SETTINGS))
+            if (ServerCommand.Parse(e.Text).IsMainCommandAnyOf(CommandOrRight.READ_CHATBOT_SETTINGS))
     		{
-                if (Context.Credentials.UserHasRight(e.Login, Command.READ_CHATBOT_SETTINGS))
+                if (Context.Credentials.UserHasRight(e.Login, CommandOrRight.READ_CHATBOT_SETTINGS))
 				{
 					if (ReadSettings())
                         SendFormattedMessageToLogin(e.Login, "{[#ServerStyle]}> {[#MessageStyle]}ChatBot-Settings successfully read!");

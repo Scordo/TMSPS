@@ -73,7 +73,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.TMX
         {
             ServerCommand command = ServerCommand.Parse(e.Text);
 
-            if (command.IsMainCommandAnyOf(Command.TMX_INFO))
+            if (command.IsMainCommandAnyOf(CommandOrRight.TMX_INFO))
             {
                 if (command.PartsWithoutMainCommand.Count > 0)
                 {
@@ -96,10 +96,10 @@ namespace TMSPS.Core.PluginSystem.Plugins.TMX
         {
             ServerCommand command = ServerCommand.Parse(e.Text);
 
-            if (!command.IsMainCommandAnyOf(Command.TMX_ADD_TRACK))
+            if (!command.IsMainCommandAnyOf(CommandOrRight.TMX_ADD_TRACK))
                 return false;
 
-            if (!Context.Credentials.UserHasRight(e.Login, Command.TMX_ADD_TRACK))
+            if (!Context.Credentials.UserHasRight(e.Login, CommandOrRight.TMX_ADD_TRACK))
             {
                 SendNoPermissionMessagetoLogin(e.Login);
                 return true;

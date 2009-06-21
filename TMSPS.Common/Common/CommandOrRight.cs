@@ -1,6 +1,6 @@
 ﻿namespace TMSPS.Core.Common
 {
-    public static class Command
+    public static class CommandOrRight
     {
         //const string COMMAND_RESTART_SERVER = "restartserver";
         public const string KICK = "kick";
