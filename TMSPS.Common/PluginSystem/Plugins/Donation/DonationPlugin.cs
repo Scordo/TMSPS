@@ -14,36 +14,18 @@ namespace TMSPS.Core.PluginSystem.Plugins.Donation
     {
         #region Properties
 
-        public override Version Version
-        {
-            get { return new Version("1.0.0.0"); }
-        }
-
-        public override string Author
-        {
-            get { return "Jens Hofmann"; }
-        }
-
-        public override string Name
-        {
-            get { return "DonationPlugin"; }
-        }
-
-        public override string Description
-        {
-            get { return "Kicks players and/or spectators idling too long."; }
-        }
-
-        public override string ShortName
-        {
-            get { return "Donation"; }
-        }
-
+        public override Version Version { get { return new Version("1.0.0.0"); } }
+        public override string Author { get { return "Jens Hofmann"; } }
+        public override string Name { get { return "DonationPlugin"; } }
+        public override string Description { get { return "Kicks players and/or spectators idling too long."; } }
+        public override string ShortName { get { return "Donation"; } }
         private DonationPluginSettings Settings { get; set; }
         private bool InitializationAborted { get; set; }
         private Dictionary<int, DonationInfo> BillDictionary { get; set; }
 
         #endregion
+
+        #region Methods
 
         protected override void Init()
         {
@@ -79,85 +61,91 @@ namespace TMSPS.Core.PluginSystem.Plugins.Donation
 
         private void Callbacks_PlayerChat(object sender, Communication.EventArguments.Callbacks.PlayerChatEventArgs e)
         {
-            if (e.Text == null || !e.Text.StartsWith(CommandOrRight.DONATE, StringComparison.OrdinalIgnoreCase))
-                return;
-
-            int coppers;
-
-            if (!int.TryParse(e.Text.Substring(CommandOrRight.DONATE.Length).Trim(), NumberStyles.None, CultureInfo.InvariantCulture,  out coppers) || coppers <= 0)
-                return;
-
-            if (coppers < Settings.MinDonationValue)
+            RunCatchLog(() =>
             {
-                SendFormattedMessageToLogin(e.Login, Settings.DonationToSmallMessage, "Coppers", Settings.MinDonationValue.ToString(CultureInfo.InvariantCulture));
-                return;
-            }
+                if (e.Text == null || !e.Text.StartsWith(CommandOrRight.DONATE, StringComparison.OrdinalIgnoreCase))
+                    return;
 
-            PlayerSettings playerSettings = GetPlayerSettings(e.Login);
+                int coppers;
 
-            bool isUnitedAccount = playerSettings.IsUnitedAccount;
+                if (!int.TryParse(e.Text.Substring(CommandOrRight.DONATE.Length).Trim(), NumberStyles.None, CultureInfo.InvariantCulture,  out coppers) || coppers <= 0)
+                    return;
 
-            if (!playerSettings.DetailMode.HasDetailedPlayerInfo())
-            {
-                DetailedPlayerInfo playerInfo = GetDetailedPlayerInfo(e.Login);
+                if (coppers < Settings.MinDonationValue)
+                {
+                    SendFormattedMessageToLogin(e.Login, Settings.DonationToSmallMessage, "Coppers", Settings.MinDonationValue.ToString(CultureInfo.InvariantCulture));
+                    return;
+                }
 
-                if (playerInfo != null)
-                    isUnitedAccount = playerInfo.IsUnitedAccount;
-            }
+                PlayerSettings playerSettings = GetPlayerSettings(e.Login);
 
-            if (!isUnitedAccount)
-            {
-                SendFormattedMessageToLogin(e.Login, Settings.PlayerHasNoUnitedAccountMessage);
-                return;
-            }
+                bool isUnitedAccount = playerSettings.IsUnitedAccount;
 
-            GenericResponse<int> billResponse = Context.RPCClient.Methods.SendBill(e.Login, coppers, Settings.DonationHint, Settings.DonationTargetLogin);
+                if (!playerSettings.DetailMode.HasDetailedPlayerInfo())
+                {
+                    DetailedPlayerInfo playerInfo = GetDetailedPlayerInfo(e.Login);
 
-            if (billResponse.Erroneous)
-            {
-                Logger.Warn(string.Format("Error while calling method SendBill: {0}({1})", billResponse.Fault.FaultMessage, billResponse.Fault.FaultCode));
-                SendFormattedMessageToLogin(e.Login, Settings.DonationErrorMessage, "ErrorMessage", billResponse.Fault.FaultMessage);
-                return;
-            }
-            
-            BillDictionary[billResponse.Value] = new DonationInfo{Login = e.Login, Coppers = coppers};
+                    if (playerInfo != null)
+                        isUnitedAccount = playerInfo.IsUnitedAccount;
+                }
+
+                if (!isUnitedAccount)
+                {
+                    SendFormattedMessageToLogin(e.Login, Settings.PlayerHasNoUnitedAccountMessage);
+                    return;
+                }
+
+                GenericResponse<int> billResponse = Context.RPCClient.Methods.SendBill(e.Login, coppers, Settings.DonationHint, Settings.DonationTargetLogin);
+
+                if (billResponse.Erroneous)
+                {
+                    Logger.Warn(string.Format("Error while calling method SendBill: {0}({1})", billResponse.Fault.FaultMessage, billResponse.Fault.FaultCode));
+                    SendFormattedMessageToLogin(e.Login, Settings.DonationErrorMessage, "ErrorMessage", billResponse.Fault.FaultMessage);
+                    return;
+                }
+                
+                BillDictionary[billResponse.Value] = new DonationInfo{Login = e.Login, Coppers = coppers};
+            }, "Error in Callbacks_PlayerChat Method.", true);
         }
 
         private void Callbacks_BillUpdated(object sender, Communication.EventArguments.Callbacks.BillUpdatedEventArgs e)
         {
-            DonationInfo donationInfo = BillDictionary.ContainsKey(e.BillID) ? BillDictionary[e.BillID] : null;
-
-            switch (e.State)
+            RunCatchLog(() =>
             {
-                case BillState.Payed:
-                    Logger.Error(string.Format("Donation successfull: {0} (TransactionID: {1}, BillId: {2})", e.StateName, e.TransactionID, e.BillID));
-                    if (!CheckDonationInfo(donationInfo, e.BillID))
+                DonationInfo donationInfo = BillDictionary.ContainsKey(e.BillID) ? BillDictionary[e.BillID] : null;
+
+                switch (e.State)
+                {
+                    case BillState.Payed:
+                        Logger.Error(string.Format("Donation successfull: {0} (TransactionID: {1}, BillId: {2})", e.StateName, e.TransactionID, e.BillID));
+                        if (!CheckDonationInfo(donationInfo, e.BillID))
+                            break;
+
+                        BillDictionary.Remove(e.BillID);
+                        SendFormattedMessageToLogin(donationInfo.Login, Settings.DonationThanksMessage, "Coppers", donationInfo.Coppers.ToString(CultureInfo.InvariantCulture));
                         break;
+                    case BillState.Refused:
+                        Logger.Error(string.Format("Donation Refused: {0} (TransactionID: {1}, BillId: {2})", e.StateName, e.TransactionID, e.BillID));
 
-                    BillDictionary.Remove(e.BillID);
-                    SendFormattedMessageToLogin(donationInfo.Login, Settings.DonationThanksMessage, "Coppers", donationInfo.Coppers.ToString(CultureInfo.InvariantCulture));
-                    break;
-                case BillState.Refused:
-                    Logger.Error(string.Format("Donation Refused: {0} (TransactionID: {1}, BillId: {2})", e.StateName, e.TransactionID, e.BillID));
+                        if (!CheckDonationInfo(donationInfo, e.BillID))
+                            break;
 
-                    if (!CheckDonationInfo(donationInfo, e.BillID))
+                        BillDictionary.Remove(e.BillID);
+                        SendFormattedMessageToLogin(donationInfo.Login, Settings.RefuseMessage);
                         break;
+                    case BillState.Erroneous:
+                        Logger.Error(string.Format("Donation erroneous: {0} (TransactionID: {1}, BillId: {2})", e.StateName, e.TransactionID, e.BillID));
+                        if (!CheckDonationInfo(donationInfo, e.BillID))
+                            break;
 
-                    BillDictionary.Remove(e.BillID);
-                    SendFormattedMessageToLogin(donationInfo.Login, Settings.RefuseMessage);
-                    break;
-                case BillState.Erroneous:
-                    Logger.Error(string.Format("Donation erroneous: {0} (TransactionID: {1}, BillId: {2})", e.StateName, e.TransactionID, e.BillID));
-                    if (!CheckDonationInfo(donationInfo, e.BillID))
+                        BillDictionary.Remove(e.BillID);
+                        SendFormattedMessageToLogin(donationInfo.Login, Settings.DonationErrorMessage, "ErrorMessage", e.StateName);
                         break;
-
-                    BillDictionary.Remove(e.BillID);
-                    SendFormattedMessageToLogin(donationInfo.Login, Settings.DonationErrorMessage, "ErrorMessage", e.StateName);
-                    break;
-                default:
-                    // skip Issued/CreatingTransaction/ValidatingPayement
-                    break;
-            }
+                    default:
+                        // skip Issued/CreatingTransaction/ValidatingPayement
+                        break;
+                }
+            }, "Error in Callbacks_BillUpdated Method.", true);
         }
 
         private bool CheckDonationInfo(DonationInfo donationInfo, int billID)
@@ -168,10 +156,16 @@ namespace TMSPS.Core.PluginSystem.Plugins.Donation
             return donationInfo != null;
         }
 
+        #endregion
+
+        #region Embedded Types
+
         private class DonationInfo
         {
             public string Login { get; set;}
             public int Coppers { get; set;}
         }
+
+        #endregion
     }
 }
