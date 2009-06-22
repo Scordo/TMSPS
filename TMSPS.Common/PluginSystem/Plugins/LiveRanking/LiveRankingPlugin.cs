@@ -22,31 +22,11 @@ namespace TMSPS.Core.PluginSystem.Plugins.LiveRanking
 
         #region Properties
 
-        public override Version Version
-        {
-            get { return new Version("1.0.0.0"); }
-        }
-
-        public override string Author
-        {
-            get { return "Jens Hofmann"; }
-        }
-
-        public override string Name
-        {
-            get { return "Live Ranking Plugin"; }
-        }
-
-        public override string Description
-        {
-            get { return "Displays live rankings in a userinterface."; }
-        }
-
-        public override string ShortName
-        {
-            get { return "LiveRanking"; }
-        }
-
+        public override Version Version { get { return new Version("1.0.0.0"); } }
+        public override string Author { get { return "Jens Hofmann"; } }
+        public override string Name { get { return "Live Ranking Plugin"; } }
+        public override string Description { get { return "Displays live rankings in a userinterface."; } }
+        public override string ShortName { get { return "LiveRanking"; } }
         private LiveRankingsSettings Settings { get; set; }
         private PlayerRank[] LastRankings { get; set; }
         private TimedVolatileExecutionQueue<LiveRankingPlugin> UpdateTimer { get; set; }
@@ -70,6 +50,16 @@ namespace TMSPS.Core.PluginSystem.Plugins.LiveRanking
             Context.RPCClient.Callbacks.PlayerFinish += Callbacks_PlayerFinish;
         }
 
+        protected override void Dispose(bool connectionLost)
+        {
+            UpdateTimer.Stop();
+
+            Context.RPCClient.Callbacks.PlayerConnect -= Callbacks_PlayerConnect;
+            Context.RPCClient.Callbacks.BeginRace -= Callbacks_BeginRace;
+            Context.RPCClient.Callbacks.EndRace -= Callbacks_EndRace;
+            Context.RPCClient.Callbacks.PlayerFinish -= Callbacks_PlayerFinish;
+        }
+
         private void Callbacks_PlayerFinish(object sender, Communication.EventArguments.Callbacks.PlayerFinishEventArgs e)
         {
             if (e.TimeOrScore <= 0)
@@ -89,6 +79,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.LiveRanking
         private void Callbacks_BeginRace(object sender, Communication.EventArguments.Callbacks.BeginRaceEventArgs e)
         {
             PodiumStage = false;
+            
             RunCatchLog(() => 
             {
                 UpdateTimer.Clear();
@@ -303,16 +294,6 @@ namespace TMSPS.Core.PluginSystem.Plugins.LiveRanking
         private void HideUI()
         {
             SendEmptyManiaLinkPage(LIVE_RANKING_LIST_MANIA_LINK_PAGE_ID);
-        }
-
-        protected override void Dispose(bool connectionLost)
-        {
-            UpdateTimer.Stop();
-
-            Context.RPCClient.Callbacks.PlayerConnect -= Callbacks_PlayerConnect;
-            Context.RPCClient.Callbacks.BeginRace -= Callbacks_BeginRace;
-            Context.RPCClient.Callbacks.EndRace -= Callbacks_EndRace;
-            Context.RPCClient.Callbacks.PlayerFinish -= Callbacks_PlayerFinish;
         }
 
         #endregion
