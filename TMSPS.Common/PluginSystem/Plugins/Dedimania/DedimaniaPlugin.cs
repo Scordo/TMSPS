@@ -98,14 +98,17 @@ namespace TMSPS.Core.PluginSystem.Plugins.Dedimania
             ReportCurrentChallenge(currentRankings, GetCurrentChallengeInfoCached());
         }
 
+        protected override void Dispose(bool connectionLost)
+        {
+            DisposePlugins(connectionLost);
+
+            Context.RPCClient.Callbacks.BeginRace -= Callbacks_BeginRace;
+            Context.RPCClient.Callbacks.PlayerFinish -= Callbacks_PlayerFinish;
+            Context.RPCClient.Callbacks.EndRace -= Callbacks_EndRace;
+        }
+
         private void Callbacks_PlayerFinish(object sender, PlayerFinishEventArgs e)
         {
-            if (e.Erroneous)
-            {
-                Logger.Error(string.Format("[Callbacks_PlayerFinish] Invalid Response: {0}[{1}]", e.Fault.FaultMessage, e.Fault.FaultCode));
-                return;
-            }
-
             RunCatchLog(() =>
             {
                 if (e.TimeOrScore > 0)
@@ -170,6 +173,45 @@ namespace TMSPS.Core.PluginSystem.Plugins.Dedimania
             }, "Error in Callbacks_PlayerFinish Method.", true);
         }
 
+        private void Callbacks_BeginRace(object sender, BeginRaceEventArgs e)
+        {
+            RunCatchLog(() =>
+            {
+                ResetUpdateServerPlayersTimer();
+                ReportCurrentChallenge(null, e.ChallengeInfo);
+            }, "Error in Callbacks_BeginChallenge Method.", true);
+        }
+
+        private void Callbacks_EndRace(object sender, EndRaceEventArgs e)
+        {
+            RunCatchLog(() =>
+            {
+                if (e.Rankings.Count == 0 || !e.Rankings.Exists(ranking => ranking.BestTime != -1))
+                    return;
+
+                List<DedimaniaTime> times = new List<DedimaniaTime>();
+
+                foreach (PlayerRank ranking in e.Rankings)
+                {
+                    if (ranking.BestTime >= 6 * 1000 && CheckpointsValid(ranking.BestCheckpoints))
+                        times.Add(new DedimaniaTime(ranking.Login, ranking.BestTime, ranking.BestCheckpoints));
+                }
+
+                if (times.Count == 0)
+                    return;
+
+                GameMode? currentGameMode = GetCurrentGameModeCached(this);
+                if (!currentGameMode.HasValue)
+                    return;
+
+                ResetUpdateServerPlayersTimer();
+                DedimaniaChallengeRaceTimesReply challengeRaceTimesReply = DedimaniaClient.ChallengeRaceTimes(e.Challenge.UId, e.Challenge.Name, e.Challenge.Environnement, e.Challenge.Author, Context.ServerInfo.Version.GetShortName(), (int)currentGameMode.Value, e.Challenge.NumberOfCheckpoints, (int)DedimaniaSettings.MAX_RECORDS_TO_REPORT, times.ToArray());
+
+                if (challengeRaceTimesReply == null)
+                    Logger.WarnToUI("Error while calling ChallengeRaceTimes!");
+            }, "Error in Callbacks_EndChallenge Method.", true);
+        }
+
         private void OnRankingsChanged(DedimaniaRanking[] rankings)
         {
             if (RankingsChanged != null)
@@ -196,15 +238,6 @@ namespace TMSPS.Core.PluginSystem.Plugins.Dedimania
         private void DisposePlugins(bool connectionLost)
         {
             Plugins.ForEach(plugin => plugin.DisposePlugin(connectionLost));
-        }
-
-        protected override void Dispose(bool connectionLost)
-        {
-            DisposePlugins(connectionLost);
-
-            Context.RPCClient.Callbacks.BeginRace -= Callbacks_BeginRace;
-            Context.RPCClient.Callbacks.PlayerFinish -= Callbacks_PlayerFinish;
-            Context.RPCClient.Callbacks.EndRace -= Callbacks_EndRace;
         }
 
         private static void UpdateServerPlayers(object state)
@@ -237,21 +270,6 @@ namespace TMSPS.Core.PluginSystem.Plugins.Dedimania
                 if (!plugin.DedimaniaClient.UpdateServerPlayers(plugin.Context.ServerInfo.Version.GetShortName(), (int) currentGameMode.Value, serverInfo, playersToReport.ToArray()))
                     plugin.Logger.WarnToUI("Error while calling UpdateServerPlayers!");
             }, "Error in Callbacks_BeginRace Method.", true, plugin.Logger);
-        }
-
-        private void Callbacks_BeginRace(object sender, BeginRaceEventArgs e)
-        {
-            if (e.Erroneous)
-            {
-                Logger.Error(string.Format("[Callbacks_BeginRace] Invalid Response: {0}[{1}]", e.Fault.FaultMessage, e.Fault.FaultCode));
-                return;
-            }
-
-            RunCatchLog(()=>
-            {
-                ResetUpdateServerPlayersTimer();
-                ReportCurrentChallenge(null, e.ChallengeInfo);
-            }, "Error in Callbacks_BeginChallenge Method.", true);
         }
 
         private void ReportCurrentChallenge(ICollection<PlayerRank> currentRankings, ChallengeListSingleInfo currentChallenge)
@@ -291,42 +309,6 @@ namespace TMSPS.Core.PluginSystem.Plugins.Dedimania
             }
             else
                 Logger.WarnToUI("Error while calling CurrentChallenge!");   
-        }
-
-        private void Callbacks_EndRace(object sender, EndRaceEventArgs e)
-        {
-            if (e.Erroneous)
-            {
-                Logger.Error(string.Format("[Callbacks_EndRace] Invalid Response: {0}[{1}]", e.Fault.FaultMessage, e.Fault.FaultCode));
-                return;
-            }
-
-            RunCatchLog(()=>
-            {
-                if (e.Rankings.Count == 0 || !e.Rankings.Exists(ranking => ranking.BestTime != -1))
-                    return;
-
-                List<DedimaniaTime> times = new List<DedimaniaTime>();
-
-                foreach (PlayerRank ranking in e.Rankings)
-                {
-                    if (ranking.BestTime >= 6 * 1000 && CheckpointsValid(ranking.BestCheckpoints))
-                        times.Add(new DedimaniaTime(ranking.Login, ranking.BestTime, ranking.BestCheckpoints));
-                }
-
-                if (times.Count == 0)
-                    return;
-
-                GameMode? currentGameMode = GetCurrentGameModeCached(this);
-                if (!currentGameMode.HasValue)
-                    return;
-
-                ResetUpdateServerPlayersTimer();
-                DedimaniaChallengeRaceTimesReply challengeRaceTimesReply = DedimaniaClient.ChallengeRaceTimes(e.Challenge.UId, e.Challenge.Name, e.Challenge.Environnement, e.Challenge.Author, Context.ServerInfo.Version.GetShortName(), (int) currentGameMode.Value, e.Challenge.NumberOfCheckpoints, (int) DedimaniaSettings.MAX_RECORDS_TO_REPORT, times.ToArray());
-
-                if (challengeRaceTimesReply == null)
-                    Logger.WarnToUI("Error while calling ChallengeRaceTimes!");
-            }, "Error in Callbacks_EndChallenge Method.", true);
         }
 
         private void ResetUpdateServerPlayersTimer()
