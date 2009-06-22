@@ -14,50 +14,15 @@ namespace TMSPS.Core.PluginSystem.Plugins
     {
         #region Properties
 
-        public override Version Version
-        {
-            get { return new Version("1.0.0.0"); }
-        }
-
-        public override string Author
-        {
-            get { return "Jens Hofmann"; }
-        }
-
-        public override string Name
-        {
-            get { return "NameProtectionBotPlugin"; }
-        }
-
-        public override string Description
-        {
-            get { return "Checks for registered clan members and kicks every player missusing the clantag."; }
-        }
-
-        public override string ShortName
-        {
-            get { return "NameProtectionBot"; }
-        }
-
-        private HashSet<string> ClanMembers
-        {
-            get; set;
-        }
-
-        private string Pattern
-        {
-            get; set;
-        }
-
-        private string KickReason
-        {
-            get; set;
-        }
-
-        private string PublicKickReason
-        {
-            get; set;
-        }
+        public override Version Version { get { return new Version("1.0.0.0"); } }
+        public override string Author { get { return "Jens Hofmann"; } }
+        public override string Name { get { return "NameProtectionBotPlugin"; } }
+        public override string Description { get { return "Checks for registered clan members and kicks every player missusing the clantag."; } }
+        public override string ShortName { get { return "NameProtectionBot"; }}
+        private HashSet<string> ClanMembers { get; set; }
+        private string Pattern { get; set; }
+        private string KickReason { get; set; }
+        private string PublicKickReason { get; set; }
 
         #endregion
 
@@ -70,73 +35,83 @@ namespace TMSPS.Core.PluginSystem.Plugins
             Context.RPCClient.Callbacks.PlayerChat += Callbacks_PlayerChat;
         }
 
+        protected override void Dispose(bool connectionLost)
+        {
+            Context.RPCClient.Callbacks.PlayerConnect -= Callbacks_PlayerConnect;
+            Context.RPCClient.Callbacks.PlayerChat -= Callbacks_PlayerChat;
+        }
+
         private void Callbacks_PlayerConnect(object sender, PlayerConnectEventArgs e)
         {
-            if (e.Erroneous)
-            {
-                Logger.Error(string.Format("[Callbacks_PlayerConnect] Invalid Response: {0}[{1}]", e.Fault.FaultMessage, e.Fault.FaultCode));
-                return;
-            }
-
             if (e.Handled)
                 return;
 
             RunCatchLog(()=>
             {
-                if (!ClanMembers.Contains(e.Login.ToLower()))
+                if (ClanMembers.Contains(e.Login.ToLower()))
+                    return;
+
+                string nickname = GetNickname(e.Login);
+
+                if (nickname == null)
                 {
-                    string nickname = GetNickname(e.Login);
+                    Logger.Debug(string.Format("Could not determine nickname for login: {0}", e.Login));
+                    return;
+                }
 
-                    if (nickname != null)
-                    {
-                        if (!Regex.IsMatch(nickname, Pattern, RegexOptions.Singleline | RegexOptions.IgnoreCase | RegexOptions.Compiled))
-                            return;
+                if (!Regex.IsMatch(nickname, Pattern, RegexOptions.Singleline | RegexOptions.IgnoreCase | RegexOptions.Compiled))
+                    return;
 
-                        GenericResponse<bool> kickResponse = Context.RPCClient.Methods.Kick(e.Login, KickReason);
+                GenericResponse<bool> kickResponse = Context.RPCClient.Methods.Kick(e.Login, KickReason);
 
-                        if (kickResponse != null && kickResponse.Value)
-                        {
-                            Logger.InfoToUI(string.Format("Login {0} with player name {1} was kicked due to name abuse!", e.Login, nickname));
+                if (kickResponse.Erroneous)
+                {
+                    Logger.Debug(string.Format("Could not kick login: {0}. Reason: {1}({2})", e.Login, kickResponse.Fault.FaultMessage, kickResponse.Fault.FaultCode));
+                    return;
+                }
 
-                            SendFormattedMessage(PublicKickReason, "Nickname", StripTMColorsAndFormatting(nickname));
-                            e.Handled = true;
-                        }
-                    }
+                if (kickResponse.Value)
+                {
+                    Logger.InfoToUI(string.Format("Login {0} with player name {1} was kicked due to name abuse!", e.Login, nickname));
+
+                    SendFormattedMessage(PublicKickReason, "Nickname", StripTMColorsAndFormatting(nickname));
+                    e.Handled = true;
+                }
+                else
+                {
+                    Logger.Debug(string.Format("Could not kick login: {0}. Kickresposne returned: false", e.Login));
                 }
             }, "Error in Callbacks_PlayerConnect Method.", true);
         }
 
         private void Callbacks_PlayerChat(object sender, PlayerChatEventArgs e)
         {
-            ServerCommand command = ServerCommand.Parse(e.Text);
-
-            if (command == null)
-                return;
-
-            if (string.Compare(command.MainCommand, CommandOrRight.READCLANTAG_SETTINGS, StringComparison.InvariantCultureIgnoreCase) != 0)
-                return;
-
-            if (!Context.Credentials.UserHasAnyRight(e.Login, CommandOrRight.READCLANTAG_SETTINGS))
+            RunCatchLog(()=>
             {
-                SendNoPermissionMessagetoLogin(e.Login);
-                return;
-            }
+                ServerCommand command = ServerCommand.Parse(e.Text);
 
-            try
-            {
-                ReadConfigValues();
-                SendFormattedMessageToLogin(e.Login, "{[#ServerStyle]}> {[#MessageStyle]} Successfully read clan tag settings file.");
-            }
-            catch (Exception)
-            {
-                SendFormattedMessageToLogin(e.Login, "{[#ServerStyle]}> {[#ErrorStyle]}Error reading clan tag settings file. Please view log for a detailed error description.");
-            }
-        }
+                if (command == null)
+                    return;
 
-        protected override void Dispose(bool connectionLost)
-        {
-            Context.RPCClient.Callbacks.PlayerConnect -= Callbacks_PlayerConnect;
-            Context.RPCClient.Callbacks.PlayerChat -= Callbacks_PlayerChat;
+                if (string.Compare(command.MainCommand, CommandOrRight.READCLANTAG_SETTINGS, StringComparison.InvariantCultureIgnoreCase) != 0)
+                    return;
+
+                if (!Context.Credentials.UserHasAnyRight(e.Login, CommandOrRight.READCLANTAG_SETTINGS))
+                {
+                    SendNoPermissionMessagetoLogin(e.Login);
+                    return;
+                }
+
+                try
+                {
+                    ReadConfigValues();
+                    SendFormattedMessageToLogin(e.Login, "{[#ServerStyle]}> {[#MessageStyle]} Successfully read clan tag settings file.");
+                }
+                catch (Exception)
+                {
+                    SendFormattedMessageToLogin(e.Login, "{[#ServerStyle]}> {[#ErrorStyle]}Error reading clan tag settings file. Please view log for a detailed error description.");
+                }
+            }, "Error in Callbacks_PlayerChat Method.", true);
         }
 
         private void ReadConfigValues()
