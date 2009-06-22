@@ -123,6 +123,114 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
 	        Context.RPCClient.Callbacks.PlayerChat += Callbacks_PlayerChat;
 	    }
 
+        protected override void Dispose(bool connectionLost)
+        {
+            TimePlayedTimer.Stop();
+
+            if (!connectionLost)
+                UpdateTimePlayedForAllCurrentPlayers();
+
+            DisposePlugins(connectionLost);
+
+            Context.RPCClient.Callbacks.BeginRace -= Callbacks_BeginRace;
+            Context.RPCClient.Callbacks.EndRace -= Callbacks_EndRace;
+            Context.RPCClient.Callbacks.PlayerConnect -= Callbacks_PlayerConnect;
+            Context.RPCClient.Callbacks.PlayerDisconnect -= Callbacks_PlayerDisconnect;
+            Context.RPCClient.Callbacks.PlayerFinish -= Callbacks_PlayerFinish;
+            Context.RPCClient.Callbacks.PlayerChat -= Callbacks_PlayerChat;
+        }
+
+	    private void Callbacks_PlayerChat(object sender, PlayerChatEventArgs e)
+	    {
+	        RunCatchLog(()=>
+            {
+                if (CheckForDeleteCheaterCommand(e))
+                    return;
+
+                if (CheckForListLocalLoginsCommand(e))
+                    return;
+
+            }, "Error in Callbacks_PlayerChat Method.", true);
+	    }
+
+        private void Callbacks_PlayerFinish(object sender, PlayerFinishEventArgs e)
+        {
+            RunCatchLog(() => ThreadPool.QueueUserWorkItem(OnPlayerFinished, new object[] { CurrentChallengeID, e }), "Error in Callbacks_PlayerFinish Method.", true);
+        }
+
+        private void Callbacks_EndRace(object sender, EndRaceEventArgs e)
+        {
+            RunCatchLog(() =>
+            {
+                if (e.Rankings.Count > 0)
+                {
+                    // this may take a while, so run it async on the thread pool
+                    ThreadPool.QueueUserWorkItem(UpdateRankingForChallenge, e.Challenge.UId);
+                }
+
+                if (e.Rankings.Count > 1)
+                {
+                    // there must be at least 2 players to increase the wins for the first player
+                    if (e.Rankings[0].BestTime > 0)
+                    {
+                        uint wins = PlayerAdapter.IncreaseWins(e.Rankings[0].Login);
+                        OnPlayerWins(e.Rankings[0], wins);
+                        int maxRank = e.Rankings.Max(playerRank => playerRank.Rank);
+
+                        foreach (PlayerRank playerRank in e.Rankings)
+                        {
+                            if (playerRank.Rank <= 0)
+                                continue;
+
+                            if (!CheckpointsValid(playerRank.BestCheckpoints))
+                                HandleCheater(playerRank.Login, false);
+                            else
+                                PositionAdapter.AddPosition(playerRank.Login, e.Challenge.UId, Convert.ToUInt16(playerRank.Rank), Convert.ToUInt16(maxRank));
+                        }
+                    }
+                }
+            }, "Error in Callbacks_EndRace Method.", true);
+        }
+
+        private void Callbacks_PlayerDisconnect(object sender, PlayerDisconnectEventArgs e)
+        {
+            RunCatchLog(() => PlayerAdapter.UpdateTimePlayed(e.Login), "Error in Callbacks_PlayerDisconnect Method.", true);
+        }
+
+        private void Callbacks_PlayerConnect(object sender, PlayerConnectEventArgs e)
+        {
+            if (e.Handled)
+                return;
+
+            RunCatchLog(() =>
+            {
+                string nickname = GetNickname(e.Login);
+
+                if (nickname == null)
+                    return;
+
+                if (!nickname.IsNullOrTimmedEmpty())
+                {
+                    Player player = new Player(e.Login, nickname);
+                    PlayerAdapter.CreateOrUpdate(player);
+                    OnPlayerCreatedOrUpdated(player, nickname);
+                }
+            }, "Error in Callbacks_PlayerConnect Method.", true);
+        }
+
+        private void Callbacks_BeginRace(object sender, BeginRaceEventArgs e)
+        {
+            RunCatchLog(() =>
+            {
+                EnsureChallengeExistsInStorage(e.ChallengeInfo);
+                DetermineLocalRecords();
+                OnLocalRecordsDetermined(new List<RankEntry>(LocalRecords));
+
+                if (ChallengeChanged != null)
+                    ChallengeChanged(this, EventArgs.Empty);
+            }, "Error in Callbacks_BeginRace Method.", true);
+        }
+
         private void HandleCheater(string login, bool updateUI)
         {
             Context.RPCClient.Methods.BanAndBlackList(login, "Banned and blacklisted for cheating!", true);
@@ -135,25 +243,6 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
                 OnLocalRecordsDetermined(new List<RankEntry>(LocalRecords));
             }
         }
-
-	    private void Callbacks_PlayerChat(object sender, PlayerChatEventArgs e)
-	    {
-	        if (e.Erroneous)
-	        {
-	            Logger.Error(string.Format("[Callbacks_PlayerChat] Invalid Response: {0}[{1}]", e.Fault.FaultMessage, e.Fault.FaultCode));
-	            return;
-	        }
-
-	        RunCatchLog(()=>
-            {
-                if (CheckForDeleteCheaterCommand(e))
-                    return;
-
-                if (CheckForListLocalLoginsCommand(e))
-                    return;
-
-            }, "Error in Callbacks_PlayerChat Method.", true);
-	    }
 
 	    private bool CheckForDeleteCheaterCommand(PlayerChatEventArgs args)
 	    {
@@ -215,17 +304,6 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
             return true;
         }
 
-	    private void Callbacks_PlayerFinish(object sender, PlayerFinishEventArgs e)
-	    {
-	        if (e.Erroneous)
-	        {
-	            Logger.Error(string.Format("[Callbacks_PlayerFinish] Invalid Response: {0}[{1}]", e.Fault.FaultMessage, e.Fault.FaultCode));
-	            return;
-	        }
-
-            RunCatchLog(() => ThreadPool.QueueUserWorkItem(OnPlayerFinished, new object[] { CurrentChallengeID, e}), "Error in Callbacks_PlayerFinish Method.", true);
-	    }
-
 	    private void OnPlayerFinished(object state)
 	    {
 	        object[] stateParams = (object[]) state;
@@ -253,46 +331,6 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
 	        }
 	    }
 
-        private void Callbacks_EndRace(object sender, EndRaceEventArgs e)
-	    {
-	        if (e.Erroneous)
-	        {
-	            Logger.Error(string.Format("[Callbacks_EndRace] Invalid Response: {0}[{1}]", e.Fault.FaultMessage, e.Fault.FaultCode));
-	            return;
-	        }
-
-	        RunCatchLog(()=>
-            {
-                if (e.Rankings.Count > 0)
-                {
-                    // this may take a while, so run it async on the thread pool
-                    ThreadPool.QueueUserWorkItem(UpdateRankingForChallenge, e.Challenge.UId);
-                }
-
-                if (e.Rankings.Count > 1)
-                {
-                    // there must be at least 2 players to increase the wins for the first player
-                    if (e.Rankings[0].BestTime > 0)
-                    {
-                        uint wins = PlayerAdapter.IncreaseWins(e.Rankings[0].Login);
-                        OnPlayerWins(e.Rankings[0], wins);
-                        int maxRank = e.Rankings.Max(playerRank => playerRank.Rank);
-
-                        foreach (PlayerRank playerRank in e.Rankings)
-                        {
-                            if (playerRank.Rank <= 0)
-                                continue;
-
-                            if (!CheckpointsValid(playerRank.BestCheckpoints))
-                                HandleCheater(playerRank.Login, false);
-                            else
-                                PositionAdapter.AddPosition(playerRank.Login, e.Challenge.UId, Convert.ToUInt16(playerRank.Rank), Convert.ToUInt16(maxRank));
-                        }
-                    }
-                }
-            }, "Error in Callbacks_EndRace Method.", true);
-        }
-
         private void UpdateRankingForChallenge(object challengeID)
         {
             RankingAdapter.UpdateForChallenge(Convert.ToString(challengeID));
@@ -301,63 +339,6 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
 	    private void TimePlayedTimer_Elapsed(object sender, ElapsedEventArgs e)
 	    {
 	        RunCatchLog(UpdateTimePlayedForAllCurrentPlayers, "Error in TimePlayedTimer_Elapsed Method.", true);
-	    }
-
-	    private void Callbacks_PlayerDisconnect(object sender,PlayerDisconnectEventArgs e)
-	    {
-	        if (e.Erroneous)
-	        {
-	            Logger.Error(string.Format("[Callbacks_PlayerDisconnect] Invalid Response: {0}[{1}]", e.Fault.FaultMessage, e.Fault.FaultCode));
-	            return;
-	        }
-
-	        RunCatchLog(() => PlayerAdapter.UpdateTimePlayed(e.Login), "Error in Callbacks_PlayerDisconnect Method.", true);
-	    }
-
-	    private void Callbacks_PlayerConnect(object sender, PlayerConnectEventArgs e)
-	    {
-	        if (e.Erroneous)
-	        {
-	            Logger.Error(string.Format("[Callbacks_PlayerConnect] Invalid Response: {0}[{1}]", e.Fault.FaultMessage, e.Fault.FaultCode));
-	            return;
-	        }
-
-	        if (e.Handled)
-	            return;
-
-	        RunCatchLog(()=>
-            {
-                string nickname = GetNickname(e.Login);
-
-                if (nickname == null)
-                    return;
-
-                if (!nickname.IsNullOrTimmedEmpty())
-                {
-                    Player player = new Player(e.Login, nickname);
-                    PlayerAdapter.CreateOrUpdate(player);
-                    OnPlayerCreatedOrUpdated(player, nickname);
-                }
-            }, "Error in Callbacks_PlayerConnect Method.", true);
-	    }
-
-        private void Callbacks_BeginRace(object sender, BeginRaceEventArgs e)
-	    {
-	        if (e.Erroneous)
-	        {
-	            Logger.Error(string.Format("[Callbacks_BeginRace] Invalid Response: {0}[{1}]", e.Fault.FaultMessage, e.Fault.FaultCode));
-	            return;
-	        }
-
-	        RunCatchLog(() =>
-            {
-                EnsureChallengeExistsInStorage(e.ChallengeInfo);
-                DetermineLocalRecords();
-                OnLocalRecordsDetermined(new List<RankEntry>(LocalRecords));
-
-                if (ChallengeChanged != null)
-                    ChallengeChanged(this, EventArgs.Empty);
-            }, "Error in Callbacks_BeginRace Method.", true);
 	    }
 
 	    private void EnsureChallengeExistsInStorage(ChallengeListSingleInfo challengeInfo)
@@ -398,22 +379,6 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
 	        {
 	            plugin.DisposePlugin(connectionLost);
 	        }
-	    }
-
-	    protected override void Dispose(bool connectionLost)
-	    {
-	        TimePlayedTimer.Stop();
-            
-	        if (!connectionLost)
-	            UpdateTimePlayedForAllCurrentPlayers();
-
-	        DisposePlugins(connectionLost);
-
-            Context.RPCClient.Callbacks.BeginRace -= Callbacks_BeginRace;
-            Context.RPCClient.Callbacks.EndRace -= Callbacks_EndRace;
-	        Context.RPCClient.Callbacks.PlayerConnect -= Callbacks_PlayerConnect;
-	        Context.RPCClient.Callbacks.PlayerDisconnect -= Callbacks_PlayerDisconnect;
-	        Context.RPCClient.Callbacks.PlayerFinish -= Callbacks_PlayerFinish;
 	    }
 
 	    protected void OnPlayerNewRecord(string login, string nickname, int timeOrScore, uint? oldPosition, uint? newPosition)
