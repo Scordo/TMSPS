@@ -44,14 +44,13 @@ namespace TMSPS.Core.PluginSystem.Plugins
             Context.RPCClient.Callbacks.PlayerChat += Callbacks_PlayerChat;
         }
 
+        protected override void Dispose(bool connectionLost)
+        {
+            Context.RPCClient.Callbacks.PlayerChat -= Callbacks_PlayerChat;
+        }
+
         private void Callbacks_PlayerChat(object sender, PlayerChatEventArgs e)
         {
-            if (e.Erroneous)
-            {
-                Logger.Error(string.Format("[Callbacks_PlayerChat] Invalid Response: {0}[{1}]", e.Fault.FaultMessage, e.Fault.FaultCode));
-                return;
-            }
-
             RunCatchLog(() =>
             {
                 if (e.IsServerMessage || e.Text.IsNullOrTimmedEmpty())
@@ -137,11 +136,6 @@ namespace TMSPS.Core.PluginSystem.Plugins
             }
 
             return false;
-        }
-
-        protected override void Dispose(bool connectionLost)
-        {
-            Context.RPCClient.Callbacks.PlayerChat -= Callbacks_PlayerChat;
         }
 
         #endregion
