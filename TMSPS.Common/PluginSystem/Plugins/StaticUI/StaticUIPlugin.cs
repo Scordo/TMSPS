@@ -48,16 +48,28 @@ namespace TMSPS.Core.PluginSystem.Plugins.StaticUI
             Context.RPCClient.Callbacks.EndRace += Callbacks_EndRace;
         }
 
+        protected override void Dispose(bool connectionLost)
+        {
+            Context.RPCClient.Callbacks.PlayerConnect -= Callbacks_PlayerConnect;
+            Context.RPCClient.Callbacks.BeginRace -= Callbacks_BeginRace;
+            Context.RPCClient.Callbacks.EndRace -= Callbacks_EndRace;
+        }
+
         private void Callbacks_EndRace(object sender, EndRaceEventArgs e)
         {
             if (Settings.HidOnFinish)
-                SendEmptyManiaLinkPage("StaticUIPanel");
+                RunCatchLog(() => SendEmptyManiaLinkPage("StaticUIPanel"), "Error in Callbacks_EndRace Method.", true);
         }
 
         private void Callbacks_BeginRace(object sender, BeginRaceEventArgs e)
         {
             if (Settings.HidOnFinish)
-                SendContentToAll();
+                RunCatchLog(SendContentToAll, "Error in Callbacks_BeginRace Method.", true);
+        }
+
+        private void Callbacks_PlayerConnect(object sender, PlayerConnectEventArgs e)
+        {
+            RunCatchLog(() => SendContentToLogin(e.Login), "Error in Callbacks_PlayerConnect Method.", true);
         }
 
         private void SendContentToLogin(string login)
@@ -68,18 +80,6 @@ namespace TMSPS.Core.PluginSystem.Plugins.StaticUI
         private void SendContentToAll()
         {
             Context.RPCClient.Methods.SendDisplayManialinkPage(Settings.ManiaLinkPageContent, 0, false);
-        }
-
-        private void Callbacks_PlayerConnect(object sender, PlayerConnectEventArgs e)
-        {
-            SendContentToLogin(e.Login);
-        }
-
-        protected override void Dispose(bool connectionLost)
-        {
-            Context.RPCClient.Callbacks.PlayerConnect -= Callbacks_PlayerConnect;
-            Context.RPCClient.Callbacks.BeginRace -= Callbacks_BeginRace;
-            Context.RPCClient.Callbacks.EndRace -= Callbacks_EndRace;
         }
 
         #endregion
