@@ -2,6 +2,7 @@
 using System.Configuration;
 using TMSPS.Core.Communication.EventArguments.Callbacks;
 using TMSPS.Core.Communication.ProxyTypes;
+using TMSPS.Core.Communication.ResponseHandling;
 using TMSPS.Core.PluginSystem.Configuration;
 using SettingsBase=TMSPS.Core.Common.SettingsBase;
 using Version=System.Version;
@@ -12,31 +13,11 @@ namespace TMSPS.Core.PluginSystem.Plugins
     {
         #region Properties
 
-        public override Version Version
-        {
-            get { return new Version("1.0.0.0"); }
-        }
-
-        public override string Author
-        {
-            get { return "Jens Hofmann"; }
-        }
-
-        public override string Name
-        {
-            get { return "ChatBotPlugin"; }
-        }
-
-        public override string Description
-        {
-            get { return "Checks for players having no rank. And automatically kicks them"; }
-        }
-
-        public override string ShortName
-        {
-            get { return "KickUnrankedPlayers"; }
-        }
-
+        public override Version Version { get { return new Version("1.0.0.0"); }}
+        public override string Author { get { return "Jens Hofmann"; } }
+        public override string Name { get { return "Kick Unranked Players Plugin"; } }
+        public override string Description { get { return "Checks for players having no rank and automatically kicks them."; } }
+        public override string ShortName { get { return "KickUnrankedPlayers"; } }
         public KickUnrankedPlayerPluginSettings Settings { get; private set; }
 
         #endregion
@@ -51,33 +32,62 @@ namespace TMSPS.Core.PluginSystem.Plugins
 
         private void Callbacks_PlayerConnect(object sender, PlayerConnectEventArgs e)
         {
-            PlayerSettings playerSettings = GetPlayerSettings(e.Login);
-            int ladderRanking;
-
-            if (!playerSettings.DetailMode.HasDetailedPlayerInfo())
+            if (e.Handled)
             {
-                DetailedPlayerInfo detailedPlayerInfo = GetDetailedPlayerInfo(e.Login);
-
-                if (detailedPlayerInfo == null)
-                    return;
-
-                PlayerRanking worldRanking = detailedPlayerInfo.LadderStats.PlayerRankings.Find(ranking => ranking.Path == "World");
-
-                if (worldRanking == null)
-                    return;
-
-                ladderRanking = worldRanking.Ranking;
-            }
-            else
-                ladderRanking = playerSettings.LadderRanking;
-            
-
-            if (ladderRanking != -1)
+                Logger.Debug(string.Format("Callbacks_PlayerConnect method skipped for login: {0}. Eventargs stated: Already handled", e.Login));
                 return;
+            }
 
-            Context.RPCClient.Methods.Kick(e.Login, Settings.PersonalKickMessage);
-            SendFormattedMessage(Settings.PublicKickMessage, "Nickname", StripTMColorsAndFormatting(playerSettings.NickName));
-            e.Handled = true;
+            RunCatchLog(() =>
+            {
+                PlayerSettings playerSettings = GetPlayerSettings(e.Login);
+
+                if (playerSettings == null)
+                {
+                    Logger.Debug(string.Format("Could not get PlayerSettings for login: {0}", e.Login));
+                    return;
+                }
+
+                int ladderRanking;
+
+                if (!playerSettings.DetailMode.HasDetailedPlayerInfo())
+                {
+                    DetailedPlayerInfo detailedPlayerInfo = GetDetailedPlayerInfo(e.Login);
+
+                    if (detailedPlayerInfo == null)
+                    {
+                        Logger.Debug(string.Format("Could not get DetailedPlayerInfo for login: {0}", e.Login));
+                        return;
+                    }
+
+                    PlayerRanking worldRanking = detailedPlayerInfo.LadderStats.PlayerRankings.Find(ranking => ranking.Path == "World");
+
+                    if (worldRanking == null)
+                    {
+                        Logger.Debug(string.Format("Could not find World-Ranking for login: {0}", e.Login));
+                        return;
+                    }
+
+                    ladderRanking = worldRanking.Ranking;
+                }
+                else
+                    ladderRanking = playerSettings.LadderRanking;
+
+
+                if (ladderRanking != -1)
+                    return;
+
+                GenericResponse<bool> kickResponse = Context.RPCClient.Methods.Kick(e.Login, Settings.PersonalKickMessage);
+
+                if (kickResponse.Erroneous)
+                {
+                    Logger.Debug(string.Format("Could not kick login: {0}. Reason: {1}({2})", e.Login, kickResponse.Fault.FaultMessage, kickResponse.Fault.FaultCode));
+                    return;
+                }
+
+                SendFormattedMessage(Settings.PublicKickMessage, "Nickname", StripTMColorsAndFormatting(playerSettings.NickName));
+                e.Handled = true;
+            }, "Error in Callbacks_PlayerConnect Method.", true);
         }
 
         protected override void Dispose(bool connectionLost)
