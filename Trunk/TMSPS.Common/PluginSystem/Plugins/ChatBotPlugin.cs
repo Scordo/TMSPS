@@ -13,45 +13,14 @@ namespace TMSPS.Core.PluginSystem.Plugins
     {
     	#region Properties
 
-    	public override Version Version
-    	{
-    		get { return new Version("1.0.0.0"); }
-    	}
-
-    	public override string Author
-    	{
-    		get { return "Jens Hofmann"; }
-    	}
-
-    	public override string Name
-    	{
-    		get { return "ChatBotPlugin"; }
-    	}
-
-    	public override string Description
-    	{
-    		get { return "Checks for registered phrases and answers to them."; }
-    	}
-
-    	public override string ShortName
-    	{
-    		get { return "ChatBot"; }
-    	}
-
-    	private string Botname
-    	{
-    		get; set;
-    	}
-
-    	private Dictionary<string, string> Answers
-    	{
-    		get; set;
-    	}
-
-    	private string[] Phrases
-    	{
-    		get; set;
-    	}
+    	public override Version Version { get { return new Version("1.0.0.0"); } }
+    	public override string Author { get { return "Jens Hofmann"; } }
+    	public override string Name { get { return "ChatBotPlugin"; } }
+    	public override string Description { get { return "Checks for registered phrases and answers to them."; } }
+    	public override string ShortName { get { return "ChatBot"; } }
+    	private string Botname { get; set; }
+    	private Dictionary<string, string> Answers { get; set; }
+    	private string[] Phrases { get; set; }
 
     	#endregion
 
@@ -68,24 +37,20 @@ namespace TMSPS.Core.PluginSystem.Plugins
     		Context.RPCClient.Callbacks.PlayerChat += Callbacks_PlayerChat;
     	}
 
+        protected override void Dispose(bool connectionLost)
+        {
+            Context.RPCClient.Callbacks.PlayerChat -= Callbacks_PlayerChat;
+        }
+
     	private void Callbacks_PlayerChat(object sender, PlayerChatEventArgs e)
     	{
-            if (e.Erroneous)
-            {
-                Logger.Error(string.Format("[Callbacks_PlayerChat] Invalid Response: {0}[{1}]", e.Fault.FaultMessage, e.Fault.FaultCode));
-                return;
-            }
-
 			RunCatchLog(()=>
 			{
     			if (e.IsServerMessage || e.Text.IsNullOrTimmedEmpty())
     				return;
 
-    			if (e.IsRegisteredCommand)
-    			{
-    				CheckForReadSettingsCommand(e);
+                if (e.IsRegisteredCommand && CheckForReadSettingsCommand(e))
     				return;
-    			}
 
     			foreach (string phrase in Phrases)
     			{
@@ -104,27 +69,18 @@ namespace TMSPS.Core.PluginSystem.Plugins
     	{
             if (ServerCommand.Parse(e.Text).IsMainCommandAnyOf(CommandOrRight.READ_CHATBOT_SETTINGS))
     		{
-                if (Context.Credentials.UserHasRight(e.Login, CommandOrRight.READ_CHATBOT_SETTINGS))
-				{
-					if (ReadSettings())
-                        SendFormattedMessageToLogin(e.Login, "{[#ServerStyle]}> {[#MessageStyle]}ChatBot-Settings successfully read!");
-					else
-                        SendFormattedMessageToLogin(e.Login, "{[#ServerStyle]}> {[#ErrorStyle]}Error while reading ChatBot-Settings. See log for detailed error description.");
-				}
+                if (!LoginHasAnyRight(e.Login, true, CommandOrRight.READ_CHATBOT_SETTINGS))
+                    return true;
+				
+                if (ReadSettings())
+                    SendFormattedMessageToLogin(e.Login, "{[#ServerStyle]}> {[#MessageStyle]}ChatBot-Settings successfully read!");
 				else
-				{
-                    SendNoPermissionMessagetoLogin(e.Login);
-				}
+                    SendFormattedMessageToLogin(e.Login, "{[#ServerStyle]}> {[#ErrorStyle]}Error while reading ChatBot-Settings. See log for detailed error description.");
 
 				return true;
     		}
 
     		return false;
-    	}
-
-        protected override void Dispose(bool connectionLost)
-    	{
-    		Context.RPCClient.Callbacks.PlayerChat -= Callbacks_PlayerChat;
     	}
 
     	private bool ReadSettings()
