@@ -53,6 +53,70 @@ namespace TMSPS.Core.PluginSystem.Plugins.CheckPoints
             Context.RPCClient.Callbacks.PlayerInfoChanged -= Callbacks_PlayerInfoChanged;
         }
 
+        private void Callbacks_PlayerDisconnect(object sender, PlayerDisconnectEventArgs e)
+        {
+            RunCatchLog(() => BestCheckPoints.Remove(e.Login), "Error in Callbacks_PlayerDisconnect Method.", true);
+        }
+
+        private void Callbacks_BeginChallenge(object sender, BeginChallengeEventArgs e)
+        {
+            RunCatchLog(() => 
+            {
+                lock (_cpReadWriteLock)
+                {
+                    BestCheckPoints = new Dictionary<string, Dictionary<int, int>>();
+                }
+            }, "Error in Callbacks_BeginChallenge Method.", true);
+        }
+
+        private void Callbacks_EndChallenge(object sender, EndChallengeEventArgs e)
+        {
+            RunCatchLog(() => SendEmptyManiaLinkPage(MANIA_LINK_PAGE_ID), "Error in Callbacks_EndChallenge Method.", true);
+        }
+
+        private void Callbacks_PlayerCheckpoint(object sender, PlayerCheckpointEventArgs e)
+        {
+            RunCatchLog(() => 
+            {
+                if (e.TimeOrScore <= 0)
+                {
+                    SendEmptyManiaLinkPageToLogin(e.Login, MANIA_LINK_PAGE_ID);
+                    return;
+                }
+
+                int? diff = GetDiff(e.Login, e.CheckpointIndex, e.TimeOrScore, false);
+
+                if (diff.HasValue)
+                    SendCheckPointUIToLogin(e.Login, diff.Value, e.CheckpointIndex, false);
+                else
+                    SendEmptyManiaLinkPageToLogin(e.Login, MANIA_LINK_PAGE_ID);
+            }, "Error in Callbacks_PlayerCheckpoint Method.", true);
+        }
+
+        private void Callbacks_PlayerFinish(object sender, PlayerFinishEventArgs e)
+        {
+            RunCatchLog(() => 
+            {
+                if (e.TimeOrScore <= 0)
+                {
+                    SendEmptyManiaLinkPageToLogin(e.Login, MANIA_LINK_PAGE_ID);
+                    return;
+                }
+
+                int? diff = GetDiff(e.Login, 0, e.TimeOrScore, true);
+                SendCheckPointUIToLogin(e.Login, diff.Value, 0, true);
+            }, "Error in Callbacks_PlayerFinish Method.", true);
+        }
+
+        private void Callbacks_PlayerInfoChanged(object sender, PlayerInfoChangedEventArgs e)
+        {
+            RunCatchLog(() => 
+            {
+                if (e.PlayerInfo.SpectatorStatus != 0)
+                    SendEmptyManiaLinkPageToLogin(e.PlayerInfo.Login, MANIA_LINK_PAGE_ID);
+            }, "Error in Callbacks_PlayerInfoChanged Method.", true);
+        }
+
         private int? GetDiff(string login, int checkpointIndex, int time, bool isFinish)
         {
             lock (_cpReadWriteLock)
@@ -95,9 +159,9 @@ namespace TMSPS.Core.PluginSystem.Plugins.CheckPoints
             if (diff > 0)
                 sign = "-";
 
-            double secondsDiff = diff/1000d;
+            double secondsDiff = diff / 1000d;
             string diffText = string.Concat(textStyle, sign, Math.Abs(secondsDiff).ToString("F2", CultureInfo.InvariantCulture));
-            string cpText = string.Format("{0}{1}:", isFinish ? "FCP" : "CP", isFinish ? string.Empty : " " +(checkpointIndex + 1));
+            string cpText = string.Format("{0}{1}:", isFinish ? "FCP" : "CP", isFinish ? string.Empty : " " + (checkpointIndex + 1));
 
             return FormatMessage(Settings.Template, "ManiaLinkID", MANIA_LINK_PAGE_ID, "CheckPointText", cpText, "DiffText", diffText);
         }
@@ -105,58 +169,6 @@ namespace TMSPS.Core.PluginSystem.Plugins.CheckPoints
         private void SendCheckPointUIToLogin(string login, int diff, int checkpointIndex, bool isFinish)
         {
             Context.RPCClient.Methods.SendDisplayManialinkPageToLogin(login, GetManiaLinkPage(diff, checkpointIndex, isFinish), Convert.ToInt32(Settings.TimeoutInSeconds * 1000), false);
-        }
-
-        private void Callbacks_PlayerDisconnect(object sender, PlayerDisconnectEventArgs e)
-        {
-            BestCheckPoints.Remove(e.Login);
-        }
-
-        private void Callbacks_BeginChallenge(object sender, BeginChallengeEventArgs e)
-        {
-            lock (_cpReadWriteLock)
-            {
-                BestCheckPoints = new Dictionary<string, Dictionary<int, int>>();
-            }
-        }
-
-        private void Callbacks_EndChallenge(object sender, EndChallengeEventArgs e)
-        {
-            SendEmptyManiaLinkPage(MANIA_LINK_PAGE_ID);
-        }
-
-        private void Callbacks_PlayerCheckpoint(object sender, PlayerCheckpointEventArgs e)
-        {
-            if (e.TimeOrScore <= 0)
-            {
-                SendEmptyManiaLinkPageToLogin(e.Login, MANIA_LINK_PAGE_ID);
-                return;
-            }
-
-            int? diff = GetDiff(e.Login, e.CheckpointIndex, e.TimeOrScore, false);
-
-            if (diff.HasValue)
-                SendCheckPointUIToLogin(e.Login, diff.Value, e.CheckpointIndex, false);
-            else
-                SendEmptyManiaLinkPageToLogin(e.Login, MANIA_LINK_PAGE_ID);
-        }
-
-        private void Callbacks_PlayerFinish(object sender, PlayerFinishEventArgs e)
-        {
-            if (e.TimeOrScore <= 0)
-            {
-                SendEmptyManiaLinkPageToLogin(e.Login, MANIA_LINK_PAGE_ID);
-                return;
-            }
-
-            int? diff = GetDiff(e.Login, 0, e.TimeOrScore, true);
-            SendCheckPointUIToLogin(e.Login, diff.Value, 0, true);
-        }
-
-        private void Callbacks_PlayerInfoChanged(object sender, PlayerInfoChangedEventArgs e)
-        {
-            if (e.PlayerInfo.SpectatorStatus != 0)
-                SendEmptyManiaLinkPageToLogin(e.PlayerInfo.Login, MANIA_LINK_PAGE_ID);
         }
 
         #endregion
