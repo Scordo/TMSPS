@@ -18,33 +18,12 @@ namespace TMSPS.Core.PluginSystem.Plugins.IdleKick
 
         #region Properties
 
-        public override Version Version
-        {
-            get { return new Version("1.0.0.0"); }
-        }
-
-        public override string Author
-        {
-            get { return "Jens Hofmann"; }
-        }
-
-        public override string Name
-        {
-            get { return "IdleKickPlugin"; }
-        }
-
-        public override string Description
-        {
-            get { return "Kicks players and/or spectators idling too long."; }
-        }
-
-        public override string ShortName
-        {
-            get { return "IdleKick"; }
-        }
-
+        public override Version Version { get { return new Version("1.0.0.0"); } }
+        public override string Author { get { return "Jens Hofmann"; } }
+        public override string Name { get { return "IdleKickPlugin"; } }
+        public override string Description { get { return "Kicks players and/or spectators idling too long."; } }
+        public override string ShortName { get { return "IdleKick"; } }
         public IdleKickPluginSettings Settings { get; private set; }
-
         private Dictionary<string, uint> LoginRounds { get; set; }
         private Dictionary<string, DateTime> LoginTimes { get; set; }
         private Timer IdleKickTimer { get; set; }
@@ -92,11 +71,14 @@ namespace TMSPS.Core.PluginSystem.Plugins.IdleKick
 
         private void Callbacks_PlayerDisconnect(object sender, PlayerDisconnectEventArgs e)
         {
-            lock (_readWriteLockObject)
+            RunCatchLog(() =>
             {
-                LoginRounds.Remove(e.Login);
-                LoginTimes.Remove(e.Login);
-            }
+                lock (_readWriteLockObject)
+                {
+                    LoginRounds.Remove(e.Login);
+                    LoginTimes.Remove(e.Login);
+                }
+            }, "Error in Callbacks_PlayerDisconnect Method.", true);
         }
 
         private void Callbacks_PlayerChat(object sender, PlayerChatEventArgs e)
