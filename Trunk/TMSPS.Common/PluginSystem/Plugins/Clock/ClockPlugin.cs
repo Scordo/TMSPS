@@ -14,31 +14,11 @@ namespace TMSPS.Core.PluginSystem.Plugins.Clock
 
         #region Properties
 
-        public override Version Version
-        {
-            get { return new Version("1.0.0.0"); }
-        }
-
-        public override string Author
-        {
-            get { return "Jens Hofmann"; }
-        }
-
-        public override string Name
-        {
-            get { return "ClockPlugin"; }
-        }
-
-        public override string Description
-        {
-            get { return "Shows a clock"; }
-        }
-
-        public override string ShortName
-        {
-            get { return "Clock"; }
-        }
-
+        public override Version Version { get { return new Version("1.0.0.0"); }}
+        public override string Author { get { return "Jens Hofmann"; } }
+        public override string Name { get { return "ClockPlugin"; } }
+        public override string Description { get { return "Shows a clock"; } }
+        public override string ShortName { get { return "Clock"; } }
         public ClockPluginSettings Settings { get; private set; }
         private Timer ClockTimer { get; set; }
 
@@ -53,15 +33,15 @@ namespace TMSPS.Core.PluginSystem.Plugins.Clock
             StartClockTimer();
         }
 
-        private void Callbacks_PlayerConnect(object sender, Communication.EventArguments.Callbacks.PlayerConnectEventArgs e)
-        {
-            RunCatchLog(() => Context.RPCClient.Methods.SendDisplayManialinkPageToLogin(e.Login, GetClockManiaLinkPage(), 0, false), "Error in Callbacks_PlayerConnect Method.", true);
-        }
-
         protected override void Dispose(bool connectionLost)
         {
             Context.RPCClient.Callbacks.PlayerConnect -= Callbacks_PlayerConnect;
             StopClockTimer();
+        }
+
+        private void Callbacks_PlayerConnect(object sender, Communication.EventArguments.Callbacks.PlayerConnectEventArgs e)
+        {
+            RunCatchLog(() => Context.RPCClient.Methods.SendDisplayManialinkPageToLogin(e.Login, GetClockManiaLinkPage(), 0, false), "Error in Callbacks_PlayerConnect Method.", true);
         }
 
         private void UpdateClock(object state)
