@@ -54,7 +54,19 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
             Context.RPCClient.Callbacks.EndRace += Callbacks_EndRace;
             Context.RPCClient.Callbacks.PlayerConnect += Callbacks_PlayerConnect;
             Context.RPCClient.Callbacks.PlayerChat += Callbacks_PlayerChat;
+        }
 
+        protected override void Dispose(bool connectionLost)
+        {
+            UpdateListTimer.Stop();
+            UpdateLocalRecordTimer.Stop();
+
+            HostPlugin.PlayerNewRecord -= HostPlugin_PlayerNewRecord;
+            HostPlugin.LocalRecordsDetermined -= HostPlugin_LocalRecordsDetermined;
+            HostPlugin.PlayerWins -= HostPlugin_PlayerWins;
+            Context.RPCClient.Callbacks.EndRace -= Callbacks_EndRace;
+            Context.RPCClient.Callbacks.PlayerConnect -= Callbacks_PlayerConnect;
+            Context.RPCClient.Callbacks.PlayerChat -= Callbacks_PlayerChat;
         }
 
         private void Callbacks_PlayerChat(object sender, PlayerChatEventArgs e)
@@ -70,6 +82,131 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
                 if (CheckForInfoCommand(e))
                     return;
             }, "Error in Callbacks_PlayerChat Method.", true);
+        }
+
+        private void Callbacks_PlayerConnect(object sender, PlayerConnectEventArgs e)
+        {
+            if (e.Handled)
+                return;
+
+            RunCatchLog(() =>
+            {
+                if (Settings.ShowPBUserInterface)
+                {
+                    uint? personalBest = HostPlugin.RecordAdapter.GetBestTime(e.Login, HostPlugin.CurrentChallengeID);
+                    SendPBManiaLinkPage(e.Login, personalBest);
+                }
+
+                if (Settings.ShowLocalRecordUserInterface)
+                    SendLocalRecordManiaLinkToLogin(e.Login);
+
+                if (Settings.ShowLocalRecordListUserInterface)
+                {
+                    string maniaLinkPageContent = GetRecordListManiaLinkPage(LastRankings, PlayersCount < Settings.StaticModeStartLimit ? e.Login : null);
+                    string hash = maniaLinkPageContent.ToHash();
+                    SetManiaLinkPageHash(e.Login, _localRecordListManiaLinkPageID, hash);
+
+                    Context.RPCClient.Methods.SendDisplayManialinkPageToLogin(e.Login, maniaLinkPageContent, 0, false);
+                }
+
+                if (Settings.ShowMessages)
+                    SendServerRankMessageToLogin(e.Login);
+            }, "Error in Callbacks_PlayerConnect Method.", true);
+        }
+
+        private void Callbacks_EndRace(object sender, EndRaceEventArgs e)
+        {
+            RunCatchLog(() =>
+            {
+                UpdateListTimer.Clear();
+                UpdateLocalRecordTimer.Clear();
+
+                if (Settings.ShowPBUserInterface)
+                    SendEmptyManiaLinkPage(_pbManiaLinkPageID);
+
+                if (Settings.ShowLocalRecordUserInterface)
+                    SendEmptyManiaLinkPage(_localRecordManiaLinkPageID);
+
+                if (Settings.ShowLocalRecordListUserInterface && Settings.HideRecordListUIOnFinish)
+                    SendEmptyManiaLinkPage(_localRecordListManiaLinkPageID);
+            }, "Error in Callbacks_EndRace Method.", true);
+        }
+
+        private void HostPlugin_PlayerNewRecord(object sender, PlayerNewRecordEventArgs e)
+        {
+            RunCatchLog(() =>
+            {
+                if (!e.OldPosition.HasValue)
+                {
+                    if (Settings.ShowMessages)
+                    {
+                        string message = FormatMessage(Settings.FirstLocalRankMessage, "Nickname", StripTMColorsAndFormatting(e.Nickname), "Rank", e.NewPosition.ToString());
+                        Context.RPCClient.Methods.SendNotice(message, e.Login, Convert.ToInt32(Settings.NoticeDelayInSeconds));
+                        Context.RPCClient.Methods.ChatSendServerMessage(message);
+                    }
+                }
+                else if (e.NewPosition > e.OldPosition)
+                {
+                    if (Settings.ShowMessages)
+                    {
+                        string message = FormatMessage(Settings.NewLocalRankMessage, "Nickname", StripTMColorsAndFormatting(e.Nickname), "OldRank", e.OldPosition.ToString(), "NewRank", e.NewPosition.ToString());
+                        Context.RPCClient.Methods.SendNotice(message, e.Login, Convert.ToInt32(Settings.NoticeDelayInSeconds));
+                        Context.RPCClient.Methods.ChatSendServerMessage(message);
+                    }
+                }
+                else
+                {
+                    if (Settings.ShowMessages)
+                    {
+                        string message = FormatMessage(Settings.ImprovedLocalRankMessage, "Nickname", StripTMColorsAndFormatting(e.Nickname), "Rank", e.NewPosition.ToString());
+                        Context.RPCClient.Methods.SendNotice(message, e.Login, Convert.ToInt32(Settings.NoticeDelayInSeconds));
+                        Context.RPCClient.Methods.ChatSendServerMessage(message);
+                    }
+                }
+
+                if (Settings.ShowPBUserInterface)
+                    SendPBManiaLinkPage(e.Login, Convert.ToUInt32(e.TimeOrScore));
+
+                if (LocalBestTimeOrScore == null || e.TimeOrScore < LocalBestTimeOrScore)
+                {
+                    LocalBestTimeOrScore = Convert.ToUInt32(e.TimeOrScore);
+
+                    if (Settings.ShowLocalRecordUserInterface)
+                        UpdateLocalRecordTimer.Enqueue(SendLocalRecordManiaLinkPageToAll, null);
+                    //SendLocalRecordManiaLinkPageToAll();
+                }
+
+                if (Settings.ShowLocalRecordUserInterface)
+                    UpdateListTimer.Enqueue(SendRecordListToAllPlayers, HostPlugin.LocalRecords);
+                //SendRecordListToAllPlayers(HostPlugin.LocalRecords);
+            }, "Error in HostPlugin_PlayerNewRecord Method.", true);
+        }
+
+        private void HostPlugin_PlayerWins(object sender, PlayerWinEventArgs e)
+        {
+            RunCatchLog(() =>
+            {
+                if (Settings.ShowMessages)
+                    SendFormattedMessageToLogin(e.RankingInfo.Login, Settings.WinMessage, "Wins", e.Wins.ToString());
+            }, "Error in HostPlugin_PlayerWins Method.", true);
+        }
+
+        private void HostPlugin_LocalRecordsDetermined(object sender, EventArgs<RankEntry[]> e)
+        {
+            RunCatchLog(() =>
+            {
+                LastRankings = e.Value;
+                LocalBestTimeOrScore = e.Value.Length > 0 ? (uint?)e.Value[0].TimeOrScore : null;
+
+                if (Settings.ShowPBUserInterface)
+                    SendPBManiaLinkPageToAll(e.Value);
+
+                if (Settings.ShowLocalRecordUserInterface)
+                    SendLocalRecordManiaLinkPageToAll();
+
+                if (Settings.ShowLocalRecordUserInterface)
+                    SendRecordListToAllPlayers(e.Value);
+            }, "Error in HostPlugin_LocalRecordsDetermined Method.", true);
         }
 
         private bool CheckForServerRankCommand(PlayerChatEventArgs args)
@@ -143,54 +280,6 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
                 SendFormattedMessageToLogin(login, Settings.InfoMessage, "Wins", player.Wins.ToString(CultureInfo.InvariantCulture), "Played", player.TimePlayed.TotalHours.ToString("F0", CultureInfo.InvariantCulture) + "h", "Created", player.Created.ToShortDateString());
         }
 
-        private void HostPlugin_PlayerWins(object sender, PlayerWinEventArgs e)
-        {
-            if (Settings.ShowMessages)
-                SendFormattedMessageToLogin(e.RankingInfo.Login, Settings.WinMessage, "Wins", e.Wins.ToString());
-        }
-
-        private void Callbacks_PlayerConnect(object sender, PlayerConnectEventArgs e)
-        {
-            if (e.Handled)
-                return;
-
-            if (Settings.ShowPBUserInterface)
-            {
-                uint? personalBest = HostPlugin.RecordAdapter.GetBestTime(e.Login, HostPlugin.CurrentChallengeID);
-                SendPBManiaLinkPage(e.Login, personalBest);
-            }
-
-            if (Settings.ShowLocalRecordUserInterface)
-                SendLocalRecordManiaLinkToLogin(e.Login);
-
-            if (Settings.ShowLocalRecordListUserInterface)
-            {
-                string maniaLinkPageContent = GetRecordListManiaLinkPage(LastRankings, PlayersCount < Settings.StaticModeStartLimit ? e.Login : null);
-                string hash = maniaLinkPageContent.ToHash();
-                SetManiaLinkPageHash(e.Login, _localRecordListManiaLinkPageID, hash);
-
-                Context.RPCClient.Methods.SendDisplayManialinkPageToLogin(e.Login, maniaLinkPageContent, 0, false);
-            }
-
-            if (Settings.ShowMessages)
-                SendServerRankMessageToLogin(e.Login);
-        }
-
-        private void HostPlugin_LocalRecordsDetermined(object sender, EventArgs<RankEntry[]> e)
-        {
-            LastRankings = e.Value;
-            LocalBestTimeOrScore = e.Value.Length > 0 ? (uint?)e.Value[0].TimeOrScore : null;
-
-            if (Settings.ShowPBUserInterface)
-                SendPBManiaLinkPageToAll(e.Value);
-
-            if (Settings.ShowLocalRecordUserInterface)
-                SendLocalRecordManiaLinkPageToAll();
-
-            if (Settings.ShowLocalRecordUserInterface)
-                SendRecordListToAllPlayers(e.Value);
-        }
-
         private void SendRecordListToAllPlayers(RankEntry[] rankings)
         {
             if (rankings != null && rankings.Length > 0)
@@ -261,7 +350,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
 
         private void SendLocalRecordManiaLinkPageToAll(string dummy)
         {
-            SendLocalRecordManiaLinkPageToAll();
+            RunCatchLog(SendLocalRecordManiaLinkPageToAll, "Error in SendLocalRecordManiaLinkPageToAll Method.", true);
         }
 
         private void SendLocalRecordManiaLinkPageToAll()
@@ -284,72 +373,6 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
             maniaLinkPage.Replace("{[ManiaLinkID]}", _localRecordManiaLinkPageID);
 
             return maniaLinkPage.ToString();
-        }
-
-        private void Callbacks_EndRace(object sender, EndRaceEventArgs e)
-        {
-            UpdateListTimer.Clear();
-            UpdateLocalRecordTimer.Clear();
-
-            if (Settings.ShowPBUserInterface)
-                SendEmptyManiaLinkPage(_pbManiaLinkPageID);
-
-            if (Settings.ShowLocalRecordUserInterface)
-                SendEmptyManiaLinkPage(_localRecordManiaLinkPageID);
-
-            if (Settings.ShowLocalRecordListUserInterface && Settings.HideRecordListUIOnFinish)
-                SendEmptyManiaLinkPage(_localRecordListManiaLinkPageID);
-        }
-
-        
-
-        private void HostPlugin_PlayerNewRecord(object sender, PlayerNewRecordEventArgs e)
-        {
-            if (!e.OldPosition.HasValue)
-            {
-                if (Settings.ShowMessages)
-                {
-                    string message = FormatMessage(Settings.FirstLocalRankMessage, "Nickname", StripTMColorsAndFormatting(e.Nickname), "Rank", e.NewPosition.ToString());
-                    Context.RPCClient.Methods.SendNotice(message, e.Login, Convert.ToInt32(Settings.NoticeDelayInSeconds));
-                    Context.RPCClient.Methods.ChatSendServerMessage(message);
-                }
-            }
-            else if (e.NewPosition > e.OldPosition)
-            {
-                if (Settings.ShowMessages)
-                {
-                    string message = FormatMessage(Settings.NewLocalRankMessage, "Nickname", StripTMColorsAndFormatting(e.Nickname), "OldRank", e.OldPosition.ToString(), "NewRank", e.NewPosition.ToString());
-                    Context.RPCClient.Methods.SendNotice(message, e.Login, Convert.ToInt32(Settings.NoticeDelayInSeconds));
-                    Context.RPCClient.Methods.ChatSendServerMessage(message);
-                }
-            }
-            else
-            {
-                if (Settings.ShowMessages)
-                {
-                    string message = FormatMessage(Settings.ImprovedLocalRankMessage, "Nickname", StripTMColorsAndFormatting(e.Nickname), "Rank", e.NewPosition.ToString());
-                    Context.RPCClient.Methods.SendNotice(message, e.Login, Convert.ToInt32(Settings.NoticeDelayInSeconds));
-                    Context.RPCClient.Methods.ChatSendServerMessage(message);
-                }
-            }
-
-            if (Settings.ShowPBUserInterface)
-                SendPBManiaLinkPage(e.Login, Convert.ToUInt32(e.TimeOrScore));
-
-
-
-            if (LocalBestTimeOrScore == null || e.TimeOrScore < LocalBestTimeOrScore)
-            {
-                LocalBestTimeOrScore = Convert.ToUInt32(e.TimeOrScore);
-
-                if (Settings.ShowLocalRecordUserInterface)
-                    UpdateLocalRecordTimer.Enqueue(SendLocalRecordManiaLinkPageToAll, null);
-                    //SendLocalRecordManiaLinkPageToAll();
-            }
-
-            if (Settings.ShowLocalRecordUserInterface)
-                UpdateListTimer.Enqueue(SendRecordListToAllPlayers, HostPlugin.LocalRecords);
-                //SendRecordListToAllPlayers(HostPlugin.LocalRecords);
         }
 
         private string GetRecordListManiaLinkPage(RankEntry[] rankings, string login)
@@ -495,18 +518,6 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
                 result.Add(ranksAfterPlayerRank[i], rankings[ranksAfterPlayerRank[i] - 1]);
 
             return result;
-        }
-
-        protected override void Dispose(bool connectionLost)
-        {
-            UpdateListTimer.Stop();
-            UpdateLocalRecordTimer.Stop();
-
-            HostPlugin.PlayerNewRecord -= HostPlugin_PlayerNewRecord;
-            HostPlugin.LocalRecordsDetermined -= HostPlugin_LocalRecordsDetermined;
-            Context.RPCClient.Callbacks.EndRace -= Callbacks_EndRace;
-            Context.RPCClient.Callbacks.PlayerConnect -= Callbacks_PlayerConnect;
-            Context.RPCClient.Callbacks.PlayerChat -= Callbacks_PlayerChat;
         }
 
         #endregion
