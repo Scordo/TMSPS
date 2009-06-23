@@ -784,7 +784,7 @@ namespace TMSPS.Core.Communication
         }
 
         /// <summary>
-        /// estarts the challenge, with an optional boolean parameter DontClearCupScores (only available in cup mode).
+        /// Restarts the challenge, with an optional boolean parameter DontClearCupScores (only available in cup mode).
         /// </summary>
         public GenericResponse<bool> ChallengeRestart()
         {

@@ -29,6 +29,7 @@
         public const string READ_CHATBOT_SETTINGS = "readchatbotsettings";
         public const string TMX_INFO = "tmxinfo";
         public const string TMX_ADD_TRACK = "addtrack";
+        public const string TMX_INSERT_TRACK = "inserttrack";
         public const string DELETE_CHEATER = "deletecheater";
         public const string GET_LOCAL_LOGINS = "getlocallogins";
         public const string RESTART_TRACK_IMMEDIATELY = "restarttrack";

@@ -94,14 +94,11 @@ namespace TMSPS.Core.PluginSystem.Plugins.TMX
         {
             ServerCommand command = ServerCommand.Parse(e.Text);
 
-            if (!command.IsMainCommandAnyOf(CommandOrRight.TMX_ADD_TRACK))
+            if (!command.IsMainCommandAnyOf(CommandOrRight.TMX_ADD_TRACK, CommandOrRight.TMX_INSERT_TRACK))
                 return false;
 
-            if (!Context.Credentials.UserHasRight(e.Login, CommandOrRight.TMX_ADD_TRACK))
-            {
-                SendNoPermissionMessagetoLogin(e.Login);
+            if (!LoginHasAnyRight(e.Login, true, CommandOrRight.TMX_ADD_TRACK, CommandOrRight.TMX_INSERT_TRACK))
                 return true;
-            }
 
             if (command.PartsWithoutMainCommand.Count == 0)
                 return true;
@@ -131,44 +128,35 @@ namespace TMSPS.Core.PluginSystem.Plugins.TMX
 
             byte[] trackData = TMXInfo.DownloadTrack(trackID);
 
-            if (trackData != null)
-            {
-                string targetTrackFilePath = tmxInfo.GetRelativeFilePath();
-
-                GenericResponse<bool> writeFileResponse = Context.RPCClient.Methods.WriteFile(targetTrackFilePath, trackData);
-
-                if (writeFileResponse.Erroneous || !writeFileResponse.Value)
-                {
-                    SendFormattedMessageToLogin(e.Login, "{[#ServerStyle]}>{[#ErrorStyle] Could write track {[#HighlightStyle]}{[Trackname]}{[#ErrorStyle]} with trackid {[#HighlightStyle]}{[TrackID]}.", "Trackname", tmxInfo.Name, "TrackID", trackID);
-                    return true;
-                }
-
-                GenericResponse<bool> addtrackResponse = Context.RPCClient.Methods.AddChallenge(targetTrackFilePath);
-
-                if (addtrackResponse.Erroneous || !addtrackResponse.Value)
-                {
-                    SendFormattedMessageToLogin(e.Login, "{[#ServerStyle]}>{[#ErrorStyle] Could add track {[#HighlightStyle]}{[Trackname]}{[#ErrorStyle]} with trackid {[#HighlightStyle]}{[TrackID]}.", "Trackname", tmxInfo.Name, "TrackID", trackID);
-                    return true;
-                }
-
-                SendFormattedMessageToLogin(e.Login, "{[#ServerStyle]}> {[#MessageStyle]}Track {[#HighlightStyle]}{[Trackname]}{[#MessageStyle]} with trackid {[#HighlightStyle]}{[TrackID]}{[#MessageStyle]} added to tracklist.", "Trackname", tmxInfo.Name, "TrackID", trackID);
-
-                challenges = GetChallengeList();
-                if (challenges != null)
-                {
-                    int challengeIndex = challenges.FindIndex(c => c.FileName.Equals(tmxInfo.GetRelativeFilePath(), StringComparison.InvariantCultureIgnoreCase));
-
-                    if (challengeIndex != -1)
-                    {
-                        Context.RPCClient.Methods.SetNextChallengeIndex(challengeIndex);
-                        SendFormattedMessageToLogin(e.Login, "{[#ServerStyle]}> {[#MessageStyle]}Track {[#HighlightStyle]}{[Trackname]}{[#MessageStyle]} with trackid {[#HighlightStyle]}{[TrackID]}{[#MessageStyle]} will be the next track.", "Trackname", tmxInfo.Name, "TrackID", trackID);
-                    }
-                }
-            }
-            else
+            if (trackData == null)
             {
                 SendFormattedMessageToLogin(e.Login, "{[#ServerStyle]}> {[#ErrorStyle]}Could not retrieve track {[#HighlightStyle]}{[Trackname]}{[#ErrorStyle]} with trackid {[#HighlightStyle]}{[TrackID]}.", "Trackname", tmxInfo.Name, "TrackID", trackID);
+                return true;
             }
+
+            string targetTrackFilePath = tmxInfo.GetRelativeFilePath();
+
+            GenericResponse<bool> writeFileResponse = Context.RPCClient.Methods.WriteFile(targetTrackFilePath, trackData);
+
+            if (writeFileResponse.Erroneous || !writeFileResponse.Value)
+            {
+                SendFormattedMessageToLogin(e.Login, "{[#ServerStyle]}>{[#ErrorStyle] Could write track {[#HighlightStyle]}{[Trackname]}{[#ErrorStyle]} with trackid {[#HighlightStyle]}{[TrackID]}.", "Trackname", tmxInfo.Name, "TrackID", trackID);
+                return true;
+            }
+
+            GenericResponse<bool> addtrackResponse = command.IsMainCommandAnyOf(CommandOrRight.TMX_ADD_TRACK) ? Context.RPCClient.Methods.AddChallenge(targetTrackFilePath) 
+                                                                                                              : Context.RPCClient.Methods.InsertChallenge(targetTrackFilePath);
+
+            if (addtrackResponse.Erroneous || !addtrackResponse.Value)
+            {
+                SendFormattedMessageToLogin(e.Login, "{[#ServerStyle]}>{[#ErrorStyle] Could add track {[#HighlightStyle]}{[Trackname]}{[#ErrorStyle]} with trackid {[#HighlightStyle]}{[TrackID]}.", "Trackname", tmxInfo.Name, "TrackID", trackID);
+                return true;
+            }
+
+            SendFormattedMessageToLogin(e.Login, "{[#ServerStyle]}> {[#MessageStyle]}Track {[#HighlightStyle]}{[Trackname]}{[#MessageStyle]} with trackid {[#HighlightStyle]}{[TrackID]}{[#MessageStyle]} added to tracklist.", "Trackname", tmxInfo.Name, "TrackID", trackID);
+
+            if (command.IsMainCommandAnyOf(CommandOrRight.TMX_INSERT_TRACK))
+                SendFormattedMessageToLogin(e.Login, "{[#ServerStyle]}> {[#MessageStyle]}Track {[#HighlightStyle]}{[Trackname]}{[#MessageStyle]} with trackid {[#HighlightStyle]}{[TrackID]}{[#MessageStyle]} will be the next track.", "Trackname", tmxInfo.Name, "TrackID", trackID);
 
             return true;
         }
