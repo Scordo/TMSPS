@@ -332,6 +332,7 @@
     <None Include="Resources\SQLScripts\StoredProcedures\Challenge\Challenge_Deserialize_ByID.sql" />
     <None Include="Resources\SQLScripts\StoredProcedures\Challenge\Challenge_Deserialize_ByUniqueID.sql" />
     <None Include="Resources\SQLScripts\StoredProcedures\Challenge\Challenge_GetAllUniqueTrackIDs.sql" />
+    <None Include="Resources\SQLScripts\StoredProcedures\Challenge\Challenge_GetDrivenUniqueTrackIDs_ByLogin.sql" />
     <None Include="Resources\SQLScripts\StoredProcedures\Challenge\Challenge_IncreaseRaces_ByChallenge.sql" />
     <None Include="Resources\SQLScripts\StoredProcedures\Challenge\Challenge_IncreaseRaces_ByID.sql" />
     <None Include="Resources\SQLScripts\StoredProcedures\Challenge\Challenge_IncreaseRaces_ByUniqueID.sql" />

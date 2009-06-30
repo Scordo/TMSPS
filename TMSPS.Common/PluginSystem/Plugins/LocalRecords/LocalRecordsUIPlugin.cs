@@ -8,6 +8,8 @@ using System.Threading;
 using System.Xml.Linq;
 using TMSPS.Core.Common;
 using TMSPS.Core.Communication.EventArguments.Callbacks;
+using TMSPS.Core.Communication.ProxyTypes;
+using TMSPS.Core.Communication.ResponseHandling;
 using TMSPS.Core.PluginSystem.Configuration;
 using Version = System.Version;
 
@@ -80,6 +82,9 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
                     return;
 
                 if (CheckForInfoCommand(e))
+                    return;
+
+                if (CheckForSelectUndrivenTracksCommand(e))
                     return;
             }, "Error in Callbacks_PlayerChat Method.", true);
         }
@@ -240,6 +245,68 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
             SendInfoMessageToLogin(args.Login);
 
             return true;
+        }
+
+        private bool CheckForSelectUndrivenTracksCommand(PlayerChatEventArgs args)
+        {
+            if (!ServerCommand.Parse(args.Text).IsMainCommandAnyOf(CommandOrRight.SELECT_UNDRIVEN_TRACKS))
+                return false;
+
+            if (!LoginHasRight(args.Login, true, CommandOrRight.SELECT_UNDRIVEN_TRACKS))
+                return true;
+
+            SelectUndrivenTracks(args.Login);
+
+            return true;
+        }
+
+        private void SelectUndrivenTracks(string login)
+        {
+            ThreadPool.QueueUserWorkItem(SelectUndrivenTracks, login);
+        }
+
+        private void SelectUndrivenTracks(object state)
+        {
+            RunCatchLog(() =>
+            {
+                string login = (string)state;
+                HashSet<string> drivenChallengeUIDs = GetDrivenChallengeUIDs(login);
+                List<string> undrivenChallengeFilenames = GetUndrivenChallengeFilenames(drivenChallengeUIDs);
+                GenericResponse<int> chooseNextChallengeListResponse = null;    
+
+                if (undrivenChallengeFilenames.Count > 0)
+                {
+                    chooseNextChallengeListResponse = Context.RPCClient.Methods.ChooseNextChallengeList(undrivenChallengeFilenames);
+
+                    if (LogFaultResponse(chooseNextChallengeListResponse, "SelectUndrivenTracks"))
+                        return;
+                }
+
+                if (chooseNextChallengeListResponse.Value > 0)
+                    SendFormattedMessageToLogin(login, "{[#ServerStyle]}> {[#MessageStyle]}You have not driven {[#HighlightStyle]}{[Amount]}{[#MessageStyle]} track(s). Those tracks will be the next in the track cycle.", "Amount", chooseNextChallengeListResponse.Value.ToString());
+                else
+                    SendFormattedMessageToLogin(login, "{[#ServerStyle]}> {[#MessageStyle]}You have driven all maps.");
+            }, "Error in SelectUndrivenTracks Method.", true);
+        }
+
+        private List<string> GetUndrivenChallengeFilenames(HashSet<string> uniqueIDs)
+        {
+            GenericListResponse<ChallengeListSingleInfo> getChallGenericListResponse = Context.RPCClient.Methods.GetChallengeList();
+
+            if (getChallGenericListResponse.Erroneous)
+            {
+
+                return new List<string>();
+            }
+
+            List<ChallengeListSingleInfo> undrivenTracks = getChallGenericListResponse.Value.FindAll(c => !uniqueIDs.Contains(c.UId));
+
+            return undrivenTracks.ConvertAll(c => c.FileName);
+        }
+
+        private HashSet<string> GetDrivenChallengeUIDs(string login)
+        {
+            return new HashSet<string>(HostPlugin.ChallengeAdapter.GetDrivenUniqueTrackIDs(login));
         }
 
         private void SendServerRankMessageToLogin(string login)

@@ -4,6 +4,7 @@ using System.Globalization;
 using System.IO;
 using System.Reflection;
 using System.Text.RegularExpressions;
+using TMSPS.Core.Communication.ResponseHandling;
 using TMSPS.Core.Logging;
 using System.Linq;
 using TMSPS.Core.ManiaLinking;
@@ -84,6 +85,15 @@ namespace TMSPS.Core.PluginSystem
 
             if (action.PluginID == ID)
                 OnManiaLinkPageAnswer(e.Login, e.PlayerID, action);
+        }
+
+        protected bool LogFaultResponse<T>(ResponseBase<T> faulResponse, string currentMethodName) where T : ResponseBase<T>
+        {
+            if (!faulResponse.Erroneous)
+                return false;
+            
+            Logger.ErrorToUI(string.Format("Error while calling method '{0}': {1}({2})", currentMethodName, faulResponse.Fault.FaultMessage, faulResponse.Fault.FaultCode));
+            return true;
         }
 
         protected virtual void OnManiaLinkPageAnswer(string login, int playerID, TMAction action)
