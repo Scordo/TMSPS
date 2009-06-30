@@ -9,6 +9,14 @@ namespace TMSPS.Core.Communication
 {
     public class Methods
     {
+        #region Constants
+
+        private const int MAX_CHALLENGE_AMOUNT = 100000;
+        private const int MAX_PLAYER_AMOUNT = 500;
+
+        #endregion
+
+
         #region Members
 
         private readonly TrackManiaRPCClient _client;
@@ -255,7 +263,7 @@ namespace TMSPS.Core.Communication
 
         public GenericListResponse<PlayerInfo> GetPlayerList()
         {
-            return GetPlayerList(500, 0);
+            return GetPlayerList(MAX_PLAYER_AMOUNT, 0);
         }
 
         public GenericListResponse<PlayerInfo> GetPlayerList(int maxPlayersToReceive, int startingIndex)
@@ -268,9 +276,14 @@ namespace TMSPS.Core.Communication
             return (GenericResponse<int>)_client.SendMethod<GenericResponse<int>>(TrackManiaMethod.GetNextChallengeIndex.ToString());
         }
 
+        public GenericListResponse<ChallengeListSingleInfo> GetChallengeList()
+        {
+            return GetChallengeList(MAX_CHALLENGE_AMOUNT, 0);
+        }
+
         public GenericListResponse<ChallengeListSingleInfo> GetChallengeList(int challengeIndex)
         {
-            return GetChallengeList(1, challengeIndex);
+            return GetChallengeList(MAX_CHALLENGE_AMOUNT, challengeIndex);
         }
 
         public GenericListResponse<ChallengeListSingleInfo> GetChallengeList(int maxChallengesToReceive, int challengeIndex)
@@ -1178,9 +1191,9 @@ namespace TMSPS.Core.Communication
         /// <summary>
         ///  Add the list of challenges with the specified filenames at the end of the current selection. The list of challenges to add is an array of strings.
         /// </summary>
-        public GenericResponse<bool> AddChallengeList(string[] filenames)
+        public GenericResponse<int> AddChallengeList(List<string> filenames)
         {
-            return (GenericResponse<bool>)_client.SendMethod<GenericResponse<bool>>(TrackManiaMethod.AddChallengeList.ToString(), filenames);
+            return (GenericResponse<int>)_client.SendMethod<GenericResponse<int>>(TrackManiaMethod.AddChallengeList.ToString(), filenames);
         }
 
         /// <summary>
@@ -1194,9 +1207,9 @@ namespace TMSPS.Core.Communication
         /// <summary>
         /// Remove the list of challenges with the specified filenames from the current selection. The list of challenges to remove is an array of strings.
         /// </summary>
-        public GenericResponse<bool> RemoveChallengeList(string[] filenames)
+        public GenericResponse<int> RemoveChallengeList(List<string> filenames)
         {
-            return (GenericResponse<bool>)_client.SendMethod<GenericResponse<bool>>(TrackManiaMethod.RemoveChallengeList.ToString(), filenames);
+            return (GenericResponse<int>)_client.SendMethod<GenericResponse<int>>(TrackManiaMethod.RemoveChallengeList.ToString(), filenames);
         }
 
         /// <summary>
@@ -1210,9 +1223,9 @@ namespace TMSPS.Core.Communication
         /// <summary>
         /// Insert the list of challenges with the specified filenames after the current challenge. The list of challenges to insert is an array of strings.
         /// </summary>
-        public GenericResponse<bool> InsertChallengeList(string[] filenames)
+        public GenericResponse<int> InsertChallengeList(List<string> filenames)
         {
-            return (GenericResponse<bool>)_client.SendMethod<GenericResponse<bool>>(TrackManiaMethod.InsertChallengeList.ToString(), filenames);
+            return (GenericResponse<int>)_client.SendMethod<GenericResponse<int>>(TrackManiaMethod.InsertChallengeList.ToString(), filenames);
         }
 
         /// <summary>
@@ -1226,9 +1239,9 @@ namespace TMSPS.Core.Communication
         /// <summary>
         ///  Set as next challenges the list of challenges with the specified filenames, if they are present in the selection. The list of challenges to choose is an array of strings.
         /// </summary>
-        public GenericResponse<bool> ChooseNextChallengeList(string[] filenames)
+        public GenericResponse<int> ChooseNextChallengeList(List<string> filenames)
         {
-            return (GenericResponse<bool>)_client.SendMethod<GenericResponse<bool>>(TrackManiaMethod.ChooseNextChallengeList.ToString(), filenames);
+            return (GenericResponse<int>)_client.SendMethod<GenericResponse<int>>(TrackManiaMethod.ChooseNextChallengeList.ToString(), filenames);
         }
 
         /// <summary>
@@ -1798,224 +1811,224 @@ namespace TMSPS.Core.Communication
             return SendNoticeToLogins(message, avatarLogin, maxDurationInSeconds, logins == null ? new string[] { } : logins.ToArray());
         }
 
-		/// <summary>
-		/// Returns the current status of the server.
-		/// </summary>
-		public GenericResponse<ServerStatus> GetStatus()
-		{
-			return (GenericResponse<ServerStatus>)_client.SendMethod<GenericResponse<ServerStatus>>(TrackManiaMethod.GetStatus.ToString());
-		}
+        /// <summary>
+        /// Returns the current status of the server.
+        /// </summary>
+        public GenericResponse<ServerStatus> GetStatus()
+        {
+            return (GenericResponse<ServerStatus>)_client.SendMethod<GenericResponse<ServerStatus>>(TrackManiaMethod.GetStatus.ToString());
+        }
 
-		/// <summary>
-		/// Returns a struct containing the networks stats of the server. The structure contains the following fields : Uptime, NbrConnection, MeanConnectionTime, MeanNbrPlayer, RecvNetRate, SendNetRate, TotalReceivingSize, TotalSendingSize and an array of structures named PlayerNetInfos. Each structure of the array PlayerNetInfos contains the following fields : Login, IPAddress, LastTransferTime, DeltaBetweenTwoLastNetState, PacketLossRate.
-		/// </summary>
-		public GenericResponse<NetworkStatus> GetNetworkStats()
-		{
-			return (GenericResponse<NetworkStatus>)_client.SendMethod<GenericResponse<NetworkStatus>>(TrackManiaMethod.GetNetworkStats.ToString());
-		}
+        /// <summary>
+        /// Returns a struct containing the networks stats of the server. The structure contains the following fields : Uptime, NbrConnection, MeanConnectionTime, MeanNbrPlayer, RecvNetRate, SendNetRate, TotalReceivingSize, TotalSendingSize and an array of structures named PlayerNetInfos. Each structure of the array PlayerNetInfos contains the following fields : Login, IPAddress, LastTransferTime, DeltaBetweenTwoLastNetState, PacketLossRate.
+        /// </summary>
+        public GenericResponse<NetworkStatus> GetNetworkStats()
+        {
+            return (GenericResponse<NetworkStatus>)_client.SendMethod<GenericResponse<NetworkStatus>>(TrackManiaMethod.GetNetworkStats.ToString());
+        }
 
-		/// <summary>
-		/// Returns a struct containing the infos for the current challenge. The struct contains the following fields : Name, UId, FileName, Author, Environnement, Mood, BronzeTime, SilverTime, GoldTime, AuthorTime, CopperPrice and LapRace.
-		/// </summary>
-		public GenericResponse<ChallengeInfo> GetCurrentChallengeInfo()
-		{
-			return (GenericResponse<ChallengeInfo>)_client.SendMethod<GenericResponse<ChallengeInfo>>(TrackManiaMethod.GetCurrentChallengeInfo.ToString());
-		}
+        /// <summary>
+        /// Returns a struct containing the infos for the current challenge. The struct contains the following fields : Name, UId, FileName, Author, Environnement, Mood, BronzeTime, SilverTime, GoldTime, AuthorTime, CopperPrice and LapRace.
+        /// </summary>
+        public GenericResponse<ChallengeInfo> GetCurrentChallengeInfo()
+        {
+            return (GenericResponse<ChallengeInfo>)_client.SendMethod<GenericResponse<ChallengeInfo>>(TrackManiaMethod.GetCurrentChallengeInfo.ToString());
+        }
 
-		/// <summary>
+        /// <summary>
         /// Returns a struct containing the infos for the next challenge. The struct contains the following fields : Name, UId, FileName, Author, Environnement, Mood, BronzeTime, SilverTime, GoldTime, AuthorTime, CopperPrice, LapRace, NbLaps and NbCheckpoints. NbLaps and NbCheckpoints are always set to -1.
-		/// </summary>
-		public GenericResponse<ChallengeInfo> GetNextChallengeInfo()
-		{
-			return (GenericResponse<ChallengeInfo>)_client.SendMethod<GenericResponse<ChallengeInfo>>(TrackManiaMethod.GetNextChallengeInfo.ToString());
-		}
+        /// </summary>
+        public GenericResponse<ChallengeInfo> GetNextChallengeInfo()
+        {
+            return (GenericResponse<ChallengeInfo>)_client.SendMethod<GenericResponse<ChallengeInfo>>(TrackManiaMethod.GetNextChallengeInfo.ToString());
+        }
 
-		/// <summary>
+        /// <summary>
         /// Returns a struct containing the infos for the challenge with the specified filename. The struct contains the following fields : Name, UId, FileName, Author, Environnement, Mood, BronzeTime, SilverTime, GoldTime, AuthorTime, CopperPrice, LapRace, NbLaps and NbCheckpoints. NbLaps and NbCheckpoints are always set to -1.
-		/// </summary>
-		public GenericResponse<ChallengeInfo> GetChallengeInfo(string filename)
-		{
-			return (GenericResponse<ChallengeInfo>)_client.SendMethod<GenericResponse<ChallengeInfo>>(TrackManiaMethod.GetChallengeInfo.ToString(), filename);
-		}
+        /// </summary>
+        public GenericResponse<ChallengeInfo> GetChallengeInfo(string filename)
+        {
+            return (GenericResponse<ChallengeInfo>)_client.SendMethod<GenericResponse<ChallengeInfo>>(TrackManiaMethod.GetChallengeInfo.ToString(), filename);
+        }
 
         /// <summary>
         /// Returns the current ranking for the race in progress. This method take two parameters. The first parameter specifies the maximum number of infos to be returned, and the second one the starting index in the ranking. The ranking returned is a list of structure. Each structure contains the following fields : Login, NickName, PlayerId, Rank, BestTime, Score, NbrLapsFinished and LadderScore. it also contains an array BestCheckpoints that contains the checkpoints times for the best race.
         /// </summary>
         public GenericListResponse<PlayerRank> GetCurrentRanking()
         {
-            return GetCurrentRanking(500, 0);
+            return GetCurrentRanking(MAX_PLAYER_AMOUNT, 0);
         }
 
-		/// <summary>
-		/// Returns the current ranking for the race in progress. This method take two parameters. The first parameter specifies the maximum number of infos to be returned, and the second one the starting index in the ranking. The ranking returned is a list of structure. Each structure contains the following fields : Login, NickName, PlayerId, Rank, BestTime, Score, NbrLapsFinished and LadderScore. it also contains an array BestCheckpoints that contains the checkpoints times for the best race.
-		/// </summary>
-		public GenericListResponse<PlayerRank> GetCurrentRanking(int maxEntriestToReceive, int startingIndex)
-		{
-			return (GenericListResponse<PlayerRank>)_client.SendMethod<GenericListResponse<PlayerRank>>(TrackManiaMethod.GetCurrentRanking.ToString(), maxEntriestToReceive, startingIndex);
-		}
+        /// <summary>
+        /// Returns the current ranking for the race in progress. This method take two parameters. The first parameter specifies the maximum number of infos to be returned, and the second one the starting index in the ranking. The ranking returned is a list of structure. Each structure contains the following fields : Login, NickName, PlayerId, Rank, BestTime, Score, NbrLapsFinished and LadderScore. it also contains an array BestCheckpoints that contains the checkpoints times for the best race.
+        /// </summary>
+        public GenericListResponse<PlayerRank> GetCurrentRanking(int maxEntriestToReceive, int startingIndex)
+        {
+            return (GenericListResponse<PlayerRank>)_client.SendMethod<GenericListResponse<PlayerRank>>(TrackManiaMethod.GetCurrentRanking.ToString(), maxEntriestToReceive, startingIndex);
+        }
 
-		/// <summary>
-		/// Returns the vote currently in progress. The returned structure is { CallerLogin, CmdName, CmdParam }.
-		/// </summary>
-		public GenericResponse<CallVote> GetCurrentCallVote()
-		{
-			return (GenericResponse<CallVote>)_client.SendMethod<GenericResponse<CallVote>>(TrackManiaMethod.GetCurrentCallVote.ToString());
-		}
+        /// <summary>
+        /// Returns the vote currently in progress. The returned structure is { CallerLogin, CmdName, CmdParam }.
+        /// </summary>
+        public GenericResponse<CallVote> GetCurrentCallVote()
+        {
+            return (GenericResponse<CallVote>)_client.SendMethod<GenericResponse<CallVote>>(TrackManiaMethod.GetCurrentCallVote.ToString());
+        }
 
-		/// <summary>
-		/// Set new ratios for passing specific votes. The parameter is an array of structs {string Command, double Ratio}, ratio is in [0,1] or -1 for vote disabled.
-		/// </summary>
-		public GenericResponse<bool> SetCallVoteRatios(List<CallVoteRatio> ratios)
-		{
-			return (GenericResponse<bool>)_client.SendMethod<GenericResponse<bool>>(TrackManiaMethod.SetCallVoteRatios.ToString(), ratios);
-		}
+        /// <summary>
+        /// Set new ratios for passing specific votes. The parameter is an array of structs {string Command, double Ratio}, ratio is in [0,1] or -1 for vote disabled.
+        /// </summary>
+        public GenericResponse<bool> SetCallVoteRatios(List<CallVoteRatio> ratios)
+        {
+            return (GenericResponse<bool>)_client.SendMethod<GenericResponse<bool>>(TrackManiaMethod.SetCallVoteRatios.ToString(), ratios);
+        }
 
-		/// <summary>
-		/// Get the current ratios for passing votes.
-		/// </summary>
-		public GenericListResponse<CallVoteRatio> GetCallVoteRatios()
-		{
-			return (GenericListResponse<CallVoteRatio>)_client.SendMethod<GenericListResponse<CallVoteRatio>>(TrackManiaMethod.GetCallVoteRatios.ToString());
-		}
+        /// <summary>
+        /// Get the current ratios for passing votes.
+        /// </summary>
+        public GenericListResponse<CallVoteRatio> GetCallVoteRatios()
+        {
+            return (GenericListResponse<CallVoteRatio>)_client.SendMethod<GenericListResponse<CallVoteRatio>>(TrackManiaMethod.GetCallVoteRatios.ToString());
+        }
 
-		/// <summary>
-		/// Get some system infos.
-		/// </summary>
-		public GenericResponse<SystemInfo> GetSystemInfo()
-		{
-			return (GenericResponse<SystemInfo>)_client.SendMethod<GenericResponse<SystemInfo>>(TrackManiaMethod.GetSystemInfo.ToString());
-		}
+        /// <summary>
+        /// Get some system infos.
+        /// </summary>
+        public GenericResponse<SystemInfo> GetSystemInfo()
+        {
+            return (GenericResponse<SystemInfo>)_client.SendMethod<GenericResponse<SystemInfo>>(TrackManiaMethod.GetSystemInfo.ToString());
+        }
 
-		/// <summary>
-		/// Set new server options using the struct passed as parameters. This struct must contain the following fields : Name, Comment, Password, PasswordForSpectator, RefereePassword, NextMaxPlayers, NextMaxSpectators, IsP2PUpload, IsP2PDownload, NextLadderMode, NextVehicleNetQuality, NextCallVoteTimeOut, CallVoteRatio, AllowChallengeDownload, AutoSaveReplays, and optionally RefereePassword, RefereeMode, AutoSaveValidationReplays, HideServer, UseChangingValidationSeed. Only available to Admin. A change of NextMaxPlayers, NextMaxSpectators, NextLadderMode, NextVehicleNetQuality, NextCallVoteTimeOut or UseChangingValidationSeed requires a challenge restart to be taken into account.
-		/// </summary>
-		public GenericResponse<bool> SetServerOptions(ServerOptions options)
-		{
-			return (GenericResponse<bool>)_client.SendMethod<GenericResponse<bool>>(TrackManiaMethod.SetServerOptions.ToString(), options);
-		}
+        /// <summary>
+        /// Set new server options using the struct passed as parameters. This struct must contain the following fields : Name, Comment, Password, PasswordForSpectator, RefereePassword, NextMaxPlayers, NextMaxSpectators, IsP2PUpload, IsP2PDownload, NextLadderMode, NextVehicleNetQuality, NextCallVoteTimeOut, CallVoteRatio, AllowChallengeDownload, AutoSaveReplays, and optionally RefereePassword, RefereeMode, AutoSaveValidationReplays, HideServer, UseChangingValidationSeed. Only available to Admin. A change of NextMaxPlayers, NextMaxSpectators, NextLadderMode, NextVehicleNetQuality, NextCallVoteTimeOut or UseChangingValidationSeed requires a challenge restart to be taken into account.
+        /// </summary>
+        public GenericResponse<bool> SetServerOptions(ServerOptions options)
+        {
+            return (GenericResponse<bool>)_client.SendMethod<GenericResponse<bool>>(TrackManiaMethod.SetServerOptions.ToString(), options);
+        }
 
-		/// <summary>
-		/// Get the mods settings.
-		/// </summary>
-		public GenericResponse<ForcedMod> GetForcedMods()
-		{
-			return (GenericResponse<ForcedMod>)_client.SendMethod<GenericResponse<ForcedMod>>(TrackManiaMethod.GetForcedMods.ToString());
-		}
+        /// <summary>
+        /// Get the mods settings.
+        /// </summary>
+        public GenericResponse<ForcedMod> GetForcedMods()
+        {
+            return (GenericResponse<ForcedMod>)_client.SendMethod<GenericResponse<ForcedMod>>(TrackManiaMethod.GetForcedMods.ToString());
+        }
 
-		/// <summary>
-		/// Set the mods to apply on the clients. Parameters: Override, if true even the challenges with a mod will be overridden by the server setting; and Mods, an array of structures [{EnvName, Url}, ...]. Requires a challenge restart to be taken into account. Only available to Admin.
-		/// </summary>
-		public GenericResponse<bool> SetForcedMods(bool setOverride, List<Mod> mods)
-		{
-			return (GenericResponse<bool>)_client.SendMethod<GenericResponse<bool>>(TrackManiaMethod.SetForcedMods.ToString(), setOverride, mods);
-		}
+        /// <summary>
+        /// Set the mods to apply on the clients. Parameters: Override, if true even the challenges with a mod will be overridden by the server setting; and Mods, an array of structures [{EnvName, Url}, ...]. Requires a challenge restart to be taken into account. Only available to Admin.
+        /// </summary>
+        public GenericResponse<bool> SetForcedMods(bool setOverride, List<Mod> mods)
+        {
+            return (GenericResponse<bool>)_client.SendMethod<GenericResponse<bool>>(TrackManiaMethod.SetForcedMods.ToString(), setOverride, mods);
+        }
 
-		/// <summary>
-		/// Get the music setting.
-		/// </summary>
-		public GenericResponse<ForcedMusic> GetForcedMusic()
-		{
-			return (GenericResponse<ForcedMusic>)_client.SendMethod<GenericResponse<ForcedMusic>>(TrackManiaMethod.GetForcedMusic.ToString());
-		}
+        /// <summary>
+        /// Get the music setting.
+        /// </summary>
+        public GenericResponse<ForcedMusic> GetForcedMusic()
+        {
+            return (GenericResponse<ForcedMusic>)_client.SendMethod<GenericResponse<ForcedMusic>>(TrackManiaMethod.GetForcedMusic.ToString());
+        }
 
-		/// <summary>
-		///  Get the current forced skins.
-		/// </summary>
-		public GenericListResponse<ForcedSkin> GetForcedSkins()
-		{
-			return (GenericListResponse<ForcedSkin>)_client.SendMethod<GenericListResponse<ForcedSkin>>(TrackManiaMethod.GetForcedSkins.ToString());
-		}
+        /// <summary>
+        ///  Get the current forced skins.
+        /// </summary>
+        public GenericListResponse<ForcedSkin> GetForcedSkins()
+        {
+            return (GenericListResponse<ForcedSkin>)_client.SendMethod<GenericListResponse<ForcedSkin>>(TrackManiaMethod.GetForcedSkins.ToString());
+        }
 
-		/// <summary>
-		/// efines a list of remappings for player skins. It expects a list of structs Orig, Name, Checksum, Url. Orig is the name of the skin to remap, or '*' for any other. Name, Checksum, Url define the skin to use. (they are optional, you may set value '' for any of those. All 3 null means same as Orig). Will only affects players connecting after the value is set. Only available to Admin.
-		/// </summary>
-		public GenericResponse<bool> SetForcedSkins(List<ForcedSkin> skins)
-		{
-			return (GenericResponse<bool>)_client.SendMethod<GenericResponse<bool>>(TrackManiaMethod.SetForcedSkins.ToString(), skins);
-		}
+        /// <summary>
+        /// efines a list of remappings for player skins. It expects a list of structs Orig, Name, Checksum, Url. Orig is the name of the skin to remap, or '*' for any other. Name, Checksum, Url define the skin to use. (they are optional, you may set value '' for any of those. All 3 null means same as Orig). Will only affects players connecting after the value is set. Only available to Admin.
+        /// </summary>
+        public GenericResponse<bool> SetForcedSkins(List<ForcedSkin> skins)
+        {
+            return (GenericResponse<bool>)_client.SendMethod<GenericResponse<bool>>(TrackManiaMethod.SetForcedSkins.ToString(), skins);
+        }
 
-		/// <summary>
-		/// Get the current and next value of UseChangingValidationSeed. The struct returned contains two fields CurrentValue and NextValue.
-		/// </summary>
-		public GenericResponse<CNPair<bool>> GetUseChangingValidationSeed()
-		{
-			return (GenericResponse<CNPair<bool>>)_client.SendMethod<GenericResponse<CNPair<bool>>>(TrackManiaMethod.GetUseChangingValidationSeed.ToString());
-		}
+        /// <summary>
+        /// Get the current and next value of UseChangingValidationSeed. The struct returned contains two fields CurrentValue and NextValue.
+        /// </summary>
+        public GenericResponse<CNPair<bool>> GetUseChangingValidationSeed()
+        {
+            return (GenericResponse<CNPair<bool>>)_client.SendMethod<GenericResponse<CNPair<bool>>>(TrackManiaMethod.GetUseChangingValidationSeed.ToString());
+        }
 
-		/// <summary>
-		/// Returns a struct containing the game settings for the next challenge, ie: GameMode, ChatTime, NbChallenge, RoundsPointsLimit, RoundsUseNewRules, RoundsForcedLaps, TimeAttackLimit, TimeAttackSynchStartPeriod, TeamPointsLimit, TeamMaxPoints, TeamUseNewRules, LapsNbLaps, LapsTimeLimit, FinishTimeout, and additionally for version 1: AllWarmUpDuration, DisableRespawn, ForceShowAllOpponents, RoundsPointsLimitNewRules, TeamPointsLimitNewRules, CupPointsLimit, CupRoundsPerChallenge, CupNbWinners, CupWarmUpDuration.
-		/// </summary>
-		public GenericResponse<GameInfo> GetNextGameInfo()
-		{
-			return (GenericResponse<GameInfo>)_client.SendMethod<GenericResponse<GameInfo>>(TrackManiaMethod.GetNextGameInfo.ToString());
-		}
+        /// <summary>
+        /// Returns a struct containing the game settings for the next challenge, ie: GameMode, ChatTime, NbChallenge, RoundsPointsLimit, RoundsUseNewRules, RoundsForcedLaps, TimeAttackLimit, TimeAttackSynchStartPeriod, TeamPointsLimit, TeamMaxPoints, TeamUseNewRules, LapsNbLaps, LapsTimeLimit, FinishTimeout, and additionally for version 1: AllWarmUpDuration, DisableRespawn, ForceShowAllOpponents, RoundsPointsLimitNewRules, TeamPointsLimitNewRules, CupPointsLimit, CupRoundsPerChallenge, CupNbWinners, CupWarmUpDuration.
+        /// </summary>
+        public GenericResponse<GameInfo> GetNextGameInfo()
+        {
+            return (GenericResponse<GameInfo>)_client.SendMethod<GenericResponse<GameInfo>>(TrackManiaMethod.GetNextGameInfo.ToString());
+        }
 
-		/// <summary>
-		/// Returns a struct containing two other structures, the first containing the current game settings and the second the game settings for next challenge. The first structure is named CurrentGameInfos and the second NextGameInfos.
-		/// </summary>
-		public GenericResponse<GameInfos> GetGameInfos()
-		{
-			return (GenericResponse<GameInfos>)_client.SendMethod<GenericResponse<GameInfos>>(TrackManiaMethod.GetGameInfos.ToString());
-		}
+        /// <summary>
+        /// Returns a struct containing two other structures, the first containing the current game settings and the second the game settings for next challenge. The first structure is named CurrentGameInfos and the second NextGameInfos.
+        /// </summary>
+        public GenericResponse<GameInfos> GetGameInfos()
+        {
+            return (GenericResponse<GameInfos>)_client.SendMethod<GenericResponse<GameInfos>>(TrackManiaMethod.GetGameInfos.ToString());
+        }
 
-		/// <summary>
-		/// Set new game settings using the struct passed as parameters. This struct must contain the following fields : GameMode, ChatTime, RoundsPointsLimit, RoundsUseNewRules, RoundsForcedLaps, TimeAttackLimit, TimeAttackSynchStartPeriod, TeamPointsLimit, TeamMaxPoints, TeamUseNewRules, LapsNbLaps, LapsTimeLimit, FinishTimeout, and optionally: AllWarmUpDuration, DisableRespawn, ForceShowAllOpponents, RoundsPointsLimitNewRules, TeamPointsLimitNewRules, CupPointsLimit, CupRoundsPerChallenge, CupNbWinners, CupWarmUpDuration. Only available to Admin. Requires a challenge restart to be taken into account.
-		/// </summary>
-		public GenericResponse<bool> SetGameInfos(GameInfo gameInfo)
-		{
-			return (GenericResponse<bool>)_client.SendMethod<GenericResponse<bool>>(TrackManiaMethod.SetGameInfos.ToString(), gameInfo);
-		}
+        /// <summary>
+        /// Set new game settings using the struct passed as parameters. This struct must contain the following fields : GameMode, ChatTime, RoundsPointsLimit, RoundsUseNewRules, RoundsForcedLaps, TimeAttackLimit, TimeAttackSynchStartPeriod, TeamPointsLimit, TeamMaxPoints, TeamUseNewRules, LapsNbLaps, LapsTimeLimit, FinishTimeout, and optionally: AllWarmUpDuration, DisableRespawn, ForceShowAllOpponents, RoundsPointsLimitNewRules, TeamPointsLimitNewRules, CupPointsLimit, CupRoundsPerChallenge, CupNbWinners, CupWarmUpDuration. Only available to Admin. Requires a challenge restart to be taken into account.
+        /// </summary>
+        public GenericResponse<bool> SetGameInfos(GameInfo gameInfo)
+        {
+            return (GenericResponse<bool>)_client.SendMethod<GenericResponse<bool>>(TrackManiaMethod.SetGameInfos.ToString(), gameInfo);
+        }
 
-		/// <summary>
-		/// Gets the points used for the scores in round mode.
-		/// </summary>
-		public GenericListResponse<int> GetRoundCustomPoints()
-		{
-			return (GenericListResponse<int>)_client.SendMethod<GenericListResponse<int>>(TrackManiaMethod.GetRoundCustomPoints.ToString());
-		}
+        /// <summary>
+        /// Gets the points used for the scores in round mode.
+        /// </summary>
+        public GenericListResponse<int> GetRoundCustomPoints()
+        {
+            return (GenericListResponse<int>)_client.SendMethod<GenericListResponse<int>>(TrackManiaMethod.GetRoundCustomPoints.ToString());
+        }
 
-		/// <summary>
-		/// Set the points used for the scores in round mode. Points is an array of decreasing integers for the players from the first to last. And you can add an optional boolean to relax the constraint checking on the scores.
-		/// </summary>
-		public GenericResponse<bool> SetRoundCustomPoints(List<int> decreasingPoints, bool relaxConstraints)
-		{
-			return (GenericResponse<bool>)_client.SendMethod<GenericResponse<bool>>(TrackManiaMethod.SetRoundCustomPoints.ToString(), decreasingPoints, relaxConstraints);
-		}
+        /// <summary>
+        /// Set the points used for the scores in round mode. Points is an array of decreasing integers for the players from the first to last. And you can add an optional boolean to relax the constraint checking on the scores.
+        /// </summary>
+        public GenericResponse<bool> SetRoundCustomPoints(List<int> decreasingPoints, bool relaxConstraints)
+        {
+            return (GenericResponse<bool>)_client.SendMethod<GenericResponse<bool>>(TrackManiaMethod.SetRoundCustomPoints.ToString(), decreasingPoints, relaxConstraints);
+        }
 
-		/// <summary>
-		/// Force the scores of the current game. Only available in rounds and team mode. You have to pass an array of structs {int PlayerId, int Score}. And a boolean SilentMode - if true, the scores are silently updated (only available for SuperAdmin), allowing an external controller to do its custom counting...
-		/// </summary>
-		public GenericResponse<bool> ForceScores(List<ForcedScore> scores, bool silentMode)
-		{
-			return (GenericResponse<bool>)_client.SendMethod<GenericResponse<bool>>(TrackManiaMethod.ForceScores.ToString(), scores, silentMode);
-		}
+        /// <summary>
+        /// Force the scores of the current game. Only available in rounds and team mode. You have to pass an array of structs {int PlayerId, int Score}. And a boolean SilentMode - if true, the scores are silently updated (only available for SuperAdmin), allowing an external controller to do its custom counting...
+        /// </summary>
+        public GenericResponse<bool> ForceScores(List<ForcedScore> scores, bool silentMode)
+        {
+            return (GenericResponse<bool>)_client.SendMethod<GenericResponse<bool>>(TrackManiaMethod.ForceScores.ToString(), scores, silentMode);
+        }
 
-		/// <summary>
-		/// Returns a struct containing the player infos of the game server (ie: in case of a basic server, itself; in case of a relay server, the main server), with an optional parameter for compatibility: struct version (0 = united, 1 = forever). The structure is identical to the ones from GetPlayerList. Forever PlayerInfo struct is: Login, NickName, PlayerId, TeamId, SpectatorStatus, LadderRanking, and Flags.
-		/// LadderRanking is 0 when not in official mode,
-		/// Flags = ForceSpectator(0,1,2) + IsReferee * 10 + IsPodiumReady * 100 + IsUsingStereoscopy * 1000 + IsManagedByAnOtherServer * 10000 + IsServer * 100000
-		/// SpectatorStatus = Spectator + TemporarySpectator * 10 + PureSpectator * 100 + AutoTarget * 1000 + CurrentTargetId * 10000
-		/// </summary>
-		public GenericResponse<PlayerInfo> GetMainServerPlayerInfo()
-		{
-			return (GenericResponse<PlayerInfo>)_client.SendMethod<GenericResponse<PlayerInfo>>(TrackManiaMethod.GetMainServerPlayerInfo.ToString());
-		}
+        /// <summary>
+        /// Returns a struct containing the player infos of the game server (ie: in case of a basic server, itself; in case of a relay server, the main server), with an optional parameter for compatibility: struct version (0 = united, 1 = forever). The structure is identical to the ones from GetPlayerList. Forever PlayerInfo struct is: Login, NickName, PlayerId, TeamId, SpectatorStatus, LadderRanking, and Flags.
+        /// LadderRanking is 0 when not in official mode,
+        /// Flags = ForceSpectator(0,1,2) + IsReferee * 10 + IsPodiumReady * 100 + IsUsingStereoscopy * 1000 + IsManagedByAnOtherServer * 10000 + IsServer * 100000
+        /// SpectatorStatus = Spectator + TemporarySpectator * 10 + PureSpectator * 100 + AutoTarget * 1000 + CurrentTargetId * 10000
+        /// </summary>
+        public GenericResponse<PlayerInfo> GetMainServerPlayerInfo()
+        {
+            return (GenericResponse<PlayerInfo>)_client.SendMethod<GenericResponse<PlayerInfo>>(TrackManiaMethod.GetMainServerPlayerInfo.ToString());
+        }
 
-		/// <summary>
-		/// Send a localised text message to all clients without the server login. The parameter is an array of structures {Lang='??', Text='...'}. If no matching language is found, the last text in the array is used. Only available to Admin.
-		/// </summary>
-		public GenericResponse<bool> ChatSendServerMessageToLanguage(List<LanguageDependentText> texts)
-		{
-			return (GenericResponse<bool>)_client.SendMethod<GenericResponse<bool>>(TrackManiaMethod.ChatSendServerMessageToLanguage.ToString(), texts);
-		}
+        /// <summary>
+        /// Send a localised text message to all clients without the server login. The parameter is an array of structures {Lang='??', Text='...'}. If no matching language is found, the last text in the array is used. Only available to Admin.
+        /// </summary>
+        public GenericResponse<bool> ChatSendServerMessageToLanguage(List<LanguageDependentText> texts)
+        {
+            return (GenericResponse<bool>)_client.SendMethod<GenericResponse<bool>>(TrackManiaMethod.ChatSendServerMessageToLanguage.ToString(), texts);
+        }
 
-		/// <summary>
-		/// Send a localised text message to all clients. The parameter is an array of structures {Lang='??', Text='...'}. If no matching language is found, the last text in the array is used.
-		/// </summary>
-		public GenericResponse<bool> ChatSendToLanguage(List<LanguageDependentText> texts)
-		{
-			return (GenericResponse<bool>)_client.SendMethod<GenericResponse<bool>>(TrackManiaMethod.ChatSendToLanguage.ToString(), texts);
-		}
+        /// <summary>
+        /// Send a localised text message to all clients. The parameter is an array of structures {Lang='??', Text='...'}. If no matching language is found, the last text in the array is used.
+        /// </summary>
+        public GenericResponse<bool> ChatSendToLanguage(List<LanguageDependentText> texts)
+        {
+            return (GenericResponse<bool>)_client.SendMethod<GenericResponse<bool>>(TrackManiaMethod.ChatSendToLanguage.ToString(), texts);
+        }
 
         #endregion
     }

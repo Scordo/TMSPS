@@ -61,7 +61,11 @@ namespace TMSPS.Core.Communication
 
             if (value is IEnumerable)
             {
+                XElement valueElement = new XElement("value");
+                
                 XElement arrayElement = new XElement("array");
+                valueElement.Add(arrayElement);
+                
                 XElement dataElement = new XElement("data");
 				arrayElement.Add(dataElement);
 
@@ -70,7 +74,7 @@ namespace TMSPS.Core.Communication
 					dataElement.Add((GetValueElement(childValue)));
                 }
 
-            	return arrayElement;
+                return valueElement;
             }
 
             if (value is DateTime)

@@ -70,6 +70,11 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords.SQL
             return SqlHelper.ExecuteClassQuery<Challenge>("Challenge_Deserialize_ByUniqueID", ChallengeFromDataRow, "UniqueID", uniqueID);
         }
 
+        public List<string> GetDrivenUniqueTrackIDs(string login)
+        {
+            return SqlHelper.ExecuteClassListQuery("Challenge_GetDrivenUniqueTrackIDs_ByLogin", (DataRow r) => Convert.ToString(r["UniqueID"]), "Login", login);
+        }
+
     	/// <exception cref="ArgumentNullException"><c>challenge</c> is null.</exception>
     	public void IncreaseRaces(Challenge challenge)
 		{
