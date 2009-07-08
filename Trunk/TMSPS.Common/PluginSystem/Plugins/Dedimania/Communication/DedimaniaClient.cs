@@ -6,6 +6,8 @@ namespace TMSPS.Core.PluginSystem.Plugins.Dedimania.Communication
 {
     public class DedimaniaClient
     {
+        #region Properties
+
         private IDedimaniaProxy Proxy { get; set; }
         private AuthenticateParameters AuthParameters { get; set; }
 
@@ -14,6 +16,16 @@ namespace TMSPS.Core.PluginSystem.Plugins.Dedimania.Communication
             get { return Proxy.Url; }
             set { Proxy.Url = value;}
         }
+
+        public int Timeout
+        {
+            get { return Proxy.Timeout; }
+            set { Proxy.Timeout = value; }
+        }
+
+        #endregion
+
+        #region Constructor
 
         public DedimaniaClient(string url, AuthenticateParameters authParameters)
         {
@@ -25,6 +37,10 @@ namespace TMSPS.Core.PluginSystem.Plugins.Dedimania.Communication
             Proxy.EnableCompression = true;
             Proxy.KeepAlive = true;
         }
+
+        #endregion
+
+        #region Public Methods
 
         public DedimaniaVersionInfoReply GetVersion()
         {
@@ -182,6 +198,8 @@ namespace TMSPS.Core.PluginSystem.Plugins.Dedimania.Communication
 
             return result;
         }
+
+        #endregion
 
         private static bool ParseBool(object multiCallResultElement)
         {

@@ -84,7 +84,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.Dedimania
                     SendDedimaniaRecordManiaLinkPageToLogin(e.Login);
 
                 if (Settings.ShowRecordListUI)
-                    Context.RPCClient.Methods.SendDisplayManialinkPageToLogin(e.Login, GetRecordListManiaLinkPage(HostPlugin.Rankings, PlayersCount < Settings.StaticModeStartLimit ? e.Login : null), 0, false);
+                    SendRecordListToLogin(e.Login);
             }, "Error in Callbacks_PlayerConnect Method.", false);
         }
 
@@ -130,7 +130,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.Dedimania
 
         private void SendRecordListToAllPlayers(DedimaniaRanking[] rankings)
         {
-            if (rankings != null && rankings.Length > 0)
+            if (rankings != null && rankings.Length > 0 && HostPlugin.IsDedimaniaResponsive)
             {
                 if (PlayersCount < Settings.StaticModeStartLimit)
                 {
@@ -139,11 +139,11 @@ namespace TMSPS.Core.PluginSystem.Plugins.Dedimania
                         string maniaLinkPageContent = GetRecordListManiaLinkPage(rankings, playerSettings.Login);
                         string hash = maniaLinkPageContent.ToHash();
 
-                        if (playerSettings.ManiaLinkPageHashStore.Get(_dedimaniaRecordListManiaLinkPageID) != hash)
-                        {
-                            SetManiaLinkPageHash(playerSettings.Login, _dedimaniaRecordListManiaLinkPageID, hash);
-                            Context.RPCClient.Methods.SendDisplayManialinkPageToLogin(playerSettings.Login, maniaLinkPageContent, 0, false);
-                        }
+                        if (playerSettings.ManiaLinkPageHashStore.Get(_dedimaniaRecordListManiaLinkPageID) == hash)
+                            continue;
+                        
+                        SetManiaLinkPageHash(playerSettings.Login, _dedimaniaRecordListManiaLinkPageID, hash);
+                        Context.RPCClient.Methods.SendDisplayManialinkPageToLogin(playerSettings.Login, maniaLinkPageContent, 0, false);
                     }
                 }
                 else
@@ -153,6 +153,11 @@ namespace TMSPS.Core.PluginSystem.Plugins.Dedimania
             }
             else
                 Context.RPCClient.Methods.SendDisplayManialinkPage(GetRecordListManiaLinkPage(new DedimaniaRanking[] { }, null), 0, false);
+        }
+
+        private void SendRecordListToLogin(string login)
+        {
+            Context.RPCClient.Methods.SendDisplayManialinkPageToLogin(login, GetRecordListManiaLinkPage(HostPlugin.Rankings, PlayersCount < Settings.StaticModeStartLimit ? login : null), 0, false);
         }
 
         private string GetRecordListManiaLinkPage(DedimaniaRanking[] rankings, string login)
@@ -315,7 +320,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.Dedimania
             StringBuilder maniaLinkPage = new StringBuilder(Settings.DediPanelTemplateActive);
 
             string timeString = "  --.--  ";
-            if (HostPlugin.BestTime.HasValue)
+            if (HostPlugin.BestTime.HasValue && HostPlugin.IsDedimaniaResponsive)
             {
                 TimeSpan time = TimeSpan.FromMilliseconds(HostPlugin.BestTime.Value);
                 timeString = string.Format("{0}:{1}.{2}", time.Minutes, time.Seconds.ToString("00"), (time.Milliseconds / 10).ToString("00"));

@@ -42,6 +42,7 @@
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml.Linq">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
@@ -64,6 +65,7 @@
     <Compile Include="Common\NicknameResolverBase.cs" />
     <Compile Include="Common\NicknameResolverCacheEntry.cs" />
     <Compile Include="Common\NicknameResolverFactory.cs" />
+    <Compile Include="Common\NotifyPropertyChanged.cs" />
     <Compile Include="Common\PlayerFlags.cs" />
     <Compile Include="Common\ReadOnlyDictionary.cs" />
     <Compile Include="Common\SettingsBase.cs" />
