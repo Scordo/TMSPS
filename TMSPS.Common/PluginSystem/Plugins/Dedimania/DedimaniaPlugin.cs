@@ -13,6 +13,8 @@ namespace TMSPS.Core.PluginSystem.Plugins.Dedimania
 {
     public class DedimaniaPlugin : TMSPSPlugin
     {
+        enum AuthResult { Failed, Erroneous, Success }
+
         #region Constants
 
         private const int UPDATE_SERVER_PLAYERS_INTERVAL_IN_MINUTES = 4;
@@ -30,7 +32,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.Dedimania
 
         #region Properties
 
-        public override Version Version { get { return new Version("0.2"); }}
+        public override Version Version { get { return new Version("0.3"); }}
         public override string Author { get { return "Jens Hofmann"; } }
         public override string Name{ get { return "DedimaniaPlugin"; } }
         public override string Description { get { return "Saves records in dedimania database."; } }
@@ -39,6 +41,8 @@ namespace TMSPS.Core.PluginSystem.Plugins.Dedimania
         public DedimaniaSettings Settings { get; private set; }
         public DedimaniaRanking[] Rankings { get; set; }
         public uint? BestTime { get; private set; }
+        public bool IsDedimaniaResponsive { get; private set; }
+
 
         #endregion
 
@@ -56,6 +60,31 @@ namespace TMSPS.Core.PluginSystem.Plugins.Dedimania
             Rankings = new DedimaniaRanking[] {};
             Settings = DedimaniaSettings.ReadFromFile(PluginSettingsFilePath);
 
+            InitializeDedimaniaClient();
+
+            AuthResult authResult = TryAuthentication();
+            if (authResult == AuthResult.Failed)
+                return;
+
+            IsDedimaniaResponsive = (authResult == AuthResult.Success);
+
+            InitializePlugins();
+            ResetUpdateServerPlayersTimer();
+
+            DedimaniaClient.Url = Settings.ReportUrl;
+
+            if (IsDedimaniaResponsive)
+                ReportCurrentChallenge(GetExistingCurrentRankings(), GetCurrentChallengeInfoCached());
+            else
+                OnRankingsChanged(new DedimaniaRanking[] {});
+
+            Context.RPCClient.Callbacks.BeginRace += Callbacks_BeginRace;
+            Context.RPCClient.Callbacks.EndRace += Callbacks_EndRace;
+            Context.RPCClient.Callbacks.PlayerFinish += Callbacks_PlayerFinish;
+        }
+
+        private void InitializeDedimaniaClient()
+        {
             AuthenticateParameters authParams = new AuthenticateParameters
             {
                 Game = Context.ServerInfo.Version.GetShortName(),
@@ -67,26 +96,34 @@ namespace TMSPS.Core.PluginSystem.Plugins.Dedimania
                 Version = Version.ToString(2)
             };
 
-            DedimaniaClient = new DedimaniaClient(Settings.AuthUrl, authParams);
+            // set default timeout of dedimania requests to 10 seconds
+            DedimaniaClient = new DedimaniaClient(Settings.AuthUrl, authParams){Timeout = 10000};
+        }
 
-            if (!DedimaniaClient.Authenticate())
+        private AuthResult TryAuthentication()
+        {
+            try
             {
-                Logger.ErrorToUI("Auth failed. Stopping Plugin!");
-                return;
+                if (!DedimaniaClient.Authenticate())
+                {
+                    Logger.ErrorToUI("Authentication failed. Stopping Plugin!");
+                    return AuthResult.Failed;
+                }
+    
+                return AuthResult.Success;
             }
+            catch(Exception ex)
+            {
+                Logger.ErrorToUI("Error starting dedimania plugin: " + ex.Message);
+                Logger.Error("Error starting dedimania plugin: " + ex);
 
-            DedimaniaClient.Url = Settings.ReportUrl;
-            Context.RPCClient.Callbacks.BeginRace += Callbacks_BeginRace;
-            Context.RPCClient.Callbacks.EndRace += Callbacks_EndRace;
-            Context.RPCClient.Callbacks.PlayerFinish += Callbacks_PlayerFinish;
+                return AuthResult.Erroneous;
+            }
+        }
 
-            InitializePlugins();
-            ResetUpdateServerPlayersTimer();
-
-            List<PlayerRank> currentRankings = GetCurrentRanking();
-            if (currentRankings == null)
-                return;
-
+        private List<PlayerRank> GetExistingCurrentRankings()
+        {
+            List<PlayerRank> currentRankings = GetCurrentRanking() ?? new List<PlayerRank>();
             List<PlayerSettings> playerList = Context.PlayerSettings.GetAllAsList();
 
             foreach (PlayerRank rank in currentRankings.ToArray())
@@ -95,7 +132,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.Dedimania
                     currentRankings.Remove(rank);
             }
 
-            ReportCurrentChallenge(currentRankings, GetCurrentChallengeInfoCached());
+            return currentRankings;
         }
 
         protected override void Dispose(bool connectionLost)
@@ -109,6 +146,9 @@ namespace TMSPS.Core.PluginSystem.Plugins.Dedimania
 
         private void Callbacks_PlayerFinish(object sender, PlayerFinishEventArgs e)
         {
+            if (!IsDedimaniaResponsive)
+                return;
+
             RunCatchLog(() =>
             {
                 if (e.TimeOrScore > 0)
@@ -177,13 +217,18 @@ namespace TMSPS.Core.PluginSystem.Plugins.Dedimania
         {
             RunCatchLog(() =>
             {
-                ResetUpdateServerPlayersTimer();
                 ReportCurrentChallenge(null, e.ChallengeInfo);
+
+                if (IsDedimaniaResponsive)
+                    ResetUpdateServerPlayersTimer();
             }, "Error in Callbacks_BeginChallenge Method.", true);
         }
 
         private void Callbacks_EndRace(object sender, EndRaceEventArgs e)
         {
+            if (!IsDedimaniaResponsive)
+                return;
+
             RunCatchLog(() =>
             {
                 if (e.Rankings.Count == 0 || !e.Rankings.Exists(ranking => ranking.BestTime != -1))
@@ -299,16 +344,35 @@ namespace TMSPS.Core.PluginSystem.Plugins.Dedimania
             int spectatorsCount = currentPlayers.Count - playersCount;
             DedimaniaServerInfo serverInfo = new DedimaniaServerInfo(serverOptions.Name, serverOptions.Comment, serverOptions.Password.Length > 0, string.Empty, 0, Context.ServerInfo.ServerXMLRpcPort, playersCount, serverOptions.CurrentMaxPlayers, spectatorsCount, serverOptions.CurrentMaxSpectators, serverOptions.CurrentLadderMode, string.Empty);
 
-            DedimaniaCurrentChallengeReply currentChallengeReply = DedimaniaClient.CurrentChallenge(currentChallenge.UId, currentChallenge.Name, currentChallenge.Environnement, currentChallenge.Author, Context.ServerInfo.Version.GetShortName(), (int) currentGameMode.Value, serverInfo, (int) DedimaniaSettings.MAX_RECORDS_TO_REPORT, playersToReport.ToArray());
+            DedimaniaCurrentChallengeReply currentChallengeReply = null;
+
+            try
+            {
+                currentChallengeReply = DedimaniaClient.CurrentChallenge(currentChallenge.UId, currentChallenge.Name, currentChallenge.Environnement, currentChallenge.Author, Context.ServerInfo.Version.GetShortName(), (int)currentGameMode.Value, serverInfo, (int)DedimaniaSettings.MAX_RECORDS_TO_REPORT, playersToReport.ToArray());
+                IsDedimaniaResponsive = true;
+            }
+            catch (Exception ex)
+            {
+                Logger.ErrorToUI("Could not report current challenge: " + ex.Message );
+                Logger.Error("Could not report current challenge: " + ex);
+                IsDedimaniaResponsive = false;
+            }
 
             if (currentChallengeReply != null)
             {
                 FillRankingsFromDedimania(currentChallengeReply.Records, currentRankings);
                 BestTime = Rankings.Length == 0 ? null : (uint?) Rankings[0].TimeOrScore;
-                OnRankingsChanged(Rankings);
             }
-            else
-                Logger.WarnToUI("Error while calling CurrentChallenge!");   
+            else 
+            {
+                Rankings = new DedimaniaRanking[] {};
+                BestTime = null;
+
+                if (IsDedimaniaResponsive)
+                    Logger.Debug("Error while calling CurrentChallenge!");
+            }
+
+            OnRankingsChanged(Rankings);
         }
 
         private void ResetUpdateServerPlayersTimer()
