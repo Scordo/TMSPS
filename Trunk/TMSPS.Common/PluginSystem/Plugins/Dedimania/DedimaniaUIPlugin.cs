@@ -56,6 +56,12 @@ namespace TMSPS.Core.PluginSystem.Plugins.Dedimania
             HostPlugin.RankingsChanged -= HostPlugin_RankingsChanged;
             Context.RPCClient.Callbacks.PlayerConnect -= Callbacks_PlayerConnect;
             Context.RPCClient.Callbacks.EndRace -= Callbacks_EndRace;
+
+            if (!connectionLost)
+            {
+                SendEmptyManiaLinkPage(_dedimaniaManiaLinkPageID);
+                SendEmptyManiaLinkPage(_dedimaniaRecordListManiaLinkPageID);
+            }
         }
 
         private void Callbacks_EndRace(object sender, Core.Communication.EventArguments.Callbacks.EndRaceEventArgs e)

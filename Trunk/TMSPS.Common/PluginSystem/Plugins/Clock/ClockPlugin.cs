@@ -37,6 +37,11 @@ namespace TMSPS.Core.PluginSystem.Plugins.Clock
         {
             Context.RPCClient.Callbacks.PlayerConnect -= Callbacks_PlayerConnect;
             StopClockTimer();
+
+            if (!connectionLost)
+            {
+                SendEmptyManiaLinkPage(CLOCK_MANIA_LINK_PAGE_ID);
+            }
         }
 
         private void Callbacks_PlayerConnect(object sender, Communication.EventArguments.Callbacks.PlayerConnectEventArgs e)

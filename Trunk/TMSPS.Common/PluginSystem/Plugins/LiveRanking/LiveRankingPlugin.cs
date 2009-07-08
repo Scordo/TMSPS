@@ -58,6 +58,11 @@ namespace TMSPS.Core.PluginSystem.Plugins.LiveRanking
             Context.RPCClient.Callbacks.BeginRace -= Callbacks_BeginRace;
             Context.RPCClient.Callbacks.EndRace -= Callbacks_EndRace;
             Context.RPCClient.Callbacks.PlayerFinish -= Callbacks_PlayerFinish;
+
+            if (!connectionLost)
+            {
+                SendEmptyManiaLinkPage(LIVE_RANKING_LIST_MANIA_LINK_PAGE_ID);
+            }
         }
 
         private void Callbacks_PlayerFinish(object sender, Communication.EventArguments.Callbacks.PlayerFinishEventArgs e)

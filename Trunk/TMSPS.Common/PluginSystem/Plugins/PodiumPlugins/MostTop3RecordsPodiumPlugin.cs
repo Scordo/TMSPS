@@ -39,6 +39,9 @@ namespace TMSPS.Core.PluginSystem.Plugins.PodiumPlugins
         {
             Context.RPCClient.Callbacks.BeginRace -= Callbacks_BeginRace;
             Context.RPCClient.Callbacks.EndRace -= Callbacks_EndRace;
+
+            if (!connectionLost)
+                SendEmptyManiaLinkPage(_linkPageID);
         }
 
 		private void Callbacks_BeginRace(object sender, Communication.EventArguments.Callbacks.BeginRaceEventArgs e)

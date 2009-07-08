@@ -69,6 +69,13 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
             Context.RPCClient.Callbacks.EndRace -= Callbacks_EndRace;
             Context.RPCClient.Callbacks.PlayerConnect -= Callbacks_PlayerConnect;
             Context.RPCClient.Callbacks.PlayerChat -= Callbacks_PlayerChat;
+
+            if (!connectionLost)
+            {
+                SendEmptyManiaLinkPage(_localRecordListManiaLinkPageID);
+                SendEmptyManiaLinkPage(_localRecordManiaLinkPageID);
+                SendEmptyManiaLinkPage(_pbManiaLinkPageID);
+            }
         }
 
         private void Callbacks_PlayerChat(object sender, PlayerChatEventArgs e)
