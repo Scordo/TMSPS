@@ -53,6 +53,11 @@ namespace TMSPS.Core.PluginSystem.Plugins.StaticUI
             Context.RPCClient.Callbacks.PlayerConnect -= Callbacks_PlayerConnect;
             Context.RPCClient.Callbacks.BeginRace -= Callbacks_BeginRace;
             Context.RPCClient.Callbacks.EndRace -= Callbacks_EndRace;
+
+            if (!connectionLost)
+            {
+                SendEmptyManiaLinkPage("StaticUIPanel");
+            }
         }
 
         private void Callbacks_EndRace(object sender, EndRaceEventArgs e)

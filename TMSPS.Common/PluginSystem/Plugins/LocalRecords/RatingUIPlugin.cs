@@ -45,6 +45,12 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
             HostPlugin.ChallengeChanged -= HostPlugin_ChallengeChanged;
             Context.RPCClient.Callbacks.PlayerChat -= Callbacks_PlayerChat;
             Context.RPCClient.Callbacks.PlayerConnect -= Callbacks_PlayerConnect;
+
+            if (!connectionLost)
+            {
+                SendEmptyManiaLinkPage(_allVoteRatingManiaLinkPageID);
+                SendEmptyManiaLinkPage(_ownVoteRatingManiaLinkPageID);
+            }
         }
 
         private void Callbacks_PlayerConnect(object sender, Communication.EventArguments.Callbacks.PlayerConnectEventArgs e)

@@ -71,6 +71,11 @@ namespace TMSPS.Core.PluginSystem.Plugins.AdminPlayer
         protected override void Dispose(bool connectionLost)
         {
             Context.RPCClient.Callbacks.PlayerConnect -= Callbacks_PlayerConnect;
+
+            if (!connectionLost)
+            {
+                SendEmptyManiaLinkPage(PLAYER_PANEL_ID);
+            }
         }
 
         protected override void OnManiaLinkPageAnswer(string login, int playerID, TMAction action)
