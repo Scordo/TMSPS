@@ -62,6 +62,7 @@ namespace TMSPS.TRC.Forms
                 return;
             }
 
+            loadedProfile.Password = password;
             SelectedProfile = loadedProfile;
             DialogResult = true;
         }

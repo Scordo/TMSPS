@@ -36,6 +36,11 @@ namespace TMSPS.TRC.BL.Configuration
 
         public virtual void Save()
         {
+            Save(null);
+        }
+
+        protected void Save(Action<BinaryWriter> additionalActions)
+        {
             string directoryPath = Path.GetDirectoryName(FilePath);
 
             if (!Directory.Exists(directoryPath))
@@ -45,18 +50,13 @@ namespace TMSPS.TRC.BL.Configuration
             {
                 using (BinaryWriter writer = new BinaryWriter(fileStream, Encoding.UTF8))
                 {
-                    WriteToWriter(writer);
+                    writer.Write(Name);
+                    writer.Write(PasswordHash);
+
+                    if (additionalActions != null)
+                        additionalActions(writer);
                 }
             }
-        }
-
-        protected void WriteToWriter(BinaryWriter writer)
-        {
-            if (writer == null)
-                throw new ArgumentNullException("writer");
-
-            writer.Write(Name);
-            writer.Write(PasswordHash);
         }
 
         public static ProfileInfo ReadFromFile(string filePath)
@@ -143,6 +143,11 @@ namespace TMSPS.TRC.BL.Configuration
         public override string ToString()
         {
             return Name;
+        }
+
+        public ProfileInfo CloneProfileInfo()
+        {
+            return new ProfileInfo{ Name = Name, PasswordHash = PasswordHash, FilePath = FilePath};
         }
 
         #endregion
