@@ -72,6 +72,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Forms\ManageServerControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Forms\ManageServersForm.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -97,15 +101,18 @@
     <Compile Include="BL\Common\CryptoHelper.cs" />
     <Compile Include="BL\Configuration\Profile.cs" />
     <Compile Include="BL\Configuration\ProfileInfo.cs" />
-    <Compile Include="BL\Configuration\ProfileReader.cs" />
     <Compile Include="BL\Configuration\ServerInfo.cs" />
     <Compile Include="BL\Configuration\ServerInfoList.cs" />
     <Compile Include="BL\Exceptions\InvalidFileFormatException.cs" />
     <Compile Include="BL\TypeExtensions\BinaryReaderExtender.cs" />
+    <Compile Include="BL\Wpf\Converters\RpcPortConverter.cs" />
     <Compile Include="BL\Wpf\TRCBaseWindow.cs" />
     <Compile Include="BL\Wpf\Helpers\PasswordHelper.cs" />
     <Compile Include="Forms\CreateProfileForm.xaml.cs">
       <DependentUpon>CreateProfileForm.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\ManageServerControl.xaml.cs">
+      <DependentUpon>ManageServerControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="Forms\ManageServersForm.xaml.cs">
       <DependentUpon>ManageServersForm.xaml</DependentUpon>

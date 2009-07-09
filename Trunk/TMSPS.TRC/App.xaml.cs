@@ -21,7 +21,8 @@ namespace TMSPS.TRC
 
         public string AppDirectory { get; private set; }
         public string ProfilesDirectory { get; private set; }
-        public Profile CurrentProfile { get;  set; }
+        public MainForm MainForm { get { return (MainForm) Windows[0]; } }
+        public Profile CurrentProfile { get { return MainForm.CurrentProfile; } }
 
         #endregion
 

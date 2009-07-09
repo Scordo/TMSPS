@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Windows;
@@ -11,6 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using TMSPS.TRC.BL.Configuration;
 using TMSPS.TRC.Forms;
 
 namespace TMSPS.TRC
@@ -20,10 +22,32 @@ namespace TMSPS.TRC
     /// </summary>
     public partial class MainForm
     {
+        #region Properties
+
+        public Profile CurrentProfile { get; internal set; }
+
+        #endregion
+
+        #region Constructor
+
         public MainForm()
         {
             InitializeComponent();
         }
+
+        #endregion
+
+        #region Dependency Properties
+
+        public static readonly DependencyProperty IsProfileSelectedProperty = DependencyProperty.Register("IsProfileSelected", typeof(bool), typeof(MainForm), new FrameworkPropertyMetadata(false));
+
+        public bool IsProfileSelected
+        {
+            get { return (bool)GetValue(IsProfileSelectedProperty); }
+            set { SetValue(IsProfileSelectedProperty, value); }
+        }
+
+        #endregion
 
         private void ExitMenu_Click(object sender, RoutedEventArgs e)
         {
@@ -38,7 +62,8 @@ namespace TMSPS.TRC
             if (selectProfileForm.ShowDialog() != true)
                 return;
 
-            MessageBox.Show("Profile selected: " + selectProfileForm.SelectedProfile.Name);
+            CurrentProfile = selectProfileForm.SelectedProfile;
+            IsProfileSelected = true;
         }
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
@@ -56,8 +81,16 @@ namespace TMSPS.TRC
 
         private void Servers_ManageMenu_Click(object sender, RoutedEventArgs e)
         {
+            if (CurrentProfile == null)
+                return;
+
             ManageServersForm manageServersForm = new ManageServersForm();
+            manageServersForm.DataContext = Application.CurrentProfile.Servers.Clone();
             manageServersForm.ShowDialog();
+
+            CurrentProfile.Servers.Clear();
+            CurrentProfile.Servers.AddRange(manageServersForm.Servers);
+            CurrentProfile.Save();
         }
     }
 }

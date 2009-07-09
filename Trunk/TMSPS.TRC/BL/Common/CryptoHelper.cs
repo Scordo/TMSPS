@@ -6,7 +6,7 @@ namespace TMSPS.TRC.BL.Common
 {
     public static class CryptoHelper
     {
-        public const string DEFAULT_SALT = "-=TRC=-";
+        public const string DEFAULT_SALT = "-=TRC=--=TRC=-";
         public static readonly Encoding DEFAULT_ENCODING = Encoding.UTF8;
 
         public static byte[] EncryptString(string clearText, string password)

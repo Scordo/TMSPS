@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO;
-using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 using TMSPS.TRC.BL.Common;
 
@@ -11,9 +10,14 @@ namespace TMSPS.TRC.BL.Configuration
         public ServerInfoList Servers { get; protected set; }
         public string Password { get; set; }
 
+        public Profile()
+        {
+            Servers = new ServerInfoList();
+        }
+
         public override void Save()
         {
-            base.Save();
+            Save(writer => SaveServerList(writer, Password));
         }
 
         public static Profile ReadFromFile(string filePath, string password)
@@ -34,11 +38,11 @@ namespace TMSPS.TRC.BL.Configuration
                     if (reader.PeekChar() == -1)
                         return result;
 
-                    uint serverListBytesCount = reader.ReadUInt32();
+                    int serverListBytesCount = reader.ReadInt32();
 
                     if (serverListBytesCount > 0)
                     {
-                        byte[] serverListData = reader.ReadBytes((int)serverListBytesCount);
+                        byte[] serverListData = reader.ReadBytes(serverListBytesCount);
                         result.LoadServerListData(serverListData, password);
                     }
                     else
@@ -55,9 +59,32 @@ namespace TMSPS.TRC.BL.Configuration
         {
             using (MemoryStream stream = new MemoryStream(CryptoHelper.Decrypt(encryptedServerListData, password)))
             {
-                BinaryFormatter formatter = new BinaryFormatter();
-                Servers = (ServerInfoList) formatter.Deserialize(stream);
+                using (BinaryReader reader = new BinaryReader(stream, Encoding.UTF8))
+                {
+                    Servers = ServerInfoList.ReadFromBinaryReader(reader);    
+                }
             }
+        }
+
+        protected void SaveServerList(BinaryWriter outerWriter,  string password)
+        {
+            using (MemoryStream stream = new MemoryStream())
+            {
+                using (BinaryWriter innerWriter = new BinaryWriter(stream, Encoding.UTF8))
+                {
+                    Servers.WriteToBinaryWriter(innerWriter);
+                    stream.Seek(0, SeekOrigin.Begin);
+
+                    byte[] bytes = CryptoHelper.Encrypt(stream.GetBuffer(), password);
+                    outerWriter.Write(bytes.Length);
+                    outerWriter.Write(bytes);
+                }
+            }
+        }
+
+        public Profile CloneProfile()
+        {
+            return new Profile{FilePath = FilePath, Name = Name, Password = Password, PasswordHash = PasswordHash, Servers = Servers.Clone()};
         }
     }
 }
