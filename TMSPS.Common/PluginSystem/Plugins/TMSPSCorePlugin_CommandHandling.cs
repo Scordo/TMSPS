@@ -9,14 +9,15 @@ namespace TMSPS.Core.PluginSystem.Plugins
 {
     public partial class TMSPSCorePlugin
     {
-        
-
         private void HandleCommand(string login, ServerCommand command)
         {
             switch (command.MainCommand.ToLower(Context.Culture))
             {
                 case CommandOrRight.KICK:
                     HandleKickCommand(login, command);
+                    break;
+                case CommandOrRight.WARN:
+                    HandleWarnCommand(login, command);
                     break;
                 case CommandOrRight.BAN:
                     HandleBanCommand(login, command);
@@ -60,6 +61,45 @@ namespace TMSPS.Core.PluginSystem.Plugins
                 //case COMMAND_RESTART_SERVER:
                 //    HandleRestartServerCommand(command);
                 //    break;
+            }
+        }
+
+        private void HandleWarnCommand(string login, ServerCommand command)
+        {
+            if (command.PartsWithoutMainCommand.Count == 0)
+                return;
+
+            string loginToWarn = command.PartsWithoutMainCommand[0].Trim();
+
+            WarnLogin(login, loginToWarn);
+        }
+
+        public void WarnLogin(string operatorLogin, string loginToWarn)
+        {
+            if (!Context.Credentials.UserHasAnyRight(operatorLogin, CommandOrRight.WARN))
+            {
+                SendNoPermissionMessagetoLogin(operatorLogin);
+                return;
+            }
+
+            if (LoginHasRight(loginToWarn, false, CommandOrRight.WARN_PROTECTION))
+                return;
+
+            string nickname = GetNickname(operatorLogin);
+
+            if (nickname == null)
+                return;
+
+            string nicknameToWarn = GetNickname(loginToWarn);
+
+            if (nicknameToWarn != null)
+            {
+                SendFormattedMessage(Settings.PublicWarnMessage, "WarningNickname", StripTMColorsAndFormatting(nickname), "WarnedNickname", StripTMColorsAndFormatting(nicknameToWarn));
+                Context.RPCClient.Methods.SendDisplayManialinkPageToLogin(loginToWarn, FormatMessage(Settings.WarnManiaLinkPageContent), (int) Settings.WarnTimeout * 1000, false);
+            }
+            else
+            {
+                SendNoPlayerWithLoginMessageToLogin(operatorLogin, loginToWarn);
             }
         }
 

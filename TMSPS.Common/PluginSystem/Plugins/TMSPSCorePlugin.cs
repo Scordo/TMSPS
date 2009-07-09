@@ -75,151 +75,151 @@ namespace TMSPS.Core.PluginSystem.Plugins
         private void SyncBlackListWithDedimania(object state)
         {
             RunCatchLog(() =>
-                            {
-                                GenericListResponse<LoginResponse> getBlackListResponse = Context.RPCClient.Methods.GetBlackList(10000, 0);   
+            {
+                GenericListResponse<LoginResponse> getBlackListResponse = Context.RPCClient.Methods.GetBlackList(10000, 0);   
 
-                                if (getBlackListResponse.Erroneous)
-                                {
-                                    Logger.ErrorToUI(string.Format("Error while calling GetBlackList: {0}({1})", getBlackListResponse.Fault.FaultMessage, getBlackListResponse.Fault.FaultCode));
-                                    return;
-                                }
+                if (getBlackListResponse.Erroneous)
+                {
+                    Logger.ErrorToUI(string.Format("Error while calling GetBlackList: {0}({1})", getBlackListResponse.Fault.FaultMessage, getBlackListResponse.Fault.FaultCode));
+                    return;
+                }
 
-                                HashSet<string> localBlackListLogins = new HashSet<string>(getBlackListResponse.Value.ConvertAll(x => x.Login));
-                                HashSet<string> dedimaniaBlackListLogins = BlackListReader.GetBlackListedLogins(new Uri(Settings.DedimaniaBlackListUrl));
-                
-                                Logger.Debug(string.Format("Found {0} login(s) in local blacklist and {1} login(s) in dedimania blacklist.", localBlackListLogins.Count, dedimaniaBlackListLogins.Count));
-                                dedimaniaBlackListLogins.ExceptWith(localBlackListLogins);
-                                Logger.Debug(string.Format("{0} login(s) in will be added to blacklist.", dedimaniaBlackListLogins.Count));
+                HashSet<string> localBlackListLogins = new HashSet<string>(getBlackListResponse.Value.ConvertAll(x => x.Login));
+                HashSet<string> dedimaniaBlackListLogins = BlackListReader.GetBlackListedLogins(new Uri(Settings.DedimaniaBlackListUrl));
 
-                                foreach (string login in dedimaniaBlackListLogins)
-                                {
-                                    GenericResponse<bool> blackListResponse = Context.RPCClient.Methods.BlackList(login);
+                Logger.Debug(string.Format("Found {0} login(s) in local blacklist and {1} login(s) in dedimania blacklist.", localBlackListLogins.Count, dedimaniaBlackListLogins.Count));
+                dedimaniaBlackListLogins.ExceptWith(localBlackListLogins);
+                Logger.Debug(string.Format("{0} login(s) in will be added to blacklist.", dedimaniaBlackListLogins.Count));
 
-                                    if (blackListResponse.Erroneous)
-                                    {
-                                        Logger.Error(string.Format("Error while calling BlackList for login {0}: {1}({2})", login, blackListResponse.Fault.FaultMessage, blackListResponse.Fault.FaultCode));
-                                        continue;
-                                    }
+                foreach (string login in dedimaniaBlackListLogins)
+                {
+                    GenericResponse<bool> blackListResponse = Context.RPCClient.Methods.BlackList(login);
 
-                                    if (blackListResponse.Value)
-                                        Logger.Debug(string.Format("Added login {0} to blacklist.", login));
-                                    else
-                                        Logger.Debug(string.Format("Could not add login {0} to blacklist.", login));
-                                }
+                    if (blackListResponse.Erroneous)
+                    {
+                        Logger.Error(string.Format("Error while calling BlackList for login {0}: {1}({2})", login, blackListResponse.Fault.FaultMessage, blackListResponse.Fault.FaultCode));
+                        continue;
+                    }
 
-                                if (dedimaniaBlackListLogins.Count > 0)
-                                {
-                                    Logger.InfoToUI(string.Format("Added {0} login(s) from dedimania blacklist to local blacklist.", dedimaniaBlackListLogins.Count));
-                                    GenericResponse<bool> saveBlackListResponse = Context.RPCClient.Methods.SaveBlackList("blacklist.txt");
+                    if (blackListResponse.Value)
+                        Logger.Debug(string.Format("Added login {0} to blacklist.", login));
+                    else
+                        Logger.Debug(string.Format("Could not add login {0} to blacklist.", login));
+                }
 
-                                    if (saveBlackListResponse.Erroneous)
-                                    {
-                                        Logger.Error(string.Format("Error while calling SaveBlackList: {0}({1})", saveBlackListResponse.Fault.FaultMessage, saveBlackListResponse.Fault.FaultCode));
-                                        return;
-                                    }
+                if (dedimaniaBlackListLogins.Count > 0)
+                {
+                    Logger.InfoToUI(string.Format("Added {0} login(s) from dedimania blacklist to local blacklist.", dedimaniaBlackListLogins.Count));
+                    GenericResponse<bool> saveBlackListResponse = Context.RPCClient.Methods.SaveBlackList("blacklist.txt");
 
-                                    if (!saveBlackListResponse.Value)
-                                        Logger.Error("Could not save blacklist.");
-                                }
-                            }, "Errror in SyncBlackListWithDedimania", true);
+                    if (saveBlackListResponse.Erroneous)
+                    {
+                        Logger.Error(string.Format("Error while calling SaveBlackList: {0}({1})", saveBlackListResponse.Fault.FaultMessage, saveBlackListResponse.Fault.FaultCode));
+                        return;
+                    }
+
+                    if (!saveBlackListResponse.Value)
+                        Logger.Error("Could not save blacklist.");
+                }
+            }, "Errror in SyncBlackListWithDedimania", true);
         }
 
         private void Callbacks_EndRace(object sender, EndRaceEventArgs e)
         {
             RunCatchLog(() =>
-                            {          
-                                int top = Convert.ToInt32(Settings.SaveGhostReplayOfTop);
+            {          
+                int top = Convert.ToInt32(Settings.SaveGhostReplayOfTop);
 
-                                if (top < 100)
-                                {
-                                    foreach (PlayerRank rank in e.Rankings.Take(top).Where(x => x.BestTime > 0))
-                                    {
-                                        Context.RPCClient.Methods.SaveBestGhostsReplay(rank.Login, string.Empty);
-                                    }
-                                }
-                                else
-                                    Context.RPCClient.Methods.SaveBestGhostsReplay(string.Empty, string.Empty);
-                            }, "Errror in Callbacks_EndRace", true);
+                if (top < 100)
+                {
+                    foreach (PlayerRank rank in e.Rankings.Take(top).Where(x => x.BestTime > 0))
+                    {
+                        Context.RPCClient.Methods.SaveBestGhostsReplay(rank.Login, string.Empty);
+                    }
+                }
+                else
+                    Context.RPCClient.Methods.SaveBestGhostsReplay(string.Empty, string.Empty);
+            }, "Errror in Callbacks_EndRace", true);
         }
 
         private void Callbacks_PlayerChat(object sender, PlayerChatEventArgs e)
         {
             RunCatchLog(() =>
-                            { 
-                                ServerCommand command = ServerCommand.Parse(e.Text);
+            { 
+                ServerCommand command = ServerCommand.Parse(e.Text);
 
-                                if (command != null)
-                                    HandleCommand(e.Login, command);
-                            }, "Errror in Callbacks_PlayerChat", true);
+                if (command != null)
+                    HandleCommand(e.Login, command);
+            }, "Errror in Callbacks_PlayerChat", true);
         }
 
         private void Callbacks_PlayerConnect(object sender, PlayerConnectEventArgs e)
         {
             RunCatchLog(() =>
-                            {
-                                PlayerInfo playerInfo = GetPlayerInfo(e.Login);
+            {
+                PlayerInfo playerInfo = GetPlayerInfo(e.Login);
 
-                                if (playerInfo == null)
-                                    return;
+                if (playerInfo == null)
+                    return;
 
-                                NicknameResolverFactory.Instance.Set(e.Login, playerInfo.NickName);
+                NicknameResolverFactory.Instance.Set(e.Login, playerInfo.NickName);
 
-                                if (playerInfo.NickName.IsNullOrTimmedEmpty())
-                                {
-                                    Context.RPCClient.Methods.Kick(e.Login, "Please provide a nickname!");
-                                    e.Handled = true;
-                                    return;
-                                }
+                if (playerInfo.NickName.IsNullOrTimmedEmpty())
+                {
+                    Context.RPCClient.Methods.Kick(e.Login, "Please provide a nickname!");
+                    e.Handled = true;
+                    return;
+                }
 
-                                if (Settings.EnableJoinMessage)
-                                {
-                                    DetailedPlayerInfo detailedPlayerInfo = GetDetailedPlayerInfo(e.Login);
+                if (Settings.EnableJoinMessage)
+                {
+                    DetailedPlayerInfo detailedPlayerInfo = GetDetailedPlayerInfo(e.Login);
 
-                                    if (detailedPlayerInfo == null)
-                                        return;
+                    if (detailedPlayerInfo == null)
+                        return;
 
-                                    string nation = "Unknown";
-                                    List<string> pathParts = new List<string>(detailedPlayerInfo.Path.Split(new[] { '|' }, StringSplitOptions.RemoveEmptyEntries));
+                    string nation = "Unknown";
+                    List<string> pathParts = new List<string>(detailedPlayerInfo.Path.Split(new[] { '|' }, StringSplitOptions.RemoveEmptyEntries));
 
-                                    if (pathParts.Count > 1)
-                                        nation = string.Join(" > ", pathParts.ToArray(), 1, pathParts.Count - 1);
+                    if (pathParts.Count > 1)
+                        nation = string.Join(" > ", pathParts.ToArray(), 1, pathParts.Count - 1);
 
-                                    int ladderRank = -1;
+                    int ladderRank = -1;
 
-                                    PlayerRanking worldRanking = detailedPlayerInfo.LadderStats.PlayerRankings.Find(ranking => ranking.Path == "World");
+                    PlayerRanking worldRanking = detailedPlayerInfo.LadderStats.PlayerRankings.Find(ranking => ranking.Path == "World");
 
-                                    if (worldRanking != null)
-                                        ladderRank = worldRanking.Ranking;
+                    if (worldRanking != null)
+                        ladderRank = worldRanking.Ranking;
 
-                                    SendFormattedMessage(Settings.JoinMessage, "Nickname", StripTMColorsAndFormatting(detailedPlayerInfo.NickName), "Nation", nation, "Ladder", ladderRank.ToString(Context.Culture));
-                                }
-                            }, "Error in Callbacks_PlayerConnect Method.", true);
+                    SendFormattedMessage(Settings.JoinMessage, "Nickname", StripTMColorsAndFormatting(detailedPlayerInfo.NickName), "Nation", nation, "Ladder", ladderRank.ToString(Context.Culture));
+                }
+            }, "Error in Callbacks_PlayerConnect Method.", true);
         }
 
         private void Callbacks_PlayerDisconnect(object sender, PlayerDisconnectEventArgs e)
         {
             RunCatchLog(() =>
-                            {
-                                Context.PlayerSettings.Remove(e.Login.ToLower());
+            {
+                Context.PlayerSettings.Remove(e.Login.ToLower());
 
-                                if (Settings.EnableLeaveMessage)
-                                {
-                                    string nickname = GetNickname(e.Login);
+                if (Settings.EnableLeaveMessage)
+                {
+                    string nickname = GetNickname(e.Login);
 
-                                    if (nickname != null)
-                                        SendFormattedMessage(Settings.LeaveMessage, "Nickname", StripTMColorsAndFormatting(nickname));
-                                }
-                            }, "Error in Callbacks_PlayerDisconnect Method.", true);
+                    if (nickname != null)
+                        SendFormattedMessage(Settings.LeaveMessage, "Nickname", StripTMColorsAndFormatting(nickname));
+                }
+            }, "Error in Callbacks_PlayerDisconnect Method.", true);
         }
 
         private void Callbacks_BeginChallenge(object sender, BeginChallengeEventArgs e)
         {
             RunCatchLog(() =>
-                            {
-                                CurrentChallengeInfo = e.ChallengeInfo; // cache current challenge info
-                                GetServerOptions(); // cache current server options
-                                GetCurrentGameMode(); // cache current game mode
-                            }, "Error in Callbacks_BeginChallenge Method.", true);
+            {
+                CurrentChallengeInfo = e.ChallengeInfo; // cache current challenge info
+                GetServerOptions(); // cache current server options
+                GetCurrentGameMode(); // cache current game mode
+            }, "Error in Callbacks_BeginChallenge Method.", true);
         }
 
         #endregion

@@ -14,6 +14,7 @@ namespace TMSPS.Core.PluginSystem.Plugins
         public const string LEAVE_MESSAGE = "{[#ServerStyle]}>> {[#HighlightStyle]}{[Nickname]}{[#MessageStyle]} has left the game.";
         public const bool ENABLE_LEAVE_MESSAGE = true;
         public const string KICK_MESSAGE = "{[#ServerStyle]}>> {[#HighlightStyle]}{[KickingNickname]}{[#MessageStyle]} kicked {[#HighlightStyle]}{[KickedNickname]}.";
+        public const string PUBLIC_WARN_MESSAGE = "{[#ServerStyle]}>> {[#HighlightStyle]}{[WarningNickname]}{[#MessageStyle]} warned {[#HighlightStyle]}{[WarnedNickname]}.";
         public const string BAN_MESSAGE = "{[#ServerStyle]}>> {[#HighlightStyle]}{[BanningNickname]}{[#MessageStyle]} banned {[#HighlightStyle]}{[BannedNickname]}.";
         public const string IGNORE_MESSAGE = "{[#ServerStyle]}>> {[#HighlightStyle]}{[IgnoringNickname]}{[#MessageStyle]} added {[#HighlightStyle]}{[IgnoredNickname]}{[#MessageStyle]} to ignore list.";
         public const string ADDGUEST_MESSAGE = "{[#ServerStyle]}>> {[#HighlightStyle]}{[AdminNickname]}{[#MessageStyle]} added {[#HighlightStyle]}{[GuestNickname]}{[#MessageStyle]} to guest list.";
@@ -25,6 +26,7 @@ namespace TMSPS.Core.PluginSystem.Plugins
         public const bool ENABLE_DEDIMANIA_BLACKLIST_SYNC = true;
         public const uint DEDIMANIA_BLACKLIST_SYNC_INTERVAL = 60; // minutes
         public const string DEDIMANIA_BLACKLIST_URL = "http://www.gamers.org/tmf/dedimania_blacklist.txt";
+        public const uint WARN_TIMEOUT = 15; // seconds
 
         #endregion
 
@@ -47,6 +49,9 @@ namespace TMSPS.Core.PluginSystem.Plugins
         public bool EnableDedimaniaBlackListSync { get; private set; }
         public TimeSpan DedimaniaBlackListSyncInterval { get; private set; }
         public string DedimaniaBlackListUrl { get; private set; }
+        public string PublicWarnMessage { get; private set; }
+        public string WarnManiaLinkPageContent { get; private set; }
+        public uint WarnTimeout { get; private set; }
 
         #endregion
 
@@ -76,6 +81,9 @@ namespace TMSPS.Core.PluginSystem.Plugins
             result.EnableDedimaniaBlackListSync = ReadConfigBool(configDocument.Root, "EnableDedimaniaBlackListSync", ENABLE_DEDIMANIA_BLACKLIST_SYNC, xmlConfigurationFile);
             result.DedimaniaBlackListSyncInterval = TimeSpan.FromMinutes(ReadConfigUInt(configDocument.Root, "DedimaniaBlackListSyncInterval", DEDIMANIA_BLACKLIST_SYNC_INTERVAL, xmlConfigurationFile));
             result.DedimaniaBlackListUrl = ReadConfigString(configDocument.Root, "DedimaniaBlackListUrl", DEDIMANIA_BLACKLIST_URL, xmlConfigurationFile);
+            result.WarnManiaLinkPageContent = ReadConfigString(configDocument.Root, "WarnManiaLinkPageContent", xmlConfigurationFile).Replace("\t", string.Empty);
+            result.PublicWarnMessage = ReadConfigString(configDocument.Root, "PublicWarnMessage", PUBLIC_WARN_MESSAGE, xmlConfigurationFile);
+            result.WarnTimeout = ReadConfigUInt(configDocument.Root, "WarnTimeout", WARN_TIMEOUT, xmlConfigurationFile);
 
             result.NicknameResolverClass = NICKNAME_RESOLVER_CLASS;
             result.NicknameResolverAssemblyLocation = NICKNAME_RESOLVER_ASSEMBLY;

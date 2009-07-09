@@ -4,6 +4,7 @@
     {
         //const string COMMAND_RESTART_SERVER = "restartserver";
         public const string KICK = "kick";
+        public const string WARN = "warn";
         public const string BAN = "ban";
         public const string UNBAN = "unban";
         public const string BLACKLIST = "blacklist";
