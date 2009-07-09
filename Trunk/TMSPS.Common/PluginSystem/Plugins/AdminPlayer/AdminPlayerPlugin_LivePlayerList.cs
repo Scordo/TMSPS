@@ -60,6 +60,9 @@ namespace TMSPS.Core.PluginSystem.Plugins.AdminPlayer
 
                 switch (action)
                 {
+                    case LivePlayerListRowAction.WarnPlayer:
+                        LivePlayerList_WarnPlayer(login, areaAction.RowIndex);
+                        break;
                     case LivePlayerListRowAction.KickPlayer:
                         LivePlayerList_KickPlayer(login, areaAction.RowIndex);
                         break;
@@ -98,6 +101,11 @@ namespace TMSPS.Core.PluginSystem.Plugins.AdminPlayer
         {
             Context.CorePlugin.ForceSpectatorLogin(login, GetLoginByRowIndex(login, rowIndex));
             ResendCurrentLivePlayerListPage(login);
+        }
+
+        private void LivePlayerList_WarnPlayer(string login, byte rowIndex)
+        {
+            Context.CorePlugin.WarnLogin(login, GetLoginByRowIndex(login, rowIndex));
         }
 
         private void LivePlayerList_KickPlayer(string login, byte rowIndex)
