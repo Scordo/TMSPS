@@ -52,6 +52,9 @@ namespace TMSPS.Core.PluginSystem.Plugins
                 if (e.IsRegisteredCommand && CheckForReadSettingsCommand(e))
     				return;
 
+                if (e.IsRegisteredCommand)
+                    return;
+
     			foreach (string phrase in Phrases)
     			{
     				string regexPattern = @"\b" + Regex.Escape(phrase) + @"\b";
