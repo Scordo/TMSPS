@@ -1,17 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using TMSPS.TRC.BL.Configuration;
 using TMSPS.TRC.Forms;
 
@@ -22,12 +10,6 @@ namespace TMSPS.TRC
     /// </summary>
     public partial class MainForm
     {
-        #region Properties
-
-        public Profile CurrentProfile { get; internal set; }
-
-        #endregion
-
         #region Constructor
 
         public MainForm()
@@ -40,11 +22,18 @@ namespace TMSPS.TRC
         #region Dependency Properties
 
         public static readonly DependencyProperty IsProfileSelectedProperty = DependencyProperty.Register("IsProfileSelected", typeof(bool), typeof(MainForm), new FrameworkPropertyMetadata(false));
+        public static readonly DependencyProperty CurrentProfileProperty = DependencyProperty.Register("CurrentProfile", typeof(Profile), typeof(MainForm), new FrameworkPropertyMetadata(null));
 
         public bool IsProfileSelected
         {
             get { return (bool)GetValue(IsProfileSelectedProperty); }
             set { SetValue(IsProfileSelectedProperty, value); }
+        }
+
+        public Profile CurrentProfile
+        {
+            get { return (Profile)GetValue(CurrentProfileProperty); }
+            set { SetValue(CurrentProfileProperty, value); }
         }
 
         #endregion
@@ -91,6 +80,14 @@ namespace TMSPS.TRC
             CurrentProfile.Servers.Clear();
             CurrentProfile.Servers.AddRange(manageServersForm.Servers);
             CurrentProfile.Save();
+        }
+
+        private void Servers_ConnectMenu_Click(object sender, RoutedEventArgs e)
+        {
+            MenuItem menuItem = (MenuItem) e.OriginalSource;
+            ServerInfo serverInfo = (ServerInfo) menuItem.Header;
+
+            MessageBox.Show("Selected server address: " + serverInfo.Address);
         }
     }
 }

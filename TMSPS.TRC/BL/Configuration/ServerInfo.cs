@@ -102,7 +102,7 @@ namespace TMSPS.TRC.BL.Configuration
         public void WriteToBinaryWriter(BinaryWriter writer)
         {
             writer.Write(Name);
-            writer.Write(Description);
+            writer.Write(Description ?? string.Empty);
             writer.Write(XmlRpcPort);
             writer.Write(Address);
             writer.Write(SuperAdminPassword);

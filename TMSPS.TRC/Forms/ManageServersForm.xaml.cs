@@ -1,15 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 using TMSPS.TRC.BL.Configuration;
 
 namespace TMSPS.TRC.Forms
@@ -113,6 +103,15 @@ namespace TMSPS.TRC.Forms
         {
             AddServerButton.IsEnabled = (Mode != ActionMode.ServerAddition);
             DeleteServerButton.IsEnabled = (ServerListBox.SelectedValue != null);
+        }
+
+        private void TRCBaseWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            if (Mode == ActionMode.ServerAddition)
+            {
+                Servers.Remove((ServerInfo) ServerListBox.SelectedItem);
+                Mode = ActionMode.ServerView;
+            }
         }
     }
 

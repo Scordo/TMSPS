@@ -116,7 +116,7 @@
         <WebProjectProperties>
           <UseIIS>False</UseIIS>
           <AutoAssignPort>True</AutoAssignPort>
-          <DevelopmentServerPort>20513</DevelopmentServerPort>
+          <DevelopmentServerPort>57895</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>
           <IISUrl>http://localhost/ServiceController</IISUrl>
           <NTLMAuthentication>False</NTLMAuthentication>
