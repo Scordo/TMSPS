@@ -3,7 +3,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:Wpf="clr-namespace:TMSPS.TRC.BL.Wpf"
     xmlns:Forms="clr-namespace:TMSPS.TRC.Forms"
-    Title="Manage servers" Height="390" Width="586" WindowStartupLocation="CenterScreen">
+    Title="Manage servers" Height="390" Width="586" WindowStartupLocation="CenterScreen" Closing="TRCBaseWindow_Closing">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="*" />

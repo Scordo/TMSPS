@@ -72,7 +72,7 @@ namespace TMSPS.TRC.Forms
             if (ProfileComboBox.Items.Count == 0)
                 return;
 
-            SelectButton.IsEnabled = (ProfileComboBox.SelectedItem is ProfileInfo);
+            EnsureCorrectButtonStates();
 
             if (ProfileComboBox.SelectedItem is ProfileInfo)
             {
@@ -91,10 +91,22 @@ namespace TMSPS.TRC.Forms
             FillUI(_loadedProfiles);
         }
 
+        private void EnsureCorrectButtonStates()
+        {
+            SelectButton.IsEnabled = (ProfileComboBox.SelectedItem is ProfileInfo);
+            DeleteProfileButton.IsEnabled = (ProfileComboBox.SelectedItem is ProfileInfo);
+        }
+
         private void TRCBaseWindow_KeyUp(object sender, KeyEventArgs e)
         {
             if (e.Key == Key.Escape)
                 DialogResult = false;
+        }
+
+        private void DeleteProfileButton_Click(object sender, RoutedEventArgs e)
+        {
+            ((ProfileInfo)ProfileComboBox.SelectedItem).Delete();
+            FillUI();
         }
     }
 }

@@ -39,6 +39,14 @@ namespace TMSPS.TRC.BL.Configuration
             Save(null);
         }
 
+        public void Delete()
+        {
+            if (!File.Exists(FilePath))
+                return;
+
+            File.Delete(FilePath);
+        }
+
         protected void Save(Action<BinaryWriter> additionalActions)
         {
             string directoryPath = Path.GetDirectoryName(FilePath);

@@ -13,7 +13,7 @@
             </MenuItem>
             <MenuItem Header="Servers" IsEnabled="{Binding Path=IsProfileSelected}" >
                 <MenuItem Name="Servers_ManageMenu" Header="Manage" Click="Servers_ManageMenu_Click"  />
-                <MenuItem Name="Servers_ConnectMenu" Header="Connect" />
+                <MenuItem Name="Servers_ConnectMenu" Header="Connect" ItemsSource="{Binding Path=CurrentProfile.Servers}" DisplayMemberPath="Name" MenuItem.Click="Servers_ConnectMenu_Click"  />
             </MenuItem>
         </Menu>
     </StackPanel>
