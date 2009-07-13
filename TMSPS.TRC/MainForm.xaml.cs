@@ -1,6 +1,10 @@
-﻿using System.Windows;
+﻿using System;
+using System.ComponentModel;
+using System.Windows;
 using System.Windows.Controls;
 using TMSPS.TRC.BL.Configuration;
+using TMSPS.TRC.BL.Wpf;
+using TMSPS.TRC.Controls;
 using TMSPS.TRC.Forms;
 
 namespace TMSPS.TRC
@@ -15,6 +19,7 @@ namespace TMSPS.TRC
         public MainForm()
         {
             InitializeComponent();
+            LoginTextBox.TextChanged += LoginTextBox_TextChanged;
         }
 
         #endregion
@@ -38,6 +43,24 @@ namespace TMSPS.TRC
 
         #endregion
 
+        #region Public Methods
+
+        public new void Log(string message)
+        {
+            string dateString = DateTime.Now.ToLongTimeString();
+            LoginTextBox.AppendText(string.Format("[{0}] {1}{2}", dateString, message, Environment.NewLine));
+        }
+
+        #endregion
+
+        #region Non Public Methods
+
+        private void LoginTextBox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (LoginTextBox.LineCount > 0)
+                LoginTextBox.ScrollToLine(LoginTextBox.LineCount - 1);
+        }
+
         private void ExitMenu_Click(object sender, RoutedEventArgs e)
         {
             ShutDownApplication();
@@ -55,7 +78,7 @@ namespace TMSPS.TRC
             IsProfileSelected = true;
         }
 
-        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        private void Window_Closing(object sender, CancelEventArgs e)
         {
             e.Cancel = true;
             Hide();
@@ -87,7 +110,34 @@ namespace TMSPS.TRC
             MenuItem menuItem = (MenuItem) e.OriginalSource;
             ServerInfo serverInfo = (ServerInfo) menuItem.Header;
 
-            MessageBox.Show("Selected server address: " + serverInfo.Address);
+            ServerControl serverControl = new ServerControl {DataContext = new ServerControlDataContext(serverInfo.Clone())};
+            serverControl.Close += ServerControl_Close;
+
+            TabItem newTab = new TabItem { Header = serverInfo.Name, Content = serverControl };
+            ServerForms.Items.Insert(0, newTab);
+            ServerForms.SelectedIndex = 0;
+
+            serverControl.ConnectToServer();
         }
+
+        private void ServerControl_Close(object sender, EventArgs e)
+        {
+            ServerControl serverControl = (ServerControl) sender;
+            ServerControlDataContext dataContext = (ServerControlDataContext) serverControl.DataContext;
+
+            for (int i = 0; i < ServerForms.Items.Count; i++)
+            {
+                TabItem currentTab = (TabItem) ServerForms.Items[i];
+
+                ServerControl currentServerControl = currentTab.Content as ServerControl;
+                if (currentServerControl == null || currentServerControl.DataContext != dataContext)
+                    continue;
+
+                ServerForms.Items.RemoveAt(i);
+                break;
+            }
+        }
+
+        #endregion
     }
 }

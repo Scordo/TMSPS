@@ -48,6 +48,11 @@ namespace TMSPS.Core.Communication
             get; protected set;
         }
 
+        public bool IsConnected
+        {
+            get { return SocketAsyncEventArgs != null; } 
+        }
+
         public SocketAsyncEventArgs SocketAsyncEventArgs
         {
             get; protected set;

@@ -65,6 +65,8 @@ namespace TMSPS.TRC.Forms
             loadedProfile.Password = password;
             SelectedProfile = loadedProfile;
             DialogResult = true;
+
+            Log(string.Format("User selected profile '{0}'.", loadedProfile.Name));
         }
 
         private void ProfileComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
