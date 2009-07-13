@@ -3,7 +3,7 @@ using System.Windows.Controls;
 using TMSPS.TRC.BL.Configuration;
 using TMSPS.TRC.BL.Wpf.Helpers;
 
-namespace TMSPS.TRC.Forms
+namespace TMSPS.TRC.Controls
 {
     /// <summary>
     /// Interaction logic for ManageServerControl.xaml

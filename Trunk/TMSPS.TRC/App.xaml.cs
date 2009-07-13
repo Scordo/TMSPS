@@ -36,5 +36,14 @@ namespace TMSPS.TRC
         }
 
         #endregion
+
+        #region Public Methods
+
+        public void Log(string message)
+        {
+            MainForm.Log(message);
+        }
+
+        #endregion
     }
 }
