@@ -137,7 +137,7 @@ namespace TMSPS.TRC.Controls
                 tab.StopWork();
 
             SelectedMenuItem(x => x.TargetTabType == typeof (TextBox));
-            ToggleListBoxItemStatesAndTabs(false, new [] {typeof(TextBox)}, new [] {UIAction.Close} );
+            ToggleListBoxItemStatesAndTabs(false, new [] {typeof(TextBox), typeof(ServerInfoTabContentControl)}, new [] {UIAction.Close} );
         }
 
         private bool SelectedMenuItem(Predicate<ServerMenuEntry> predicate)
@@ -291,7 +291,7 @@ namespace TMSPS.TRC.Controls
 
         private static ObservableCollection<ServerMenuEntry> _menuEntries = new ObservableCollection<ServerMenuEntry>
         {
-                new ServerMenuEntry("Server info", "Server settings", typeof(ServerInfoTabContentControl), false),
+                new ServerMenuEntry("Information", "Server", typeof(ServerInfoTabContentControl), true),
                 new ServerMenuEntry("Log", "Misc", typeof(TextBox), true),
                 new ServerMenuEntry("Close", "Misc", ServerControl.UIAction.Close, true)
         };
