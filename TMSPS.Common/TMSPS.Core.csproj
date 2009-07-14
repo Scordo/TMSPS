@@ -77,6 +77,7 @@
     <Compile Include="Communication\EventArguments\Callbacks\EndChallengeEventArgs.cs" />
     <Compile Include="Communication\ProxyTypes\ForceSpectatorState.cs" />
     <Compile Include="Communication\ProxyTypes\GameMode.cs" />
+    <Compile Include="Communication\ProxyTypes\LadderServerLimits.cs" />
     <Compile Include="Communication\ProxyTypes\StartServerParameters.cs" />
     <Compile Include="Logging\ConsoleUILogger.cs" />
     <Compile Include="Logging\CoreLogger.cs" />

@@ -1563,9 +1563,9 @@ namespace TMSPS.Core.Communication
         /// <summary>
         /// Get the ladder points limit for the players allowed on this server. The struct returned contains two fields LadderServerLimitMin and LadderServerLimitMax.
         /// </summary>
-        public GenericResponse<CNPair<int>> GetLadderServerLimits()
+        public GenericResponse<LadderServerLimits> GetLadderServerLimits()
         {
-            return (GenericResponse<CNPair<int>>)_client.SendMethod<GenericResponse<CNPair<int>>>(TrackManiaMethod.GetLadderServerLimits.ToString());
+            return (GenericResponse<LadderServerLimits>)_client.SendMethod<GenericResponse<LadderServerLimits>>(TrackManiaMethod.GetLadderServerLimits.ToString());
         }
 
         /// <summary>
