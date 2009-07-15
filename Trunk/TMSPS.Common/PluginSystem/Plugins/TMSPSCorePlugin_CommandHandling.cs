@@ -4,6 +4,7 @@ using TMSPS.Core.Common;
 using TMSPS.Core.Communication.ProxyTypes;
 using TMSPS.Core.Communication.ResponseHandling;
 using TMSPS.Core.PluginSystem.Configuration;
+using System.Linq;
 
 namespace TMSPS.Core.PluginSystem.Plugins
 {
@@ -100,6 +101,35 @@ namespace TMSPS.Core.PluginSystem.Plugins
                 HandleReadCredentialsCommand(login);
                 return;
             }
+
+            if (command.Is(Command.Wisper))
+            {
+                HandleWisperCommand(login, command);
+                return;
+            }
+        }
+
+        private void HandleWisperCommand(string login, ServerCommand command)
+        {
+            if (command.PartsWithoutMainCommand.Count < 2)
+                return;
+
+            string loginToWisperTo = command.PartsWithoutMainCommand[0].Trim();
+            string wisperText = string.Join(" ", command.PartsWithoutMainCommand.ToArray(), 1, command.PartsWithoutMainCommand.Count - 1);
+
+            WisperToLogin(login, loginToWisperTo, wisperText);
+        }
+
+        public void WisperToLogin(string login, string loginToWisperTo, string message)
+        {
+            if (GetPlayerSettings(loginToWisperTo) == null)
+                SendNoPlayerWithLoginMessageToLogin(login, loginToWisperTo);
+
+            string sourceNickname = GetNickname(login, true);
+            string targetNickname = GetNickname(loginToWisperTo, true);
+
+            SendFormattedMessageToLogin(login, Settings.WisperSourceMessage, "Nickname", targetNickname, "Message", message);
+            SendFormattedMessageToLogin(loginToWisperTo, Settings.WisperTargetMessage, "Nickname", sourceNickname, "Message", message);
         }
 
         private void HandleWarnCommand(string login, ServerCommand command)

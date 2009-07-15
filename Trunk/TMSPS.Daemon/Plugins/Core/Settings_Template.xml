@@ -17,6 +17,8 @@
 	<PublicWarnMessage>{[#ServerStyle]}>> {[#HighlightStyle]}{[WarningNickname]}{[#MessageStyle]} warned {[#HighlightStyle]}{[WarnedNickname]}.</PublicWarnMessage>
 	<WarnTimeout>15</WarnTimeout>
 	<LoginMissingMessage>{[#ServerStyle]}> {[#ErrorStyle]}There is no player with login {[#HighlightStyle]}{[Login]}.</LoginMissingMessage>
+	<WisperTargetMessage>{[Nickname]}$z {[#MessageStyle]}wispers:$z {[Message]}</WisperTargetMessage>
+	<WisperSourceMessage>{[#MessageStyle]}Wisper to $z{[Nickname]}$z{[#MessageStyle]} :$z {[Message]}</WisperSourceMessage>
 
 	<NicknameResolver>
 		<Assembly>TMSPS.Core</Assembly>

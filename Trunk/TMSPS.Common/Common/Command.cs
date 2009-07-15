@@ -78,6 +78,8 @@ namespace TMSPS.Core.Common
         NextRank,
         [CommandName("Donate")]
         Donate,
+        [CommandName("pm", "wisper", "w")]
+        Wisper,
     }
 
     public static class CommandExtensions
