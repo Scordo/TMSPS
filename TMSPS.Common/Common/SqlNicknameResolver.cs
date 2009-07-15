@@ -13,14 +13,17 @@ namespace TMSPS.Core.Common
 		private ConnectionManager ConnectionManager { get; set; }
 		private PlayerAdapter PlayerAdapter { get; set; }
 
-		public override string Get(string login)
+        public override string Get(string login, bool returnLoginOnFailure)
 		{
 			if (NicknameCache.ContainsKey(login))
 				return NicknameCache[login].Nickname;
 
 			Player player = PlayerAdapter.Deserialize(login);
 
-			return player == null ? null : player.Nickname;
+            if (player == null)
+                return returnLoginOnFailure ? login : null;
+
+			return player.Nickname;
 		}
 
 		public override void Set(string login, string nickname)

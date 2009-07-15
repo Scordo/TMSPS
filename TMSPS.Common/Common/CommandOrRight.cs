@@ -41,6 +41,8 @@
         public const string IGNORE_PROTECTION = "ignoreprotection";
         public const string FORCE_SPECTATOR_PROTECTION = "forcespectatorprotection";
         public const string SELECT_UNDRIVEN_TRACKS = "selectundriventracks";
+        public const string LAST_SEEN1 = "/lastseen";
+        public const string LAST_SEEN2 = "/seen";
         public const string NEXT_TRACK = "nexttrack";
         public const string TOPSUMS = "/topsums";
         public const string TOPRANKS = "/topranks";

@@ -16,6 +16,8 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
         public const string WIN_MESSAGE = "{[#ServerStyle]}> {[#RecordStyle]}Congratulations, you've won your {[#RankStyle]}{[Wins]}{[#RecordStyle]}. race!";
         public const string RANKING_MESSAGE = "{[#ServerStyle]}> {[#RecordStyle]}Your server rank is {[#HighlightStyle]}{[Rank]}{[#RecordStyle]}, Average: {[#HighlightStyle]}{[Average]}{[#RecordStyle]}, Score: {[#HighlightStyle]}{[Score]}{[#RecordStyle]}, Tracks {[#HighlightStyle]}{[Tracks]}{[#RecordStyle]}/{[#HighlightStyle]}{[TracksCount]}";
         public const string NO_BETTER_RANK_MESSAGE = "{[#ServerStyle]}> {[#RecordStyle]}There is no better rank than yours.";
+        public const string LAST_SEEN_MESSAGE = "{[#ServerStyle]}>> {[#HighlightStyle]}{[Nickname]}$z{[#MessageStyle]} was last seen: {[#HighlightStyle]}{[LastSeen]}.";
+        public const string PLAYER_ON_SERVER_MESSAGE = "{[#ServerStyle]}>> {[#HighlightStyle]}{[Nickname]}$z{[#MessageStyle]} is currently playing here.";
         public const string NEXT_RANK_MESSAGE = "{[#ServerStyle]}> {[#RecordStyle]}The next rank is owned by {[#HighlightStyle]}{[Nickname]}{[#RecordStyle]} with rank {[#HighlightStyle]}{[Rank]}{[#RecordStyle]}, Average: {[#HighlightStyle]}{[Average]}{[#RecordStyle]}, Score: {[#HighlightStyle]}{[Score]}{[#RecordStyle]}, Tracks {[#HighlightStyle]}{[Tracks]}{[#RecordStyle]}/{[#HighlightStyle]}{[TracksCount]}";
         public const string INFO_MESSAGE = "{[#ServerStyle]}> Your info: {[#MessageStyle]}Wins: {[#HighlightStyle]}{[Wins]}{[#MessageStyle]} Time played: {[#HighlightStyle]}{[Played]}{[#MessageStyle]} First visit: {[#HighlightStyle]}{[Created]}";
         public const bool SHOW_MESSAGES = true;
@@ -57,6 +59,8 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
         public string RankingMessage { get; private set; }
         public string NextRankMessage { get; private set; }
         public string NoBetterRankMessage { get; private set; }
+        public string LastSeenMessage { get; private set; }
+        public string PlayerOnServerMessage { get; private set; }
         public uint NoticeDelayInSeconds { get; private set; }
         public string PBPanelTemplate { get; private set; }
 
@@ -105,6 +109,8 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
             result.StripNickFormatting = ReadConfigBool(configDocument.Root, "StripNickFormatting", STRIP_NICK_FORMATTING, xmlConfigurationFile);
             result.UpdateInterval = ReadConfigUInt(configDocument.Root, "UpdateInterval", UPDATE_INTERVAL, xmlConfigurationFile);
             result.StaticModeStartLimit = ReadConfigUInt(configDocument.Root, "StaticModeStartLimit", STATIC_MODE_START_LIMIT, xmlConfigurationFile);
+            result.LastSeenMessage = ReadConfigString(configDocument.Root, "LastSeenMessage", LAST_SEEN_MESSAGE, xmlConfigurationFile);
+            result.PlayerOnServerMessage = ReadConfigString(configDocument.Root, "PlayerOnServerMessage", PLAYER_ON_SERVER_MESSAGE, xmlConfigurationFile);
 
             string pbPanelTemplateFile = Path.Combine(settingsDirectory, "PBPanelTemplate.xml");
             result.PBPanelTemplate = File.Exists(pbPanelTemplateFile) ? File.ReadAllText(pbPanelTemplateFile) : UITemplates.LowerRightPBRecordPanelActive;

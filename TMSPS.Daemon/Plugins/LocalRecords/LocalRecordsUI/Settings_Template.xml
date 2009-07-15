@@ -18,4 +18,6 @@
 	<InfoMessage>{[#ServerStyle]}> Your info: {[#MessageStyle]}Wins: {[#HighlightStyle]}{[Wins]}{[#MessageStyle]} Time played: {[#HighlightStyle]}{[Played]}{[#MessageStyle]} First visit: {[#HighlightStyle]}{[Created]}</InfoMessage>
 	<UpdateInterval>2</UpdateInterval>
 	<StaticModeStartLimit>40</StaticModeStartLimit>
+	<LastSeenMessage>{[#ServerStyle]}>> {[#HighlightStyle]}{[Nickname]}$z{[#MessageStyle]} was last seen: {[#HighlightStyle]}{[LastSeen]}.</LastSeenMessage>
+	<PlayerOnServerMessage>{[#ServerStyle]}>> {[#HighlightStyle]}{[Nickname]}$z{[#MessageStyle]} is currently playing here.</PlayerOnServerMessage>
 </Settings>

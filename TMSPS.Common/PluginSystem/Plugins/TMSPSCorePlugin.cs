@@ -20,7 +20,7 @@ namespace TMSPS.Core.PluginSystem.Plugins
         public override string Name { get { return "Core Plugin"; } }
         public override string Description { get { return "This Plugin does all the basic stuff making the whole thing work."; } }
         public override string ShortName { get { return "Core"; } }
-        private TMSPSCorePluginSettings Settings { get; set; }
+        public TMSPSCorePluginSettings Settings { get; private set; }
         private Timer DedimaniaBlackListSyncTimer { get; set; }
 
         #endregion

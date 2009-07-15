@@ -21,13 +21,15 @@ namespace TMSPS.Core.Common
 
         #region Public Methods
 
-        public override string Get(string login)
+        public override string Get(string login, bool returnLoginOnFailure)
         {
             if (NicknameCache.ContainsKey(login))
                 return NicknameCache[login].Nickname;
 
             long nickStartPos;
-            return GetNickname(login, out nickStartPos);
+            string nickname = GetNickname(login, out nickStartPos);
+
+            return nickname ?? (returnLoginOnFailure ? login : null);
         }
 
         public override void Set(string login, string nickname)

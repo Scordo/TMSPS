@@ -75,6 +75,10 @@ namespace TMSPS.Core.PluginSystem
             return NicknameResolverFactory.Instance.Get(login);
         }
 
+        protected static string GetNickname(string login, bool returnLoginOnFailur)
+        {
+            return NicknameResolverFactory.Instance.Get(login, returnLoginOnFailur);
+        }
 
         protected PlayerInfo GetPlayerInfo(string login)
         {
