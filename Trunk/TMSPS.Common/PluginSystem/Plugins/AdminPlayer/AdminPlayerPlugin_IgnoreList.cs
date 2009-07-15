@@ -85,7 +85,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.AdminPlayer
 
         private void SendIgnoreListPageToLogin(string login, uint? pageIndex)
         {
-            if (!LoginHasAnyRight(login, true, CommandOrRight.IGNORE))
+            if (!LoginHasRight(login, true, Command.Ignore))
                 return;
 
             const int MAX_IGNORELIST_SIZE = 1000;

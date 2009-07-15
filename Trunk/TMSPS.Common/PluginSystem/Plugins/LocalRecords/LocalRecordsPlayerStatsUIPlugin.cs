@@ -49,9 +49,8 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
 
         private bool CheckForTopSumsCommand(PlayerChatEventArgs args)
         {
-            if (string.Compare(args.Text, CommandOrRight.TOPSUMS, StringComparison.InvariantCultureIgnoreCase) != 0 && string.Compare(args.Text, CommandOrRight.Summary, StringComparison.InvariantCultureIgnoreCase) != 0)
+            if (!ServerCommand.Parse(args.Text).Is(Command.TopSums))
                 return false;
-
 
             SendTopSumsPageToLogin(args.Login, 0);
 

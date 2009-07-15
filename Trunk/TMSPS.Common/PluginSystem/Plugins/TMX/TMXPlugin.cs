@@ -71,7 +71,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.TMX
         {
             ServerCommand command = ServerCommand.Parse(e.Text);
 
-            if (command.IsMainCommandAnyOf(CommandOrRight.TMX_INFO))
+            if (command.Is(Command.TMXInfo))
             {
                 if (command.PartsWithoutMainCommand.Count > 0)
                 {
@@ -94,10 +94,10 @@ namespace TMSPS.Core.PluginSystem.Plugins.TMX
         {
             ServerCommand command = ServerCommand.Parse(e.Text);
 
-            if (!command.IsMainCommandAnyOf(CommandOrRight.TMX_ADD_TRACK, CommandOrRight.TMX_INSERT_TRACK))
+            if (!command.IsAny(Command.AddTrack, Command.InsertTrack))
                 return false;
 
-            if (!LoginHasAnyRight(e.Login, true, CommandOrRight.TMX_ADD_TRACK, CommandOrRight.TMX_INSERT_TRACK))
+            if (!LoginHasRight(e.Login, true, Command.AddTrack))
                 return true;
 
             if (command.PartsWithoutMainCommand.Count == 0)
@@ -144,8 +144,8 @@ namespace TMSPS.Core.PluginSystem.Plugins.TMX
                 return true;
             }
 
-            GenericResponse<bool> addtrackResponse = command.IsMainCommandAnyOf(CommandOrRight.TMX_ADD_TRACK) ? Context.RPCClient.Methods.AddChallenge(targetTrackFilePath) 
-                                                                                                              : Context.RPCClient.Methods.InsertChallenge(targetTrackFilePath);
+            GenericResponse<bool> addtrackResponse = command.Is(Command.AddTrack) ? Context.RPCClient.Methods.AddChallenge(targetTrackFilePath) 
+                                                                                  : Context.RPCClient.Methods.InsertChallenge(targetTrackFilePath);
 
             if (addtrackResponse.Erroneous || !addtrackResponse.Value)
             {
@@ -155,7 +155,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.TMX
 
             SendFormattedMessageToLogin(e.Login, "{[#ServerStyle]}> {[#MessageStyle]}Track {[#HighlightStyle]}{[Trackname]}{[#MessageStyle]} with trackid {[#HighlightStyle]}{[TrackID]}{[#MessageStyle]} added to tracklist.", "Trackname", tmxInfo.Name, "TrackID", trackID);
 
-            if (command.IsMainCommandAnyOf(CommandOrRight.TMX_INSERT_TRACK))
+            if (command.Is(Command.InsertTrack))
                 SendFormattedMessageToLogin(e.Login, "{[#ServerStyle]}> {[#MessageStyle]}Track {[#HighlightStyle]}{[Trackname]}{[#MessageStyle]} with trackid {[#HighlightStyle]}{[TrackID]}{[#MessageStyle]} will be the next track.", "Trackname", tmxInfo.Name, "TrackID", trackID);
 
             return true;

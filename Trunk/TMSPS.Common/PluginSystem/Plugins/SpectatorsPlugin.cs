@@ -73,9 +73,9 @@ namespace TMSPS.Core.PluginSystem.Plugins
 
         private bool CheckForGetAllSpectatorsCommand(PlayerChatEventArgs e)
         {
-            if (ServerCommand.Parse(e.Text).IsMainCommandAnyOf(CommandOrRight.GET_SPECTATORS1, CommandOrRight.GET_SPECTATORS2))
+            if (ServerCommand.Parse(e.Text).Is(Command.GetSpectators))
             {
-                if (!LoginHasAnyRight(e.Login, true, CommandOrRight.GET_SPECTATORS1, CommandOrRight.GET_SPECTATORS2))
+                if (!LoginHasRight(e.Login, true, Command.GetSpectators))
                     return true;
 
                 List<string> spectators = Context.PlayerSettings.GetAsList(playerSettings => playerSettings.SpectatorStatus.IsSpectator)
@@ -95,9 +95,9 @@ namespace TMSPS.Core.PluginSystem.Plugins
 
         private bool CheckForGetMySpectatorsCommand(PlayerChatEventArgs e)
         {
-            if (ServerCommand.Parse(e.Text).IsMainCommandAnyOf(CommandOrRight.GET_MY_SPECTATORS1, CommandOrRight.GET_MY_SPECTATORS2))
+            if (ServerCommand.Parse(e.Text).Is(Command.GetMySpectators))
             {
-                if (!LoginHasAnyRight(e.Login, true, CommandOrRight.GET_SPECTATORS1, CommandOrRight.GET_SPECTATORS2))
+                if (!LoginHasRight(e.Login, true, Command.GetMySpectators))
                     return true;
 
                 List<string> spectators = Context.PlayerSettings.GetAsList(playerSettings => playerSettings.SpectatorStatus.IsSpectator && playerSettings.SpectatorStatus.CurrentPlayerTargetID == e.PlayerID)
@@ -118,7 +118,7 @@ namespace TMSPS.Core.PluginSystem.Plugins
 
         private bool CheckForKickAllSpectatorsCommand(PlayerChatEventArgs e)
         {
-            if (ServerCommand.Parse(e.Text).IsMainCommandAnyOf(CommandOrRight.KICK_SPECTATORS1, CommandOrRight.KICK_SPECTATORS2))
+            if (ServerCommand.Parse(e.Text).Is(Command.KickSpectators))
             {
                 Context.CorePlugin.KickAllSpectators(e.Login);
                 return true;
@@ -129,7 +129,7 @@ namespace TMSPS.Core.PluginSystem.Plugins
 
         private bool CheckForKickMySpectatorsCommand(PlayerChatEventArgs e)
         {
-            if (ServerCommand.Parse(e.Text).IsMainCommandAnyOf(CommandOrRight.KICK_MY_SPECTATORS1, CommandOrRight.KICK_MY_SPECTATORS2))
+            if (ServerCommand.Parse(e.Text).Is(Command.KickMySpectators))
             {
                 Context.CorePlugin.KickSpectatorsOf(e.Login, e.PlayerID);
                 return true;
