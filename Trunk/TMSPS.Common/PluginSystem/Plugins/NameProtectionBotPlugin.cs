@@ -200,7 +200,7 @@ namespace TMSPS.Core.PluginSystem.Plugins
 
                 string login = loginElement.Value.Trim();
                 if (!ClanMembers.Contains(login))
-                    ClanMembers.Add(login);
+                    ClanMembers.Add(login.ToLower());
             }
         }
 
