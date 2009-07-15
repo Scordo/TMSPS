@@ -27,7 +27,13 @@ namespace TMSPS.Core.Common
         }
 
         public abstract void ReadConfigSettings(XElement configElement);
-        public abstract string Get(string login);
+        public string Get(string login)
+        {
+            return Get(login, false);
+        }
+
+        public abstract string Get(string login, bool returnLoginOnFailure);
+        
         public abstract void Set(string login, string nickname);
 
         protected void UpdateCacheForLogin(string login, string nickname)

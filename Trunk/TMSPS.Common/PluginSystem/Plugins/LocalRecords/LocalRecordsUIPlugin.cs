@@ -93,6 +93,9 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
 
                 if (CheckForSelectUndrivenTracksCommand(e))
                     return;
+
+                if (CheckForLastSeenCommand(e))
+                    return;
             }, "Error in Callbacks_PlayerChat Method.", true);
         }
 
@@ -263,6 +266,45 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
                 return true;
 
             SelectUndrivenTracks(args.Login);
+
+            return true;
+        }
+
+        private bool CheckForLastSeenCommand(PlayerChatEventArgs args)
+        {
+            if (args.Text == null || (!args.Text.StartsWith(CommandOrRight.LAST_SEEN1, StringComparison.OrdinalIgnoreCase) && !args.Text.StartsWith(CommandOrRight.LAST_SEEN2, StringComparison.OrdinalIgnoreCase)))
+                return false;
+
+            string text = args.Text;
+
+            if (text.StartsWith(CommandOrRight.LAST_SEEN1, StringComparison.OrdinalIgnoreCase))
+                text = text.Substring(CommandOrRight.LAST_SEEN1.Length).Trim();
+
+            if (text.StartsWith(CommandOrRight.LAST_SEEN2, StringComparison.OrdinalIgnoreCase))
+                text = text.Substring(CommandOrRight.LAST_SEEN2.Length).Trim();
+
+            if (text.Length == 0)
+                return true;
+
+            string login = text;
+            string nickname = GetNickname(login, true);
+
+            if (GetPlayerSettings(login) != null)
+            {
+                SendFormattedMessageToLogin(args.Login, Settings.PlayerOnServerMessage, "Nickname", nickname);
+                return true;
+            }
+
+            Player player = HostPlugin.PlayerAdapter.Deserialize(login);
+
+            if (player == null)
+            {
+                SendNoPlayerWithLoginMessageToLogin(args.Login, login);
+                return true; 
+            }
+
+
+            SendFormattedMessageToLogin(args.Login, Settings.LastSeenMessage, "Nickname", nickname, "LastSeen", TimeZone.CurrentTimeZone.ToUniversalTime(player.LastTimePlayedChanged).ToString("R"));
 
             return true;
         }

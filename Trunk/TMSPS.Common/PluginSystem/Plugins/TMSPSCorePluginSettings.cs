@@ -19,6 +19,7 @@ namespace TMSPS.Core.PluginSystem.Plugins
         public const string IGNORE_MESSAGE = "{[#ServerStyle]}>> {[#HighlightStyle]}{[IgnoringNickname]}{[#MessageStyle]} added {[#HighlightStyle]}{[IgnoredNickname]}{[#MessageStyle]} to ignore list.";
         public const string ADDGUEST_MESSAGE = "{[#ServerStyle]}>> {[#HighlightStyle]}{[AdminNickname]}{[#MessageStyle]} added {[#HighlightStyle]}{[GuestNickname]}{[#MessageStyle]} to guest list.";
         public const string BLACKLIST_MESSAGE = "{[#ServerStyle]}>> {[#HighlightStyle]}{[BlackListingNickname]}{[#MessageStyle]} blacklists {[#HighlightStyle]}{[BlackListedNickname]}.";
+        public const string LOGIN_MISSING_MESSAGE = "{[#ServerStyle]}> {[#ErrorStyle]}There is no player with login {[#HighlightStyle]}{[Login]}.";
         public const string TRACKLIST_FILE = "tracklist.txt";
         public const string NICKNAME_RESOLVER_CLASS = "TMSPS.Core.Common.FlatFileNicknameResolver";
         public const string NICKNAME_RESOLVER_ASSEMBLY = "TMSPS.Core";
@@ -51,6 +52,7 @@ namespace TMSPS.Core.PluginSystem.Plugins
         public string DedimaniaBlackListUrl { get; private set; }
         public string PublicWarnMessage { get; private set; }
         public string WarnManiaLinkPageContent { get; private set; }
+        public string LoginMissingMessage { get; private set; }
         public uint WarnTimeout { get; private set; }
 
         #endregion
@@ -84,6 +86,8 @@ namespace TMSPS.Core.PluginSystem.Plugins
             result.WarnManiaLinkPageContent = ReadConfigString(configDocument.Root, "WarnManiaLinkPageContent", xmlConfigurationFile).Replace("\t", string.Empty);
             result.PublicWarnMessage = ReadConfigString(configDocument.Root, "PublicWarnMessage", PUBLIC_WARN_MESSAGE, xmlConfigurationFile);
             result.WarnTimeout = ReadConfigUInt(configDocument.Root, "WarnTimeout", WARN_TIMEOUT, xmlConfigurationFile);
+            result.LoginMissingMessage = ReadConfigString(configDocument.Root, "LoginMissingMessage", LOGIN_MISSING_MESSAGE, xmlConfigurationFile);
+            
 
             result.NicknameResolverClass = NICKNAME_RESOLVER_CLASS;
             result.NicknameResolverAssemblyLocation = NICKNAME_RESOLVER_ASSEMBLY;

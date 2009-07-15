@@ -7,6 +7,7 @@ namespace TMSPS.Core.Common
     {
         void Init(PluginHostContext context, XElement configElement);
         string Get(string login);
+        string Get(string login, bool returnLoginOnFailure);
         void Set(string login, string nickname);
     }
 }

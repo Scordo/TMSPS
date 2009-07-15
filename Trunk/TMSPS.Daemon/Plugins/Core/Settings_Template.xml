@@ -16,6 +16,7 @@
 	<DedimaniaBlackListUrl>http://www.gamers.org/tmf/dedimania_blacklist.txt</DedimaniaBlackListUrl>
 	<PublicWarnMessage>{[#ServerStyle]}>> {[#HighlightStyle]}{[WarningNickname]}{[#MessageStyle]} warned {[#HighlightStyle]}{[WarnedNickname]}.</PublicWarnMessage>
 	<WarnTimeout>15</WarnTimeout>
+	<LoginMissingMessage>{[#ServerStyle]}> {[#ErrorStyle]}There is no player with login {[#HighlightStyle]}{[Login]}.</LoginMissingMessage>
 
 	<NicknameResolver>
 		<Assembly>TMSPS.Core</Assembly>

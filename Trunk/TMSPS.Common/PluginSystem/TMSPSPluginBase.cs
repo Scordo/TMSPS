@@ -214,7 +214,7 @@ namespace TMSPS.Core.PluginSystem
 
         protected void SendNoPlayerWithLoginMessageToLogin(string login, string missingLogin)
         {
-            SendFormattedMessageToLogin(login, "{[#ServerStyle]}> {[#ErrorStyle]}There is no player with login " + missingLogin);
+            SendFormattedMessageToLogin(login, Context.CorePlugin.Settings.LoginMissingMessage, "Login", missingLogin);
         }
 
         protected bool LoginHasRight(string login, bool sendNoPermissionMessageIfRightMissing, string right)
