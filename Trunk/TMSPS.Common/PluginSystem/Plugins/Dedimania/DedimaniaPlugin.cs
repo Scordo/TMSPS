@@ -226,9 +226,6 @@ namespace TMSPS.Core.PluginSystem.Plugins.Dedimania
 
         private void Callbacks_EndRace(object sender, EndRaceEventArgs e)
         {
-            if (!IsDedimaniaResponsive)
-                return;
-
             RunCatchLog(() =>
             {
                 if (e.Rankings.Count == 0 || !e.Rankings.Exists(ranking => ranking.BestTime != -1))
