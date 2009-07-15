@@ -20,6 +20,8 @@ namespace TMSPS.Core.PluginSystem.Plugins
         public const string ADDGUEST_MESSAGE = "{[#ServerStyle]}>> {[#HighlightStyle]}{[AdminNickname]}{[#MessageStyle]} added {[#HighlightStyle]}{[GuestNickname]}{[#MessageStyle]} to guest list.";
         public const string BLACKLIST_MESSAGE = "{[#ServerStyle]}>> {[#HighlightStyle]}{[BlackListingNickname]}{[#MessageStyle]} blacklists {[#HighlightStyle]}{[BlackListedNickname]}.";
         public const string LOGIN_MISSING_MESSAGE = "{[#ServerStyle]}> {[#ErrorStyle]}There is no player with login {[#HighlightStyle]}{[Login]}.";
+        public const string WISPER_TARGET_MESSAGE = "{[Nickname]}$z {[#MessageStyle]}wispers:$z {[Message]}";
+        public const string WISPER_SOURCE_MESSAGE = "{[#MessageStyle]}Wisper to $z{[Nickname]}$z{[#MessageStyle]} :$z {[Message]}";
         public const string TRACKLIST_FILE = "tracklist.txt";
         public const string NICKNAME_RESOLVER_CLASS = "TMSPS.Core.Common.FlatFileNicknameResolver";
         public const string NICKNAME_RESOLVER_ASSEMBLY = "TMSPS.Core";
@@ -42,6 +44,8 @@ namespace TMSPS.Core.PluginSystem.Plugins
         public string IgnoreMessage { get; private set; }
         public string AddGuestMessage { get; private set; }
         public string BlackListMessage { get; private set; }
+        public string WisperTargetMessage { get; private set; }
+        public string WisperSourceMessage { get; private set; }
         public string TrackListFile { get; private set; }
         public string NicknameResolverClass { get; private set; }
         public string NicknameResolverAssemblyLocation { get; private set;}
@@ -87,6 +91,8 @@ namespace TMSPS.Core.PluginSystem.Plugins
             result.PublicWarnMessage = ReadConfigString(configDocument.Root, "PublicWarnMessage", PUBLIC_WARN_MESSAGE, xmlConfigurationFile);
             result.WarnTimeout = ReadConfigUInt(configDocument.Root, "WarnTimeout", WARN_TIMEOUT, xmlConfigurationFile);
             result.LoginMissingMessage = ReadConfigString(configDocument.Root, "LoginMissingMessage", LOGIN_MISSING_MESSAGE, xmlConfigurationFile);
+            result.WisperTargetMessage = ReadConfigString(configDocument.Root, "WisperTargetMessage", WISPER_TARGET_MESSAGE, xmlConfigurationFile);
+            result.WisperSourceMessage = ReadConfigString(configDocument.Root, "WisperSourceMessage", WISPER_SOURCE_MESSAGE, xmlConfigurationFile);
             
 
             result.NicknameResolverClass = NICKNAME_RESOLVER_CLASS;
