@@ -123,7 +123,10 @@ namespace TMSPS.Core.PluginSystem.Plugins
         public void WisperToLogin(string login, string loginToWisperTo, string message)
         {
             if (GetPlayerSettings(loginToWisperTo) == null)
+            {
                 SendNoPlayerWithLoginMessageToLogin(login, loginToWisperTo);
+                return;
+            }
 
             string sourceNickname = GetNickname(login, true);
             string targetNickname = GetNickname(loginToWisperTo, true);
