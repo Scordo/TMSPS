@@ -4,6 +4,7 @@ using System.Globalization;
 using System.IO;
 using System.Reflection;
 using System.Text.RegularExpressions;
+using TMSPS.Core.Common;
 using TMSPS.Core.Communication.ResponseHandling;
 using TMSPS.Core.Logging;
 using System.Linq;
@@ -217,9 +218,29 @@ namespace TMSPS.Core.PluginSystem
             SendFormattedMessageToLogin(login, Context.CorePlugin.Settings.LoginMissingMessage, "Login", missingLogin);
         }
 
+        protected bool LoginHasRight(string login, bool sendNoPermissionMessageIfRightMissing, Command command)
+        {
+            return LoginHasRight(login, sendNoPermissionMessageIfRightMissing, CommandInfo.Parse(command));
+        }
+
+        protected bool LoginHasRight(string login, bool sendNoPermissionMessageIfRightMissing, CommandInfo commandInfo)
+        {
+            return LoginHasAnyRight(login, sendNoPermissionMessageIfRightMissing, commandInfo.Rights.ToArray());
+        }
+
         protected bool LoginHasRight(string login, bool sendNoPermissionMessageIfRightMissing, string right)
         {
             return LoginHasAnyRight(login, sendNoPermissionMessageIfRightMissing, right);
+        }
+
+        protected bool LoginHasAnyRight(string login, bool sendNoPermissionMessageIfRightMissing, params CommandInfo[] CommandInfoList)
+        {
+            return LoginHasAnyRight(login, sendNoPermissionMessageIfRightMissing, CommandInfoList.SelectMany(x => x.Rights).ToArray());
+        }
+
+        protected bool LoginHasAnyRight(string login, bool sendNoPermissionMessageIfRightMissing, params Command[] commands)
+        {
+            return LoginHasAnyRight(login, sendNoPermissionMessageIfRightMissing, commands.Select(x => CommandInfo.Parse(x)).ToArray());
         }
 
         protected bool LoginHasAnyRight(string login, bool sendNoPermissionMessageIfRightMissing, params string[] rights)
@@ -234,9 +255,6 @@ namespace TMSPS.Core.PluginSystem
 
             return true;
         }
-
-        
-
 
         public static string StripTMColorsAndFormatting(string input)
         {

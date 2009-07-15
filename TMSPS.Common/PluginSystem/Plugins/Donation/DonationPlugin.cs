@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Globalization;
 using TMSPS.Core.Common;
 using TMSPS.Core.Communication.ProxyTypes;
@@ -63,12 +62,14 @@ namespace TMSPS.Core.PluginSystem.Plugins.Donation
         {
             RunCatchLog(() =>
             {
-                if (e.Text == null || !e.Text.StartsWith(CommandOrRight.DONATE, StringComparison.OrdinalIgnoreCase))
+                ServerCommand command = ServerCommand.Parse(e.Text);
+
+                if (!command.Is(Command.Donate) || command.PartsWithoutMainCommand.Count == 0)
                     return;
 
                 int coppers;
 
-                if (!int.TryParse(e.Text.Substring(CommandOrRight.DONATE.Length).Trim(), NumberStyles.None, CultureInfo.InvariantCulture,  out coppers) || coppers <= 0)
+                if (!int.TryParse(command.PartsWithoutMainCommand[0], NumberStyles.None, CultureInfo.InvariantCulture,  out coppers) || coppers <= 0)
                     return;
 
                 if (coppers < Settings.MinDonationValue)

@@ -49,7 +49,7 @@ namespace TMSPS.Core.PluginSystem.Configuration
 	        if (user == null)
 	            throw new ArgumentNullException("user");
 
-	        if (rights == null)
+	        if (rights == null || rights.Length == 0)
 	            return true;
 
 	        user = user.ToLower();

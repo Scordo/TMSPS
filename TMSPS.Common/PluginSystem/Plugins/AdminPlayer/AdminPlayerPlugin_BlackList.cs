@@ -85,7 +85,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.AdminPlayer
 
         private void SendBlackListPageToLogin(string login, uint? pageIndex)
         {
-            if (!LoginHasAnyRight(login, true, CommandOrRight.BLACKLIST))
+            if (!LoginHasRight(login, true, Command.Blacklist))
                 return;
 
             const int MAX_BlackLIST_SIZE = 1000;

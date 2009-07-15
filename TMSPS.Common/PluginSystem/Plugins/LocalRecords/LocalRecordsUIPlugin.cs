@@ -226,7 +226,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
 
         private bool CheckForServerRankCommand(PlayerChatEventArgs args)
         {
-            if (string.Compare(args.Text, CommandOrRight.SERVER_RANK1, StringComparison.InvariantCultureIgnoreCase) != 0 && string.Compare(args.Text, CommandOrRight.SERVER_RANK2, StringComparison.InvariantCultureIgnoreCase) != 0)
+            if (!ServerCommand.Parse(args.Text).Is(Command.Rank))
                 return false;
 
             SendServerRankMessageToLogin(args.Login);
@@ -236,7 +236,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
 
         private bool CheckForNextServerRankCommand(PlayerChatEventArgs args)
         {
-            if (string.Compare(args.Text, CommandOrRight.NEXT_SERVER_RANK1, StringComparison.InvariantCultureIgnoreCase) != 0 && string.Compare(args.Text, CommandOrRight.NEXT_SERVER_RANK2, StringComparison.InvariantCultureIgnoreCase) != 0)
+            if (!ServerCommand.Parse(args.Text).Is(Command.NextRank))
                 return false;
 
             SendNextServerRankMessageToLogin(args.Login);
@@ -246,10 +246,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
 
         private bool CheckForInfoCommand(PlayerChatEventArgs args)
         {
-            if (string.Compare(args.Text, CommandOrRight.Info, StringComparison.InvariantCultureIgnoreCase) != 0 &&
-                string.Compare(args.Text, CommandOrRight.Wins, StringComparison.InvariantCultureIgnoreCase) != 0 &&
-                string.Compare(args.Text, CommandOrRight.Played, StringComparison.InvariantCultureIgnoreCase) != 0 &&
-                string.Compare(args.Text, CommandOrRight.Visit, StringComparison.InvariantCultureIgnoreCase) != 0)
+            if (!ServerCommand.Parse(args.Text).Is(Command.Info))
                 return false;
 
             SendInfoMessageToLogin(args.Login);
@@ -259,10 +256,10 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
 
         private bool CheckForSelectUndrivenTracksCommand(PlayerChatEventArgs args)
         {
-            if (!ServerCommand.Parse(args.Text).IsMainCommandAnyOf(CommandOrRight.SELECT_UNDRIVEN_TRACKS))
+            if (!ServerCommand.Parse(args.Text).Is(Command.SelectUndrivenTracks))
                 return false;
 
-            if (!LoginHasRight(args.Login, true, CommandOrRight.SELECT_UNDRIVEN_TRACKS))
+            if (!LoginHasRight(args.Login, true, Command.SelectUndrivenTracks))
                 return true;
 
             SelectUndrivenTracks(args.Login);
@@ -272,21 +269,15 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
 
         private bool CheckForLastSeenCommand(PlayerChatEventArgs args)
         {
-            if (args.Text == null || (!args.Text.StartsWith(CommandOrRight.LAST_SEEN1, StringComparison.OrdinalIgnoreCase) && !args.Text.StartsWith(CommandOrRight.LAST_SEEN2, StringComparison.OrdinalIgnoreCase)))
+            ServerCommand command = ServerCommand.Parse(args.Text);
+
+            if (!command.Is(Command.LastSeen))
                 return false;
 
-            string text = args.Text;
-
-            if (text.StartsWith(CommandOrRight.LAST_SEEN1, StringComparison.OrdinalIgnoreCase))
-                text = text.Substring(CommandOrRight.LAST_SEEN1.Length).Trim();
-
-            if (text.StartsWith(CommandOrRight.LAST_SEEN2, StringComparison.OrdinalIgnoreCase))
-                text = text.Substring(CommandOrRight.LAST_SEEN2.Length).Trim();
-
-            if (text.Length == 0)
+            if (command.PartsWithoutMainCommand.Count == 0)
                 return true;
 
-            string login = text;
+            string login = command.PartsWithoutMainCommand[0];
             string nickname = GetNickname(login, true);
 
             if (GetPlayerSettings(login) != null)

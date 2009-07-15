@@ -141,7 +141,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.AdminPlayer
 
         private void RestartTrackImmediately(string login)
         {
-            if (!LoginHasAnyRight(login, true, CommandOrRight.RESTART_TRACK_IMMEDIATELY))
+            if (!LoginHasRight(login, true, Command.RestartTrack))
                 return;
 
             Context.RPCClient.Methods.RestartChallenge();
@@ -149,7 +149,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.AdminPlayer
 
         private void SwitchToNextMap(string login)
         {
-            if (!LoginHasAnyRight(login, true, CommandOrRight.NEXT_TRACK))
+            if (!LoginHasRight(login, true, Command.NextTrack))
                 return;
           
             Context.RPCClient.Methods.NextChallenge();
@@ -197,17 +197,15 @@ namespace TMSPS.Core.PluginSystem.Plugins.AdminPlayer
 
         private bool LoginHasAnyAdminPlayerRight(string login)
         {
-            return LoginHasAnyRight(login, false,   CommandOrRight.RESTART_TRACK_IMMEDIATELY,
-                                                    CommandOrRight.NEXT_TRACK, 
-                                                    CommandOrRight.KICK_SPECTATORS1,
-                                                    CommandOrRight.KICK_SPECTATORS2,
-                                                    CommandOrRight.ADD_GUEST,
-                                                    CommandOrRight.KICK,
-                                                    CommandOrRight.BAN,
-                                                    CommandOrRight.BLACKLIST,
-                                                    CommandOrRight.IGNORE,
-                                                    CommandOrRight.KICK_MY_SPECTATORS1,
-                                                    CommandOrRight.KICK_MY_SPECTATORS2);
+            return LoginHasAnyRight(login, false,   Command.RestartTrack,
+                                                    Command.NextTrack,
+                                                    Command.KickSpectators,
+                                                    Command.AddGuest,
+                                                    Command.Kick,
+                                                    Command.Ban,
+                                                    Command.Blacklist,
+                                                    Command.Ignore,
+                                                    Command.KickMySpectators);
         }
         
         #endregion

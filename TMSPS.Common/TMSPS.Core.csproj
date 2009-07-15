@@ -55,7 +55,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Common\BlackListReader.cs" />
-    <Compile Include="Common\CommandOrRight.cs" />
+    <Compile Include="Common\CommandInfo.cs" />
+    <Compile Include="Common\Command.cs" />
     <Compile Include="Common\ComparerFactory.cs" />
     <Compile Include="Common\EventArgs.cs" />
     <Compile Include="Common\FlatFileNicknameResolver.cs" />
@@ -68,6 +69,7 @@
     <Compile Include="Common\NotifyPropertyChanged.cs" />
     <Compile Include="Common\PlayerFlags.cs" />
     <Compile Include="Common\ReadOnlyDictionary.cs" />
+    <Compile Include="Common\Right.cs" />
     <Compile Include="Common\SettingsBase.cs" />
     <Compile Include="Common\PlayerSpectatorStatus.cs" />
     <Compile Include="Common\SqlNicknameResolver.cs" />

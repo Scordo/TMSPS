@@ -251,30 +251,26 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
 
 	        ServerCommand command = ServerCommand.Parse(args.Text);
 
-	        if (command == null || !command.IsMainCommandAnyOf(CommandOrRight.DELETE_CHEATER) || command.PartsWithoutMainCommand.Count < 1)
+	        if (!command.Is(Command.DeleteCheater) || command.PartsWithoutMainCommand.Count == 0)
 	            return false;
 
 	        string login = command.PartsWithoutMainCommand[0];
 
-            if (Context.Credentials.UserHasRight(args.Login, CommandOrRight.DELETE_CHEATER))
+            if (!LoginHasRight(args.Login, true, Command.DeleteCheater))
+                return true;
+            
+            if (PlayerAdapter.RemoveAllStatsForLogin(login))
             {
-                if (PlayerAdapter.RemoveAllStatsForLogin(login))
-                {
-                    SendFormattedMessageToLogin(args.Login, Settings.CheaterDeletedMessage, "Login", login);
+                SendFormattedMessageToLogin(args.Login, Settings.CheaterDeletedMessage, "Login", login);
 
-                    DetermineLocalRecords();
-                    OnLocalRecordsDetermined(new List<RankEntry>(LocalRecords));
-                }
-                else
-                {
-                    SendFormattedMessageToLogin(args.Login, Settings.CheaterDeletionFailedMessage, "Login", login);
-                }
+                DetermineLocalRecords();
+                OnLocalRecordsDetermined(new List<RankEntry>(LocalRecords));
             }
             else
             {
-                SendNoPermissionMessagetoLogin(args.Login);
+                SendFormattedMessageToLogin(args.Login, Settings.CheaterDeletionFailedMessage, "Login", login);
             }
-
+ 
 	        return true;
 	    }
 
@@ -285,7 +281,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
 
             ServerCommand command = ServerCommand.Parse(args.Text);
 
-            if (command == null || !command.IsMainCommandAnyOf(CommandOrRight.GET_LOCAL_LOGINS))
+            if (!command.Is(Command.GetLocalLogins))
                 return false;
 
             DetermineLocalRecords();

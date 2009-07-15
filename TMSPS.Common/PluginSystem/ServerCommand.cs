@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Text.RegularExpressions;
+using TMSPS.Core.Common;
 
 namespace TMSPS.Core.PluginSystem
 {
@@ -9,6 +9,7 @@ namespace TMSPS.Core.PluginSystem
     {
         #region Properties
 
+        public bool HasCommandPrefix { get; private set; }
         public string OriginalText { get; private set;}
         public string CommandText { get; private set; }
         public string MainCommand { get; private set; }
@@ -39,28 +40,23 @@ namespace TMSPS.Core.PluginSystem
             if (chatMessage == null)
                 return null;
 
-            bool isCommand = Array.Exists(ValidCommandPrefixes, command => chatMessage.StartsWith(string.Format("/{0} ", command), StringComparison.InvariantCultureIgnoreCase));
-
-            if (!isCommand)
+            if (!chatMessage.StartsWith("/"))
                 return null;
 
-            const string commandPattern = @"/\w+\s+(?<Command>.*)";
+            string originalMessage = chatMessage;
+            bool hasCommandPrefix = TrimmCommandPrefix(chatMessage, out chatMessage);
 
-            Match match = Regex.Match(chatMessage, commandPattern, RegexOptions.Compiled | RegexOptions.Singleline);
-
-            if (!match.Success)
-                return null;
-
-            string[] commandParts = match.Groups["Command"].Value.Split(new[] {' '}, StringSplitOptions.RemoveEmptyEntries);
+            string[] commandParts = chatMessage.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
 
             if (commandParts.Length == 0)
                 return null;
 
             ServerCommand result = new ServerCommand
             {
-                OriginalText = chatMessage,
-                CommandText = match.Groups["Command"].Value,
-                MainCommand = commandParts[0]
+                OriginalText = originalMessage,
+                CommandText = chatMessage,
+                MainCommand = commandParts[0],
+                HasCommandPrefix = hasCommandPrefix
             };
 
             List<string> parts = new List<string>();
@@ -81,6 +77,22 @@ namespace TMSPS.Core.PluginSystem
         }
 
         #endregion
+
+        private static bool TrimmCommandPrefix(string chatMessage, out string modifiedChatMessage)
+        {
+            foreach (string commandPrefix in ValidCommandPrefixes)
+            {
+                if (chatMessage.StartsWith(string.Format("/{0} ", commandPrefix), StringComparison.InvariantCultureIgnoreCase))
+                {
+                    modifiedChatMessage = chatMessage.Substring(commandPrefix.Length+1).Trim();
+                    return true;
+                }
+            }
+
+            modifiedChatMessage = chatMessage.Substring(1);
+
+            return false;
+        }
     }
 
     public static class ServerCommandExtensions
@@ -91,6 +103,48 @@ namespace TMSPS.Core.PluginSystem
                 return false;
 
             return Array.Exists(commandNames, command => string.Compare(serverCommand.MainCommand, command, StringComparison.InvariantCultureIgnoreCase) == 0);
+        }
+
+        public static bool Is(this ServerCommand serverCommand, Command command)
+        {
+            return Is(serverCommand, CommandInfo.Parse(command));
+        }
+
+        public static bool IsAny(this ServerCommand serverCommand, params CommandInfo[] commandInfoList)
+        {
+            if (commandInfoList == null || commandInfoList.Length == 0)
+                return false;
+
+            foreach (CommandInfo commandInfo in commandInfoList)
+            {
+                if (serverCommand.Is(commandInfo))
+                    return true;
+            }
+
+            return false;
+        }
+
+        public static bool IsAny(this ServerCommand serverCommand, params Command[] commands)
+        {
+            if (commands == null || commands.Length == 0)
+                return false;
+
+            foreach (Command command in commands)
+            {
+                if (serverCommand.Is(command))
+                    return true;
+            }
+
+            return false;
+        }
+
+        public static bool Is(this ServerCommand serverCommand, CommandInfo commandInfo)
+        {
+            if (serverCommand == null || commandInfo == null)
+                return false;
+
+            // remove last expression to allow commands requiring a prefix to work withput prefix
+            return commandInfo.ContaisCommandName(serverCommand.MainCommand) && commandInfo.Options.RequiresPrefix == serverCommand.HasCommandPrefix;
         }
     }
 }

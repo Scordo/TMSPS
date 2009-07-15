@@ -88,19 +88,11 @@ namespace TMSPS.Core.PluginSystem.Plugins
         {
             RunCatchLog(()=>
             {
-                ServerCommand command = ServerCommand.Parse(e.Text);
-
-                if (command == null)
+                if (!ServerCommand.Parse(e.Text).Is(Command.ReadClanTagSettings))
                     return;
 
-                if (string.Compare(command.MainCommand, CommandOrRight.READCLANTAG_SETTINGS, StringComparison.InvariantCultureIgnoreCase) != 0)
+                if (!LoginHasRight(e.Login, true, Command.ReadClanTagSettings))
                     return;
-
-                if (!Context.Credentials.UserHasAnyRight(e.Login, CommandOrRight.READCLANTAG_SETTINGS))
-                {
-                    SendNoPermissionMessagetoLogin(e.Login);
-                    return;
-                }
 
                 try
                 {

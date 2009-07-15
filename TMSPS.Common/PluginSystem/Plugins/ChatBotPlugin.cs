@@ -70,9 +70,9 @@ namespace TMSPS.Core.PluginSystem.Plugins
 
     	private bool CheckForReadSettingsCommand(PlayerChatEventArgs e)
     	{
-            if (ServerCommand.Parse(e.Text).IsMainCommandAnyOf(CommandOrRight.READ_CHATBOT_SETTINGS))
+            if (ServerCommand.Parse(e.Text).Is(Command.ReadChatBotSettings))
     		{
-                if (!LoginHasAnyRight(e.Login, true, CommandOrRight.READ_CHATBOT_SETTINGS))
+                if (!LoginHasRight(e.Login, true, Command.ReadChatBotSettings))
                     return true;
 				
                 if (ReadSettings())

@@ -11,56 +11,94 @@ namespace TMSPS.Core.PluginSystem.Plugins
     {
         private void HandleCommand(string login, ServerCommand command)
         {
-            switch (command.MainCommand.ToLower(Context.Culture))
+            if (command.Is(Command.Kick))
             {
-                case CommandOrRight.KICK:
-                    HandleKickCommand(login, command);
-                    break;
-                case CommandOrRight.WARN:
-                    HandleWarnCommand(login, command);
-                    break;
-                case CommandOrRight.BAN:
-                    HandleBanCommand(login, command);
-                    break;
-                case CommandOrRight.UNBAN:
-                    HandleUnBanCommand(login, command);
-                    break;
-                case CommandOrRight.BLACKLIST:
-                    HandleBlackListCommand(login, command);
-                    break;
-                case CommandOrRight.UNBLACKLIST:
-                    HandleUnBlackListCommand(login, command);
-                    break;
-                case CommandOrRight.IGNORE:
-                    HandleIgnoreCommand(login, command);
-                    break;
-                case CommandOrRight.UNIGNORE:
-                    HandleUnIgnoreCommand(login, command);
-                    break;
-                case CommandOrRight.ADD_GUEST:
-                    HandleAddGuestCommand(login, command);
-                    break;
-                case CommandOrRight.REMOVE_GUEST:
-                    HandleRemoveGuestCommand(login, command);
-                    break;
-                case CommandOrRight.FORCE_SPECTATOR:
-                    HandleForceSpectatorCommand(login, command);
-                    break;
-                case CommandOrRight.WRITE_TRACK_LIST:
-                    HandleWriteTrackListCommand(login, command);
-                    break;
-                case CommandOrRight.READ_TRACK_LIST:
-                    HandleReadTrackListCommand(login, command);
-                    break;
-                case CommandOrRight.REMOVE_CURRENT_TRACK:
-                    HandleRemoveTrackCommand(login);
-                    break;
-                case CommandOrRight.READ_CREDENTIALS:
-                    HandleReadCredentialsCommand(login);
-                    break;
-                //case COMMAND_RESTART_SERVER:
-                //    HandleRestartServerCommand(command);
-                //    break;
+                HandleKickCommand(login, command);
+                return;
+            }
+
+            if (command.Is(Command.Warn))
+            {
+                HandleWarnCommand(login, command);
+                return;
+            }
+
+            if (command.Is(Command.Ban))
+            {
+                HandleBanCommand(login, command);
+                return;
+            }
+
+            if (command.Is(Command.Unban))
+            {
+                HandleUnBanCommand(login, command);
+                return;
+            }
+
+            if (command.Is(Command.Blacklist))
+            {
+                HandleBlackListCommand(login, command);
+                return;
+            }
+
+            if (command.Is(Command.Unblacklist))
+            {
+                HandleUnBlackListCommand(login, command);
+                return;
+            }
+
+            if (command.Is(Command.Ignore))
+            {
+                HandleIgnoreCommand(login, command);
+                return;
+            }
+
+            if (command.Is(Command.Unignore))
+            {
+                HandleUnIgnoreCommand(login, command);
+                return;
+            }
+
+            if (command.Is(Command.AddGuest))
+            {
+                HandleAddGuestCommand(login, command);
+                return;
+            }
+
+            if (command.Is(Command.RemoveGuest))
+            {
+                HandleRemoveGuestCommand(login, command);
+                return;
+            }
+
+            if (command.Is(Command.ForceSpectator))
+            {
+                HandleForceSpectatorCommand(login, command);
+                return;
+            }
+
+            if (command.Is(Command.WriteTrackList))
+            {
+                HandleWriteTrackListCommand(login, command);
+                return;
+            }
+
+            if (command.Is(Command.ReadTrackList))
+            {
+                HandleReadTrackListCommand(login, command);
+                return;
+            }
+
+            if (command.Is(Command.RemoveCurrentTrack))
+            {
+                HandleRemoveTrackCommand(login);
+                return;
+            }
+
+            if (command.Is(Command.ReadCredentials))
+            {
+                HandleReadCredentialsCommand(login);
+                return;
             }
         }
 
@@ -76,13 +114,10 @@ namespace TMSPS.Core.PluginSystem.Plugins
 
         public void WarnLogin(string operatorLogin, string loginToWarn)
         {
-            if (!Context.Credentials.UserHasAnyRight(operatorLogin, CommandOrRight.WARN))
-            {
-                SendNoPermissionMessagetoLogin(operatorLogin);
+            if (!LoginHasRight(operatorLogin, true, Command.Warn))
                 return;
-            }
 
-            if (LoginHasRight(loginToWarn, false, CommandOrRight.WARN_PROTECTION))
+            if (LoginHasRight(loginToWarn, false, Right.WARN_PROTECTION))
                 return;
 
             string nickname = GetNickname(operatorLogin);
@@ -105,11 +140,8 @@ namespace TMSPS.Core.PluginSystem.Plugins
 
         private void HandleReadCredentialsCommand(string login)
         {
-            if (!Context.Credentials.UserHasAnyRight(login, CommandOrRight.READ_CREDENTIALS))
-            {
-                SendNoPermissionMessagetoLogin(login);
+            if (!LoginHasRight(login, true, Command.ReadCredentials))
                 return;
-            }
 
             try
             {
@@ -135,13 +167,10 @@ namespace TMSPS.Core.PluginSystem.Plugins
 
         public void ForceSpectatorLogin(string operatorLogin, string loginToForce)
         {
-            if (!Context.Credentials.UserHasAnyRight(operatorLogin, CommandOrRight.FORCE_SPECTATOR))
-            {
-                SendNoPermissionMessagetoLogin(operatorLogin);
+            if (!LoginHasRight(operatorLogin, true, Command.ForceSpectator))
                 return;
-            }
 
-            if (LoginHasRight(loginToForce, false, CommandOrRight.FORCE_SPECTATOR_PROTECTION))
+            if (LoginHasRight(loginToForce, false, Right.FORCE_SPECTATOR_PROTECTION))
                 return;
 
             string nickname = GetNickname(operatorLogin);
@@ -179,13 +208,10 @@ namespace TMSPS.Core.PluginSystem.Plugins
 
         public void KickLogin(string operatorLogin, string loginToKick)
         {
-            if (!Context.Credentials.UserHasAnyRight(operatorLogin, CommandOrRight.KICK))
-            {
-                SendNoPermissionMessagetoLogin(operatorLogin);
+            if (!LoginHasRight(operatorLogin, true, Command.Kick))
                 return;
-            }
 
-            if (LoginHasRight(loginToKick, false, CommandOrRight.KICK_PROTECTION))
+            if (LoginHasRight(loginToKick, false, Right.KICK_PROTECTION))
                 return;
 
             string nickname = GetNickname(operatorLogin);
@@ -222,13 +248,10 @@ namespace TMSPS.Core.PluginSystem.Plugins
 
         public void BanLogin(string operatorLogin, string loginToBan)
         {
-            if (!Context.Credentials.UserHasAnyRight(operatorLogin, CommandOrRight.BAN))
-            {
-                SendNoPermissionMessagetoLogin(operatorLogin);
+            if (!LoginHasRight(operatorLogin, true, Command.Ban))
                 return;
-            }
 
-            if (LoginHasRight(loginToBan, false, CommandOrRight.BAN_PROTECTION))
+            if (LoginHasRight(loginToBan, false, Right.BAN_PROTECTION))
                 return;
 
             string nickname = GetNickname(operatorLogin);
@@ -265,11 +288,8 @@ namespace TMSPS.Core.PluginSystem.Plugins
 
         public void UnBanLogin(string operatorLogin, string loginToRemove)
         {
-            if (!Context.Credentials.UserHasAnyRight(operatorLogin, CommandOrRight.BAN))
-            {
-                SendNoPermissionMessagetoLogin(operatorLogin);
+            if (!LoginHasRight(operatorLogin, true, Command.Unban))
                 return;
-            }
 
             GenericResponse<bool> removePlayerResponse = Context.RPCClient.Methods.UnBan(loginToRemove);
 
@@ -292,13 +312,10 @@ namespace TMSPS.Core.PluginSystem.Plugins
 
         public void IgnoreLogin(string operatorLogin, string loginToIgnore)
         {
-            if (!Context.Credentials.UserHasAnyRight(operatorLogin, CommandOrRight.IGNORE))
-            {
-                SendNoPermissionMessagetoLogin(operatorLogin);
+            if (!LoginHasRight(operatorLogin, true, Command.Ignore))
                 return;
-            }
 
-            if (LoginHasRight(loginToIgnore, false, CommandOrRight.IGNORE_PROTECTION))
+            if (LoginHasRight(loginToIgnore, false, Right.IGNORE_PROTECTION))
                 return;
 
             string nickname = GetNickname(operatorLogin);
@@ -334,11 +351,8 @@ namespace TMSPS.Core.PluginSystem.Plugins
 
         public void UnIgnoreLogin(string operatorLogin, string loginToRemove)
         {
-            if (!Context.Credentials.UserHasAnyRight(operatorLogin, CommandOrRight.IGNORE))
-            {
-                SendNoPermissionMessagetoLogin(operatorLogin);
+            if (!LoginHasRight(operatorLogin, true, Command.Ignore))
                 return;
-            }
 
             GenericResponse<bool> removePlayerResponse = Context.RPCClient.Methods.UnIgnore(loginToRemove);
 
@@ -361,11 +375,8 @@ namespace TMSPS.Core.PluginSystem.Plugins
 
         public void AddGuestLogin(string operatorLogin, string loginOfGuest)
         {
-            if (!Context.Credentials.UserHasAnyRight(operatorLogin, CommandOrRight.ADD_GUEST))
-            {
-                SendNoPermissionMessagetoLogin(operatorLogin);
+            if (!LoginHasRight(operatorLogin, true, Command.AddGuest))
                 return;
-            }
 
             string nickname = GetNickname(operatorLogin);
 
@@ -404,11 +415,8 @@ namespace TMSPS.Core.PluginSystem.Plugins
 
         public void RemoveGuestLogin(string operatorLogin, string loginToRemove)
         {
-            if (!Context.Credentials.UserHasAnyRight(operatorLogin, CommandOrRight.ADD_GUEST))
-            {
-                SendNoPermissionMessagetoLogin(operatorLogin);
+            if (!LoginHasRight(operatorLogin, true, Command.AddGuest))
                 return;
-            }
 
             GenericResponse<bool> removeGuestResponse = Context.RPCClient.Methods.RemoveGuest(loginToRemove);
             string nickname = GetNickname(loginToRemove) ?? loginToRemove;
@@ -440,13 +448,10 @@ namespace TMSPS.Core.PluginSystem.Plugins
 
         public void AddBlackListLogin(string operatorLogin, string loginToBlacklist)
         {
-            if (!Context.Credentials.UserHasAnyRight(operatorLogin, CommandOrRight.BLACKLIST))
-            {
-                SendNoPermissionMessagetoLogin(operatorLogin);
+            if (!LoginHasRight(operatorLogin, true, Command.Blacklist))
                 return;
-            }
 
-            if (LoginHasRight(loginToBlacklist, false, CommandOrRight.BLACKLIST_PROTECTION))
+            if (LoginHasRight(loginToBlacklist, false, Right.BLACKLIST_PROTECTION))
                 return;
 
             string nickname = GetNickname(operatorLogin);
@@ -486,11 +491,8 @@ namespace TMSPS.Core.PluginSystem.Plugins
 
         public void RemoveBlackListLogin(string operatorLogin, string loginToRemove)
         {
-            if (!Context.Credentials.UserHasAnyRight(operatorLogin, CommandOrRight.BLACKLIST))
-            {
-                SendNoPermissionMessagetoLogin(operatorLogin);
+            if (!LoginHasRight(operatorLogin, true, Command.Blacklist))
                 return;
-            }
 
             GenericResponse<bool> removeBlackResponse = Context.RPCClient.Methods.UnBlackList(loginToRemove);
 
@@ -514,11 +516,8 @@ namespace TMSPS.Core.PluginSystem.Plugins
 
         private void HandleWriteTrackListCommand(string login, ServerCommand command)
         {
-            if (!Context.Credentials.UserHasAnyRight(login, CommandOrRight.WRITE_TRACK_LIST))
-            {
-                SendNoPermissionMessagetoLogin(login);
+            if (!LoginHasRight(login, true, Command.WriteTrackList))
                 return;
-            }
 
             string filename = Settings.TrackListFile;
 
@@ -535,11 +534,8 @@ namespace TMSPS.Core.PluginSystem.Plugins
 
         private void HandleReadTrackListCommand(string login, ServerCommand command)
         {
-            if (!Context.Credentials.UserHasAnyRight(login, CommandOrRight.READ_TRACK_LIST))
-            {
-                SendNoPermissionMessagetoLogin(login);
+            if (!LoginHasRight(login, true, Command.ReadTrackList))
                 return;
-            }
 
             string filename = Settings.TrackListFile;
 
@@ -556,11 +552,8 @@ namespace TMSPS.Core.PluginSystem.Plugins
 
         private void HandleRemoveTrackCommand(string login)
         {
-            if (!Context.Credentials.UserHasAnyRight(login, CommandOrRight.REMOVE_CURRENT_TRACK))
-            {
-                SendNoPermissionMessagetoLogin(login);
+            if (!LoginHasRight(login, true, Command.RemoveCurrentTrack))
                 return;
-            }
 
             ChallengeListSingleInfo challengeInfo = GetCurrentChallengeInfoCached();
 
@@ -580,7 +573,7 @@ namespace TMSPS.Core.PluginSystem.Plugins
 
         public void KickAllSpectators(string login)
         {
-            if (!LoginHasAnyRight(login, true, CommandOrRight.KICK_SPECTATORS1, CommandOrRight.KICK_SPECTATORS2))
+            if (!LoginHasRight(login, true, Command.KickSpectators))
                 return;
 
             List<PlayerSettings> playerSettings = Context.PlayerSettings.GetAsList(playerSetting => playerSetting.SpectatorStatus.IsSpectator);
@@ -588,7 +581,7 @@ namespace TMSPS.Core.PluginSystem.Plugins
 
             foreach (PlayerSettings playerSetting in playerSettings)
             {
-                if (LoginHasRight(playerSetting.Login, false, CommandOrRight.KICK_PROTECTION))
+                if (LoginHasRight(playerSetting.Login, false, Right.KICK_PROTECTION))
                     continue;
 
                 Context.RPCClient.Methods.Kick(playerSetting.Login, "Kicked for spectating without asking.");
@@ -604,7 +597,7 @@ namespace TMSPS.Core.PluginSystem.Plugins
 
         public void KickSpectatorsOf(string login, int playerID)
         {
-            if (!LoginHasAnyRight(login, true, CommandOrRight.KICK_MY_SPECTATORS1, CommandOrRight.KICK_MY_SPECTATORS2))
+            if (!LoginHasRight(login, true, Command.KickMySpectators))
                 return;
 
             List<PlayerSettings> playerSettings = Context.PlayerSettings.GetAsList(playerSetting => playerSetting.SpectatorStatus.IsSpectator && playerSetting.SpectatorStatus.CurrentPlayerTargetID == playerID);
@@ -612,7 +605,7 @@ namespace TMSPS.Core.PluginSystem.Plugins
 
             foreach (PlayerSettings playerSetting in playerSettings)
             {
-                if (LoginHasRight(playerSetting.Login, false, CommandOrRight.KICK_PROTECTION))
+                if (LoginHasRight(playerSetting.Login, false, Right.KICK_PROTECTION))
                     continue;
 
                 Context.RPCClient.Methods.Kick(playerSetting.Login, "Kicked for spectating without asking.");
