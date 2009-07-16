@@ -19,7 +19,7 @@ namespace TMSPS.Core.PluginSystem.Plugins
     	public override string Description { get { return "Checks for registered phrases and answers to them."; } }
     	public override string ShortName { get { return "ChatBot"; } }
     	private string Botname { get; set; }
-    	private Dictionary<string, string> Answers { get; set; }
+        private Dictionary<string, ChatBotAnswer> Answers { get; set; }
     	private string[] Phrases { get; set; }
 
     	#endregion
@@ -59,11 +59,17 @@ namespace TMSPS.Core.PluginSystem.Plugins
     			{
     				string regexPattern = @"\b" + Regex.Escape(phrase) + @"\b";
 
-    				if (Regex.IsMatch(e.Text, regexPattern, RegexOptions.Singleline | RegexOptions.IgnoreCase))
-    				{
-    					Context.RPCClient.Methods.ChatSendServerMessage(string.Format("{0}{1}", Botname, Answers[phrase]));
-    					break;
-    				}
+    				if (!Regex.IsMatch(e.Text, regexPattern, RegexOptions.Singleline | RegexOptions.IgnoreCase))
+    				    continue;
+
+    			    ChatBotAnswer answer = Answers[phrase];
+
+                    if (answer.Wisper)
+                        SendFormattedMessageToLogin(e.Login, string.Format("{0}{1}", Botname, answer.Answer));
+                    else
+                        SendFormattedMessage(string.Format("{0}{1}", Botname, answer.Answer));
+    				
+                    break;
     			}
 			}, "Error in Callbacks_PlayerChat Method.", true);
     	}
@@ -104,16 +110,18 @@ namespace TMSPS.Core.PluginSystem.Plugins
     			if (botnameElement != null)
     				Botname = botnameElement.Value;
 
-    			Answers = new Dictionary<string, string>();
+                Answers = new Dictionary<string, ChatBotAnswer>();
     			foreach (XElement phraseElement in doc.Root.Descendants("Phrase"))
     			{
     				XAttribute phraseAttribute = phraseElement.Attribute("values");
     				XAttribute answerAttribute = phraseElement.Attribute("answer");
+                    XAttribute wisperAttribute = phraseElement.Attribute("wisper");
 
     				if (answerAttribute == null || phraseAttribute == null)
     					continue;
 
     				string answer = answerAttribute.Value.Trim();
+    			    bool wisper = (wisperAttribute != null) && (string.Compare(wisperAttribute.Value, "true", true) == 0);
 
     				if (answer.IsNullOrTimmedEmpty())
     					continue;
@@ -125,7 +133,7 @@ namespace TMSPS.Core.PluginSystem.Plugins
     					if (phrase.IsNullOrTimmedEmpty())
     						continue;
 
-    					Answers[phrase.Trim().ToLower()] = answer;
+                        Answers[phrase.Trim().ToLower()] = new ChatBotAnswer(answer, wisper);
     				}
     			}
 
@@ -142,5 +150,35 @@ namespace TMSPS.Core.PluginSystem.Plugins
     	}
 
     	#endregion
+
+        #region Embedded Types
+
+        private class ChatBotAnswer
+        {
+            #region Properties
+
+            public string Answer { get; set; }
+            public bool Wisper { get; set; }
+
+            #endregion
+
+            #region Constructors
+
+            public ChatBotAnswer()
+            {
+                
+            }
+
+            public ChatBotAnswer(string answer, bool wisper)
+            {
+                Answer = answer;
+                Wisper = wisper;
+            }
+
+            #endregion
+        }
+
+        #endregion
+
     }
 }
