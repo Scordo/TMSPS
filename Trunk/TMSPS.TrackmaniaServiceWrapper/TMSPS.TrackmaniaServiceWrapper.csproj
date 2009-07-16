@@ -79,6 +79,13 @@
   <ItemGroup>
     <None Include="App.config" />
     <None Include="App_Template.config" />
+    <None Include="Release\CreateRelease.bat" />
+    <None Include="Release\CreateRelease.proj" />
+    <None Include="Release\install.bat" />
+    <None Include="Release\InstallationHelp.docx" />
+    <None Include="Release\InstallationHelp.pdf" />
+    <None Include="Release\TMSPS.TrackmaniaServiceWrapper.exe.config" />
+    <None Include="Release\uninstall.bat" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
