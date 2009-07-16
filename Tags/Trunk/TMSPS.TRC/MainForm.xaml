@@ -1,0 +1,39 @@
+﻿<Wpf:TRCBaseWindow x:Class="TMSPS.TRC.MainForm"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:Wpf="clr-namespace:TMSPS.TRC.BL.Wpf"
+    DataContext="{Binding RelativeSource={RelativeSource Self}}"
+    Title="Trackmania Remote Control" Width="720" Height="540" Closing="Window_Closing" WindowStartupLocation="CenterScreen" >
+    
+    <Wpf:TRCBaseWindow.Resources>
+
+    </Wpf:TRCBaseWindow.Resources>
+    
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition MaxHeight="20" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+
+        <Menu Grid.Row="0" Grid.Column="0" Height="21" Name="MainMenu" VerticalAlignment="Top">
+            <MenuItem Header="Select">
+                <MenuItem Name="SelectProfileMenu" Header="Profile" Click="SelectProfileMenu_Click"  />
+                <MenuItem MaxHeight="2" Background="Black" />
+                <MenuItem Name="ExitMenu" Header="Exit" Click="ExitMenu_Click"  />
+            </MenuItem>
+            <MenuItem Header="Servers" IsEnabled="{Binding Path=IsProfileSelected}" >
+                <MenuItem Name="Servers_ManageMenu" Header="Manage" Click="Servers_ManageMenu_Click"  />
+                <MenuItem Name="Servers_ConnectMenu" Header="Connect" ItemsSource="{Binding Path=CurrentProfile.Servers}" DisplayMemberPath="Name" MenuItem.Click="Servers_ConnectMenu_Click" />
+            </MenuItem>
+        </Menu>
+
+        <TabControl Grid.Row="1" Grid.Column="0"  Name="ServerForms" SelectedIndex="0" TabStripPlacement="Top" HorizontalAlignment="Stretch">
+            <TabItem Header="Log">
+                <TextBox Name="LoginTextBox" IsReadOnly="True" TextWrapping="WrapWithOverflow" VerticalScrollBarVisibility="Auto" />
+            </TabItem>
+        </TabControl>
+    </Grid>
+</Wpf:TRCBaseWindow>

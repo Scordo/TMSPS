@@ -1,0 +1,64 @@
+﻿<UserControl x:Class="TMSPS.TRC.Controls.ServerControl"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:Controls="clr-namespace:TMSPS.TRC.Controls"
+    MinWidth="650" MinHeight="450">
+    <UserControl.Resources>
+        <Controls:ServerMenuEntry x:Key="serverMenuEntry"/>
+
+        <DataTemplate x:Key="ListBoxCategoryTemplate">
+            <Border CornerRadius="5,5,0,0" BorderBrush="Black" BorderThickness="1" Margin="5,20,5,5" Background="LightCoral">
+                <TextBlock Text="{Binding Path=Name}" Margin="5,2,5,2" HorizontalAlignment="Center"  />
+            </Border>
+        </DataTemplate>
+        
+        <DataTemplate x:Key="ListBoxItemTemplate">
+            <StackPanel Orientation="Horizontal" Margin="5,0,0,0">
+                <TextBlock>-</TextBlock>
+                <TextBlock Text="{Binding Path=Name}" Margin="5,0,5,0"  />
+            </StackPanel>
+        </DataTemplate>
+
+        <CollectionViewSource x:Key="MenuEntrySource" Source="{Binding Source={StaticResource serverMenuEntry}, Path=MenuEntries}">
+            <CollectionViewSource.GroupDescriptions>
+                <PropertyGroupDescription PropertyName="Group"/>
+            </CollectionViewSource.GroupDescriptions>
+        </CollectionViewSource>
+    </UserControl.Resources>
+    
+    <Grid>
+        <DockPanel>
+            <StatusBar DockPanel.Dock="Bottom">
+                <StatusBarItem>...</StatusBarItem>
+            </StatusBar>
+
+            <StackPanel DockPanel.Dock="Left" MinWidth="150" Margin="5,5,5,5" >
+                <ListBox Name="MenuListBox" ItemTemplate="{StaticResource ListBoxItemTemplate}" ItemsSource="{Binding Source={StaticResource MenuEntrySource}}" SelectionChanged="MenuListBox_SelectionChanged">
+                    <ListBox.GroupStyle>
+                        <GroupStyle HeaderTemplate="{StaticResource ListBoxCategoryTemplate}" />
+                    </ListBox.GroupStyle>
+                    <ListBox.ItemContainerStyle>
+                        <Style TargetType="ListBoxItem">
+                            <Setter Property="IsEnabled" Value="{Binding Path=Enabled}"/>
+                            <Style.Triggers>
+                                <Trigger Property="IsEnabled" Value="False">
+                                    <Setter Property="Foreground" Value="Red" />
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </ListBox.ItemContainerStyle>
+                </ListBox>
+            </StackPanel>
+            
+            <TabControl Name="AreaTabControl">
+                <TabItem Header="Log" Visibility="Collapsed" Name="LogTab">
+                    <TextBox  Name="LogTextBox"  VerticalContentAlignment="Stretch" />
+                </TabItem>
+                <TabItem Header="Server info" Visibility="Collapsed" Name="ServerInfoTab">
+                    <Controls:ServerInfoTabContentControl HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
+                </TabItem>
+            </TabControl>
+        </DockPanel>
+       
+    </Grid>
+</UserControl>
