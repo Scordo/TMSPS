@@ -99,6 +99,14 @@
     <Content Include="Web_template.config" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Release\Web.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Release\CreateRelease.bat" />
+    <None Include="Release\CreateRelease.proj" />
+    <None Include="Release\InstallationHelp.docx" />
+  </ItemGroup>
+  <ItemGroup>
     <Folder Include="App_Data\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
