@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Threading;
-using System.Timers;
 using TMSPS.Core.Common;
 using TMSPS.Core.Communication.EventArguments.Callbacks;
 using TMSPS.Core.Communication.ProxyTypes;
@@ -10,7 +9,6 @@ using TMSPS.Core.Logging;
 using TMSPS.Core.PluginSystem.Configuration;
 using Version=System.Version;
 using System.Linq;
-using Timer=System.Timers.Timer;
 
 namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
 {
@@ -33,7 +31,6 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
 	    public ISessionAdapter SessionAdapter { get; protected set; }
 	    public IRankingAdapter RankingAdapter { get; protected set; }
 	    public int CurrentChallengeID { get; protected set; }
-	    protected Timer TimePlayedTimer { get; private set; }
 	    public LocalRecordsSettings Settings { get; protected set; }
 	    protected List<ILocalRecordsPluginPlugin> Plugins {get; private set;}
 	    public RankEntry[] LocalRecords { get; private set; }
@@ -105,11 +102,6 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
 	        }
 
 	        EnsureChallengeExistsInStorage(currentChallengeInfo);
-	        
-	        TimePlayedTimer = new Timer(30000);
-	        TimePlayedTimer.Elapsed += TimePlayedTimer_Elapsed;
-	        TimePlayedTimer.Start();
-
 	        DetermineLocalRecords();
 
 	        InitializePlugins();
@@ -125,12 +117,10 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
 
         protected override void Dispose(bool connectionLost)
         {
-            TimePlayedTimer.Stop();
-
-            if (!connectionLost)
-                UpdateTimePlayedForAllCurrentPlayers();
-
+            RunCatchLog(() => Context.PlayerSettings.GetAllAsList().ForEach(p => PlayerAdapter.UpdateTimePlayed(p.Login)), "Error updatimg TimePlayed for all players while disposing the plugin.");
             DisposePlugins(connectionLost);
+
+            // enforce connection close here later
 
             Context.RPCClient.Callbacks.BeginRace -= Callbacks_BeginRace;
             Context.RPCClient.Callbacks.EndRace -= Callbacks_EndRace;
@@ -332,11 +322,6 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
             RankingAdapter.UpdateForChallenge(Convert.ToString(challengeID));
         }
 
-	    private void TimePlayedTimer_Elapsed(object sender, ElapsedEventArgs e)
-	    {
-	        RunCatchLog(UpdateTimePlayedForAllCurrentPlayers, "Error in TimePlayedTimer_Elapsed Method.", true);
-	    }
-
 	    private void EnsureChallengeExistsInStorage(ChallengeListSingleInfo challengeInfo)
 	    {
 	        Challenge challenge = new Challenge(challengeInfo.UId, challengeInfo.Name, challengeInfo.Author, challengeInfo.Environnement);
@@ -344,11 +329,6 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
 	        CurrentChallengeID = challenge.ID.Value;
 
 	        OnChallengeCreatedOrUpdated(challengeInfo, challenge);
-	    }
-
-	    private void UpdateTimePlayedForAllCurrentPlayers()
-	    {
-            PlayerAdapter.UpdateTimePlayed(Context.PlayerSettings.GetAllAsList().ConvertAll(p => p.Login));  
 	    }
 
 	    private void InitializePlugins()

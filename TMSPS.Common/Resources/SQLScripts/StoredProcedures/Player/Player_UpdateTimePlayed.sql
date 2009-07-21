@@ -9,7 +9,7 @@ BEGIN
 	UPDATE 
 		dbo.Player
 	SET
-		TimePlayed = TimePlayed + CASE WHEN DateDiff(ms, LastTimePlayedChanged, @currentdate) > 60000 THEN 0 ELSE DateDiff(ms, LastTimePlayedChanged, @currentdate) END,
+		TimePlayed = TimePlayed + CASE WHEN DateDiff(ms, LastTimePlayedChanged, @currentdate) > 43200000 THEN 0 ELSE DateDiff(ms, LastTimePlayedChanged, @currentdate) END,
 		LastTimePlayedChanged = @currentdate,
 		LastChanged = @currentdate
 	Output
@@ -20,5 +20,4 @@ BEGIN
 		[Login] = @Login
 		
 	Select * From @InsertedValues
-		
 END
