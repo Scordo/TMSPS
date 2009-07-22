@@ -160,7 +160,11 @@ namespace TMSPS.Core.PluginSystem.Plugins
                 PlayerInfo playerInfo = GetPlayerInfo(e.Login);
 
                 if (playerInfo == null)
+                {
+                    e.Handled = true;
+                    Context.RPCClient.Methods.Kick(e.Login, "TMSPS couldn't determine your player information, try reconnecting!");
                     return;
+                }
 
                 NicknameResolverFactory.Instance.Set(e.Login, playerInfo.NickName);
 
@@ -204,7 +208,7 @@ namespace TMSPS.Core.PluginSystem.Plugins
 
                 if (Settings.EnableLeaveMessage)
                 {
-                    string nickname = GetNickname(e.Login);
+                    string nickname = GetNickname(e.Login, true);
 
                     if (nickname != null)
                         SendFormattedMessage(Settings.LeaveMessage, "Nickname", StripTMColorsAndFormatting(nickname));
