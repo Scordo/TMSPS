@@ -157,6 +157,9 @@ namespace TMSPS.Core.PluginSystem.Plugins.AdminPlayer
 
         private void Callbacks_PlayerConnect(object sender, Communication.EventArguments.Callbacks.PlayerConnectEventArgs e)
         {
+            if (e.Handled)
+                return;
+
             SendPlayerUIToLogin(e.Login);
         }
 

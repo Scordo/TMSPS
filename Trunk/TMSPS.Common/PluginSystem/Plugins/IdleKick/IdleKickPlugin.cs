@@ -66,6 +66,9 @@ namespace TMSPS.Core.PluginSystem.Plugins.IdleKick
 
         private void Callbacks_PlayerConnect(object sender, PlayerConnectEventArgs e)
         {
+            if (e.Handled)
+                return;
+
             RunCatchLog(() => ResetValues(e.Login), "Error in Callbacks_PlayerConnect Method.", true);
         }
 

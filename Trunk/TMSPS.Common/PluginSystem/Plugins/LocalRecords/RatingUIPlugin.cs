@@ -55,6 +55,9 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
 
         private void Callbacks_PlayerConnect(object sender, Communication.EventArguments.Callbacks.PlayerConnectEventArgs e)
         {
+            if (e.Handled)
+                return;
+
             SendAllVoteManiaLinkPageToLogin(e.Login, _lastAverageVoteValue);
 
             double? voteValue = HostPlugin.RatingAdapter.GetVoteByLogin(e.Login, HostPlugin.CurrentChallengeID);

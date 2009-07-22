@@ -74,6 +74,9 @@ namespace TMSPS.Core.PluginSystem.Plugins.StaticUI
 
         private void Callbacks_PlayerConnect(object sender, PlayerConnectEventArgs e)
         {
+            if (e.Handled)
+                return;
+
             RunCatchLog(() => SendContentToLogin(e.Login), "Error in Callbacks_PlayerConnect Method.", true);
         }
 

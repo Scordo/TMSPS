@@ -46,6 +46,9 @@ namespace TMSPS.Core.PluginSystem.Plugins.Clock
 
         private void Callbacks_PlayerConnect(object sender, Communication.EventArguments.Callbacks.PlayerConnectEventArgs e)
         {
+            if (e.Handled)
+                return;
+
             RunCatchLog(() => Context.RPCClient.Methods.SendDisplayManialinkPageToLogin(e.Login, GetClockManiaLinkPage(), 0, false), "Error in Callbacks_PlayerConnect Method.", true);
         }
 
