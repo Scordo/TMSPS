@@ -73,6 +73,21 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
 	    #endregion
 	}
 
+    public class IndexedPlayer : Player, IIndexedPlayerSerializable
+    {
+        public int RowNumber { get; private set; }
+
+        #region IIndexedPlayerSerializable Members
+
+        int IIndexedPlayerSerializable.RowNumber
+        {
+            get { return RowNumber; }
+            set { RowNumber = value; }
+        }
+
+        #endregion
+    }
+
     public interface IPlayerSerializable
     {
         int? ID { get; set; }
@@ -81,5 +96,10 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
         DateTime LastTimePlayedChanged { get; set; }
         uint Wins { get; set; }
         TimeSpan TimePlayed { get; set; }
+    }
+
+    public interface IIndexedPlayerSerializable
+    {
+        int RowNumber { get; set; }
     }
 }

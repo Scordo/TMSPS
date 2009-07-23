@@ -87,6 +87,11 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords.SQL
             return SqlHelper.ExecuteClassListQuery<Player>("Player_DeserializeList", PlayerFromDataRow, "top", (int)top, "sorting", (int)sorting, "asc", ascending);
         }
 
+        public PagedList<IndexedPlayer> DeserializeListByWins(int? startIndex, int? endIndex)
+        {
+            return SqlHelper.ExecutePagedClassListQuery<IndexedPlayer>("Player_DeserializeList_Paged_ByWins", IndexedPlayerFromDataRow, startIndex, endIndex);
+        } 
+
         public bool RemoveAllStatsForLogin(string login)
         {
             return SqlHelper.ExecuteScalarReturnBool("Player_RemoveAllStatsForLogin", "login", login);
@@ -98,9 +103,26 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords.SQL
 
         private static Player PlayerFromDataRow(DataRow row)
         {
-            string login = Convert.ToString(row["Login"]);
-            string nickname = Convert.ToString(row["Nickname"]);
-            Player player = new Player(login, nickname);
+            Player player = new Player();
+            AssignPlayerFromDataRow(player, row);
+
+            return player;
+        }
+
+        private static IndexedPlayer IndexedPlayerFromDataRow(DataRow row)
+        {
+            IndexedPlayer player = new IndexedPlayer();
+            AssignPlayerFromDataRow(player, row);
+            IIndexedPlayerSerializable indexedPlayerSerializable = player;
+            indexedPlayerSerializable.RowNumber = Convert.ToInt32(row["RowNumber"]);
+
+            return player;
+        }
+
+        private static void AssignPlayerFromDataRow(Player player, DataRow row)
+        {
+            player.Nickname = Convert.ToString(row["Nickname"]);
+            player.Login = Convert.ToString(row["Login"]);
 
             IPlayerSerializable playerSerializable = player;
             playerSerializable.ID = Convert.ToInt32(row["ID"]);
@@ -109,8 +131,6 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords.SQL
             playerSerializable.LastTimePlayedChanged = Convert.ToDateTime(row["LastTimePlayedChanged"]);
             playerSerializable.Wins = Convert.ToUInt32(row["Wins"]);
             playerSerializable.TimePlayed = TimeSpan.FromMilliseconds(Convert.ToInt64(row["TimePlayed"]));
-
-            return player;
         }
 
         #endregion
