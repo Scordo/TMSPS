@@ -187,6 +187,10 @@ namespace TMSPS.Core.Communication
             }
 
             XElement messageElement = TryParseXElement(response);
+
+            if (messageElement == null)
+                throw new FormatException(string.Format("The response could not be transformed into a XElement.\nMethod: {0}\nSent XML: \n{1}\nResponse:\n{2}", method, xml, response));
+
             return ResponseBase<T>.Parse(messageElement);
         }
 
