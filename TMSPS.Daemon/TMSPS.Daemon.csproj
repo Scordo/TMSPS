@@ -154,6 +154,8 @@
     <Content Include="Plugins\LocalRecords\TopWinnersPodium\EntryListTemplate.xml" />
     <Content Include="Plugins\LocalRecords\TopWinnersPodium\Settings.xml" />
     <Content Include="Plugins\LocalRecords\TopWinnersPodium\Settings_Template.xml" />
+    <Content Include="Plugins\LocalRecords\TopWinsUI\TopWinsTemplate.xml" />
+    <Content Include="Plugins\LocalRecords\TopWinsUI\TopWinsTemplate_Template.xml" />
     <Content Include="Plugins\NameProtectionBot\Settings.xml" />
     <Content Include="Plugins\NameProtectionBot\Settings_Template.xml" />
     <Content Include="Plugins\Settings.xml" />

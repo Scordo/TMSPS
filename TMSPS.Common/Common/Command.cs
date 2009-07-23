@@ -66,10 +66,12 @@ namespace TMSPS.Core.Common
         NextTrack,
         [CommandName("Seen", "LastSeen")]
         LastSeen,
-        [CommandName("TopSums", "Summary")]
+        [CommandName("TopSums", "Summary", "TopRaceResults")]
         TopSums,
         [CommandName("TopRanks", "Ranks")]
         TopRanks,
+        [CommandName("TopWins")]
+        TopWins,
         [CommandName("Info", "Wins", "Played", "Visit")]
         Info,
         [CommandName("SR", "Rank")]

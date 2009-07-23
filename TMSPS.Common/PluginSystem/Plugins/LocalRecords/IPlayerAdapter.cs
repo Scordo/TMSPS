@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using TMSPS.Core.Common;
+using TMSPS.Core.SQL;
 
 namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
 {
@@ -11,6 +12,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
         List<Player> DeserializeList(uint top, PlayerSortOrder sorting, bool ascending);
         bool RemoveAllStatsForLogin(string login);
         Player Deserialize(string login);
+        PagedList<IndexedPlayer> DeserializeListByWins(int? startIndex, int? endIndex);
     }
 
     public enum PlayerSortOrder

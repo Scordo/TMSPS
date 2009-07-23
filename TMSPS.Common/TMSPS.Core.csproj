@@ -249,6 +249,7 @@
     <Compile Include="PluginSystem\Plugins\LocalRecords\LocalRecordsPlayerStatsUIPlugin.cs" />
     <Compile Include="PluginSystem\Plugins\LocalRecords\LocalRecordsPluginPlugin.cs" />
     <Compile Include="PluginSystem\Plugins\LocalRecords\LocalRecordsTopRanksUIPlugin.cs" />
+    <Compile Include="PluginSystem\Plugins\LocalRecords\LocalRecordsTopWinsUIPlugin.cs" />
     <Compile Include="PluginSystem\Plugins\LocalRecords\LocalRecordsUIPlugin.cs" />
     <Compile Include="PluginSystem\Plugins\LocalRecords\LocalRecordsUISettings.cs" />
     <Compile Include="PluginSystem\Configuration\PagedUIDialogSettings.cs" />
@@ -317,9 +318,14 @@
     <Compile Include="PluginSystem\TMSPSPluginPlugin.cs" />
     <Compile Include="PluginSystem\ValueStore.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SQL\PagedList.cs" />
     <Compile Include="SQL\SQLBaseAdapter.cs" />
     <Compile Include="SQL\ConnectionManager.cs" />
     <Compile Include="SQL\SqlHelper.cs" />
+    <Compile Include="SQL\SqlHelper_Class.cs" />
+    <Compile Include="SQL\SqlHelper_ClassList.cs" />
+    <Compile Include="SQL\SqlHelper_ClassList_Parameterized.cs" />
+    <Compile Include="SQL\SqlHelper_Class_Parameterized.cs" />
     <Compile Include="TypeExtensions\ExtensionMethods.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -344,6 +350,7 @@
     <None Include="Resources\SQLScripts\StoredProcedures\Player\Player_CreateOrUpdate.sql" />
     <None Include="Resources\SQLScripts\StoredProcedures\Player\Player_Deserialize.sql" />
     <None Include="Resources\SQLScripts\StoredProcedures\Player\Player_DeserializeList.sql" />
+    <None Include="Resources\SQLScripts\StoredProcedures\Player\Player_DeserializeList_Paged_ByWins.sql" />
     <None Include="Resources\SQLScripts\StoredProcedures\Player\Player_IncreaseWins.sql" />
     <None Include="Resources\SQLScripts\StoredProcedures\Player\Player_RemoveAllStatsForLogin.sql" />
     <None Include="Resources\SQLScripts\StoredProcedures\Player\Player_UpdateTimePlayed.sql" />

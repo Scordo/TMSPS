@@ -6,29 +6,12 @@ using System.Collections.Generic;
 
 namespace TMSPS.Core.SQL
 {
-    /// <summary>
-    /// This delegate is used to create an instance of the provided Generic-Type using the provided SqlDataReader
-    /// </summary>
-    public delegate ClassName ObjectFromDataReaderHandler<ClassName>(SqlDataReader reader);
-    /// <summary>
-    /// This delegate is used to create an instance of the provided Generic-Type using the provided SqlDataReader with the ability to pass optional parameters
-    /// </summary>
-    public delegate ClassName ObjectFromParameterizedDataReaderHandler<ClassName>(SqlDataReader reader, object[] filterParameters);
-    /// <summary>
-    /// This delegate is used to create an instance of the provided Generic-Type using the provided DataRow
-    /// </summary>
-    public delegate ClassName ObjectFromDataRowHandler<ClassName>(DataRow row);
-    /// <summary>
-    /// This delegate is used to create an instance of the provided Generic-Type using the provided DataRow with the ability to pass optional parameters
-    /// </summary>
-    public delegate ClassName ObjectFromParameterizedDataRowHandler<ClassName>(DataRow row, object[] filterParameters);
-
-    public class SqlHelper
+    public partial class SqlHelper
     {
         #region Non Public Members
 
         private readonly ConnectionManager _connectionManager;
-    	private bool _closeConnectionAfterCommandProcessing;
+    	private readonly bool _closeConnectionAfterCommandProcessing;
 
         #endregion
 
@@ -290,9 +273,72 @@ namespace TMSPS.Core.SQL
         /// <returns></returns>
         public DataTable ExecuteDataTable(string storedProcedureName, Dictionary<string, object> parameters)
         {
-            SqlDataAdapter adapter = new SqlDataAdapter(GenerateCommand(storedProcedureName, parameters));
+            return ExecuteDataTable(storedProcedureName, parameters, null);
+        }
+
+        /// <summary>
+        /// Executes the stored procedure with the given name, passes the provided parameters and returns the result as a DataTable
+        /// </summary>
+        /// <param name="storedProcedureName">Name of the stored procedure.</param>
+        /// <param name="parameters">The parameters.</param>
+        /// <param name="outputParameters">The output parameters.</param>
+        /// <returns></returns>
+        public DataTable ExecuteDataTable(string storedProcedureName, Dictionary<string, object> parameters, out SqlParameterCollection outputParameters)
+        {
+            return ExecuteDataTable(storedProcedureName, parameters, null, out outputParameters);
+        }
+
+        /// <summary>
+        /// Executes the stored procedure with the given name, passes the provided parameters and returns the result as a DataTable
+        /// </summary>
+        /// <param name="storedProcedureName">Name of the stored procedure.</param>
+        /// <param name="parameters">The parameters.</param>
+        /// <returns></returns>
+        public DataTable ExecuteDataTable(string storedProcedureName, IEnumerable<SqlParameter> parameters)
+        {
+            return ExecuteDataTable(storedProcedureName, null, parameters);
+        }
+
+        /// <summary>
+        /// Executes the stored procedure with the given name, passes the provided parameters and returns the result as a DataTable
+        /// </summary>
+        /// <param name="storedProcedureName">Name of the stored procedure.</param>
+        /// <param name="parameters">The parameters.</param>
+        /// <param name="outputParameters">The output parameters.</param>
+        /// <returns></returns>
+        public DataTable ExecuteDataTable(string storedProcedureName, IEnumerable<SqlParameter> parameters, out SqlParameterCollection outputParameters)
+        {
+            return ExecuteDataTable(storedProcedureName, null, parameters, out outputParameters);
+        }
+
+        /// <summary>
+        /// Executes the stored procedure with the given name, passes the provided parameters and returns the result as a DataTable
+        /// </summary>
+        /// <param name="storedProcedureName">Name of the stored procedure.</param>
+        /// <param name="parameters">The parameters.</param>
+        /// <param name="sqlParameters">The sql parameters.</param>
+        /// <returns></returns>
+        public DataTable ExecuteDataTable(string storedProcedureName, Dictionary<string, object> parameters, IEnumerable<SqlParameter> sqlParameters)
+        {
+            SqlParameterCollection outParameters;
+            return ExecuteDataTable(storedProcedureName, parameters, sqlParameters, out outParameters);
+        }
+
+        /// <summary>
+        /// Executes the stored procedure with the given name, passes the provided parameters and returns the result as a DataTable
+        /// </summary>
+        /// <param name="storedProcedureName">Name of the stored procedure.</param>
+        /// <param name="parameters">The parameters.</param>
+        /// <param name="sqlParameters">The sql parameters.</param>
+        /// <param name="outputParameters">The output parameters.</param>
+        /// <returns></returns>
+        public DataTable ExecuteDataTable(string storedProcedureName, Dictionary<string, object> parameters, IEnumerable<SqlParameter> sqlParameters, out SqlParameterCollection outputParameters)
+        {
+            SqlCommand command = GenerateCommand(storedProcedureName, parameters, sqlParameters);
+            SqlDataAdapter adapter = new SqlDataAdapter(command);
             DataSet dataSet = new DataSet();
             adapter.Fill(dataSet, "Table");
+            outputParameters = command.Parameters;
             DoPostCommandProcessing();
 
             return dataSet.Tables["Table"];
@@ -331,6 +377,77 @@ namespace TMSPS.Core.SQL
         }
 
         /// <summary>
+        /// Executes the stored procedure with the given name, passes the provided parameters and returns a SqlDataReader
+        /// </summary>
+        /// <param name="storedProcedureName">Name of the stored procedure.</param>
+        /// <param name="parameters">The parameters.</param>
+        /// <param name="outputParameters">The output parameters.</param>
+        /// <returns></returns>
+        public SqlDataReader ExecuteReader(string storedProcedureName, Dictionary<string, object> parameters, out SqlParameterCollection outputParameters)
+        {
+            return ExecuteReader(storedProcedureName, parameters, null, out outputParameters);
+        }
+
+        /// <summary>
+        /// Executes the stored procedure with the given name, passes the provided parameters and returns a SqlDataReader
+        /// </summary>
+        /// <param name="storedProcedureName">Name of the stored procedure.</param>
+        /// <param name="parameters">The parameters.</param>
+        /// <returns></returns>
+        public SqlDataReader ExecuteReader(string storedProcedureName, IEnumerable<SqlParameter> parameters)
+        {
+            SqlParameterCollection outputParameters;
+            return ExecuteReader(storedProcedureName, null, parameters, out outputParameters);
+        }
+
+        /// <summary>
+        /// Executes the stored procedure with the given name, passes the provided parameters and returns a SqlDataReader
+        /// </summary>
+        /// <param name="storedProcedureName">Name of the stored procedure.</param>
+        /// <param name="parameters">The parameters.</param>
+        /// <param name="outputParameters">The output parameters.</param>
+        /// <returns></returns>
+        public SqlDataReader ExecuteReader(string storedProcedureName, IEnumerable<SqlParameter> parameters, out SqlParameterCollection outputParameters)
+        {
+            return ExecuteReader(storedProcedureName, null, parameters, out outputParameters);
+        }
+
+        /// <summary>
+        /// Executes the stored procedure with the given name, passes the provided parameters and returns a SqlDataReader
+        /// </summary>
+        /// <param name="storedProcedureName">Name of the stored procedure.</param>
+        /// <param name="parameters">The parameters.</param>
+        /// <param name="sqlParameters">The SQL parameters.</param>
+        /// <returns></returns>
+        public SqlDataReader ExecuteReader(string storedProcedureName, Dictionary<string, object> parameters, IEnumerable<SqlParameter> sqlParameters)
+        {
+            SqlParameterCollection outputParameters;
+            return ExecuteReader(storedProcedureName, parameters, sqlParameters, out outputParameters);
+        }
+
+        /// <summary>
+        /// Executes the stored procedure with the given name, passes the provided parameters and returns a SqlDataReader
+        /// </summary>
+        /// <param name="storedProcedureName">Name of the stored procedure.</param>
+        /// <param name="parameters">The parameters.</param>
+        /// <param name="sqlParameters">The SQL parameters.</param>
+        /// <param name="outputParameters">The output parameters.</param>
+        /// <returns></returns>
+        public SqlDataReader ExecuteReader(string storedProcedureName, Dictionary<string, object> parameters, IEnumerable<SqlParameter> sqlParameters, out SqlParameterCollection outputParameters)
+        {
+            SqlCommand sqlCommand = GenerateCommand(storedProcedureName, parameters);
+
+            try
+            {
+                return sqlCommand.ExecuteReader();
+            }
+            finally 
+            {
+                outputParameters = sqlCommand.Parameters;
+            }
+        }
+
+        /// <summary>
         /// Executes the stored procedure with the given name and returns a XmlReader
         /// </summary>
         /// <param name="storedProcedureName">Name of the stored procedure.</param>
@@ -362,269 +479,6 @@ namespace TMSPS.Core.SQL
             return GenerateCommand(storedProcedureName, parameters).ExecuteXmlReader();
         }
 
-        /// <summary>
-        /// Executes the stored procedure with the given name and used the generateMethod to return an instance of the passed generic type
-        /// </summary>
-        /// <typeparam name="ClassName">The type of the class to return.</typeparam>
-        /// <param name="storedProcedureName">Name of the stored procedure.</param>
-        /// <param name="generateMethod">The method expecting a DataRow and return an instance of the passed generic type.</param>
-        /// <returns>An instance of the passed generic type </returns>
-        public ClassName ExecuteClassQuery<ClassName>(string storedProcedureName, ObjectFromDataReaderHandler<ClassName> generateMethod)
-        {
-            return ExecuteClassQuery(storedProcedureName, generateMethod, (object[]) null);
-        }
-
-        /// <summary>
-        /// Executes the stored procedure with the given name, passes the provided parameters and used the generateMethod to return an instance of the passed generic type
-        /// </summary>
-        /// <typeparam name="ClassName">The type of the class to return.</typeparam>
-        /// <param name="storedProcedureName">Name of the stored procedure.</param>
-        /// <param name="generateMethod">The method expecting a DataRow and return an instance of the passed generic type.</param>
-        /// <param name="parameters">The parameters as objects in the shape of  paramname, paramvalue, paramname, paramvalue and so on.</param>
-        /// <returns>An instance of the passed generic type</returns>
-        public ClassName ExecuteClassQuery<ClassName>(string storedProcedureName, ObjectFromDataReaderHandler<ClassName> generateMethod, params object[] parameters)
-        {
-            return ExecuteClassQuery(storedProcedureName, generateMethod, GetParametersFromObjectArray(parameters));
-        }
-
-        /// <summary>
-        /// Executes the stored procedure with the given name, passes the provided parameters and used the generateMethod to return an instance of the passed generic type
-        /// </summary>
-        /// <typeparam name="ClassName">The type of the class to return.</typeparam>
-        /// <param name="storedProcedureName">Name of the stored procedure.</param>
-        /// <param name="generateMethod">The method expecting a DataRow and return an instance of the passed generic type.</param>
-        /// <param name="parameters">The parameters.</param>
-        /// <returns>An instance of the passed generic type</returns>
-        public ClassName ExecuteClassQuery<ClassName>(string storedProcedureName, ObjectFromDataReaderHandler<ClassName> generateMethod, Dictionary<string, object> parameters)
-        {
-            if (parameters == null)
-                parameters = new Dictionary<string, object>();
-
-            SqlDataReader reader = ExecuteReader(storedProcedureName, parameters);
-
-            if (reader.Read())
-            {
-                ClassName result = generateMethod(reader);
-                DoPostCommandProcessing();
-                return result;
-            }
-
-            return default(ClassName);
-        }
-
-        /// <summary>
-        /// Executes the stored procedure with the given name and used the generateMethod to return an instance of the passed generic type. You can pass optional filter parameters which are passed to the generateMethod
-        /// </summary>
-        /// <typeparam name="ClassName">The type of the class to return.</typeparam>
-        /// <param name="storedProcedureName">Name of the stored procedure.</param>
-        /// <param name="generateMethod">The method expecting a DataRow and return an instance of the passed generic type.</param>
-        /// <param name="filterParameters">The filter parameters.</param>
-        /// <returns>An instance of the passed generic type</returns>
-        public ClassName ExecuteClassQuery<ClassName>(string storedProcedureName, ObjectFromParameterizedDataReaderHandler<ClassName> generateMethod, object[] filterParameters)
-        {
-            return ExecuteClassQuery(storedProcedureName, generateMethod, filterParameters, (object[]) null);
-        }
-
-        /// <summary>
-        /// Executes the stored procedure with the given name, passes the provided parameters and used the generateMethod to return an instance of the passed generic type. You can pass optional filter parameters which are passed to the generateMethod
-        /// </summary>
-        /// <typeparam name="ClassName">The type of the class to return.</typeparam>
-        /// <param name="storedProcedureName">Name of the stored procedure.</param>
-        /// <param name="generateMethod">The method expecting a DataRow and return an instance of the passed generic type.</param>
-        /// <param name="filterParameters">The filter parameters.</param>
-        /// <param name="parameters">The parameters as objects in the shape of  paramname, paramvalue, paramname, paramvalue and so on.</param>
-        /// <returns>An instance of the passed generic type</returns>
-        public ClassName ExecuteClassQuery<ClassName>(string storedProcedureName, ObjectFromParameterizedDataReaderHandler<ClassName> generateMethod, object[] filterParameters, params object[] parameters)
-        {
-            return ExecuteClassQuery(storedProcedureName, generateMethod, filterParameters, GetParametersFromObjectArray(parameters));
-        }
-
-        /// <summary>
-        /// Executes the stored procedure with the given name, passes the provided parameters and used the generateMethod to return an instance of the passed generic type. You can pass optional filter parameters which are passed to the generateMethod
-        /// </summary>
-        /// <typeparam name="ClassName">The type of the class to return.</typeparam>
-        /// <param name="storedProcedureName">Name of the stored procedure.</param>
-        /// <param name="generateMethod">The method expecting a DataRow and return an instance of the passed generic type.</param>
-        /// <param name="filterParameters">The filter parameters.</param>
-        /// <param name="parameters">The parameters.</param>
-        /// <returns>An instance of the passed generic type</returns>
-        public ClassName ExecuteClassQuery<ClassName>(string storedProcedureName, ObjectFromParameterizedDataReaderHandler<ClassName> generateMethod, object[] filterParameters, Dictionary<string, object> parameters)
-        {
-            if (parameters == null)
-                parameters = new Dictionary<string, object>();
-
-            SqlDataReader reader = ExecuteReader(storedProcedureName, parameters);
-
-            if (reader.Read())
-            {
-                ClassName result = generateMethod(reader, filterParameters);
-                DoPostCommandProcessing();
-                return result;
-            }
-
-            return default(ClassName);
-        }
-
-        public ClassName ExecuteClassQuery<ClassName>(string storedProcedureName, ObjectFromDataRowHandler<ClassName> generateMethod)
-        {
-            return ExecuteClassQuery(storedProcedureName, generateMethod, (object[]) null);
-        }
-
-        public ClassName ExecuteClassQuery<ClassName>(string storedProcedureName, ObjectFromDataRowHandler<ClassName> generateMethod, params object[] parameters)
-        {
-            return ExecuteClassQuery(storedProcedureName, generateMethod, GetParametersFromObjectArray(parameters));
-        }
-
-        public ClassName ExecuteClassQuery<ClassName>(string storedProcedureName, ObjectFromDataRowHandler<ClassName> generateMethod, Dictionary<string, object> parameters)
-        {
-            if (parameters == null)
-                parameters = new Dictionary<string, object>();
-
-            DataTable table = ExecuteDataTable(storedProcedureName, parameters);
-            DoPostCommandProcessing();
-
-            if (table.Rows.Count > 0)
-                return generateMethod(table.Rows[0]);
-            
-            return default(ClassName);
-        }
-
-        public ClassName ExecuteClassQuery<ClassName>(string storedProcedureName, ObjectFromParameterizedDataRowHandler<ClassName> generateMethod, object[] filterParameters)
-        {
-            return ExecuteClassQuery(storedProcedureName, generateMethod, filterParameters, (object[]) null);
-        }
-
-        public ClassName ExecuteClassQuery<ClassName>(string storedProcedureName, ObjectFromParameterizedDataRowHandler<ClassName> generateMethod, object[] filterParameters, params object[] parameters)
-        {
-            return ExecuteClassQuery(storedProcedureName, generateMethod, filterParameters, GetParametersFromObjectArray(parameters));
-        }
-
-        public ClassName ExecuteClassQuery<ClassName>(string storedProcedureName, ObjectFromParameterizedDataRowHandler<ClassName> generateMethod, object[] filterParameters, Dictionary<string, object> parameters)
-        {
-            if (parameters == null)
-                parameters = new Dictionary<string, object>();
-
-            DataTable table = ExecuteDataTable(storedProcedureName, parameters);
-            DoPostCommandProcessing();
-
-            if (table.Rows.Count > 0)
-                return generateMethod(table.Rows[0], filterParameters);
-            
-            return default(ClassName);
-        }
-
-        public List<ClassName> ExecuteClassListQuery<ClassName>(string storedProcedureName, ObjectFromDataReaderHandler<ClassName> generateMethod)
-        {
-            return ExecuteClassListQuery(storedProcedureName, generateMethod, (object[]) null);
-        }
-
-        public List<ClassName> ExecuteClassListQuery<ClassName>(string storedProcedureName, ObjectFromDataReaderHandler<ClassName> generateMethod, params object[] parameters)
-        {
-            return ExecuteClassListQuery(storedProcedureName, generateMethod, GetParametersFromObjectArray(parameters));
-        }
-
-        public List<ClassName> ExecuteClassListQuery<ClassName>(string storedProcedureName, ObjectFromDataReaderHandler<ClassName> generateMethod, Dictionary<string, object> parameters)
-        {
-            if (parameters == null)
-                parameters = new Dictionary<string, object>();
-
-            SqlDataReader reader = ExecuteReader(storedProcedureName, parameters);
-            List<ClassName> result = new List<ClassName>();
-
-            while (reader.Read())
-            {
-                result.Add(generateMethod(reader));
-            }
-
-            DoPostCommandProcessing();
-
-            return result;
-        }
-
-        public List<ClassName> ExecuteClassListQuery<ClassName>(string storedProcedureName, ObjectFromParameterizedDataReaderHandler<ClassName> generateMethod, object[] filterParameters)
-        {
-            return ExecuteClassListQuery(storedProcedureName, generateMethod, filterParameters, (object[]) null);
-        }
-
-        public List<ClassName> ExecuteClassListQuery<ClassName>(string storedProcedureName, ObjectFromParameterizedDataReaderHandler<ClassName> generateMethod, object[] filterParameters, params object[] parameters)
-        {
-            return ExecuteClassListQuery(storedProcedureName, generateMethod, filterParameters, GetParametersFromObjectArray(parameters));
-        }
-
-        public List<ClassName> ExecuteClassListQuery<ClassName>(string storedProcedureName, ObjectFromParameterizedDataReaderHandler<ClassName> generateMethod, object[] filterParameters, Dictionary<string, object> parameters)
-        {
-            if (parameters == null)
-                parameters = new Dictionary<string, object>();
-
-            SqlDataReader reader = ExecuteReader(storedProcedureName, parameters);
-            List<ClassName> result = new List<ClassName>();
-
-            while (reader.Read())
-            {
-                result.Add(generateMethod(reader, filterParameters));
-            }
-
-            DoPostCommandProcessing();
-
-            return result;
-        }
-
-        public List<ClassName> ExecuteClassListQuery<ClassName>(string storedProcedureName, ObjectFromDataRowHandler<ClassName> generateMethod)
-        {
-            return ExecuteClassListQuery(storedProcedureName, generateMethod, (object[]) null);
-        }
-
-        public List<ClassName> ExecuteClassListQuery<ClassName>(string storedProcedureName, ObjectFromDataRowHandler<ClassName> generateMethod, params object[] parameters)
-        {
-            return ExecuteClassListQuery(storedProcedureName, generateMethod, GetParametersFromObjectArray(parameters));
-        }
-
-        public List<ClassName> ExecuteClassListQuery<ClassName>(string storedProcedureName, ObjectFromDataRowHandler<ClassName> generateMethod, Dictionary<string, object> parameters)
-        {
-            if (parameters == null)
-                parameters = new Dictionary<string, object>();
-
-            DataTable table = ExecuteDataTable(storedProcedureName, parameters);
-            List<ClassName> result = new List<ClassName>();
-
-            foreach (DataRow row in table.Rows)
-            {
-                result.Add(generateMethod(row));
-            }
-
-            DoPostCommandProcessing();
-
-            return result;
-        }
-
-        public List<ClassName> ExecuteClassListQuery<ClassName>(string storedProcedureName, ObjectFromParameterizedDataRowHandler<ClassName> generateMethod, object[] filterParameters)
-        {
-            return ExecuteClassListQuery(storedProcedureName, generateMethod, filterParameters, (object[]) null);
-        }
-
-        public List<ClassName> ExecuteClassListQuery<ClassName>(string storedProcedureName, ObjectFromParameterizedDataRowHandler<ClassName> generateMethod, object[] filterParameters, params object[] parameters)
-        {
-            return ExecuteClassListQuery(storedProcedureName, generateMethod, filterParameters, GetParametersFromObjectArray(parameters));
-        }
-
-        public List<ClassName> ExecuteClassListQuery<ClassName>(string storedProcedureName, ObjectFromParameterizedDataRowHandler<ClassName> generateMethod, object[] filterParameters, Dictionary<string, object> parameters)
-        {
-            if (parameters == null)
-                parameters = new Dictionary<string, object>();
-
-            DataTable table = ExecuteDataTable(storedProcedureName, parameters);
-            List<ClassName> result = new List<ClassName>();
-
-            foreach (DataRow row in table.Rows)
-            {
-                result.Add(generateMethod(row, filterParameters));
-            }
-
-            DoPostCommandProcessing();
-
-            return result;
-        }
-
         #endregion
 
         #region Non Public Methods
@@ -637,17 +491,52 @@ namespace TMSPS.Core.SQL
         /// <returns></returns>
         private SqlCommand GenerateCommand(string storedProcedureName, IEnumerable<KeyValuePair<string, object>> parameters)
         {
-            SqlCommand command = new SqlCommand {
-                                                     Connection = ConnectionManager.Connection,
-                                                     CommandType = CommandType.StoredProcedure,
-                                                     CommandText = storedProcedureName,
-                                                     CommandTimeout = ConnectionManager.Connection.ConnectionTimeout,
-                                                     Transaction = ConnectionManager.Transaction
-                                                };
+            return GenerateCommand(storedProcedureName, parameters, null);
+        }
 
-            foreach (KeyValuePair<string, object> parameter in parameters)
+        /// <summary>
+        /// Generates a command for the provided stored procedure and parameters
+        /// </summary>
+        /// <param name="storedProcedureName">Name of the stored procedure.</param>
+        /// <param name="sqlParameters">The parameters.</param>
+        /// <returns></returns>
+        private SqlCommand GenerateCommand(string storedProcedureName, IEnumerable<SqlParameter> sqlParameters)
+        {
+            return GenerateCommand(storedProcedureName, null, sqlParameters);
+        }
+
+        /// <summary>
+        /// Generates a command for the provided stored procedure and parameters
+        /// </summary>
+        /// <param name="storedProcedureName">Name of the stored procedure.</param>
+        /// <param name="parameters">The parameters.</param>
+        /// <param name="sqlParameters">The sql parameters.</param>
+        /// <returns></returns>
+        private SqlCommand GenerateCommand(string storedProcedureName, IEnumerable<KeyValuePair<string, object>> parameters, IEnumerable<SqlParameter> sqlParameters)
+        {
+            SqlCommand command = new SqlCommand
             {
-                command.Parameters.AddWithValue(parameter.Key, parameter.Value ?? DBNull.Value);
+                Connection = ConnectionManager.Connection,
+                CommandType = CommandType.StoredProcedure,
+                CommandText = storedProcedureName,
+                CommandTimeout = ConnectionManager.Connection.ConnectionTimeout,
+                Transaction = ConnectionManager.Transaction
+            };
+
+            if (parameters != null)
+            {
+                foreach (KeyValuePair<string, object> parameter in parameters)
+                {
+                    command.Parameters.AddWithValue(parameter.Key, parameter.Value ?? DBNull.Value);
+                }
+            }
+
+            if (sqlParameters != null)
+            {
+                foreach (SqlParameter parameter in sqlParameters)
+                {
+                    command.Parameters.Add(parameter);
+                }
             }
 
             if (command.Connection.State == ConnectionState.Closed)
