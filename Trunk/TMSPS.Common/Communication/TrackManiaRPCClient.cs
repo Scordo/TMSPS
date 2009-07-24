@@ -273,7 +273,13 @@ namespace TMSPS.Core.Communication
                 SocketAsyncEventArgsUserToken userToken = (SocketAsyncEventArgsUserToken)e.UserToken;
 
                 byte[] sizeBuffer = new[] { e.Buffer[0], e.Buffer[1], e.Buffer[2], e.Buffer[3] };
-                userToken.SizeToReceive = BitConverter.ToInt32(sizeBuffer, 0);
+                int sizeToReceive = BitConverter.ToInt32(sizeBuffer, 0);
+
+                const int sizeLimitForLogging = 10 * 1024 * 1024; // 10 MB
+                if (sizeToReceive > sizeLimitForLogging)
+                    CoreLogger.UniqueInstance.Warn(string.Format("SizeToReceive is larger than 10 MB. Size is {0} bytes", sizeToReceive));
+
+                userToken.SizeToReceive = sizeToReceive;
                 userToken.CurrentRawMessageLength = 0;
                 userToken.CurrentRawMessage = string.Empty;
 
@@ -356,6 +362,7 @@ namespace TMSPS.Core.Communication
 
         private void TMNRPCClient_SocketError(object sender, SocketErrorEventArgs e)
         {
+            SocketAsyncEventArgs.Dispose();
             SocketAsyncEventArgs = null;
 
             if (e.SocketError == System.Net.Sockets.SocketError.ConnectionReset && ServerClosedConnection != null)
