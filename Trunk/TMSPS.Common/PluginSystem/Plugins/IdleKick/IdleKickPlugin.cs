@@ -177,8 +177,13 @@ namespace TMSPS.Core.PluginSystem.Plugins.IdleKick
             string nickname = GetNickname(login);
             GenericResponse<bool> kickResponse = Context.RPCClient.Methods.Kick(login, Settings.PrivateKickMessage);
 
+            if (kickResponse != null && kickResponse.Erroneous)
+                Logger.Debug(string.Format("Couldn't kick login {0}", login));
+
             if (kickResponse == null || !kickResponse.Value || nickname == null)
                 return;
+
+            Logger.Debug(string.Format("Kicked login {0}, nickname {1}", login, GetNickname(login)));
 
             SendFormattedMessage(Settings.PublicKickMessage, "Nickname", StripTMColorsAndFormatting(nickname));
         }
