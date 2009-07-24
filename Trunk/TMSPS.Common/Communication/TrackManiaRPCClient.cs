@@ -233,42 +233,35 @@ namespace TMSPS.Core.Communication
             }
         }
 
-        private void Client_MessageSent(object sender, SocketAsyncEventArgs e)
-        {
-            //ReadMessageWithPrefix(e, Client_MessageSent, true);
-        }
-
         private void Client_Connected(object sender, SocketAsyncEventArgs e)
         {
-            if (e.SocketError == System.Net.Sockets.SocketError.Success)
+            EnsureSocketSuccess(e, () =>
             {
                 if (Connected != null)
                     Connected(this, EventArgs.Empty);
 
-                ReadMessageWithPrefix(e, Client_Connected, false);
-            }
-            else
-                OnSocketError(e.SocketError);
+                e.Completed -= Client_Connected;
+                ReadMessageWithPrefix(e, false);
+            });
         }
 
-        private void ReadMessageWithPrefix(SocketAsyncEventArgs e, EventHandler<SocketAsyncEventArgs> previousMessageHandler, bool includeHandle)
+        private void ReadMessageWithPrefix(SocketAsyncEventArgs e, bool includeHandle)
         {
-            SocketAsyncEventArgsUserToken userToken = (SocketAsyncEventArgsUserToken)e.UserToken;
+            EnsureSocketSuccess(e, () =>
+            {
+                SocketAsyncEventArgsUserToken userToken = (SocketAsyncEventArgsUserToken)e.UserToken;
 
-            byte[] sizeBuffer = new byte[includeHandle ? 8 : 4];
-            e.SetBuffer(sizeBuffer, 0, sizeBuffer.Length);
+                byte[] sizeBuffer = new byte[includeHandle ? 8 : 4];
+                e.SetBuffer(sizeBuffer, 0, sizeBuffer.Length);
+                e.Completed += Client_SizeReceived;
 
-            if (previousMessageHandler != null)
-                e.Completed -= previousMessageHandler;
-
-            e.Completed += Client_SizeReceived;
-
-            userToken.Socket.InvokeAsyncMethod(userToken.Socket.ReceiveAsync, Client_SizeReceived, e);
+                userToken.Socket.InvokeAsyncMethod(userToken.Socket.ReceiveAsync, Client_SizeReceived, e);
+            });
         }
 
         private void Client_SizeReceived(object sender, SocketAsyncEventArgs e)
         {
-            if (e.SocketError == System.Net.Sockets.SocketError.Success)
+            EnsureSocketSuccess(e, () =>
             {
                 SocketAsyncEventArgsUserToken userToken = (SocketAsyncEventArgsUserToken)e.UserToken;
 
@@ -289,16 +282,12 @@ namespace TMSPS.Core.Communication
                 e.Completed += Client_MessageReceived;
 
                 userToken.Socket.InvokeAsyncMethod(userToken.Socket.ReceiveAsync, Client_MessageReceived, e);
-            }
-            else
-            {
-                OnSocketError(e.SocketError);
-            }
+            });
         }
 
         private void Client_MessageReceived(object sender, SocketAsyncEventArgs e)
         {
-            if (e.SocketError == System.Net.Sockets.SocketError.Success)
+            EnsureSocketSuccess(e, () =>
             {
                 SocketAsyncEventArgsUserToken userToken = (SocketAsyncEventArgsUserToken)e.UserToken;
                 userToken.CurrentRawMessageLength += e.BytesTransferred;
@@ -308,10 +297,10 @@ namespace TMSPS.Core.Communication
                 e.Completed -= Client_MessageReceived;
 
                 if (userToken.MoreBytesNeedToBeRead)
-                {   
+                {
                     byte[] messageBuffer = new byte[userToken.RemainingBytesToReceive];
                     e.SetBuffer(messageBuffer, 0, messageBuffer.Length);
-                    
+
                     e.Completed += Client_MessageReceived;
                     userToken.Socket.InvokeAsyncMethod(userToken.Socket.ReceiveAsync, Client_MessageReceived, e);
                 }
@@ -339,13 +328,9 @@ namespace TMSPS.Core.Communication
                         }
                     }
 
-                    ReadMessageWithPrefix(e, Client_MessageSent, true);
+                    ReadMessageWithPrefix(e, true);
                 }
-            }
-            else
-            {
-                OnSocketError(e.SocketError);
-            }
+            });
         }
 
         private void OnReadyForSendingCommands()
@@ -367,6 +352,20 @@ namespace TMSPS.Core.Communication
 
             if (e.SocketError == System.Net.Sockets.SocketError.ConnectionReset && ServerClosedConnection != null)
                 ServerClosedConnection(this, EventArgs.Empty);
+        }
+
+        private void EnsureSocketSuccess(SocketAsyncEventArgs socketEventArgs, Action action)
+        {
+            switch (socketEventArgs.SocketError)
+            {
+                case System.Net.Sockets.SocketError.Success:
+                    action();
+                    break;
+                // more handling here later
+                default:
+                    OnSocketError(socketEventArgs.SocketError);
+                    break;
+            }
         }
 
         private static XElement TryParseXElement(string xmlFragment)
