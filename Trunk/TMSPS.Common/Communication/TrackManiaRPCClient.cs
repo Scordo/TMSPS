@@ -13,6 +13,7 @@ using ProtocolType=System.Net.Sockets.ProtocolType;
 using Socket=System.Net.Sockets.Socket;
 using SocketAsyncEventArgs=System.Net.Sockets.SocketAsyncEventArgs;
 using SocketType=System.Net.Sockets.SocketType;
+using System.Linq;
 
 namespace TMSPS.Core.Communication
 {
@@ -235,12 +236,13 @@ namespace TMSPS.Core.Communication
 
         private void Client_Connected(object sender, SocketAsyncEventArgs e)
         {
+            e.Completed -= Client_Connected;
+
             EnsureSocketSuccess(e, () =>
             {
                 if (Connected != null)
                     Connected(this, EventArgs.Empty);
 
-                e.Completed -= Client_Connected;
                 ReadMessageWithPrefix(e, false);
             });
         }
@@ -261,12 +263,12 @@ namespace TMSPS.Core.Communication
 
         private void Client_SizeReceived(object sender, SocketAsyncEventArgs e)
         {
+            e.Completed -= Client_SizeReceived;
+
             EnsureSocketSuccess(e, () =>
             {
                 SocketAsyncEventArgsUserToken userToken = (SocketAsyncEventArgsUserToken)e.UserToken;
-
-                byte[] sizeBuffer = new[] { e.Buffer[0], e.Buffer[1], e.Buffer[2], e.Buffer[3] };
-                int sizeToReceive = BitConverter.ToInt32(sizeBuffer, 0);
+                int sizeToReceive = BitConverter.ToInt32(e.Buffer.Take(4).ToArray(), 0);
 
                 const int sizeLimitForLogging = 10 * 1024 * 1024; // 10 MB
                 if (sizeToReceive > sizeLimitForLogging)
@@ -278,7 +280,7 @@ namespace TMSPS.Core.Communication
 
                 byte[] messageBuffer = new byte[userToken.SizeToReceive];
                 e.SetBuffer(messageBuffer, 0, messageBuffer.Length);
-                e.Completed -= Client_SizeReceived;
+                
                 e.Completed += Client_MessageReceived;
 
                 userToken.Socket.InvokeAsyncMethod(userToken.Socket.ReceiveAsync, Client_MessageReceived, e);
@@ -287,14 +289,13 @@ namespace TMSPS.Core.Communication
 
         private void Client_MessageReceived(object sender, SocketAsyncEventArgs e)
         {
+            e.Completed -= Client_MessageReceived;
+
             EnsureSocketSuccess(e, () =>
             {
                 SocketAsyncEventArgsUserToken userToken = (SocketAsyncEventArgsUserToken)e.UserToken;
                 userToken.CurrentRawMessageLength += e.BytesTransferred;
                 userToken.CurrentRawMessage += Encoding.UTF8.GetString(e.Buffer, e.Offset, e.BytesTransferred);
-
-                e.Completed -= Client_SizeReceived;
-                e.Completed -= Client_MessageReceived;
 
                 if (userToken.MoreBytesNeedToBeRead)
                 {
@@ -303,33 +304,29 @@ namespace TMSPS.Core.Communication
 
                     e.Completed += Client_MessageReceived;
                     userToken.Socket.InvokeAsyncMethod(userToken.Socket.ReceiveAsync, Client_MessageReceived, e);
+                    return;
                 }
-                else
+
+                if (string.Compare(userToken.CurrentRawMessage, "GBXRemote 2", StringComparison.OrdinalIgnoreCase) != 0)
                 {
-                    if (string.Compare(userToken.CurrentRawMessage, "GBXRemote 2", StringComparison.OrdinalIgnoreCase) == 0)
-                        (new MethodInvoker(OnReadyForSendingCommands)).BeginInvoke(null, null);
+                    if (userToken.CurrentRawMessage.IndexOf("<methodCall>", StringComparison.OrdinalIgnoreCase) != -1)
+                    {
+                        // message is a callback
+                        XElement messageElement = TryParseXElement(userToken.CurrentRawMessage);
+
+                        if (messageElement != null && !Callbacks.CheckForKnownMethodCallback(messageElement))
+                            CoreLogger.UniqueInstance.Error("Found unknown callback: " + userToken.CurrentRawMessage);
+                    }
                     else
                     {
-                        if (userToken.CurrentRawMessage != null)
-                        {
-                            if (userToken.CurrentRawMessage.IndexOf("<methodCall>", StringComparison.OrdinalIgnoreCase) != -1)
-                            {
-                                // message is a callback
-                                XElement messageElement = TryParseXElement(userToken.CurrentRawMessage);
-
-                                if (messageElement != null && !Callbacks.CheckForKnownMethodCallback(messageElement))
-                                    CoreLogger.UniqueInstance.Error("Found unknown callback: " + userToken.CurrentRawMessage);
-                            }
-                            else
-                            {
-                                // message is a method reply
-                                MethodResponseQueue.Enqueue(userToken.CurrentRawMessage);
-                            }
-                        }
+                        // message is a method reply
+                        MethodResponseQueue.Enqueue(userToken.CurrentRawMessage);
                     }
-
-                    ReadMessageWithPrefix(e, true);
                 }
+                else
+                    ThreadPool.QueueUserWorkItem(x => OnReadyForSendingCommands());
+
+                ReadMessageWithPrefix(e, true);
             });
         }
 
