@@ -271,8 +271,12 @@ namespace TMSPS.Core.Communication
                 int sizeToReceive = BitConverter.ToInt32(e.Buffer.Take(4).ToArray(), 0);
 
                 const int sizeLimitForLogging = 10 * 1024 * 1024; // 10 MB
-                if (sizeToReceive > sizeLimitForLogging)
+                if (sizeToReceive >= sizeLimitForLogging)
+                {
                     CoreLogger.UniqueInstance.Warn(string.Format("SizeToReceive is larger than 10 MB. Size is {0} bytes", sizeToReceive));
+                    OnSocketError(System.Net.Sockets.SocketError.SocketError);
+                    return;
+                }
 
                 userToken.SizeToReceive = sizeToReceive;
                 userToken.CurrentRawMessageLength = 0;
