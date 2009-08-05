@@ -4,7 +4,6 @@ using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading;
-using System.Windows.Forms;
 using System.Xml.Linq;
 using TMSPS.Core.Communication.EventArguments;
 using TMSPS.Core.Communication.ResponseHandling;
