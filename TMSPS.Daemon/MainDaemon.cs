@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
+using System.Windows.Forms;
 using TMSPS.Core.Common;
 using TMSPS.Core.Communication;
 using TMSPS.Core.Communication.ProxyTypes;
@@ -101,7 +102,9 @@ namespace TMSPS.Daemon
             Log.ErrorToUI("Socket Error occured!");
             Log.Error(string.Format("Connection Error: {0}.", e.SocketError));
             DisposePlugins(true);
-            _client.Connect();
+            
+            Log.Info("Going to shutdown application.");
+            Environment.Exit(-1);
         }
 
         private void ServerClosedConnection(object sender, EventArgs e)
@@ -124,6 +127,7 @@ namespace TMSPS.Daemon
         {
             Plugins = ConfigSettings.GetPlugins();
             HostContext = GetHostContext();
+            HostContext.ShutdownRequested += HostContext_ShutdownRequested;
 
             if (HostContext == null)
             {
@@ -141,12 +145,22 @@ namespace TMSPS.Daemon
             Log.InfoToUI("Plugins initialized.");
         }
 
+        
+
         private void DisposePlugins(bool connectionLost)
         {
             foreach (ITMSPSPlugin plugin in Plugins)
             {
                 plugin.DisposePlugin(connectionLost);
             }
+
+            HostContext.ShutdownRequested -= HostContext_ShutdownRequested;
+        }
+
+        private void HostContext_ShutdownRequested(object sender, ShutdownRequestedEventArgs e)
+        {
+            Log.Info(string.Format("Server is shut down by {0} for the following reason: {1}", sender,  e.Reason));
+            Environment.Exit(-1);
         }
 
         private void ReadyForSendingCommands(object sender, EventArgs e)

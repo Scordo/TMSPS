@@ -31,6 +31,12 @@ namespace TMSPS.Core.PluginSystem
 
         #endregion
 
+        #region Events
+
+        public event EventHandler<ShutdownRequestedEventArgs> ShutdownRequested;
+
+        #endregion
+
         #region Constructor
 
         public PluginHostContext(TrackManiaRPCClient client, ServerInfo serverInfo, Credentials credentials, MessageStyles messageStyles, MessageConstants messageConstants, TMSPSCorePlugin corePlugin)
@@ -77,6 +83,22 @@ namespace TMSPS.Core.PluginSystem
             }
         }
 
+        public void RequestShutdown(object caller, string reason)
+        {
+            if (ShutdownRequested != null)
+                ShutdownRequested(caller, new ShutdownRequestedEventArgs(reason));
+        }
+
         #endregion
+    }
+
+    public class ShutdownRequestedEventArgs : EventArgs
+    {
+        public string Reason { get; private set; }
+
+        public ShutdownRequestedEventArgs(string reason)
+        {
+            Reason = reason;
+        }
     }
 }
