@@ -71,6 +71,25 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
 	    }
 
 	    #endregion
+
+	    #region Public Methods
+
+        public void Assign(Player player)
+        {
+            if (player == null)
+                throw new ArgumentNullException("player");
+
+            ID = player.ID;
+            Login = player.Login;
+            Nickname = player.Nickname;
+            Created = player.Created;
+            LastChanged = player.LastChanged;
+            LastTimePlayedChanged = player.LastTimePlayedChanged;
+            Wins = player.Wins;
+            TimePlayed = player.TimePlayed;
+        }
+
+	    #endregion
 	}
 
     public class IndexedPlayer : Player, IIndexedPlayerSerializable
