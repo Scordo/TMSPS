@@ -20,12 +20,36 @@
 	<WisperTargetMessage>{[Nickname]}$z {[#MessageStyle]}wispers:$z {[Message]}</WisperTargetMessage>
 	<WisperSourceMessage>{[#MessageStyle]}Wisper to $z{[Nickname]}$z{[#MessageStyle]} :$z {[Message]}</WisperSourceMessage>
 
+	<!--Flatfile Nickname resolver-->
+	
 	<NicknameResolver>
 		<Assembly>TMSPS.Core</Assembly>
 		<Class>TMSPS.Core.Common.FlatFileNicknameResolver</Class>
 		<Config filePath="users.cfg" />
-		<!--<Config filePath="users.cfg" connectionString="server=ServernameHere;database=DatabaseHere;uid=UserHere;pwd=PasswordHere;MultipleActiveResultSets=True" />-->
 	</NicknameResolver>
+
+	<!--
+	
+	MS SQL Database usage for Nickname-Resolver
+	
+	<NicknameResolver>
+		<Assembly>TMSPS.Core</Assembly>
+		<Class>TMSPS.Core.Common.SqlNicknameResolver</Class>
+		<Config connectionString="server=ServerAddress,Port;database=DatabaseName;uid=Username;pwd=Password;MultipleActiveResultSets=True" />
+	</NicknameResolver>
+	-->
+	
+	<!--
+	
+	SQLite Database usage for Nickname-Resolver
+	
+	<NicknameResolver>
+		<Assembly>TMSPS.SQLite</Assembly>
+		<Class>TMSPS.SQLite.SQLiteNicknameResolver</Class>
+		<Config connectionString="Data Source=TMSPS.sqlite;Pooling=true;FailIfMissing=true" />
+	</NicknameResolver>
+	
+	-->
 
 	<WarnManiaLinkPageContent>
 		<manialink id="WarnPanel">

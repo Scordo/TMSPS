@@ -22,9 +22,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TMSPS.TrackmaniaServiceWrap
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TMSPS.Web.ServiceController", "TMSPS.Web.ServiceController\TMSPS.Web.ServiceController.csproj", "{EF8DD701-FBD4-4C38-B71C-6CE81953A2C0}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TMSPS.SQLite", "TMSPS.SQLite\TMSPS.SQLite.csproj", "{B7C1D32F-96EB-4EFF-BA8F-1B933D2BF563}"
+EndProject
 Global
 	GlobalSection(TeamFoundationVersionControl) = preSolution
-		SccNumberOfProjects = 8
+		SccNumberOfProjects = 9
 		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
 		SccTeamFoundationServer = https://tfs09.codeplex.com/
 		SccLocalPath0 = .
@@ -49,6 +51,9 @@ Global
 		SccProjectUniqueName7 = TMSPS.Web.ServiceController\\TMSPS.Web.ServiceController.csproj
 		SccProjectName7 = TMSPS.Web.ServiceController
 		SccLocalPath7 = TMSPS.Web.ServiceController
+		SccProjectUniqueName8 = TMSPS.SQLite\\TMSPS.SQLite.csproj
+		SccProjectName8 = TMSPS.SQLite
+		SccLocalPath8 = TMSPS.SQLite
 	EndGlobalSection
 	GlobalSection(TestCaseManagementSettings) = postSolution
 		CategoryFile = TMSPS.vsmdi
@@ -86,6 +91,10 @@ Global
 		{EF8DD701-FBD4-4C38-B71C-6CE81953A2C0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EF8DD701-FBD4-4C38-B71C-6CE81953A2C0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EF8DD701-FBD4-4C38-B71C-6CE81953A2C0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B7C1D32F-96EB-4EFF-BA8F-1B933D2BF563}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B7C1D32F-96EB-4EFF-BA8F-1B933D2BF563}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B7C1D32F-96EB-4EFF-BA8F-1B933D2BF563}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B7C1D32F-96EB-4EFF-BA8F-1B933D2BF563}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
