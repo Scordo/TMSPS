@@ -6,10 +6,10 @@ BEGIN
 	with PlayerIDs AS
 	(
 		Select 
-			Row_Number() OVER(ORDER BY dbo.Ranking_GetAmountOfRank(PlayerID, 1) desc, dbo.Ranking_GetAmountOfRank(PlayerID, 2) desc, dbo.Ranking_GetAmountOfRank(PlayerID, 3) desc) as RowNr,
-			dbo.Ranking_GetAmountOfRank(PlayerID, 1) as FirstRecords, 
-			dbo.Ranking_GetAmountOfRank(PlayerID, 2) as SecondRecords,
-			dbo.Ranking_GetAmountOfRank(PlayerID, 3) as ThirdRecords,
+			Row_Number() OVER(ORDER BY SUM(CASE WHEN Rank = 1 THEN 1 ELSE 0 END) desc, SUM(CASE WHEN Rank = 2 THEN 1 ELSE 0 END) desc, SUM(CASE WHEN Rank = 3 THEN 1 ELSE 0 END) desc) as RowNr,
+			SUM(CASE WHEN Rank = 1 THEN 1 ELSE 0 END) as FirstRecords, 
+			SUM(CASE WHEN Rank = 2 THEN 1 ELSE 0 END) as SecondRecords,
+			SUM(CASE WHEN Rank = 3 THEN 1 ELSE 0 END) as ThirdRecords,
 			PlayerID
 		FROM
 			dbo.Ranking with (nolock)
