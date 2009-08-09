@@ -1,4 +1,5 @@
-﻿using TMSPS.Core.PluginSystem.Plugins.LocalRecords;
+﻿using System;
+using TMSPS.Core.PluginSystem.Plugins.LocalRecords;
 
 namespace TMSPS.SQLite
 {
@@ -37,8 +38,8 @@ namespace TMSPS.SQLite
 
             if (count == 0)
             {
-                const string insertStatement = "INSERT INTO [Rating] ([PlayerID], [ChallengeID], [Value]) VALUES (@PlayerID, @ChallengeID, @Rating)";
-                SqlHelper.ExecuteNonQuery(insertStatement, "PlayerID", playerID.Value, "ChallengeID", challengeID, "Rating", (int) rating);
+                const string insertStatement = "INSERT INTO [Rating] ([PlayerID], [ChallengeID], [Value], [Created]) VALUES (@PlayerID, @ChallengeID, @Rating, @Created)";
+                SqlHelper.ExecuteNonQuery(insertStatement, "PlayerID", playerID.Value, "ChallengeID", challengeID, "Rating", (int) rating, "Created", DateTime.Now);
                 return rating;
             }
 

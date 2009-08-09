@@ -40,10 +40,11 @@ namespace TMSPS.SQLite
                     {"Author", challenge.Author.Trim()},
                     {"Environment", challenge.Environment.Trim()},
                     {"Name", challenge.Name.Trim()},
-                    {"Races", 0}
+                    {"Races", 0},
+                    {"Created", DateTime.Now}
                 };
 
-                const string insertStatement = "INSERT INTO [Challenge] ([UniqueID], [Name], [Author], [Environment], [Races]) VALUES (@UniqueID, @Name, @Author, @Environment, @Races)";
+                const string insertStatement = "INSERT INTO [Challenge] ([UniqueID], [Name], [Author], [Environment], [Races], [Created]) VALUES (@UniqueID, @Name, @Author, @Environment, @Races, @Created)";
                 SqlHelper.ExecuteNonQuery(insertStatement, parameters);
                 loadedChallenge = Deserialize(challenge.UniqueID);
 

@@ -32,7 +32,7 @@ namespace TMSPS.SQLite
             if (!playerID.HasValue)
                 return;
 
-            const string insertStatement = "INSERT INTO Session	(PlayerID, ChallengeID, TimeOrScore) VALUES (@PlayerID, @ChallengeID, @TimeOrScore)";
+            const string insertStatement = "INSERT INTO Session	(PlayerID, ChallengeID, TimeOrScore, Created) VALUES (@PlayerID, @ChallengeID, @TimeOrScore, CURRENT_TIMESTAMP)";
             SqlHelper.ExecuteNonQuery(insertStatement, "PlayerID", playerID.Value, "ChallengeID", challengeID, "TimeOrScore", timeOrScore);
         }
 

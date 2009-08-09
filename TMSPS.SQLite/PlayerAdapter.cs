@@ -112,8 +112,8 @@ namespace TMSPS.SQLite
 
         private void CreatePlayer(Player player)
         {
-            const string createCommand = "INSERT INTO [PLAYER] ([LOGIN], [Nickname]) VALUES (@Login, @Nickname); select last_insert_rowid();";
-            int playerID = SqlHelper.ExecuteScalar<int>(createCommand, "login", player.Login, "Nickname", player.Nickname);
+            const string createCommand = "INSERT INTO [PLAYER] ([LOGIN], [Nickname], [Created], [LastTimePlayedChanged]) VALUES (@Login, @Nickname, @Created, @Created); select last_insert_rowid();";
+            int playerID = SqlHelper.ExecuteScalar<int>(createCommand, "login", player.Login, "Nickname", player.Nickname, "Created", DateTime.Now);
 
             Player createdPlayer = Deserialize(playerID);
             player.Assign(createdPlayer);
