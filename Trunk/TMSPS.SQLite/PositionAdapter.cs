@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using TMSPS.Core.PluginSystem.Plugins.LocalRecords;
 
 namespace TMSPS.SQLite
@@ -29,12 +30,40 @@ namespace TMSPS.SQLite
 
         public void AddPosition(string login, string uniqueChallengeID, ushort position, ushort maxPosition)
         {
-            throw new NotImplementedException();
+            int? playerID = GetPlayerID(login);
+
+            if (!playerID.HasValue)
+                return;
+
+            int? challengeID = GetChallengeID(uniqueChallengeID);
+
+            if (!challengeID.HasValue)
+                return;
+
+            const string insertStatement = "INSERT INTO dbo.Position (PlayerID, ChallengeID, OwnPosition, MaxPosition) VALUES (@PlayerID, @ChallengeID, @Position, @MaxPosition)";
+            SqlHelper.ExecuteNonQuery(insertStatement, "PlayerID", playerID.Value, "ChallengeID", challengeID.Value, "Position", (int) position, "MaxPosition", (int) maxPosition);
         }
 
         public List<PositionStats> DeserializeListByMost(uint top, uint positionLimit)
         {
-            throw new NotImplementedException();
+            const string selectStatement = "Select P.Nickname, M.*" +
+                                           "FROM (Select PlayerID, Count(OwnPosition) as PositionsCount FROM Position WHERE OwnPosition <= @positionLimit Group by  PlayerID Order by PositionsCount desc) M" +
+                                           "INNER JOIN Player P  on P.Id = M.PlayerID LIMIT @top";
+
+            return SqlHelper.ExecuteClassListQuery<PositionStats>(selectStatement, PositionStatsFromDataRow,"positionLimit", (int) positionLimit, "top", (int) top);
+        }
+
+        #endregion
+
+        #region Non Public Methods
+
+        private static PositionStats PositionStatsFromDataRow(DataRow row)
+        {
+            string nickname = Convert.ToString(row["Nickname"]);
+            int playerID = Convert.ToInt32(row["PlayerID"]);
+            uint positionsCount = Convert.ToUInt32(row["PositionsCount"]);
+
+            return new PositionStats(playerID, nickname, positionsCount);
         }
 
         #endregion

@@ -143,5 +143,20 @@ namespace TMSPS.SQLite
         }
 
         #endregion
+
+        #region Non Public Methods
+
+        protected int? GetPlayerID(string login)
+        {
+            return SqlHelper.ExecuteScalar<int?>("Select [ID] FROM [Player] WHERE [Login] = @Login", "login", login);
+        }
+
+        protected int? GetChallengeID(string uniqueID)
+        {
+            return SqlHelper.ExecuteScalar<int?>("Select ID FROM dbo.Challenge with(nolock) WHERE UniqueID = @UniqueID", "UniqueID", uniqueID);
+        }
+
+        #endregion
+
     }
 }

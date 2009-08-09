@@ -55,12 +55,32 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
 		}
 
 		#endregion
+
+	    #region Public Methods
+
+        public void Assign(Challenge challenge)
+        {
+            if (challenge == null)
+                throw new ArgumentNullException("challenge");
+
+            ID = challenge.ID;
+            Created = challenge.Created;
+            LastChanged = challenge.LastChanged;
+            UniqueID = challenge.UniqueID;
+            Name = challenge.Name;
+            Author = challenge.Author;
+            Environment = challenge.Environment;
+            Races = challenge.Races;
+        }
+
+	    #endregion
+
 	}
 
-	public interface IChallengeSerializable
-	{
-		int? ID { get; set; }
-		DateTime Created { get; set; }
-		DateTime? LastChanged { get; set; }
-	}
+    public interface IChallengeSerializable
+    {
+        int? ID { get; set; }
+        DateTime Created { get; set; }
+        DateTime? LastChanged { get; set; }
+    }
 }

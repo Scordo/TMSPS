@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Text;
 using TMSPS.Core.PluginSystem.Plugins.LocalRecords;
+using TMSPS.Core.SQL;
 
 namespace TMSPS.SQLite
 {
@@ -55,37 +55,55 @@ namespace TMSPS.SQLite
 
         public uint IncreaseWins(string login)
         {
-            throw new NotImplementedException();
+            if (login == null)
+                throw new ArgumentNullException("login");
+
+            return SqlHelper.ExecuteScalar<uint>("Update [Player] SET Wins = Wins + 1, LastChanged = CURRENT_TIMESTAMP where [Login] = @Login; Select [Wins] FROM [Player] WHERE [Login] = @Login", "Login", login);
         }
 
         public ulong? UpdateTimePlayed(string login)
         {
-            throw new NotImplementedException();
+            Player player = Deserialize(login);
+
+            if (player == null)
+                return null;
+
+            TimeSpan difference = DateTime.Now - player.LastTimePlayedChanged;
+            TimeSpan timePlayed = player.TimePlayed;
+
+            if (difference < TimeSpan.FromHours(12))
+                timePlayed = timePlayed.Add(difference);
+
+            ulong millisecondsPlayed = Convert.ToUInt64(timePlayed.TotalMilliseconds);
+
+            SqlHelper.ExecuteNonQuery("Update [Player] SET TimePlayed = @TimePlayed, LastTimePlayedChanged = CURRENT_TIMESTAMP, LastChanged = CURRENT_TIMESTAMP where [Login] = @Login", "Login", login, "TimePlayed", millisecondsPlayed);
+
+            return millisecondsPlayed;
         }
 
         public List<Player> DeserializeList(uint top, PlayerSortOrder sorting, bool ascending)
         {
-            throw new NotImplementedException();
+            string selectStatement = string.Format("Select * From [Player] order by {0} {1}", sorting, ascending ? "asc" : "desc");
+            return SqlHelper.ExecuteClassListQuery<Player>(selectStatement, IndexedPlayerFromDataRow);
         }
 
         public bool RemoveAllStatsForLogin(string login)
         {
-            throw new NotImplementedException();
+            // implement later
+            return false;
         }
 
-        public Core.SQL.PagedList<IndexedPlayer> DeserializeListByWins(int? startIndex, int? endIndex)
+        public PagedList<IndexedPlayer> DeserializeListByWins(int? startIndex, int? endIndex)
         {
-            throw new NotImplementedException();
+            const string countStatement = "Select Count(*) From [Player]";
+            const string selectStatement = "Select * From [Player] order by [Wins] desc";
+
+            return SqlHelper.ExecutePagedClassListQuery<IndexedPlayer>(countStatement, selectStatement, IndexedPlayerFromDataRow, startIndex, endIndex);
         }
 
         #endregion
 
         #region Non Public Methods
-
-        private int? GetPlayerID(string login)
-        {
-            return SqlHelper.ExecuteScalar<int?>("Select [ID] FROM [Player] WHERE [Login] = @Login", "login", login);
-        }
 
         private Player Deserialize(int playerID)
         {

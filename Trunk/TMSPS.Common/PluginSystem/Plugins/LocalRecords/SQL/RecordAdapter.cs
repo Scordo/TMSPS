@@ -43,14 +43,6 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords.SQL
             newBest = Convert.ToInt16(row["NewBest"]) == 1;
         }
 
-        public RankEntry GetFirstRecordForChallenge(int challengeID)
-        {
-            List<RankEntry> list = GetTopRecordsForChallenge(challengeID, 1);
-
-            return list.Count == 0 ? null : list[0];
-        }
-
-
         public List<RankEntry> GetTopRecordsForChallenge(int challengeID, uint maxRecords)
         {
             return SqlHelper.ExecuteClassListQuery<RankEntry>("Record_GetTopRecords", RankEntryFromDataRow, "ChallengeID", challengeID, "MaxRecords", Convert.ToInt32(maxRecords));

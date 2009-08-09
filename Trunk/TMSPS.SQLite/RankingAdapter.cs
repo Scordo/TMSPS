@@ -19,14 +19,23 @@ namespace TMSPS.SQLite
         /// Initializes a new instance of the <see cref="RankingAdapter"/> class.
         /// </summary>
         /// <param name="connectionManager">The connection manager.</param>
-        public RankingAdapter(ConnectionManager connectionManager)
-            : base(connectionManager)
+        public RankingAdapter(ConnectionManager connectionManager) : base(connectionManager)
         {
         }
 
         #endregion
 
         #region IRankingAdapter Members
+
+        public void UpdateForChallenge(int challengeID)
+        {
+            
+        }
+
+        public void UpdateForChallenge(string uniqueChallengeID)
+        {
+            
+        }
 
         public Ranking Deserialize_ByLogin(string login)
         {
@@ -68,15 +77,7 @@ namespace TMSPS.SQLite
             throw new NotImplementedException();
         }
 
-        public void UpdateForChallenge(int challengeID)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void UpdateForChallenge(string uniqueChallengeID)
-        {
-            throw new NotImplementedException();
-        }
+        
 
         public List<Ranking> Deserialize_PagedList(uint startIndex, uint endIndex)
         {
