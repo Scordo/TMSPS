@@ -83,8 +83,8 @@ namespace TMSPS.SQLite
 
         public List<Player> DeserializeList(uint top, PlayerSortOrder sorting, bool ascending)
         {
-            string selectStatement = string.Format("Select * From [Player] order by {0} {1}", sorting, ascending ? "asc" : "desc");
-            return SqlHelper.ExecuteClassListQuery<Player>(selectStatement, IndexedPlayerFromDataRow);
+            string selectStatement = string.Format("Select ROWID as RowNumber, * From [Player] order by {0} {1} Limit @top", sorting, ascending ? "asc" : "desc");
+            return SqlHelper.ExecuteClassListQuery<Player>(selectStatement, IndexedPlayerFromDataRow, "top", (int) top);
         }
 
         public bool RemoveAllStatsForLogin(string login)

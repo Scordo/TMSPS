@@ -34,7 +34,7 @@ namespace TMSPS.SQLite
                 return null;
 
             const string countStatement = "Select Count(*) FROM [Rating] WHERE [PlayerID] = @PlayerID and [ChallengeID] = @ChallengeID";
-            int count = SqlHelper.ExecuteScalar<int>(countStatement, "ChallengeID", challengeID);
+            int count = SqlHelper.ExecuteScalar<int>(countStatement, "ChallengeID", challengeID, "PlayerID", playerID.Value);
 
             if (count == 0)
             {

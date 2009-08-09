@@ -47,7 +47,7 @@ namespace TMSPS.SQLite
         public List<PositionStats> DeserializeListByMost(uint top, uint positionLimit)
         {
             const string selectStatement = "Select P.Nickname, M.*" +
-                                           "FROM (Select PlayerID, Count(OwnPosition) as PositionsCount FROM Position WHERE OwnPosition <= @positionLimit Group by  PlayerID Order by PositionsCount desc) M" +
+                                           "FROM (Select PlayerID, Count(OwnPosition) as PositionsCount FROM Position WHERE OwnPosition <= @positionLimit Group by  PlayerID Order by PositionsCount desc) M " +
                                            "INNER JOIN Player P  on P.Id = M.PlayerID LIMIT @top";
 
             return SqlHelper.ExecuteClassListQuery<PositionStats>(selectStatement, PositionStatsFromDataRow,"positionLimit", (int) positionLimit, "top", (int) top);
