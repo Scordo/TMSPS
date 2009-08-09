@@ -73,8 +73,19 @@ namespace TMSPS.SQLite
             const string deleteStatement = "Delete FROM Ranking WHERE ChallengeID = @ChallengeID";
             SqlHelper.ExecuteNonQuery(deleteStatement, "ChallengeID", challengeID);
 
-            const string insertStatement = "INSERT INTO Ranking Select RowID as Rank, @ChallengeID as ChallengeID, PlayerID From Record WHERE ChallengeID = @ChallengeID order by TimeOrScore asc, LastChanged asc";
-            SqlHelper.ExecuteNonQuery(insertStatement, "ChallengeID", challengeID);
+            string tempDBName = "T" + Guid.NewGuid().ToString("N");
+            SqlHelper.ExecuteNonQuery("ATTACH DATABASE ':memory:' AS " + tempDBName);
+
+            string createTableStatement = "CREATE TABLE " + tempDBName + ".[TempRanking] ([ChallengeID] INTEGER NOT NULL, [PlayerID] INTEGER NOT NULL)";
+            SqlHelper.ExecuteNonQuery(createTableStatement);
+
+            string tempInsertStatement = "INSERT INTO " + tempDBName + ".[TempRanking] Select @ChallengeID as ChallengeID, PlayerID From Record WHERE ChallengeID = @ChallengeID order by TimeOrScore asc, LastChanged asc";
+            SqlHelper.ExecuteNonQuery(tempInsertStatement, "ChallengeID", challengeID);
+
+            string insertStatement = "INSERT INTO Ranking Select *, ROWID as [Rank] FROM " + tempDBName + ".[TempRanking]";
+            SqlHelper.ExecuteNonQuery(insertStatement);
+
+            SqlHelper.ExecuteNonQuery("DETACH DATABASE " + tempDBName);
 
             ReCreateRankTable();
         }
@@ -147,10 +158,22 @@ namespace TMSPS.SQLite
             const string deleteStatement = "DELETE FROM Rank";
             SqlHelper.ExecuteNonQuery(deleteStatement);
 
-            const string insertStatement = "INSERT INTO [Rank] Select PlayerID, ROWID as [Rank], AVG(Rank) as AverageRank, Count([Rank]) as RecordsCount, @challengesCount as ChallengesCount, (AVG(Rank) + (@challengesCount+1) / (Count([Rank])+1) * (@challengesCount - Count([Rank]))) as Score " +
-                                           "From Ranking GROUP By  PlayerID order by (AVG(Rank) + (@challengesCount+1) / (Count([Rank])+1) * (@challengesCount - Count([Rank]))) ASC";
+            string tempDBName = "T"+ Guid.NewGuid().ToString("N");
+            SqlHelper.ExecuteNonQuery("ATTACH DATABASE ':memory:' AS " + tempDBName);
 
-            SqlHelper.ExecuteNonQuery(insertStatement, "challengesCount", challengesCount);
+            string createTableStatement = "CREATE TABLE " + tempDBName + ".[TempRank] ([PlayerID] INTEGER PRIMARY KEY, [AverageRank] REAL NOT NULL, [ChallengesCount] INTEGER NOT NULL, [Score] REAL NOT NULL, [RecordsCount] INTEGER NOT NULL)";
+
+            SqlHelper.ExecuteNonQuery(createTableStatement);
+
+            string tempInsertStatement = "INSERT INTO " + tempDBName + ".[TempRank] Select PlayerID, AVG(Rank) as AverageRank, @challengesCount as ChallengesCount, (AVG(Rank) + (@challengesCount+1) / (Count([Rank])+1) * (@challengesCount - Count([Rank]))) as Score, Count([Rank]) as RecordsCount " +
+                                         "From Ranking GROUP By  PlayerID order by (AVG(Rank) + (@challengesCount+1) / (Count([Rank])+1) * (@challengesCount - Count([Rank]))) ASC";
+
+            SqlHelper.ExecuteNonQuery(tempInsertStatement, "challengesCount", challengesCount);
+
+            string insertStatement = "INSERT INTO [Rank] Select ROWID as [Rank], * FROM " + tempDBName + ".[TempRank]";
+            SqlHelper.ExecuteNonQuery(insertStatement);
+
+            SqlHelper.ExecuteNonQuery("DETACH DATABASE "+ tempDBName);
         }
 
         private static Ranking RankingFromDataRow(DataRow row)

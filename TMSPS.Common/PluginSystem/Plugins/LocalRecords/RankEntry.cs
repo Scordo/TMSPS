@@ -4,10 +4,10 @@
     {
         #region Properties
 
-        public ushort Rank { get; private set; }
-        public string Login { get; private set; }
-        public string Nickname { get; private set; }
-        public uint TimeOrScore { get; private set; }
+        public ushort Rank { get; set; }
+        public string Login { get; set; }
+        public string Nickname { get; set; }
+        public uint TimeOrScore { get; set; }
 
         #endregion
 
