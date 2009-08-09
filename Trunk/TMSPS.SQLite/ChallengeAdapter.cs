@@ -94,17 +94,47 @@ namespace TMSPS.SQLite
 
         public int DeleteTracksNotInProvidedList(List<string> uniqueTrackIDs)
         {
-            return 0;
+            // do not delete all maps
+            if (uniqueTrackIDs == null || uniqueTrackIDs.Count == 0)
+                return 0;
+
+            const string selectStatement = "Select UniqueID From Challenge";
+            HashSet<string> uniqueTrackIDsFromDB = new HashSet<string>(SqlHelper.ExecuteClassListQuery(selectStatement, (DataRow row) => Convert.ToString(row["UniqueID"])), StringComparer.Ordinal);
+            uniqueTrackIDsFromDB.ExceptWith(uniqueTrackIDs);
+
+            foreach (string uniqueTrackID in uniqueTrackIDsFromDB)
+            {
+                DeleteTrack(uniqueTrackID);
+            }
+
+            return uniqueTrackIDsFromDB.Count;
         }
 
         public void DeleteTrack(string uniqueChallengeID)
         {
-            
+            int? challengeID = GetChallengeID(uniqueChallengeID);
+
+            if (!challengeID.HasValue)
+                return;
+
+            SqlHelper.ExecuteNonQuery("DELETE [Session] WHERE ChallengeId = @challengeID", "@challengeID", challengeID.Value);
+            SqlHelper.ExecuteNonQuery("DELETE [Record] WHERE ChallengeId = @challengeID", "@challengeID", challengeID.Value);
+            SqlHelper.ExecuteNonQuery("DELETE [Rating] WHERE ChallengeId = @challengeID", "@challengeID", challengeID.Value);
+            SqlHelper.ExecuteNonQuery("DELETE [Ranking] WHERE ChallengeId = @challengeID", "@challengeID", challengeID.Value);
+            SqlHelper.ExecuteNonQuery("DELETE [Position] WHERE ChallengeId = @challengeID", "@challengeID", challengeID.Value);
+            SqlHelper.ExecuteNonQuery("DELETE [Challenge] WHERE ID = @challengeID", "@challengeID", challengeID.Value);
         }
 
         public List<string> GetDrivenUniqueTrackIDs(string login)
         {
-            return new List<string>();
+            int? playerID = GetPlayerID(login);
+
+            if (!playerID.HasValue)
+                return new List<string>();
+
+            const string selectStatement = "Select c.UniqueID FROM Record r INNER JOIN Challenge c on c.ID = r.ChallengeID WHERE r.PlayerID = @PlayerID";
+
+            return SqlHelper.ExecuteClassListQuery(selectStatement, (DataRow r) => Convert.ToString(r["UniqueID"]), "PlayerID", playerID.Value);
         }
 
         #endregion
