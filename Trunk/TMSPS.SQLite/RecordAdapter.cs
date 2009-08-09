@@ -63,13 +63,20 @@ namespace TMSPS.SQLite
 
         public List<RankEntry> GetTopRecordsForChallenge(int challengeID, uint maxRecords)
         {
-            const string selectStatement = "Select R.ROWID as [Rank], P.Login as Login, P.Nickname as Nickname, R.TimeOrScore as TimeOrScore " +
+            const string selectStatement = "Select 1 as [Rank], P.Login as Login, P.Nickname as Nickname, R.TimeOrScore as TimeOrScore " +
                                            "FROM Record R INNER JOIN Player P on P.ID = R.PlayerID " +
                                            "WHERE R.ChallengeID = @ChallengeID " +
                                            "ORDER BY R.TimeOrScore asc, R.LastChanged asc " +
                                            "LIMIT @MaxRecords";
 
-            return SqlHelper.ExecuteClassListQuery<RankEntry>(selectStatement, RankEntryFromDataRow, "ChallengeID", challengeID, "MaxRecords", Convert.ToInt32(maxRecords));
+            List<RankEntry> result = SqlHelper.ExecuteClassListQuery<RankEntry>(selectStatement, RankEntryFromDataRow, "ChallengeID", challengeID, "MaxRecords", Convert.ToInt32(maxRecords));
+
+            for (ushort i = 0; i< result.Count; i++)
+            {
+                result[i].Rank += i;
+            }
+
+            return result;
         }
 
         public uint? GetBestTime(string login, int challengeID)
@@ -86,21 +93,21 @@ namespace TMSPS.SQLite
 
         private void GetPositionAndTimeOrScore(int playerID, int challengeID, out int? position, out int? timeOrScore)
         {
-            const string selectStatement = "Select RowNr, TimeOrScore " +
-                                           "FROM(Select RowID as RowNr, TimeOrScore, PlayerID FROM Record WHERE ChallengeID = @ChallengeID order by  TimeOrScore asc,  LastChanged asc)" +
-                                           "WHERE PlayerID = @PlayerID";
+            position = null;
 
-            DataTable resultTable = SqlHelper.ExecuteDataTable(selectStatement, "PlayerID", playerID, "ChallengeID", challengeID);
+            const string selectTOSStatement = "Select TimeOrScore FROM Record WHERE PlayerID = @PlayerID";
+            timeOrScore = SqlHelper.ExecuteScalar<int?>(selectTOSStatement, "PlayerID", playerID);
 
-            if (resultTable.Rows.Count == 0)
-            {
-                position = null;
-                timeOrScore = null;
+            if (!timeOrScore.HasValue)
                 return;
-            }
 
-            position = Convert.ToInt32(resultTable.Rows[0]["RowNr"]);
-            timeOrScore = Convert.ToInt32(resultTable.Rows[0]["TimeOrScore"]);
+            const string selectStatement = "Select PlayerID FROM Record WHERE ChallengeID = @ChallengeID order by  TimeOrScore asc,  LastChanged asc";
+            List<int> orderedPlayers = SqlHelper.ExecuteClassListQuery(selectStatement, (DataRow r) => Convert.ToInt32(r["PlayerID"]), "PlayerID", playerID, "ChallengeID", challengeID);
+
+            int playerIndex = orderedPlayers.IndexOf(playerID);
+
+            if (playerIndex != -1)
+                position = playerIndex + 1;
         }
 
         private static RankEntry RankEntryFromDataRow(DataRow row)

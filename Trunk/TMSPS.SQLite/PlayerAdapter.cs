@@ -83,8 +83,15 @@ namespace TMSPS.SQLite
 
         public List<Player> DeserializeList(uint top, PlayerSortOrder sorting, bool ascending)
         {
-            string selectStatement = string.Format("Select ROWID as RowNumber, * From [Player] order by {0} {1} Limit @top", sorting, ascending ? "asc" : "desc");
-            return SqlHelper.ExecuteClassListQuery<Player>(selectStatement, IndexedPlayerFromDataRow, "top", (int) top);
+            string selectStatement = string.Format("Select 1 as RowNumber, * From [Player] order by {0} {1} Limit @top", sorting, ascending ? "asc" : "desc");
+            List<Player> result = SqlHelper.ExecuteClassListQuery<Player>(selectStatement, IndexedPlayerFromDataRow, "top", (int)top);
+
+            for (ushort i = 0; i < result.Count; i++)
+            {
+                ((IIndexedPlayerSerializable)result[i]).RowNumber += i;
+            }
+
+            return result;
         }
 
         public bool RemoveAllStatsForLogin(string login)
@@ -107,9 +114,16 @@ namespace TMSPS.SQLite
         public PagedList<IndexedPlayer> DeserializeListByWins(int? startIndex, int? endIndex)
         {
             const string countStatement = "Select Count(*) From [Player]";
-            const string selectStatement = "Select * From [Player] order by [Wins] desc";
+            const string selectStatement = "Select 1 as RowNumber, * From [Player] order by [Wins] desc";
 
-            return SqlHelper.ExecutePagedClassListQuery<IndexedPlayer>(countStatement, selectStatement, IndexedPlayerFromDataRow, startIndex, endIndex);
+            PagedList<IndexedPlayer> result = SqlHelper.ExecutePagedClassListQuery<IndexedPlayer>(countStatement, selectStatement, IndexedPlayerFromDataRow, startIndex, endIndex);
+
+            for (ushort i = 0; i < result.Count; i++)
+            {
+                ((IIndexedPlayerSerializable)result[i]).RowNumber += i + (startIndex.HasValue ? Convert.ToUInt16(startIndex.Value) :(ushort) 0);
+            }
+
+            return result;
         }
 
         #endregion
