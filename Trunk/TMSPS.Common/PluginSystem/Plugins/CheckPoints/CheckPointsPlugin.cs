@@ -104,7 +104,9 @@ namespace TMSPS.Core.PluginSystem.Plugins.CheckPoints
                 }
 
                 int? diff = GetDiff(e.Login, 0, e.TimeOrScore, true);
-                SendCheckPointUIToLogin(e.Login, diff.Value, 0, true);
+
+                if (diff.HasValue)
+                    SendCheckPointUIToLogin(e.Login, diff.Value, 0, true);
             }, "Error in Callbacks_PlayerFinish Method.", true);
         }
 
