@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using TMSPS.Core.PluginSystem.Plugins.LocalRecords;
 
 namespace TMSPS.SQLite
@@ -29,47 +30,106 @@ namespace TMSPS.SQLite
 
         public void TryCreate(Challenge challenge)
         {
-            throw new NotImplementedException();
+            Challenge loadedChallenge = Deserialize(challenge.UniqueID);
+
+            if (loadedChallenge == null)
+            {
+                Dictionary<string, object> parameters = new Dictionary<string, object>
+                {
+                    {"UniqueID", challenge.UniqueID.Trim()},
+                    {"Author", challenge.Author.Trim()},
+                    {"Environment", challenge.Environment.Trim()},
+                    {"Name", challenge.Name.Trim()},
+                    {"Races", 0}
+                };
+
+                const string insertStatement = "INSERT INTO [Challenge] ([UniqueID], [Name], [Author], [Environment], [Races]) VALUES (@UniqueID, @Name, @Author, @Environment, @Races)";
+                SqlHelper.ExecuteNonQuery(insertStatement, parameters);
+                loadedChallenge = Deserialize(challenge.UniqueID);
+
+                if (loadedChallenge == null)
+                    throw new InvalidOperationException("Could not deserialize recently created challenge");
+            }
+
+            challenge.Assign(loadedChallenge);
         }
 
         public Challenge Deserialize(int challengeID)
         {
-            throw new NotImplementedException();
+            const string selectStatement = "Select * From [Challenge] where [ID] = @ID";
+            return SqlHelper.ExecuteClassQuery<Challenge>(selectStatement, ChallengeFromDataRow, "ID", challengeID);
         }
 
         public Challenge Deserialize(string uniqueID)
         {
-            throw new NotImplementedException();
+            const string selectStatement = "Select * From [Challenge] where [UniqueID] = @UniqueID";
+            return SqlHelper.ExecuteClassQuery<Challenge>(selectStatement, ChallengeFromDataRow, "UniqueID", uniqueID);
         }
 
         public int? IncreaseRaces(int challengeID)
         {
-            throw new NotImplementedException();
+            const string updateStatement = "Update [Challenge] SET [Races] = [Races] + 1 WHERE ID = @ID";
+            SqlHelper.ExecuteNonQuery(updateStatement, "ID", challengeID);
+
+            const string selectStatement = "Select [Races] FROm [Challenge] WHERE [ID] = @ID";
+            return SqlHelper.ExecuteScalar<int?>(selectStatement, "ID", challengeID);
         }
 
         public int? IncreaseRaces(string uniqueID)
         {
-            throw new NotImplementedException();
+            const string updateStatement = "Update [Challenge] SET [Races] = [Races] + 1 WHERE UniqueID = @UniqueID";
+            SqlHelper.ExecuteNonQuery(updateStatement, "UniqueID", uniqueID);
+
+            const string selectStatement = "Select [Races] FROm [Challenge] WHERE [UniqueID] = @UniqueID";
+            return SqlHelper.ExecuteScalar<int?>(selectStatement, "UniqueID", uniqueID);
         }
 
         public void IncreaseRaces(Challenge challenge)
         {
-            throw new NotImplementedException();
+            TryCreate(challenge);
+            IncreaseRaces(challenge.ID.Value);
+            challenge.Races += 1;
         }
 
         public int DeleteTracksNotInProvidedList(List<string> uniqueTrackIDs)
         {
-            throw new NotImplementedException();
+            return 0;
         }
 
         public void DeleteTrack(string uniqueChallengeID)
         {
-            throw new NotImplementedException();
+            
         }
 
         public List<string> GetDrivenUniqueTrackIDs(string login)
         {
-            throw new NotImplementedException();
+            return new List<string>();
+        }
+
+        #endregion
+
+
+        #region Non Public Methods
+
+        // <summary>
+        /// Creates an instance of Challenge extracting the necessary data from the provided datarow.
+        /// </summary>
+        /// <param name="row">The data row.</param>
+        /// <returns></returns>
+        private static Challenge ChallengeFromDataRow(DataRow row)
+        {
+            Challenge challenge = new Challenge();
+            IChallengeSerializable challengeSerializable = challenge;
+
+            challengeSerializable.ID = Convert.ToInt32(row["ID"]);
+            challengeSerializable.Created = Convert.ToDateTime(row["Created"]);
+            challengeSerializable.LastChanged = row["LastChanged"] == DBNull.Value ? null : (DateTime?) Convert.ToDateTime(row["LastChanged"]);
+            challenge.UniqueID = Convert.ToString(row["UniqueID"]);
+            challenge.Author = Convert.ToString(row["Author"]);
+            challenge.Environment = Convert.ToString(row["Environment"]);
+            challenge.Races = Convert.ToInt32(row["Races"]);
+
+            return challenge;
         }
 
         #endregion

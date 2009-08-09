@@ -1,5 +1,4 @@
-﻿using System;
-using TMSPS.Core.PluginSystem.Plugins.LocalRecords;
+﻿using TMSPS.Core.PluginSystem.Plugins.LocalRecords;
 
 namespace TMSPS.SQLite
 {
@@ -28,7 +27,13 @@ namespace TMSPS.SQLite
 
         public void AddSession(string login, int challengeID, uint timeOrScore)
         {
-            throw new NotImplementedException();
+            int? playerID = GetPlayerID(login);
+
+            if (!playerID.HasValue)
+                return;
+
+            const string insertStatement = "INSERT INTO Session	(PlayerID, ChallengeID, TimeOrScore) VALUES (@PlayerID, @ChallengeID, @TimeOrScore)";
+            SqlHelper.ExecuteNonQuery(insertStatement, "PlayerID", playerID.Value, "ChallengeID", challengeID, "TimeOrScore", timeOrScore);
         }
 
         #endregion

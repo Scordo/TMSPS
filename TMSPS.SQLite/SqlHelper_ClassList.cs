@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Data;
 using System.Data.SQLite;
 using TMSPS.Core.SQL;
@@ -10,22 +9,22 @@ namespace TMSPS.SQLite
     {
         #region From DataRow
 
-        public List<ClassName> ExecuteClassListQuery<ClassName>(string storedProcedureName, ObjectFromDataRowHandler<ClassName> generateMethod)
+        public List<ClassName> ExecuteClassListQuery<ClassName>(string selectStatement, ObjectFromDataRowHandler<ClassName> generateMethod)
         {
-            return ExecuteClassListQuery(storedProcedureName, generateMethod, (object[])null);
+            return ExecuteClassListQuery(selectStatement, generateMethod, (object[])null);
         }
 
-        public List<ClassName> ExecuteClassListQuery<ClassName>(string storedProcedureName, ObjectFromDataRowHandler<ClassName> generateMethod, params object[] parameters)
+        public List<ClassName> ExecuteClassListQuery<ClassName>(string selectStatement, ObjectFromDataRowHandler<ClassName> generateMethod, params object[] parameters)
         {
-            return ExecuteClassListQuery(storedProcedureName, generateMethod, GetParametersFromObjectArray(parameters));
+            return ExecuteClassListQuery(selectStatement, generateMethod, GetParametersFromObjectArray(parameters));
         }
 
-        public List<ClassName> ExecuteClassListQuery<ClassName>(string storedProcedureName, ObjectFromDataRowHandler<ClassName> generateMethod, Dictionary<string, object> parameters)
+        public List<ClassName> ExecuteClassListQuery<ClassName>(string selectStatement, ObjectFromDataRowHandler<ClassName> generateMethod, Dictionary<string, object> parameters)
         {
             if (parameters == null)
                 parameters = new Dictionary<string, object>();
 
-            DataTable table = ExecuteDataTable(storedProcedureName, parameters);
+            DataTable table = ExecuteDataTable(selectStatement, parameters);
             List<ClassName> result = new List<ClassName>();
 
             foreach (DataRow row in table.Rows)
@@ -38,29 +37,25 @@ namespace TMSPS.SQLite
             return result;
         }
 
-        public PagedList<ClassName> ExecutePagedClassListQuery<ClassName>(string storedProcedureName, ObjectFromDataRowHandler<ClassName> generateMethod, int? startIndex, int? endIndex)
+        public PagedList<ClassName> ExecutePagedClassListQuery<ClassName>(string countStatement, string selectStatement, ObjectFromDataRowHandler<ClassName> generateMethod, int? startIndex, int? endIndex)
         {
-            return ExecutePagedClassListQuery(storedProcedureName, generateMethod, startIndex, endIndex, (object[])null);
+            return ExecutePagedClassListQuery(countStatement, selectStatement, generateMethod, startIndex, endIndex, (object[])null);
         }
 
-        public PagedList<ClassName> ExecutePagedClassListQuery<ClassName>(string storedProcedureName, ObjectFromDataRowHandler<ClassName> generateMethod, int? startIndex, int? endIndex, params object[] parameters)
+        public PagedList<ClassName> ExecutePagedClassListQuery<ClassName>(string countStatement, string selectStatement, ObjectFromDataRowHandler<ClassName> generateMethod, int? startIndex, int? endIndex, params object[] parameters)
         {
-            return ExecutePagedClassListQuery(storedProcedureName, generateMethod, startIndex, endIndex, GetParametersFromObjectArray(parameters));
+            return ExecutePagedClassListQuery(countStatement, selectStatement, generateMethod, startIndex, endIndex, GetParametersFromObjectArray(parameters));
         }
 
-        public PagedList<ClassName> ExecutePagedClassListQuery<ClassName>(string storedProcedureName, ObjectFromDataRowHandler<ClassName> generateMethod, int? startIndex, int? endIndex, Dictionary<string, object> parameters)
+        public PagedList<ClassName> ExecutePagedClassListQuery<ClassName>(string countStatement, string selectStatement, ObjectFromDataRowHandler<ClassName> generateMethod, int? startIndex, int? endIndex, Dictionary<string, object> parameters)
         {
             if (parameters == null)
                 parameters = new Dictionary<string, object>();
 
-            SQLiteParameter virtualCountParameter = new SQLiteParameter("@VirtualCount", SqlDbType.Int) { Direction = ParameterDirection.Output };
-            SQLiteParameter startIndexParameter = new SQLiteParameter("@StartIndex", startIndex == null ? DBNull.Value : (object)startIndex.Value);
-            SQLiteParameter endIndexParameter = new SQLiteParameter("@EndIndex", endIndex == null ? DBNull.Value : (object)endIndex.Value);
+            int virtualCount = ExecuteScalar<int>(countStatement, parameters);
+            DataTable table = ExecuteDataTable(selectStatement, parameters);
 
-            SQLiteParameterCollection outputParameters;
-            DataTable table = ExecuteDataTable(storedProcedureName, parameters, new[] { startIndexParameter, endIndexParameter, virtualCountParameter }, out outputParameters);
-
-            PagedList<ClassName> result = new PagedList<ClassName> { VirtualCount = Convert.ToInt32(outputParameters["@VirtualCount"].Value) };
+            PagedList<ClassName> result = new PagedList<ClassName> { VirtualCount = virtualCount };
 
             foreach (DataRow row in table.Rows)
             {
@@ -76,22 +71,22 @@ namespace TMSPS.SQLite
 
         #region From DataReader
 
-        public List<ClassName> ExecuteClassListQuery<ClassName>(string storedProcedureName, ObjectFromDataReaderHandler<ClassName> generateMethod)
+        public List<ClassName> ExecuteClassListQuery<ClassName>(string selectStatement, ObjectFromDataReaderHandler<ClassName> generateMethod)
         {
-            return ExecuteClassListQuery(storedProcedureName, generateMethod, (object[])null);
+            return ExecuteClassListQuery(selectStatement, generateMethod, (object[])null);
         }
 
-        public List<ClassName> ExecuteClassListQuery<ClassName>(string storedProcedureName, ObjectFromDataReaderHandler<ClassName> generateMethod, params object[] parameters)
+        public List<ClassName> ExecuteClassListQuery<ClassName>(string selectStatement, ObjectFromDataReaderHandler<ClassName> generateMethod, params object[] parameters)
         {
-            return ExecuteClassListQuery(storedProcedureName, generateMethod, GetParametersFromObjectArray(parameters));
+            return ExecuteClassListQuery(selectStatement, generateMethod, GetParametersFromObjectArray(parameters));
         }
 
-        public List<ClassName> ExecuteClassListQuery<ClassName>(string storedProcedureName, ObjectFromDataReaderHandler<ClassName> generateMethod, Dictionary<string, object> parameters)
+        public List<ClassName> ExecuteClassListQuery<ClassName>(string selectStatement, ObjectFromDataReaderHandler<ClassName> generateMethod, Dictionary<string, object> parameters)
         {
             if (parameters == null)
                 parameters = new Dictionary<string, object>();
 
-            SQLiteDataReader reader = ExecuteReader(storedProcedureName, parameters);
+            SQLiteDataReader reader = ExecuteReader(selectStatement, parameters);
             List<ClassName> result = new List<ClassName>();
 
             while (reader.Read())
@@ -104,29 +99,25 @@ namespace TMSPS.SQLite
             return result;
         }
 
-        public PagedList<ClassName> ExecutePagedClassListQuery<ClassName>(string storedProcedureName, ObjectFromDataReaderHandler<ClassName> generateMethod, int? startIndex, int? endIndex)
+        public PagedList<ClassName> ExecutePagedClassListQuery<ClassName>(string countStatement, string selectStatement, ObjectFromDataReaderHandler<ClassName> generateMethod, int? startIndex, int? endIndex)
         {
-            return ExecutePagedClassListQuery(storedProcedureName, generateMethod, startIndex, endIndex, (object[])null);
+            return ExecutePagedClassListQuery(countStatement, selectStatement, generateMethod, startIndex, endIndex, (object[])null);
         }
 
-        public PagedList<ClassName> ExecutePagedClassListQuery<ClassName>(string storedProcedureName, ObjectFromDataReaderHandler<ClassName> generateMethod, int? startIndex, int? endIndex, params object[] parameters)
+        public PagedList<ClassName> ExecutePagedClassListQuery<ClassName>(string countStatement, string selectStatement, ObjectFromDataReaderHandler<ClassName> generateMethod, int? startIndex, int? endIndex, params object[] parameters)
         {
-            return ExecutePagedClassListQuery(storedProcedureName, generateMethod, startIndex, endIndex, GetParametersFromObjectArray(parameters));
+            return ExecutePagedClassListQuery(countStatement, selectStatement, generateMethod, startIndex, endIndex, GetParametersFromObjectArray(parameters));
         }
 
-        public PagedList<ClassName> ExecutePagedClassListQuery<ClassName>(string storedProcedureName, ObjectFromDataReaderHandler<ClassName> generateMethod, int? startIndex, int? endIndex, Dictionary<string, object> parameters)
+        public PagedList<ClassName> ExecutePagedClassListQuery<ClassName>(string countStatement, string selectStatement, ObjectFromDataReaderHandler<ClassName> generateMethod, int? startIndex, int? endIndex, Dictionary<string, object> parameters)
         {
             if (parameters == null)
                 parameters = new Dictionary<string, object>();
 
-            SQLiteParameter virtualCountParameter = new SQLiteParameter("@VirtualCount", SqlDbType.Int) { Direction = ParameterDirection.Output };
-            SQLiteParameter startIndexParameter = new SQLiteParameter("@StartIndex", startIndex == null ? DBNull.Value : (object)startIndex.Value);
-            SQLiteParameter endIndexParameter = new SQLiteParameter("@EndIndex", endIndex == null ? DBNull.Value : (object)endIndex.Value);
+            int virtualCount = ExecuteScalar<int>(countStatement, parameters);
+            SQLiteDataReader reader = ExecuteReader(selectStatement, parameters);
 
-            SQLiteParameterCollection outputParameters;
-            SQLiteDataReader reader = ExecuteReader(storedProcedureName, parameters, new[] { startIndexParameter, endIndexParameter, virtualCountParameter }, out outputParameters);
-
-            PagedList<ClassName> result = new PagedList<ClassName> { VirtualCount = Convert.ToInt32(outputParameters["@VirtualCount"]) };
+            PagedList<ClassName> result = new PagedList<ClassName> { VirtualCount = virtualCount };
 
             while (reader.Read())
             {
@@ -136,6 +127,21 @@ namespace TMSPS.SQLite
             DoPostCommandProcessing();
 
             return result;
+        }
+
+        public static string GetLimitStatement(int? startIndex, int? endIndex)
+        {
+            if (!startIndex.HasValue && !endIndex.HasValue)
+                return string.Empty;
+
+            if (!startIndex.HasValue)
+                return string.Format("LIMIT {0}", endIndex.Value + 1);
+
+            if (!endIndex.HasValue)
+                endIndex = int.MaxValue;
+
+
+            return string.Format("LIMIT {0},{1}", startIndex, endIndex);
         }
 
         #endregion

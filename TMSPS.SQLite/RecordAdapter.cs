@@ -37,11 +37,6 @@ namespace TMSPS.SQLite
             throw new NotImplementedException();
         }
 
-        public RankEntry GetFirstRecordForChallenge(int challengeID)
-        {
-            throw new NotImplementedException();
-        }
-
         public uint? GetBestTime(string login, int challengeID)
         {
             throw new NotImplementedException();
