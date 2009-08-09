@@ -30,8 +30,27 @@ namespace TMSPS.SQLite
 
         public List<TopRankingEntry> GetTopRankings(uint startIndex, uint endIndex)
         {
-            //hard to implement, will be done later
-            return new List<TopRankingEntry>();
+            string tempDBName = "T" + Guid.NewGuid().ToString("N");
+            SqlHelper.ExecuteNonQuery("ATTACH DATABASE ':memory:' AS " + tempDBName);
+
+            string createTableStatement = "CREATE TABLE " + tempDBName + ".[TempRankingSums] ([PlayerID] INTEGER NOT NULL, [FirstRecords] INTEGER NOT NULL, [SecondRecords] INTEGER NOT NULL, [ThirdRecords] INTEGER NOT NULL)";
+            SqlHelper.ExecuteNonQuery(createTableStatement);
+
+            string insertStatement = "INSERT INTO " + tempDBName + ".[TempRankingSums] " +
+                                     "Select PlayerID, SUM(CASE WHEN Rank = 1 THEN 1 ELSE 0 END) as FirstRecords, SUM(CASE WHEN Rank = 2 THEN 1 ELSE 0 END) as SecondRecords, SUM(CASE WHEN Rank = 3 THEN 1 ELSE 0 END) as ThirdRecords " +
+                                     "FROM Ranking WHERE [Rank] <= 3 Group by PlayerID " +
+                                     "ORDER BY SUM(CASE WHEN Rank = 1 THEN 1 ELSE 0 END) desc, SUM(CASE WHEN Rank = 2 THEN 1 ELSE 0 END) desc, SUM(CASE WHEN Rank = 3 THEN 1 ELSE 0 END) desc";
+            SqlHelper.ExecuteNonQuery(insertStatement);
+
+            string selectStatement = "Select R.ROWID as Position, R.FirstRecords, R.SecondRecords, R.ThirdRecords, P.[Login], P.Nickname " +
+                                     "From Player P INNER JOIN " + tempDBName + ".[TempRankingSums] R on R.PlayerID = P.Id " +
+                                     "WHERE R.ROWID between @startIndex + 1  and @endIndex + 1";
+
+            List<TopRankingEntry> result = SqlHelper.ExecuteClassListQuery<TopRankingEntry>(selectStatement, TopRankingEntryDataRow, "startIndex", (int)startIndex, "endIndex", (int)endIndex);
+
+            SqlHelper.ExecuteNonQuery("DETACH DATABASE " + tempDBName);
+
+            return result;
         }
 
         public Ranking GetNextRank(string login)
