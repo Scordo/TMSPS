@@ -89,8 +89,19 @@ namespace TMSPS.SQLite
 
         public bool RemoveAllStatsForLogin(string login)
         {
-            // implement later
-            return false;
+            int? playerID = GetPlayerID(login);
+
+            if (!playerID.HasValue)
+                return false;
+
+            SqlHelper.ExecuteNonQuery("DELETE Position where PlayerID = @playerID", "playerID", playerID.Value);
+            SqlHelper.ExecuteNonQuery("DELETE Ranking where PlayerID = @playerID", "playerID", playerID.Value);
+            SqlHelper.ExecuteNonQuery("DELETE Rating where PlayerID = @playerID", "playerID", playerID.Value);
+            SqlHelper.ExecuteNonQuery("DELETE Record where PlayerID = @playerID", "playerID", playerID.Value);
+            SqlHelper.ExecuteNonQuery("DELETE Session where PlayerID = @playerID", "playerID", playerID.Value);
+            SqlHelper.ExecuteNonQuery("UPDATE Player set Wins = 0, TimePlayed = 0 where ID = @playerID", "playerID", playerID.Value);
+
+            return true;
         }
 
         public PagedList<IndexedPlayer> DeserializeListByWins(int? startIndex, int? endIndex)
