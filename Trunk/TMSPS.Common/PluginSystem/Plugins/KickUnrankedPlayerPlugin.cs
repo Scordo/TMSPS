@@ -22,6 +22,15 @@ namespace TMSPS.Core.PluginSystem.Plugins
 
         #endregion
 
+        #region Constructor
+
+        protected KickUnrankedPlayerPlugin(string pluginDirectory) : base(pluginDirectory)
+        {
+            
+        }
+
+	    #endregion
+
         #region Methods
 
         protected override void Init()

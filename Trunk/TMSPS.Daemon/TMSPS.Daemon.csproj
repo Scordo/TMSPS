@@ -106,11 +106,15 @@
     <Content Include="Plugins\AdminPlayer\IgnoreListUITemplate.xml" />
     <Content Include="Plugins\AdminPlayer\GuestListUITemplate.xml" />
     <Content Include="Plugins\AdminPlayer\LivePlayerUITemplate.xml" />
+    <Content Include="Plugins\AdminPlayer\Settings.xml" />
+    <Content Include="Plugins\AdminPlayer\Settings_Template.xml" />
     <Content Include="Plugins\ChatBot\Settings.xml" />
     <Content Include="Plugins\ChatBot\Settings_Template.xml" />
     <Content Include="Plugins\CheckPoints\Settings_Template.xml" />
     <Content Include="Plugins\CheckPoints\Settings.xml" />
     <Content Include="Plugins\Clock\ClockTemplate.xml" />
+    <Content Include="Plugins\Clock\Settings.xml" />
+    <Content Include="Plugins\Clock\Settings_Template.xml" />
     <Content Include="Plugins\Core\Settings.xml" />
     <Content Include="Plugins\Core\Settings_Template.xml" />
     <Content Include="Plugins\Dedimania\DedimaniaUI\DedimaniaRecordListTemplate.xml" />
@@ -128,6 +132,10 @@
     <Content Include="Plugins\LiveRanking\LiveRankingListTemplate.xml" />
     <Content Include="Plugins\LiveRanking\Settings.xml" />
     <Content Include="Plugins\LiveRanking\Settings_Template.xml" />
+    <Content Include="Plugins\LocalRecords\PlayerStatsUI\Settings.xml" />
+    <Content Include="Plugins\LocalRecords\PlayerStatsUI\Settings_Template.xml" />
+    <Content Include="Plugins\LocalRecords\TopRanksUI\Settings.xml" />
+    <Content Include="Plugins\LocalRecords\TopRanksUI\Settings_Template.xml" />
     <Content Include="Plugins\LocalRecords\TopRanksUI\TopRanksTemplate_Template.xml" />
     <Content Include="Plugins\LocalRecords\TopRanksUI\TopRanksTemplate.xml" />
     <Content Include="Plugins\LocalRecords\HoursPlayedPodium\EntryListTemplate.xml" />
@@ -154,16 +162,20 @@
     <Content Include="Plugins\LocalRecords\TopWinnersPodium\EntryListTemplate.xml" />
     <Content Include="Plugins\LocalRecords\TopWinnersPodium\Settings.xml" />
     <Content Include="Plugins\LocalRecords\TopWinnersPodium\Settings_Template.xml" />
+    <Content Include="Plugins\LocalRecords\TopWinsUI\Settings.xml" />
+    <Content Include="Plugins\LocalRecords\TopWinsUI\Settings_Template.xml" />
     <Content Include="Plugins\LocalRecords\TopWinsUI\TopWinsTemplate.xml" />
     <Content Include="Plugins\LocalRecords\TopWinsUI\TopWinsTemplate_Template.xml" />
     <Content Include="Plugins\NameProtectionBot\Settings.xml" />
     <Content Include="Plugins\NameProtectionBot\Settings_Template.xml" />
-    <Content Include="Plugins\Settings.xml" />
-    <Content Include="Plugins\Settings_Template.xml" />
     <Content Include="Plugins\LocalRecords\TopRankingsPodium\Settings_Template.xml" />
+    <Content Include="Plugins\Spectators\Settings.xml" />
+    <Content Include="Plugins\Spectators\Settings_Template.xml" />
     <Content Include="Plugins\StaticUI\Content.xml" />
     <Content Include="Plugins\StaticUI\Settings.xml" />
     <Content Include="Plugins\StaticUI\Settings_Template.xml" />
+    <Content Include="Plugins\TMX\Settings.xml" />
+    <Content Include="Plugins\TMX\Settings_Template.xml" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="ProjectInstaller.resx">

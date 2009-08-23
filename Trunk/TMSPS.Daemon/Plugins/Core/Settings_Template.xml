@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
-<Settings>
+<Settings assemblyName="TMSPS.Core" pluginClass="TMSPS.Core.PluginSystem.Plugins.TMSPSCorePlugin">
 	<EnableJoinMessage>true</EnableJoinMessage>
 	<JoinMessage>{[#ServerStyle]}>> {[#MessageStyle]}New Player: {[#HighlightStyle]}{[Nickname]}{[#MessageStyle]} Nation: {[#HighlightStyle]}{[Nation]}{[#MessageStyle]} Ladder: {[#HighlightStyle]}{[Ladder]}</JoinMessage>
 	<EnableLeaveMessage>true</EnableLeaveMessage>

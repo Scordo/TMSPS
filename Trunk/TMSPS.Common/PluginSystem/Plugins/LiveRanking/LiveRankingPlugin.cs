@@ -34,6 +34,15 @@ namespace TMSPS.Core.PluginSystem.Plugins.LiveRanking
 
         #endregion
 
+        #region Constructor
+
+        protected LiveRankingPlugin(string pluginDirectory) : base(pluginDirectory)
+        {
+            
+        }
+
+	    #endregion
+
         #region Methods
 
         protected override void Init()

@@ -30,6 +30,16 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
 
         #endregion
 
+        #region Constructor
+
+        protected LocalRecordsPlayerStatsUIPlugin(string pluginDirectory)
+            : base(pluginDirectory)
+        {
+            
+        }
+
+	    #endregion
+
         protected override void Init()
         {
             TopSumsActions = new PagedDialogActions(ID, (byte) Area.TopSums);

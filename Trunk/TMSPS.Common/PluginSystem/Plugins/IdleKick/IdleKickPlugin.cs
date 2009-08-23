@@ -30,6 +30,15 @@ namespace TMSPS.Core.PluginSystem.Plugins.IdleKick
 
         #endregion
 
+        #region Constructor
+
+        protected IdleKickPlugin(string pluginDirectory) : base(pluginDirectory)
+        {
+            
+        }
+
+	    #endregion
+
         #region Methods
 
         protected override void Init()

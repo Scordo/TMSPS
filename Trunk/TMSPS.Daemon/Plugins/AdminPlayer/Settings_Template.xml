@@ -1,0 +1,2 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Settings enabled="true" assemblyName="TMSPS.Core" pluginClass="TMSPS.Core.PluginSystem.Plugins.AdminPlayer.AdminPlayerPlugin" order="1300"/>

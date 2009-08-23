@@ -12,6 +12,15 @@ namespace TMSPS.Core.PluginSystem
 
 		#endregion
 
+        #region Constructor
+
+        protected TMSPSPluginPlugin(string pluginDirectory) : base(pluginDirectory)
+        {
+            
+        }
+
+	    #endregion
+
 		#region ILocalRecordsPluginPlugin Members
 
 		public void ProvideHostPlugin(T hostPlugin)

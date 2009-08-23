@@ -53,6 +53,15 @@ namespace TMSPS.Core.PluginSystem.Plugins.Dedimania
 
         #endregion
 
+        #region Constructor
+
+        protected DedimaniaPlugin(string pluginDirectory) : base(pluginDirectory)
+        {
+            
+        }
+
+	    #endregion
+
         #region Methods
 
         protected override void Init()

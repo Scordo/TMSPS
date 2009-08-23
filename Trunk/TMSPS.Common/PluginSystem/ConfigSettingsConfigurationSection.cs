@@ -4,6 +4,7 @@ using System.Configuration;
 using System.IO;
 using System.Reflection;
 using log4net;
+using log4net.Core;
 using TMSPS.Core.Common;
 using TMSPS.Core.PluginSystem.Configuration;
 using TMSPS.Core.PluginSystem.Plugins;
@@ -66,33 +67,6 @@ namespace TMSPS.Core.PluginSystem
 
         #region Public Methods
 
-        public List<ITMSPSPlugin> GetPlugins()
-        {
-        	string mainDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-			string pluginsSettingsFile = Path.Combine(mainDirectory, @"Plugins\Settings.xml");
-			
-            List<ITMSPSPlugin> result = new List<ITMSPSPlugin> {new TMSPSCorePlugin()};
-
-            PluginConfigEntryCollection pluginConfigEntries;
-
-            try
-            {
-                pluginConfigEntries = PluginUtil.GetEnabledPlugins(pluginsSettingsFile);
-            }
-            catch (Exception ex)
-            {
-                throw new ConfigurationErrorsException("Error while reading the list of plugins from Settings.xml", ex);
-            }
-
-            foreach (PluginConfigEntry pluginConfigEntry in pluginConfigEntries)
-            {
-                _log.Debug(string.Format("Instantiating ITMSPSPlugin {0}", pluginConfigEntry.PluginClass));
-                result.Add(Instancer.GetInstanceOfInterface<ITMSPSPlugin>(pluginConfigEntry.AssemblyName, pluginConfigEntry.PluginClass));
-            }
-
-            return result;
-        }
-
         public static ConfigSettingsConfigurationSection GetFromConfig(string sectionName)
         {
             try
@@ -113,6 +87,7 @@ namespace TMSPS.Core.PluginSystem
                 throw;
             }
         }
+
         #endregion
 
         #region Non Public Methods

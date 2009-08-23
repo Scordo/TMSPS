@@ -39,6 +39,15 @@ namespace TMSPS.Core.PluginSystem.Plugins.TMX
 
         #endregion
 
+        #region Constructor
+
+        protected TMXPlugin(string pluginDirectory) : base(pluginDirectory)
+        {
+            
+        }
+
+	    #endregion
+
         #region Methods
 
         protected override void Init()

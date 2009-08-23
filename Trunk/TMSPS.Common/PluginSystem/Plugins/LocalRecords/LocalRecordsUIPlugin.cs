@@ -36,6 +36,15 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
 
         #endregion
 
+        #region Constructor
+
+        protected LocalRecordsUIPlugin(string pluginDirectory) : base(pluginDirectory)
+        {
+            
+        }
+
+	    #endregion
+
         #region Methods
 
         protected override void Init()

@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
-<Settings>
+<Settings enabled="true" assemblyName="TMSPS.Core" pluginClass="TMSPS.Core.PluginSystem.Plugins.Dedimania.DedimaniaUIPlugin" order="100">
 	<ShowMessages>true</ShowMessages>
 	<ShowDEDUI>true</ShowDEDUI>
 	<ShowDEDListUI>true</ShowDEDListUI>

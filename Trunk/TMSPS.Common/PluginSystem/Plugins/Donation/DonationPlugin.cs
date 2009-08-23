@@ -24,6 +24,15 @@ namespace TMSPS.Core.PluginSystem.Plugins.Donation
 
         #endregion
 
+        #region Constructor
+
+        protected DonationPlugin(string pluginDirectory) : base(pluginDirectory)
+        {
+            
+        }
+
+	    #endregion
+
         #region Methods
 
         protected override void Init()

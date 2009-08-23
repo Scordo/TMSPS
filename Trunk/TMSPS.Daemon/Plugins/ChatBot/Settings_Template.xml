@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
-<Settings>
+<Settings enabled="true" assemblyName="TMSPS.Core" pluginClass="TMSPS.Core.PluginSystem.Plugins.ChatBotPlugin" order="600">
 	<Botname>$w$f00[Chat-Doll] $z</Botname>
 	<Phrases>
 		<Phrase values="doll|chat-doll" answer="Talking to me?" />

@@ -1,5 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
-<Settings clanTagPattern=".*?e.*?x.*?c.*?l.*?u.*?s.*?i.*?v.*?e" kickReason="Dont use exclusive clan tag!!! Your not a member of exclusive!" publicKickReason="{[#ServerStyle]}>> {[#HighlightStyle]}{[Nickname]} {[#MessageStyle]}got kick for name abuse!">
+<Settings enabled="true" assemblyName="TMSPS.Core" pluginClass="TMSPS.Core.PluginSystem.Plugins.NameProtectionBotPlugin" order="200"
+					clanTagPattern=".*?e.*?x.*?c.*?l.*?u.*?s.*?i.*?v.*?e" kickReason="Dont use exclusive clan tag!!! Your not a member of exclusive!" 
+					publicKickReason="{[#ServerStyle]}>> {[#HighlightStyle]}{[Nickname]} {[#MessageStyle]}got kick for name abuse!">
 	<Members>
 		<Login>lunasei</Login>
 		<Login>t.homaz</Login>

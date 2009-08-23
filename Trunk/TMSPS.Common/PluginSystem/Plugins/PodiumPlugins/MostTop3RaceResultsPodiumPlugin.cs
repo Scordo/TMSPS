@@ -13,6 +13,15 @@ namespace TMSPS.Core.PluginSystem.Plugins.PodiumPlugins
 
         #endregion
 
+        #region Constructor
+
+        protected MostTop3RaceResultsPodiumPlugin(string pluginDirectory) : base(pluginDirectory)
+        {
+            
+        }
+
+	    #endregion
+
         #region Properties
 
         public override Version Version { get { return new Version("1.0.0.0"); } }

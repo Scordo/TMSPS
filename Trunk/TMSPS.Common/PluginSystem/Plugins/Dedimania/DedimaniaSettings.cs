@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Configuration;
+using System.IO;
 using System.Xml.Linq;
 using TMSPS.Core.Common;
 using TMSPS.Core.Logging;
@@ -37,7 +38,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.Dedimania
 
             result.AuthUrl = ReadConfigString(configDocument.Root, "AuthUrl", AUTH_URL, xmlConfigurationFile);
             result.ReportUrl = ReadConfigString(configDocument.Root, "ReportUrl", REPORT_URL, xmlConfigurationFile);
-            result.Plugins = PluginConfigEntryCollection.ReadFromXElement(configDocument.Root.Element("Plugins"));
+            result.Plugins = PluginConfigEntryCollection.ReadFromDirectory(Path.GetDirectoryName(xmlConfigurationFile));
 
             return result;
         }
@@ -51,7 +52,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.Dedimania
                 if (logger != null)
                     logger.Debug(string.Format("Instantiating IDedimaniaPluginPlugin {0}", pluginConfigEntry.PluginClass));
 
-                result.Add(Instancer.GetInstanceOfInterface<IDedimaniaPluginPlugin>(pluginConfigEntry.AssemblyName, pluginConfigEntry.PluginClass));
+                result.Add(Instancer.GetInstanceOfInterface<IDedimaniaPluginPlugin>(pluginConfigEntry.AssemblyName, pluginConfigEntry.PluginClass, pluginConfigEntry.PluginDirectory));
             }
 
             return result;

@@ -37,6 +37,15 @@ namespace TMSPS.Core.PluginSystem.Plugins
 
         #endregion
 
+        #region Constructor
+
+        protected SpectatorsPlugin(string pluginDirectory) : base(pluginDirectory)
+        {
+            
+        }
+
+	    #endregion
+
         #region Methods
 
         protected override void Init()

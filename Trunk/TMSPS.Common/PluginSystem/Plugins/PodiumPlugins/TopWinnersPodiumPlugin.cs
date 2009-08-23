@@ -24,6 +24,15 @@ namespace TMSPS.Core.PluginSystem.Plugins.PodiumPlugins
 
         #endregion
 
+        #region Constructor
+
+        protected TopWinnersPodiumPlugin(string pluginDirectory) : base(pluginDirectory)
+        {
+            
+        }
+
+	    #endregion
+
         #region Methods
 
         protected override void Init()

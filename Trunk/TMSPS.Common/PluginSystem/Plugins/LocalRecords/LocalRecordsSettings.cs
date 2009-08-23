@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Xml.Linq;
 using System.Configuration;
 using TMSPS.Core.Common;
@@ -87,7 +88,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
             result.CheaterDeletedMessage = ReadConfigString(configDocument.Root, "CheaterDeletedMessage", CHEATER_DELETED_MSG, xmlConfigurationFile);
             result.CheaterDeletionFailedMessage = ReadConfigString(configDocument.Root, "CheaterDeletionFailedMessage", CHEATER_DELETION_FAILED_MSG, xmlConfigurationFile);
             result.CheaterBannedMessage = ReadConfigString(configDocument.Root, "CheaterBannedMessage", CHEATER_BANNED_MSG, xmlConfigurationFile);
-	        result.Plugins = PluginConfigEntryCollection.ReadFromXElement(configDocument.Root.Element("Plugins"));
+            result.Plugins = PluginConfigEntryCollection.ReadFromDirectory(Path.GetDirectoryName(xmlConfigurationFile));
 
 	        return result;
 	    }
@@ -101,7 +102,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
 	            if (logger != null)
 	                logger.Debug(string.Format("Instantiating ILocalRecordsPluginPlugin {0}", pluginConfigEntry.PluginClass));
 
-	            result.Add(Instancer.GetInstanceOfInterface<ILocalRecordsPluginPlugin>(pluginConfigEntry.AssemblyName, pluginConfigEntry.PluginClass));
+                result.Add(Instancer.GetInstanceOfInterface<ILocalRecordsPluginPlugin>(pluginConfigEntry.AssemblyName, pluginConfigEntry.PluginClass, pluginConfigEntry.PluginDirectory));
 	        }
 
 	        return result;
