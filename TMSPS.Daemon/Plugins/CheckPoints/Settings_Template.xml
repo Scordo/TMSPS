@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
-<Settings>
+<Settings enabled="true" assemblyName="TMSPS.Core" pluginClass="TMSPS.Core.PluginSystem.Plugins.CheckPoints.CheckPointsPlugin" order="1100">
 	<TimeoutInSeconds>3</TimeoutInSeconds>
 	<SuperiorTimeTextStyle>$o$00f</SuperiorTimeTextStyle>
 	<InferiorTimeTextStyle>$o$f00</InferiorTimeTextStyle>

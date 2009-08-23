@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
-<Settings>
+<Settings enabled="true" assemblyName="TMSPS.Core" pluginClass="TMSPS.Core.PluginSystem.Plugins.IdleKick.IdleKickPlugin" order="1200">
 	<KickMode>Rounds</KickMode>
 	<IdleRoundsCount>5</IdleRoundsCount>
 	<IdleSecondsCount>1500</IdleSecondsCount>

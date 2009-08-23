@@ -308,7 +308,6 @@
     <Compile Include="PluginSystem\Plugins\TMSPSCorePlugin_CommandHandling.cs" />
     <Compile Include="PluginSystem\Plugins\TMX\TMXInfo.cs" />
     <Compile Include="PluginSystem\Plugins\TMX\TMXPlugin.cs" />
-    <Compile Include="PluginSystem\PluginUtil.cs" />
     <Compile Include="PluginSystem\ServerCommand.cs" />
     <Compile Include="PluginSystem\MessageConstants.cs" />
     <Compile Include="PluginSystem\ServerInfo.cs" />

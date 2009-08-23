@@ -24,6 +24,15 @@ namespace TMSPS.Core.PluginSystem.Plugins.Clock
 
         #endregion
 
+        #region Constructor
+
+        protected ClockPlugin(string pluginDirectory) : base(pluginDirectory)
+        {
+            
+        }
+
+	    #endregion
+
         #region Methods
 
         protected override void Init()

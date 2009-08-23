@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
-<Settings>
+<Settings enabled="true" assemblyName="TMSPS.Core" pluginClass="TMSPS.Core.PluginSystem.Plugins.Donation.DonationPlugin" order="1400">
 	<!-- leave empty to take the server as the copper recipient -->
 	<DonationTargetLogin></DonationTargetLogin>
 	<MinDonationValue>10</MinDonationValue>

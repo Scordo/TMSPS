@@ -56,7 +56,7 @@ namespace TMSPS.Core.Common
         InsertTrack,
         [CommandName("AddTrack"), CommandRight("InsertTrack", "Addtrack"), CommandOptions(RequiresPrefix = true)]
         AddTrack,
-        [CommandName("TMSInfo"), CommandOptions(RequiresPrefix = true)]
+        [CommandName("TMXInfo"), CommandOptions(RequiresPrefix = true)]
         TMXInfo,
         [CommandName("DeleteCheater", "RemoveCheater"), CommandRight("DeleteCheater", "RemoveCheater"), CommandOptions(RequiresPrefix = true)]
         DeleteCheater,

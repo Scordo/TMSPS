@@ -27,6 +27,15 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
 
         #endregion
 
+        #region Constructor
+
+        protected RatingUIPlugin(string pluginDirectory) : base(pluginDirectory)
+        {
+            
+        }
+
+	    #endregion
+
         protected override void Init()
         {
             Settings = RatingUIPluginSettings.ReadFromFile(PluginSettingsFilePath);

@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
-<Settings>
+<Settings enabled="true" assemblyName="TMSPS.Core" pluginClass="TMSPS.Core.PluginSystem.Plugins.PodiumPlugins.MostTop3RecordsPodiumPlugin" order="900">
 	<MaxEntriesToShow>10</MaxEntriesToShow>
 	<Title>Most Top3 Records</Title>
 	<PositionX>24</PositionX>

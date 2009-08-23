@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
-using System.Windows.Forms;
 using TMSPS.Core.Common;
 using TMSPS.Core.Communication;
 using TMSPS.Core.Communication.ProxyTypes;
@@ -125,7 +124,10 @@ namespace TMSPS.Daemon
 
         private void InitializePlugins()
         {
-            Plugins = ConfigSettings.GetPlugins();
+            Plugins = TMSPSPluginBase.GetPlugins(ApplicationDirectory, _logger);
+            Plugins.RemoveAll(p => p is TMSPSCorePlugin);
+            Plugins.Insert(0, new TMSPSCorePlugin(Path.Combine(ApplicationDirectory, @"Plugins\Core")));
+
             HostContext = GetHostContext();
             HostContext.ShutdownRequested += HostContext_ShutdownRequested;
 

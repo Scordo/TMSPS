@@ -28,6 +28,15 @@ namespace TMSPS.Core.PluginSystem.Plugins.CheckPoints
 
         #endregion
 
+        #region Constructor
+
+        protected CheckPointsPlugin(string pluginDirectory) : base(pluginDirectory)
+        {
+            
+        }
+
+	    #endregion
+
         #region Methods
 
         protected override void Init()

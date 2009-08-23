@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
-<Settings>
+<Settings enabled="true" assemblyName="TMSPS.Core" pluginClass="TMSPS.Core.PluginSystem.Plugins.LocalRecords.LocalRecordsUIPlugin" order="100">
 	<ShowMessages>true</ShowMessages>
 	<MaxRecordsToShow>20</MaxRecordsToShow>
 	<NoticeDelayInSeconds>2</NoticeDelayInSeconds>

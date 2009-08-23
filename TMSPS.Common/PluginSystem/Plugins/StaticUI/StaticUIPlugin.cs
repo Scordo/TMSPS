@@ -36,6 +36,15 @@ namespace TMSPS.Core.PluginSystem.Plugins.StaticUI
 
         #endregion
 
+        #region Constructor
+
+        protected StaticUIPlugin(string pluginDirectory) : base(pluginDirectory)
+        {
+            
+        }
+
+	    #endregion
+
         #region Methods
 
         protected override void Init()

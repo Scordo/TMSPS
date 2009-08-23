@@ -30,6 +30,15 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
 
         #endregion
 
+        #region Constructor
+
+        protected LocalRecordsTopRanksUIPlugin(string pluginDirectory) : base(pluginDirectory)
+        {
+            
+        }
+
+	    #endregion
+
         protected override void Init()
         {
             TopRanksActions = new PagedDialogActions(ID, (byte)Area.TopRanks);

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using System.IO;
 using System.Reflection;
 
@@ -8,7 +9,7 @@ namespace TMSPS.Core.Common
     {
         #region Public Methods
 
-        public static T GetInstanceOfInterface<T>(string assemblyName, string tyepNameToInstantiate)
+        public static T GetInstanceOfInterface<T>(string assemblyName, string tyepNameToInstantiate, params object[] arguments)
         {
 			if (assemblyName == null)
 				throw new ArgumentNullException("assemblyName");
@@ -38,9 +39,15 @@ namespace TMSPS.Core.Common
 
             object providerInstance;
 
+            Type typeToInstantiate = assembly.GetType(tyepNameToInstantiate);
+
+            if (typeToInstantiate == null)
+                throw new InvalidOperationException(string.Format("Could not create instance of {0}. The type does not exist in the assembly {1}", tyepNameToInstantiate, assemblyName));
+
             try
             {
-                providerInstance = assembly.CreateInstance(tyepNameToInstantiate);
+                const BindingFlags flags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance;
+                providerInstance = Activator.CreateInstance(typeToInstantiate, flags, null, arguments, CultureInfo.InvariantCulture);
             }
             catch (Exception ex)
             {

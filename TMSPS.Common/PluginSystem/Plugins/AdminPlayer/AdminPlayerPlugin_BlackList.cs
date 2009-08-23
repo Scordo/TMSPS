@@ -27,6 +27,15 @@ namespace TMSPS.Core.PluginSystem.Plugins.AdminPlayer
 
         #endregion
 
+        #region Constructor
+
+        protected AdminPlayerPlugin(string pluginDirectory) : base(pluginDirectory)
+        {
+            
+        }
+
+	    #endregion
+
         #region Methods
 
         private void HandleBlackListAreaActions(string login, TMAction areaAction)
