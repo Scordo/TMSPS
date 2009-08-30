@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
+using System.Text;
 using TMSPS.Core.Common;
 using TMSPS.Core.Communication.ProxyTypes;
 using TMSPS.Core.Communication.ResponseHandling;
@@ -107,6 +109,61 @@ namespace TMSPS.Core.PluginSystem.Plugins
                 HandleWisperCommand(login, command);
                 return;
             }
+
+            if (command.Is(Command.Help))
+            {
+                HandleHelpCommand(login, command);
+                return;
+            }
+        }
+
+        private void HandleHelpCommand(string login, ServerCommand command)
+        {
+            if (command.HasFurtherParts)
+                ShowDetailedHelp(login, command);
+            else
+                ShowHelpSummary(login);
+        }
+
+        private void ShowHelpSummary(string login)
+        {
+            List<CommandHelp> helpList = GetPluginsCommandHelpList(login);
+
+            StringBuilder message = new StringBuilder();
+            message.Append("{[#ServerStyle]}>{[#MessageStyle]} Type '/help xxx' to get a detailed help for a command. Commands are: ");
+
+            for (int i = 0; i < helpList.Count; i++)
+            {
+                message.AppendFormat((i != 0 ? ", " : string.Empty) + "{0}", helpList[i].CommandName);
+            }
+
+            SendFormattedMessageToLogin(login, message.ToString());
+        }
+
+        private void ShowDetailedHelp(string login, ServerCommand command)
+        {
+            string commandName = command.PartsWithoutMainCommand[0];
+            List<CommandHelp> helpList = GetPluginsCommandHelpList(login);
+
+            CommandHelp commandHelp = helpList.Find(c => (string.Compare(commandName, c.CommandName, StringComparison.InvariantCultureIgnoreCase) == 0) || Array.Exists(c.AlternativeCommandNames, acn => string.Compare(commandName, acn, StringComparison.InvariantCultureIgnoreCase) == 0));
+
+            if (commandHelp != null)
+            {
+                string message = commandHelp.Description;
+
+                if (!commandHelp.Usage.IsNullOrTimmedEmpty())
+                    message = string.Concat(message, " Usage: ", commandHelp.Usage);
+
+                if (!commandHelp.UsageExample.IsNullOrTimmedEmpty())
+                    message = string.Concat(message, " Usage-Example: ", commandHelp.UsageExample);
+
+                if (commandHelp.AlternativeCommandNames != null && commandHelp.AlternativeCommandNames.Length > 0)
+                    message = string.Concat(message, " Altervnative command(s): ", string.Join(", ", commandHelp.AlternativeCommandNames));
+
+                SendFormattedMessageToLogin(login, "{[#ServerStyle]}>{[#MessageStyle]} {[Message]}", "Message", message);
+            }
+            else
+                SendFormattedMessageToLogin(login, "{[#ServerStyle]}>{[#ErrorStyle]} Command '{[CommandName]}' does not exist.", "CommandName", commandName);
         }
 
         private void HandleWisperCommand(string login, ServerCommand command)
@@ -663,5 +720,38 @@ namespace TMSPS.Core.PluginSystem.Plugins
         //    Context.RPCClient.Methods.StartServerInternet(Context.ServerInfo.ServerLogin, Context.ServerInfo.ServerLoginPassword);
         //    //Context.RPCClient.Methods.StartServerLan();
         //}
+
+
+        private List<CommandHelp> GetPluginsCommandHelpList(string login)
+        {
+            Dictionary<string, CommandHelp> commandHelpDictionary = new Dictionary<string, CommandHelp>();
+
+            foreach (ITMSPSPlugin plugin in Context.Plugins)
+            {
+                IEnumerable<CommandHelp> pluginCommandHelpList = plugin.CommandHelpList;
+
+                if (pluginCommandHelpList == null)
+                    continue;
+
+                foreach (CommandHelp commandHelp in pluginCommandHelpList)
+                {
+                    if (login != null && commandHelp.NecessaryRights != null && commandHelp.NecessaryRights.Length > 0 && !LoginHasAnyRight(login, false, commandHelp.NecessaryRights))
+                        continue;
+
+                    commandHelpDictionary[commandHelp.CommandName.ToLower(CultureInfo.InvariantCulture)] = commandHelp;
+                }
+            }
+
+            List<CommandHelp> result = new List<CommandHelp>();
+
+            foreach (KeyValuePair<string, CommandHelp> commandHelpInfo in commandHelpDictionary)
+            {
+                result.Add(commandHelpInfo.Value);
+            }
+
+            result.Sort((x, y) => string.Compare(x.CommandName, y.CommandName, StringComparison.InvariantCultureIgnoreCase));
+
+            return result;
+        }
     }
 }

@@ -82,6 +82,8 @@ namespace TMSPS.Core.Common
         Donate,
         [CommandName("pm", "wisper", "w")]
         Wisper,
+        [CommandName("Help", "Hilfe")]
+        Help,
     }
 
     public static class CommandExtensions
