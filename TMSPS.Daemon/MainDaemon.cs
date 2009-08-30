@@ -235,7 +235,7 @@ namespace TMSPS.Daemon
             MessageStyles messageStyles = MessageStyles.ReadFromFileOrGetDefault(Path.Combine(ApplicationDirectory, "MessageStyles.xml"));
             MessageConstants messageConstants = MessageConstants.ReadFromFile(Path.Combine(ApplicationDirectory, "MessageConstants.xml"), _client);
 
-            return new PluginHostContext(_client, serverInfo, new Credentials(GetFullFilePath("Credentials.xml")), messageStyles, messageConstants, (TMSPSCorePlugin)Plugins[0]);
+            return new PluginHostContext(_client, serverInfo, new Credentials(GetFullFilePath("Credentials.xml")), messageStyles, messageConstants, Plugins);
         }
 
         private void ReadConfigSettings()

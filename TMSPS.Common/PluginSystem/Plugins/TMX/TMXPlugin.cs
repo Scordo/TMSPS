@@ -170,6 +170,19 @@ namespace TMSPS.Core.PluginSystem.Plugins.TMX
             return true;
         }
 
+        public override IEnumerable<CommandHelp> CommandHelpList
+        {
+            get 
+            { 
+                return new []
+                {
+                    new CommandHelp(Command.TMXInfo, "Returns information about a track on tmx.", "/t tmxinfo", "/t tmxinfo"),
+                    new CommandHelp(Command.InsertTrack, "Inserts a track from tmx as the next track.", "/t inserttrack <TmxID>", "/t inserttrack 1706356"),
+                    new CommandHelp(Command.AddTrack, "Adds a track from tmx to the end of the tracklist.", "/t addtrack <TmxID>", "/t addtrack 1706356"),
+                };
+            }
+        }
+
         #endregion
     }
 }

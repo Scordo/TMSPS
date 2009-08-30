@@ -16,6 +16,7 @@ namespace TMSPS.Core.PluginSystem
         public ReadOnlyCollection<string> Parts { get; private set; }
         public ReadOnlyCollection<string> PartsWithoutMainCommand { get; private set; }
         public static string[] ValidCommandPrefixes {get { return new [] {"tmsps", "t"};} }
+        public bool HasFurtherParts { get { return PartsWithoutMainCommand.Count > 0; } }
 
         #endregion
 

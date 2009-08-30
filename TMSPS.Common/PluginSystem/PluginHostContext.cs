@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Globalization;
 using TMSPS.Core.Communication;
 using TMSPS.Core.PluginSystem.Configuration;
@@ -26,6 +28,7 @@ namespace TMSPS.Core.PluginSystem
         public MessageConstants MessageConstants { get; private set; }
         public PlayerSettingsStore PlayerSettings { get { return _userSettings; } }
         public TMSPSCorePlugin CorePlugin { get; private set; }
+        public ReadOnlyCollection<ITMSPSPlugin> Plugins { get; private set; }
 
         private ushort LastPluginID { get; set; }
 
@@ -39,7 +42,7 @@ namespace TMSPS.Core.PluginSystem
 
         #region Constructor
 
-        public PluginHostContext(TrackManiaRPCClient client, ServerInfo serverInfo, Credentials credentials, MessageStyles messageStyles, MessageConstants messageConstants, TMSPSCorePlugin corePlugin)
+        public PluginHostContext(TrackManiaRPCClient client, ServerInfo serverInfo, Credentials credentials, MessageStyles messageStyles, MessageConstants messageConstants, List<ITMSPSPlugin> plugins)
         {
             if (client == null)
                 throw new ArgumentNullException("client");
@@ -53,8 +56,8 @@ namespace TMSPS.Core.PluginSystem
             if (messageConstants == null)
                 throw new ArgumentNullException("messageConstants");
 
-            if (corePlugin == null)
-                throw new ArgumentNullException("corePlugin");
+            if (plugins == null)
+                throw new ArgumentNullException("plugins");
 
             RPCClient = client;
             ServerInfo = serverInfo;
@@ -63,8 +66,9 @@ namespace TMSPS.Core.PluginSystem
             Culture = new CultureInfo("en-us");
             MessagStyles = messageStyles;
             MessageConstants = messageConstants;
-            CorePlugin = corePlugin;
+            CorePlugin = (TMSPSCorePlugin)plugins[0];
             LastPluginID = 0;
+            Plugins = plugins.AsReadOnly();
         }
 
         #endregion
