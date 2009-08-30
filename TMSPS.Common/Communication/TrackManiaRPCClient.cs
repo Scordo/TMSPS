@@ -23,16 +23,18 @@ namespace TMSPS.Core.Communication
         #region Constants
 
         private const int DEFAULT_PORT = 5000;
+        private const uint CALLBACK_IDENTIFIER = 0x80000000;
 
         #endregion
 
         #region Non Public Members
 
-		private readonly object _readLock = new object();
-        private readonly object _sendLock = new object();
         private readonly Callbacks _callBacks;
         private readonly Methods _methods;
-        private readonly Queue<string> _methodResponseQueue = new Queue<string>();
+        private readonly Dictionary<uint, string> _methodResponses = new Dictionary<uint, string>();
+        private uint _messageID = 0x80000000;
+        private readonly object _messageIDLockObject = new object();
+        private readonly object _methodResponsesLockObject = new object();
 
         #endregion
 
@@ -73,9 +75,9 @@ namespace TMSPS.Core.Communication
             get { return _methods; }
         }
 
-        private Queue<string> MethodResponseQueue
+        private Dictionary<uint, string> MethodResponses
         {
-            get { return _methodResponseQueue; }
+            get { return _methodResponses; }
         }
 
         #endregion
@@ -130,7 +132,7 @@ namespace TMSPS.Core.Communication
             if (SocketAsyncEventArgs != null)
                 return;
 
-            MethodResponseQueue.Clear();
+            MethodResponses.Clear();
 
             if (port == null)
                 port = DEFAULT_PORT;
@@ -177,14 +179,11 @@ namespace TMSPS.Core.Communication
 
         public ResponseBase<T> SendMethod<T>(string method, params object[] parameters) where T : ResponseBase<T>
         {
+            uint messageID = GetUniqueMessageID();
             string xml = RPCCommand.GetMethodCallElementWithXmlDeclaration(method, parameters).ToString(SaveOptions.DisableFormatting);
-            string response;
             
-            lock (_sendLock)
-            {
-                Send(xml);
-                response = GetNextMethodResponseFromQueue();
-            }
+            Send(xml, messageID);
+            string response = GetMethodResponse(messageID);
 
             XElement messageElement = TryParseXElement(response);
 
@@ -198,33 +197,39 @@ namespace TMSPS.Core.Communication
 
         #region Non Public Methods
 
-        private string GetNextMethodResponseFromQueue()
+        private string GetMethodResponse(uint messageID)
         {
             while (true)
             {
-				string message = MethodResponseQueue.Dequeue(msg => true, _readLock);
+                lock (_methodResponsesLockObject)
+                {
+                    if (MethodResponses.ContainsKey(messageID))
+                    {
+                        string result = MethodResponses[messageID];
+                        MethodResponses.Remove(messageID);
 
-				if (message != null)
-					return message;
+                        return result;
+                    }
+                }
 
                 Thread.Sleep(10);
             }
         }
 
-        private int Send(string message)
+        private void Send(string message, uint messageID)
         {
             try
             {
                 byte[] messageBytes = Encoding.UTF8.GetBytes(message);
                 byte[] sizeBytes = BitConverter.GetBytes(messageBytes.Length);
-                byte[] handleBytes = BitConverter.GetBytes(-1);
+                byte[] handleBytes = BitConverter.GetBytes(messageID);
 
                 byte[] sendMessageBuffer = new byte[messageBytes.Length + sizeBytes.Length + handleBytes.Length];
                 sizeBytes.CopyTo(sendMessageBuffer, 0);
                 handleBytes.CopyTo(sendMessageBuffer, 4);
                 messageBytes.CopyTo(sendMessageBuffer, 8);
 
-                return Socket.Send(sendMessageBuffer, 0, sendMessageBuffer.Length, SocketFlags.None);
+                Socket.Send(sendMessageBuffer, 0, sendMessageBuffer.Length, SocketFlags.None);
             }
             catch (SocketException ex)
             {
@@ -246,13 +251,13 @@ namespace TMSPS.Core.Communication
             });
         }
 
-        private void ReadMessageWithPrefix(SocketAsyncEventArgs e, bool includeHandle)
+        private void ReadMessageWithPrefix(SocketAsyncEventArgs e, bool includeMessageID)
         {
             EnsureSocketSuccess(e, () =>
             {
                 SocketAsyncEventArgsUserToken userToken = (SocketAsyncEventArgsUserToken)e.UserToken;
 
-                byte[] sizeBuffer = new byte[includeHandle ? 8 : 4];
+                byte[] sizeBuffer = new byte[includeMessageID ? 8 : 4];
                 e.SetBuffer(sizeBuffer, 0, sizeBuffer.Length);
                 e.Completed += Client_SizeReceived;
 
@@ -268,6 +273,7 @@ namespace TMSPS.Core.Communication
             {
                 SocketAsyncEventArgsUserToken userToken = (SocketAsyncEventArgsUserToken)e.UserToken;
                 int sizeToReceive = BitConverter.ToInt32(e.Buffer.Take(4).ToArray(), 0);
+                uint? messageID = (e.Buffer.Length == 8) ? (uint?) BitConverter.ToUInt32(e.Buffer.Skip(4).Take(4).ToArray(), 0) : null;
 
                 const int sizeLimitForLogging = 10 * 1024 * 1024; // 10 MB
                 if (sizeToReceive >= sizeLimitForLogging)
@@ -277,6 +283,7 @@ namespace TMSPS.Core.Communication
                     return;
                 }
 
+                userToken.MessageID = messageID;
                 userToken.SizeToReceive = sizeToReceive;
                 userToken.CurrentRawMessageLength = 0;
                 userToken.CurrentRawMessage = string.Empty;
@@ -310,9 +317,9 @@ namespace TMSPS.Core.Communication
                     return;
                 }
 
-                if (string.Compare(userToken.CurrentRawMessage, "GBXRemote 2", StringComparison.OrdinalIgnoreCase) != 0)
+                if (userToken.MessageID.HasValue)
                 {
-                    if (userToken.CurrentRawMessage.IndexOf("<methodCall>", StringComparison.OrdinalIgnoreCase) != -1)
+                    if ((userToken.MessageID & CALLBACK_IDENTIFIER) == 0)
                     {
                         // message is a callback
                         XElement messageElement = TryParseXElement(userToken.CurrentRawMessage);
@@ -323,11 +330,20 @@ namespace TMSPS.Core.Communication
                     else
                     {
                         // message is a method reply
-                        MethodResponseQueue.Enqueue(userToken.CurrentRawMessage);
+                        lock (_methodResponsesLockObject)
+                        {
+                            MethodResponses[userToken.MessageID.Value] = userToken.CurrentRawMessage;
+                        }
                     }
+                }
+                else if (string.Compare(userToken.CurrentRawMessage, "GBXRemote 2", StringComparison.OrdinalIgnoreCase) != 0)
+                {
+                    OnSocketError(System.Net.Sockets.SocketError.ProtocolNotSupported);
+                    return;
                 }
                 else
                     ThreadPool.QueueUserWorkItem(x => OnReadyForSendingCommands());
+                    
 
                 ReadMessageWithPrefix(e, true);
             });
@@ -377,6 +393,17 @@ namespace TMSPS.Core.Communication
             catch (Exception)
             {
                 return null;
+            }
+        }
+
+        private uint GetUniqueMessageID()
+        {
+            lock (_messageIDLockObject)
+            {
+                if (_messageID == uint.MaxValue)
+                    _messageID = CALLBACK_IDENTIFIER;
+                
+                return _messageID++;
             }
         }
 

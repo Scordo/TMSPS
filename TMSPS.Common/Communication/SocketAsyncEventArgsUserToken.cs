@@ -8,6 +8,7 @@ namespace TMSPS.Core.Communication
         public int SizeToReceive { get; set;}
         public string CurrentRawMessage { get; set; }
         public int CurrentRawMessageLength { get; set; }
+        public uint? MessageID { get; set; }
 
         public int RemainingBytesToReceive
         {
