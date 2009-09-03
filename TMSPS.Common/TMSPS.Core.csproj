@@ -68,6 +68,7 @@
     <Compile Include="Common\NicknameResolverCacheEntry.cs" />
     <Compile Include="Common\NicknameResolverFactory.cs" />
     <Compile Include="Common\NotifyPropertyChanged.cs" />
+    <Compile Include="Common\Pair.cs" />
     <Compile Include="Common\PlayerFlags.cs" />
     <Compile Include="Common\ReadOnlyDictionary.cs" />
     <Compile Include="Common\Right.cs" />

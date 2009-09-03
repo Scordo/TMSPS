@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.Globalization;
 using System.Xml.Linq;
+using TMSPS.Core.Common;
 using TMSPS.Core.ManiaLinking;
 using TMSPS.Core.PluginSystem.Configuration;
 using SettingsBase=TMSPS.Core.Common.SettingsBase;
@@ -22,6 +23,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
 
         protected RatingUIPluginSettings Settings { get; private set; }
         private double? _lastAverageVoteValue;
+        private int _lastVotesCount;
         private const string _allVoteRatingManiaLinkPageID = "RatingUIAllVotePanelID";
         private const string _ownVoteRatingManiaLinkPageID = "RatingUIOwnVotePanelID";
 
@@ -39,9 +41,10 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
         protected override void Init()
         {
             Settings = RatingUIPluginSettings.ReadFromFile(PluginSettingsFilePath);
-            _lastAverageVoteValue = HostPlugin.RatingAdapter.GetAverageVote(HostPlugin.CurrentChallengeID);
-
-            SendAllVoteManiaLinkPage(_lastAverageVoteValue);
+            Pair<double?, int> voteInfo = HostPlugin.RatingAdapter.GetAverageVote(HostPlugin.CurrentChallengeID);
+            _lastAverageVoteValue = voteInfo.Value1;
+            _lastVotesCount = voteInfo.Value2;
+            SendAllVoteManiaLinkPage(_lastAverageVoteValue, _lastVotesCount);
             SendOwnVoteManiaLinkPageToAll(HostPlugin.CurrentChallengeID);
 
             HostPlugin.ChallengeChanged += HostPlugin_ChallengeChanged;
@@ -67,7 +70,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
             if (e.Handled)
                 return;
 
-            SendAllVoteManiaLinkPageToLogin(e.Login, _lastAverageVoteValue);
+            SendAllVoteManiaLinkPageToLogin(e.Login, _lastAverageVoteValue, _lastVotesCount);
 
             double? voteValue = HostPlugin.RatingAdapter.GetVoteByLogin(e.Login, HostPlugin.CurrentChallengeID);
             SendOwnVoteManiaLinkPageToLogin(e.Login, voteValue);
@@ -75,8 +78,11 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
 
         private void HostPlugin_ChallengeChanged(object sender, EventArgs e)
         {
-            _lastAverageVoteValue = HostPlugin.RatingAdapter.GetAverageVote(HostPlugin.CurrentChallengeID);
-            SendAllVoteManiaLinkPage(_lastAverageVoteValue);
+            Pair<double?, int> voteInfo = HostPlugin.RatingAdapter.GetAverageVote(HostPlugin.CurrentChallengeID);
+            _lastAverageVoteValue = voteInfo.Value1;
+            _lastVotesCount = voteInfo.Value2;
+
+            SendAllVoteManiaLinkPage(_lastAverageVoteValue, _lastVotesCount);
             SendOwnVoteManiaLinkPageToAll(HostPlugin.CurrentChallengeID);
         }
 
@@ -96,10 +102,11 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
 
             if (voteValue.HasValue)
             {
-                double? averageVote = HostPlugin.RatingAdapter.Vote(e.Login, HostPlugin.CurrentChallengeID, voteValue.Value);
+                Pair<double?, int> voteInfo = HostPlugin.RatingAdapter.Vote(e.Login, HostPlugin.CurrentChallengeID, voteValue.Value);
+                double? averageVote = voteInfo.Value1;
 
                 if (averageVote.HasValue)
-                    OnPlayerVoted(e.Login, voteValue.Value, averageVote.Value);
+                    OnPlayerVoted(e.Login, voteValue.Value, averageVote.Value, voteInfo.Value2);
             }
         }
 
@@ -117,14 +124,14 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
             Context.RPCClient.Methods.SendDisplayManialinkPageToLogin(login, GetOwnVoteManiaLinkPageContent(voteValue), 0, false);
         }
 
-        private void SendAllVoteManiaLinkPage(double? voteValue)
+        private void SendAllVoteManiaLinkPage(double? voteValue, int votesCount)
         {
-            Context.RPCClient.Methods.SendDisplayManialinkPage(GetAllVoteManiaLinkPageContent(voteValue), 0, false);
+            Context.RPCClient.Methods.SendDisplayManialinkPage(GetAllVoteManiaLinkPageContent(voteValue, votesCount), 0, false);
         }
 
-        private void SendAllVoteManiaLinkPageToLogin(string login, double? voteValue)
+        private void SendAllVoteManiaLinkPageToLogin(string login, double? voteValue, int votesCount)
         {
-            Context.RPCClient.Methods.SendDisplayManialinkPageToLogin(login, GetAllVoteManiaLinkPageContent(voteValue), 0, false);
+            Context.RPCClient.Methods.SendDisplayManialinkPageToLogin(login, GetAllVoteManiaLinkPageContent(voteValue, votesCount), 0, false);
         }
 
         protected override void OnManiaLinkPageAnswer(string login, int playerID, TMAction action)
@@ -133,10 +140,12 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
                 return;
 
             byte ownVoteValue = Convert.ToByte(action.AreaActionID - 1);
-            double? averageVote = HostPlugin.RatingAdapter.Vote(login, HostPlugin.CurrentChallengeID, ownVoteValue);
+
+            Pair<double?, int> voteInfo = HostPlugin.RatingAdapter.Vote(login, HostPlugin.CurrentChallengeID, ownVoteValue);
+            double? averageVote = voteInfo.Value1;
 
             if (averageVote.HasValue)
-                OnPlayerVoted(login, ownVoteValue, averageVote.Value);
+                OnPlayerVoted(login, ownVoteValue, averageVote.Value, voteInfo.Value2);
         }
 
         private string GetOwnVoteManiaLinkPageContent(double? voteValue)
@@ -161,7 +170,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
             return ReplaceMessagePlaceHolders(Settings.OwnVoteTemplate, replaceValues.ToArray());
         }
 
-        private string GetAllVoteManiaLinkPageContent(double? voteValue)
+        private string GetAllVoteManiaLinkPageContent(double? voteValue, int votesCount)
         {
             if (!voteValue.HasValue)
                 voteValue = -1;
@@ -181,7 +190,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
             MainArea = 1
         }
 
-        private void OnPlayerVoted(string login, ushort voteValue, double averageVoteValue)
+        private void OnPlayerVoted(string login, ushort voteValue, double averageVoteValue, int votesCount)
         {
             int lastAverageVoteValue = Convert.ToInt32(Math.Floor(_lastAverageVoteValue ?? -1));
             int currentAverageVoteValue = Convert.ToInt32(Math.Floor(averageVoteValue));
@@ -191,7 +200,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
             SendOwnVoteManiaLinkPageToLogin(login, voteValue);
 
             if (currentAverageVoteValue != lastAverageVoteValue)
-                SendAllVoteManiaLinkPage(averageVoteValue);
+                SendAllVoteManiaLinkPage(averageVoteValue, votesCount);
         }
     }
 

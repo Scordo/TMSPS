@@ -1,4 +1,5 @@
 ﻿using System;
+using TMSPS.Core.Common;
 using TMSPS.Core.PluginSystem.Plugins.LocalRecords;
 
 namespace TMSPS.SQLite
@@ -26,25 +27,26 @@ namespace TMSPS.SQLite
 
         #region IRatingAdapter Members
 
-        public double? Vote(string login, int challengeID, ushort rating)
+        public Pair<double?, int> Vote(string login, int challengeID, ushort rating)
         {
             int? playerID = GetPlayerID(login);
 
             if (playerID == null)
                 return null;
 
-            const string countStatement = "Select Count(*) FROM [Rating] WHERE [PlayerID] = @PlayerID and [ChallengeID] = @ChallengeID";
-            int count = SqlHelper.ExecuteScalar<int>(countStatement, "ChallengeID", challengeID, "PlayerID", playerID.Value);
-
-            if (count == 0)
+            const string userCountStatement = "Select Count(*) FROM [Rating] WHERE [PlayerID] = @PlayerID and [ChallengeID] = @ChallengeID";
+            double? usersVoteCount = SqlHelper.ExecuteScalar<double?>(userCountStatement, "ChallengeID", challengeID, "PlayerID", playerID.Value);
+            
+            if (usersVoteCount == 0)
             {
                 const string insertStatement = "INSERT INTO [Rating] ([PlayerID], [ChallengeID], [Value], [Created]) VALUES (@PlayerID, @ChallengeID, @Rating, @Created)";
                 SqlHelper.ExecuteNonQuery(insertStatement, "PlayerID", playerID.Value, "ChallengeID", challengeID, "Rating", (int) rating, "Created", DateTime.Now);
-                return rating;
             }
-
-            const string updateStatement = "UPDATE [Rating] SET [LastChanged] = CURRENT_TIMESTAMP, [Value] = @Rating WHERE [PlayerID] = @PlayerID AND [ChallengeID] = @ChallengeID";
-            SqlHelper.ExecuteNonQuery(updateStatement, "PlayerID", playerID.Value, "ChallengeID", challengeID, "Rating", (int)rating);
+            else
+            {
+                const string updateStatement = "UPDATE [Rating] SET [LastChanged] = CURRENT_TIMESTAMP, [Value] = @Rating WHERE [PlayerID] = @PlayerID AND [ChallengeID] = @ChallengeID";
+                SqlHelper.ExecuteNonQuery(updateStatement, "PlayerID", playerID.Value, "ChallengeID", challengeID, "Rating", (int)rating);    
+            }
 
             return GetAverageVote(challengeID);
         }
@@ -60,11 +62,15 @@ namespace TMSPS.SQLite
             return SqlHelper.ExecuteScalar<double?>(selectStatement, "PlayerID", playerID.Value, "ChallengeID", challengeID);
         }
 
-        public double? GetAverageVote(int challengeID)
+        public Pair<double?, int> GetAverageVote(int challengeID)
         {
             const string selectStatement = "Select AVG([Value]) FROM [Rating] WHERE [ChallengeID] = @ChallengeID";
+            const string countStatement = "Select Count([Value]) FROM [Rating] WHERE [ChallengeID] = @ChallengeID";
 
-            return SqlHelper.ExecuteScalar<double?>(selectStatement, "ChallengeID", challengeID);
+            double? averageVote = SqlHelper.ExecuteScalar<double?>(selectStatement, "ChallengeID", challengeID);
+            int votesCount = SqlHelper.ExecuteScalar<int>(countStatement, "ChallengeID", challengeID);
+
+            return new Pair<double?, int>{Value1 = averageVote, Value2 = votesCount};
         }
 
         #endregion
