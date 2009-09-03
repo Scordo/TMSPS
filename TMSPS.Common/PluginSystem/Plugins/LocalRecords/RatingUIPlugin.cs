@@ -182,6 +182,9 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
                 replaceValues.Add(i <= voteValue ? Settings.ActiveVoteStyle : Settings.InactiveVoteStyle);
             }
 
+            replaceValues.Add("VotesCount");
+            replaceValues.Add(votesCount.ToString());
+
             return ReplaceMessagePlaceHolders(Settings.AllVoteTemplate, replaceValues.ToArray());
         }
 
