@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
+using TMSPS.Core.Common;
 using TMSPS.Core.SQL;
 
 namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords.SQL
@@ -27,7 +29,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords.SQL
 
         #region Public Methods
 
-        public double? Vote(string login, int challengeID, ushort rating)
+        public Pair<double?, int> Vote(string login, int challengeID, ushort rating)
         {
             if (rating > 8)
                 rating = 8;
@@ -42,7 +44,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords.SQL
                 {"Rating", Convert.ToInt16(rating)}
             };
 
-            return SqlHelper.ExecuteScalar<double?>("Rating_Vote", parameters);
+            return SqlHelper.ExecuteClassQuery<Pair<double?, int>>("Rating_Vote", VoteInfoFromDataRow, parameters);
         }
 
         public double? GetVoteByLogin(string login, int challengeID)
@@ -59,13 +61,20 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords.SQL
             return SqlHelper.ExecuteScalar<double?>("Rating_GetVoteByLogin", parameters);
         }
 
-        public double? GetAverageVote(int challengeID)
+        public Pair<double?, int> GetAverageVote(int challengeID)
         {
-            return SqlHelper.ExecuteScalar<double?>("Rating_GetAverageVote", "ChallengeID", challengeID);
+            return SqlHelper.ExecuteClassQuery<Pair<double?, int>>("Rating_GetAverageVote", VoteInfoFromDataRow, "ChallengeID", challengeID);
         }
-
 
         #endregion
 
+        private static Pair<double?, int> VoteInfoFromDataRow(DataRow row)
+        {
+            Pair<double?, int> result = new Pair<double?, int>();
+            result.Value1 = row["AverageVote"] == DBNull.Value ? null : (double?)Convert.ToInt32(row["AverageVote"]);
+            result.Value2 = Convert.ToInt32(row["VotesCount"]);
+
+            return result;
+        }
     }
 }

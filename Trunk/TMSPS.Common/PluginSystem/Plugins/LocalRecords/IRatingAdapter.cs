@@ -4,8 +4,8 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
 {
     public interface IRatingAdapter : IBaseAdapter
     {
-        double? Vote(string login, int challengeID, ushort rating);
+        Pair<double?, int> Vote(string login, int challengeID, ushort rating);
         double? GetVoteByLogin(string login, int challengeID);
-        double? GetAverageVote(int challengeID);
+        Pair<double?, int> GetAverageVote(int challengeID);
     }
 }
