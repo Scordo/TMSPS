@@ -166,18 +166,18 @@ namespace TMSPS.Core.PluginSystem.Plugins
         {
             RunCatchLog(() =>
             {
-                PlayerInfo playerInfo = GetPlayerInfo(e.Login);
+                DetailedPlayerInfo detailedPlayerInfo = GetDetailedPlayerInfo(e.Login);
 
-                if (playerInfo == null)
+                if (detailedPlayerInfo == null)
                 {
                     e.Handled = true;
                     Context.RPCClient.Methods.Kick(e.Login, "TMSPS couldn't determine your player information, try reconnecting!");
                     return;
                 }
 
-                NicknameResolverFactory.Instance.Set(e.Login, playerInfo.NickName);
+                NicknameResolverFactory.Instance.Set(e.Login, detailedPlayerInfo.NickName);
 
-                if (playerInfo.NickName.IsNullOrTimmedEmpty())
+                if (detailedPlayerInfo.NickName.IsNullOrTimmedEmpty())
                 {
                     Context.RPCClient.Methods.Kick(e.Login, "Please provide a nickname!");
                     e.Handled = true;
@@ -186,11 +186,6 @@ namespace TMSPS.Core.PluginSystem.Plugins
 
                 if (Settings.EnableJoinMessage)
                 {
-                    DetailedPlayerInfo detailedPlayerInfo = GetDetailedPlayerInfo(e.Login);
-
-                    if (detailedPlayerInfo == null)
-                        return;
-
                     string nation = "Unknown";
                     List<string> pathParts = new List<string>(detailedPlayerInfo.Path.Split(new[] { '|' }, StringSplitOptions.RemoveEmptyEntries));
 
