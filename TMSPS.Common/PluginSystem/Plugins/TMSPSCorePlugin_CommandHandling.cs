@@ -753,5 +753,31 @@ namespace TMSPS.Core.PluginSystem.Plugins
 
             return result;
         }
+
+        public override IEnumerable<CommandHelp> CommandHelpList
+        {
+            get
+            {
+                return new[]
+                {
+                    new CommandHelp(Command.Kick, "Kicks a player with the specified login.", "/t kick <login>", "/t kick scordo"),
+                    new CommandHelp(Command.Warn, "Warns a player with the specified login.", "/t warn <login>", "/t warn scordo"),
+                    new CommandHelp(Command.Ban, "Bans a player with the specified login", "/t ban <login>", "/t ban scordo"),
+                    new CommandHelp(Command.Unban, "Removes the ban of a player with the specified login.", "/t unban <login>", "/t unban scordo"),
+                    new CommandHelp(Command.Blacklist, "Blacklists a player with the specified login.", "/t blacklist <login>", "/t blacklist scordo"),
+                    new CommandHelp(Command.Unblacklist, "Removes the blacklist entry of a player with the specified login.", "/t unblacklist <login>", "/t unblacklist scordo"),
+                    new CommandHelp(Command.Ignore, "Ignores a player with the specified login.", "/t ignore <login>", "/t ignore scordo"),
+                    new CommandHelp(Command.Unignore, "Removes the ignore of a player with the specified login", "/t unignore <login>", "/t unignore scordo"),
+                    new CommandHelp(Command.AddGuest, "Add the player with the specified login to the guest list.", "/t addguest <login>", "/t addguest scordo"),
+                    new CommandHelp(Command.RemoveGuest, "Removes the player with the specified login from the guest list.", "/t removeguest <login>", "/t removeguest scordo"),
+                    new CommandHelp(Command.ForceSpectator, "Forces the player with the specified login into spectator mode.", "/t forcespectator <login>", "/t forcespectator scordo"),
+                    new CommandHelp(Command.WriteTrackList, "Writes the current tracklist to the standard tracklist file on disk.", "/t writetracklist", "/t writetracklist"),
+                    new CommandHelp(Command.ReadTrackList, "Reads the the standard tracklist file from disk and replaces the current in memory tracklist.", "/t readtracklist", "/t readtracklist"),
+                    new CommandHelp(Command.RemoveCurrentTrack, "Removes the currently playing track from the current in memory tracklist. You need to call 'writetracklist' to commit the changes.", "/t removecurrenttrack", "/t removecurrenttrack"),
+                    new CommandHelp(Command.Wisper, "Writes a private message to the player with the specified login.", "/pm <login> <message>", "/pm scordo hello"),
+                    new CommandHelp(Command.ReadCredentials, "Refreshes user credentials stored in memory by reading from credentials.xml.", "/t readcredentials", "/t readcredentials"),
+                };
+            }
+        }
     }
 }

@@ -80,6 +80,20 @@ namespace TMSPS.Core.PluginSystem.Plugins
             }, "Error in Callbacks_PlayerChat Method.", true);
         }
 
+        public override IEnumerable<CommandHelp> CommandHelpList
+        {
+            get
+            {
+                return new[]
+                {
+                    new CommandHelp(Command.GetSpectators, "Shows a comma separated list of logins that are currently in spectator mode.", "/t getspectators", "/t getspectators"),
+                    new CommandHelp(Command.GetMySpectators, "Shows a comma separated list of logins that are currently spectating you.", "/t getmyspectators", "/t getmyspectators"),
+                    new CommandHelp(Command.KickSpectators, "Kicks all logins that are currently in spectator mode.", "/t kickspectators", "/t kickspectators"),
+                    new CommandHelp(Command.KickMySpectators, "Kicks all logins that are currently spectating you.", "/t kickmyspectators", "/t kickmyspectators"),
+                };
+            }
+        }
+
         private bool CheckForGetAllSpectatorsCommand(PlayerChatEventArgs e)
         {
             if (ServerCommand.Parse(e.Text).Is(Command.GetSpectators))

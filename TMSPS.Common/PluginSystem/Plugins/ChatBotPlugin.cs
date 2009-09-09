@@ -51,6 +51,17 @@ namespace TMSPS.Core.PluginSystem.Plugins
             Context.RPCClient.Callbacks.PlayerChat -= Callbacks_PlayerChat;
         }
 
+        public override IEnumerable<CommandHelp> CommandHelpList
+        {
+            get
+            {
+                return new[]
+                {
+                    new CommandHelp(Command.ReadChatBotSettings, "Refreshes the in memory settings of the chat bot by reading from settings.xml.", "/t readchatbotsettings", "/t readchatbotsettings"),
+                };
+            }
+        }
+
     	private void Callbacks_PlayerChat(object sender, PlayerChatEventArgs e)
     	{
 			RunCatchLog(()=>

@@ -115,6 +115,17 @@ namespace TMSPS.Core.PluginSystem.Plugins
             }, "Error in Callbacks_PlayerChat Method.", true);
         }
 
+        public override IEnumerable<CommandHelp> CommandHelpList
+        {
+            get
+            {
+                return new[]
+                {
+                    new CommandHelp(Command.ReadClanTagSettings, "Refreshes the in memory settings of the name protection bot by reading from settings.xml.", "/t readclantagsettings", "/t readclantagsettings"),
+                };
+            }
+        }
+
         private void ReadConfigValues()
         {
             if (!File.Exists(PluginSettingsFilePath))
