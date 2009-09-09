@@ -152,6 +152,22 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
             }, "Error in Callbacks_PlayerChat Method.", true);
 	    }
 
+        public override IEnumerable<CommandHelp> CommandHelpList
+        {
+            get
+            {
+                List<CommandHelp> result = new List<CommandHelp>
+                {
+                    new CommandHelp(Command.DeleteCheater, "Deletes all records of the specified login.", "/t deletecheater <login>", "/t deletecheater CheatMaster"),
+                    new CommandHelp(Command.GetLocalLogins, "Gets the logins of all local record holders.", "/t GetLocalLogins", "/t GetLocalLogins"),
+                };
+
+                result.AddRange(Plugins.SelectMany(p => p.CommandHelpList));
+
+                return result;
+            }
+        }
+
         private void Callbacks_PlayerFinish(object sender, PlayerFinishEventArgs e)
         {
             RunCatchLog(() => ThreadPool.QueueUserWorkItem(OnPlayerFinished, new object[] { CurrentChallengeID, e }), "Error in Callbacks_PlayerFinish Method.", true);

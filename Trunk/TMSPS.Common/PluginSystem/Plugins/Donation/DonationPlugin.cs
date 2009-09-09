@@ -67,6 +67,17 @@ namespace TMSPS.Core.PluginSystem.Plugins.Donation
             Context.RPCClient.Callbacks.BillUpdated -= Callbacks_BillUpdated;
         }
 
+        public override IEnumerable<CommandHelp> CommandHelpList
+        {
+            get
+            {
+                return new[]
+                {
+                    new CommandHelp(Command.Donate, "Donates the specified amount of coppers to the server.", "/donate xxx", "/t donate 100"),
+                };
+            }
+        }
+
         private void Callbacks_PlayerChat(object sender, Communication.EventArguments.Callbacks.PlayerChatEventArgs e)
         {
             RunCatchLog(() =>

@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System.Collections.Generic;
+using System.IO;
 using TMSPS.Core.Common;
 using TMSPS.Core.ManiaLinking;
 using TMSPS.Core.PluginSystem.Configuration;
@@ -136,6 +137,18 @@ namespace TMSPS.Core.PluginSystem.Plugins.AdminPlayer
                 case MainAreaAction.KickMySpectators:
                     Context.CorePlugin.KickSpectatorsOf(login, playerID);
                     break;
+            }
+        }
+
+        public override IEnumerable<CommandHelp> CommandHelpList
+        {
+            get
+            {
+                return new []
+                {
+                    new CommandHelp(Command.RestartTrack, "Restarts the current track immediately.", "/t restarttrack", "/t restarttrack"),
+                    new CommandHelp(Command.NextTrack, "Switches to the next track immediately", "/t texttrack", "/t texttrack"),
+                };
             }
         }
 

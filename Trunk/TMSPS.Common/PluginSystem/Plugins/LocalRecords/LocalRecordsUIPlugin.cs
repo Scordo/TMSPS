@@ -87,6 +87,21 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
             }
         }
 
+        public override IEnumerable<CommandHelp> CommandHelpList
+        {
+            get
+            {
+                return new[]
+                {
+                    new CommandHelp(Command.Rank, "Shows information about your rank.", "/rank", "/rank"),
+                    new CommandHelp(Command.NextRank, "Shows information about the player with the next rank.", "/nextrank", "/nextrank"),
+                    new CommandHelp(Command.Info, "Shows information about your wins, amount of time played and the date you first joined this server.", "/info", "/info"),
+                    new CommandHelp(Command.LastSeen, "Shows information about when the player with the specified login was last online.", "/lastseen <login>", "/lastseen scordo"),
+                    new CommandHelp(Command.SelectUndrivenTracks, "Selects all the tracks you have no record on and inserts them immediately after the current track.", "/selectundriventracks", "/selectundriventracks"),
+                };
+            }
+        }
+
         private void Callbacks_PlayerChat(object sender, PlayerChatEventArgs e)
         {
             RunCatchLog(() =>

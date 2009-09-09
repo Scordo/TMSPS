@@ -48,6 +48,17 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
             Context.RPCClient.Callbacks.PlayerChat += Callbacks_PlayerChat;
         }
 
+        public override IEnumerable<CommandHelp> CommandHelpList
+        {
+            get
+            {
+                return new[]
+                {
+                    new CommandHelp(Command.TopSums, "Shows a list of all players and the amount of 1st, 2nd and 3rd places.", "/topsums", "/topsums"),
+                };
+            }
+        }
+
         private void Callbacks_PlayerChat(object sender, PlayerChatEventArgs e)
         {
             RunCatchLog(() =>
