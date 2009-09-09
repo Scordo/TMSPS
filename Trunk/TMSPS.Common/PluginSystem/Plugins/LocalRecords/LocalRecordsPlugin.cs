@@ -162,7 +162,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
                     new CommandHelp(Command.GetLocalLogins, "Gets the logins of all local record holders.", "/t GetLocalLogins", "/t GetLocalLogins"),
                 };
 
-                result.AddRange(Plugins.SelectMany(p => p.CommandHelpList));
+                result.AddRange(Plugins.SelectMany(p => p.CommandHelpList ?? new CommandHelp[]{} ));
 
                 return result;
             }

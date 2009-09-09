@@ -152,13 +152,13 @@ namespace TMSPS.Core.PluginSystem.Plugins
                 string message = commandHelp.Description;
 
                 if (!commandHelp.Usage.IsNullOrTimmedEmpty())
-                    message = string.Concat(message, " Usage: ", commandHelp.Usage);
+                    message = string.Concat(message, " Usage: ", commandHelp.Usage, ".");
 
                 if (!commandHelp.UsageExample.IsNullOrTimmedEmpty())
-                    message = string.Concat(message, " Usage-Example: ", commandHelp.UsageExample);
+                    message = string.Concat(message, " Usage-Example: ", commandHelp.UsageExample, ".");
 
                 if (commandHelp.AlternativeCommandNames != null && commandHelp.AlternativeCommandNames.Length > 0)
-                    message = string.Concat(message, " Altervnative command(s): ", string.Join(", ", commandHelp.AlternativeCommandNames));
+                    message = string.Concat(message, " Alternative command(s): ", string.Join(", ", commandHelp.AlternativeCommandNames));
 
                 SendFormattedMessageToLogin(login, "{[#ServerStyle]}>{[#MessageStyle]} {[Message]}", "Message", message);
             }
