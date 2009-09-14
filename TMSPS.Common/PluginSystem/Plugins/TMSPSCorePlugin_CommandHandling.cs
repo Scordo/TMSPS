@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.Text;
+using System.Security;
+using System.Xml.Linq;
 using TMSPS.Core.Common;
 using TMSPS.Core.Communication.ProxyTypes;
 using TMSPS.Core.Communication.ResponseHandling;
+using TMSPS.Core.ManiaLinking;
 using TMSPS.Core.PluginSystem.Configuration;
 using System.Linq;
 
@@ -12,6 +14,10 @@ namespace TMSPS.Core.PluginSystem.Plugins
 {
     public partial class TMSPSCorePlugin
     {
+        private PagedDialogActions HelpListActions { get; set; }
+        private const string HELP_LIST_PANEL_ID = "HelpListPanelID";
+
+
         private void HandleCommand(string login, ServerCommand command)
         {
             if (command.Is(Command.Kick))
@@ -127,17 +133,19 @@ namespace TMSPS.Core.PluginSystem.Plugins
 
         private void ShowHelpSummary(string login)
         {
-            List<CommandHelp> helpList = GetPluginsCommandHelpList(login);
+            SendHelpListPageToLogin(login, 0);
 
-            StringBuilder message = new StringBuilder();
-            message.Append("{[#ServerStyle]}>{[#MessageStyle]} Type '/help xxx' to get a detailed help for a command. Commands are: ");
+            //List<CommandHelp> helpList = GetPluginsCommandHelpList(login);
 
-            for (int i = 0; i < helpList.Count; i++)
-            {
-                message.AppendFormat((i != 0 ? ", " : string.Empty) + "{0}", helpList[i].CommandName);
-            }
+            //StringBuilder message = new StringBuilder();
+            //message.Append("{[#ServerStyle]}>{[#MessageStyle]} Type '/help xxx' to get a detailed help for a command. Commands are: ");
 
-            SendFormattedMessageToLogin(login, message.ToString());
+            //for (int i = 0; i < helpList.Count; i++)
+            //{
+            //    message.AppendFormat((i != 0 ? ", " : string.Empty) + "{0}", helpList[i].CommandName);
+            //}
+
+            //SendFormattedMessageToLogin(login, message.ToString());
         }
 
         private void ShowDetailedHelp(string login, ServerCommand command)
@@ -779,5 +787,153 @@ namespace TMSPS.Core.PluginSystem.Plugins
                 };
             }
         }
+
+        protected override void OnManiaLinkPageAnswer(string login, int playerID, TMAction action)
+        {
+            switch ((Area)action.AreaID)
+            {
+                case Area.Main:
+                    HandleMainAreaActions(login, playerID, action);
+                    break;
+                case Area.HelpList:
+                    HandleHelpListAreaActions(login, action);
+                    break;
+            }
+        }
+
+        private void HandleMainAreaActions(string login, int playerID, TMAction action)
+        {
+            
+        }
+
+        private void HandleHelpListAreaActions(string login, TMAction areaAction)
+        {
+            if (areaAction.IsAreaAction)
+            {
+                PagedDialogActions.DefaultDialogAction action = (PagedDialogActions.DefaultDialogAction)areaAction.AreaActionID;
+
+                switch (action)
+                {
+                    case PagedDialogActions.DefaultDialogAction.CloseDialog:
+                        GetPluginSettings(login).AreaSettings.Reset((byte)Area.HelpList);
+                        SendEmptyManiaLinkPageToLogin(login, HELP_LIST_PANEL_ID);
+                        break;
+                    case PagedDialogActions.DefaultDialogAction.FirstPage:
+                        SendHelpListPageToLogin(login, 0);
+                        break;
+                    case PagedDialogActions.DefaultDialogAction.PrevPage:
+                        ushort prevPageIndex = Convert.ToUInt16(Math.Max(0, GetAreaSettings(login, (byte)Area.HelpList).CurrentDialogPageIndex - 1));
+                        SendHelpListPageToLogin(login, prevPageIndex);
+                        break;
+                    case PagedDialogActions.DefaultDialogAction.NextPage:
+
+                        ushort nextPageIndex = Convert.ToUInt16(GetAreaSettings(login, (byte)Area.HelpList).CurrentDialogPageIndex + 1);
+                        SendHelpListPageToLogin(login, nextPageIndex);
+                        break;
+                    case PagedDialogActions.DefaultDialogAction.LastPage:
+                        SendHelpListPageToLogin(login, null);
+                        break;
+                }
+            }
+            else
+            {
+                //GuestListRowAction action = (GuestListRowAction)areaAction.RowActionID;
+
+                //switch (action)
+                //{
+                //    case GuestListRowAction.RemovePlayer:
+                //        RemoveGuestListPlayer(login, areaAction.RowIndex);
+                //        break;
+                //}
+            }
+        }
+
+        private void SendHelpListPageToLogin(string login, uint? pageIndex)
+        {
+            List<CommandHelp> commandHelpList = GetPluginsCommandHelpList(login);
+
+            uint maxPageIndex = Convert.ToUInt32(Math.Max(0, Math.Ceiling((double)commandHelpList.Count / HelpSettings.MaxEntriesPerPage) - 1));
+
+            if (!pageIndex.HasValue)
+                pageIndex = maxPageIndex;
+
+            pageIndex = Convert.ToUInt16(Math.Min(Math.Max(0, (int)pageIndex), maxPageIndex));
+            GetAreaSettings(login, (byte)Area.HelpList).CurrentDialogPageIndex = (ushort)pageIndex;
+
+            int entriesToSkip = Convert.ToInt32(pageIndex * HelpSettings.MaxEntriesPerPage);
+            List<CommandHelp> helpCommandListEntriesToShow = commandHelpList.Skip(entriesToSkip).Take(Convert.ToInt32(HelpSettings.MaxEntriesPerPage)).ToList();
+
+            Context.RPCClient.Methods.SendDisplayManialinkPageToLogin(login, GetCommandListManiaLinkPage(pageIndex.Value + 1, maxPageIndex + 1, helpCommandListEntriesToShow), 0, false);
+        }
+
+        private string GetCommandListManiaLinkPage(uint currentPage, uint maxPage, IEnumerable<CommandHelp> commands)
+        {
+            string mainTemplateString = HelpSettings.SinglePageTemplate;
+
+            if (maxPage > 1)
+            {
+                if (currentPage == 1)
+                    mainTemplateString = HelpSettings.FirstPageTemplate;
+                else
+                    mainTemplateString = currentPage == maxPage ? HelpSettings.LastPageTemplate : HelpSettings.MiddlePageTemplate;
+            }
+
+            mainTemplateString = ReplaceMessagePlaceHolders(mainTemplateString, HelpListActions.GetReplaceParameters());
+
+            XElement mainTemplate = XElement.Parse(FormatMessage(mainTemplateString, "ManiaLinkID", HELP_LIST_PANEL_ID, "CurrentPage", currentPage.ToString(CultureInfo.InvariantCulture), "MaxPage", maxPage.ToString(CultureInfo.InvariantCulture)));
+            XElement entryPlaceHolder = mainTemplate.Descendants("HelpPlaceHolder").First();
+            double currentY = HelpSettings.FirstEntryTopMargin;
+
+            XElement lastInsertedNode = entryPlaceHolder;
+
+            foreach (CommandHelp commandHelpEntry in commands)
+            {
+                XElement currentElement = GetHelpListElement(commandHelpEntry, currentY);
+                lastInsertedNode.AddAfterSelf(currentElement);
+                lastInsertedNode = currentElement;
+                currentY -= HelpSettings.EntryHeight;
+            }
+
+            entryPlaceHolder.Remove();
+
+            return mainTemplate.ToString();
+        }
+
+        private XElement GetHelpListElement(CommandHelp commandHelpEntry, double currentY)
+        {
+            List<string> commandNames = new List<string>(commandHelpEntry.AlternativeCommandNames ?? new string[] { });
+
+            if (commandNames.Count == 0)
+                commandNames.Add("-");
+
+            return XElement.Parse
+            (
+                FormatMessage
+                (
+                    HelpSettings.EntryTemplate,
+                    "Y", currentY.ToString(CultureInfo.InvariantCulture),
+                    "CommandName", SecurityElement.Escape(commandHelpEntry.CommandName),
+                    "Description", SecurityElement.Escape(commandHelpEntry.Description),
+                    "Usage", SecurityElement.Escape(commandHelpEntry.Usage),
+                    "UsageExample", SecurityElement.Escape(commandHelpEntry.UsageExample),
+                    "Aliases", SecurityElement.Escape(string.Join(", ", commandNames.ToArray()))
+                )
+            );
+        }
+
+        #region Embedded Types
+
+        private enum Area
+        {
+            Main = 1,
+            HelpList = 2,
+        }
+
+        //private enum MainAreaAction
+        //{
+        //    ShowHelp
+        //}
+
+        #endregion
     }
 }

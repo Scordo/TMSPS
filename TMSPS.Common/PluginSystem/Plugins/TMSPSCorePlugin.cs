@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Threading;
 using TMSPS.Core.Common;
 using TMSPS.Core.Communication.EventArguments.Callbacks;
 using TMSPS.Core.Communication.ProxyTypes;
 using TMSPS.Core.Communication.ResponseHandling;
+using TMSPS.Core.PluginSystem.Plugins.Core;
 using PlayerInfo=TMSPS.Core.Communication.ProxyTypes.PlayerInfo;
 using Version=System.Version;
 using System.Linq;
@@ -21,6 +23,7 @@ namespace TMSPS.Core.PluginSystem.Plugins
         public override string Description { get { return "This Plugin does all the basic stuff making the whole thing work."; } }
         public override string ShortName { get { return "Core"; } }
         public TMSPSCorePluginSettings Settings { get; private set; }
+        public HelpSettings HelpSettings { get; private set; }
         private Timer DedimaniaBlackListSyncTimer { get; set; }
 
         #endregion
@@ -39,6 +42,10 @@ namespace TMSPS.Core.PluginSystem.Plugins
         protected override void Init()
         {
             Settings = TMSPSCorePluginSettings.ReadFromFile(PluginSettingsFilePath);
+            HelpSettings = Core.HelpSettings.ReadFromFile(Path.Combine(PluginDirectory, "HelpTemplate.xml"));
+
+            HelpListActions = new PagedDialogActions(ID, (byte) Area.HelpList);
+
             NicknameResolverFactory.CreateSingleInstance(Settings, Context);
 
             List<PlayerInfo> players =  GetPlayerList(); 

@@ -147,7 +147,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.AdminPlayer
                 return new []
                 {
                     new CommandHelp(Command.RestartTrack, "Restarts the current track immediately.", "/t restarttrack", "/t restarttrack"),
-                    new CommandHelp(Command.NextTrack, "Switches to the next track immediately", "/t texttrack", "/t texttrack"),
+                    new CommandHelp(Command.NextTrack, "Switches to the next track immediately", "/t nexttrack", "/t texttrack"),
                 };
             }
         }
