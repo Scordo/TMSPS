@@ -73,7 +73,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.Dedimania
             }
         }
 
-        private void Callbacks_EndRace(object sender, Core.Communication.EventArguments.Callbacks.EndRaceEventArgs e)
+        private void Callbacks_EndRace(object sender, TMSPS.Core.Communication.EventArguments.Callbacks.EndRaceEventArgs e)
         {
             RunCatchLog(() =>
             {
@@ -88,7 +88,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.Dedimania
             }, "Error in Callbacks_EndRace Method.", false);
         }
 
-        private void Callbacks_PlayerConnect(object sender, Core.Communication.EventArguments.Callbacks.PlayerConnectEventArgs e)
+        private void Callbacks_PlayerConnect(object sender, TMSPS.Core.Communication.EventArguments.Callbacks.PlayerConnectEventArgs e)
         {
             if (e.Handled)
                 return;

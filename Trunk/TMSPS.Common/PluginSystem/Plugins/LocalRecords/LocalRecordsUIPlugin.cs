@@ -93,10 +93,10 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
             {
                 return new[]
                 {
-                    new CommandHelp(Command.Rank, "Shows information about your rank.", "/rank", "/rank"),
-                    new CommandHelp(Command.NextRank, "Shows information about the player with the next rank.", "/nextrank", "/nextrank"),
+                    new CommandHelp(Command.Rank, "Shows information about your rank.", "/sr", "/sr"),
+                    new CommandHelp(Command.NextRank, "Shows information about the player with the next rank.", "/nsr", "/nsr"),
                     new CommandHelp(Command.Info, "Shows information about your wins, amount of time played and the date you first joined this server.", "/info", "/info"),
-                    new CommandHelp(Command.LastSeen, "Shows information about when the player with the specified login was last online.", "/lastseen <login>", "/lastseen scordo"),
+                    new CommandHelp(Command.LastSeen, "Shows information about when the player with the specified login was last online.", "/seen <login>", "/seen scordo"),
                     new CommandHelp(Command.SelectUndrivenTracks, "Selects all the tracks you have no record on and inserts them immediately after the current track.", "/selectundriventracks", "/selectundriventracks"),
                 };
             }
@@ -280,13 +280,28 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
 
         private bool CheckForSelectUndrivenTracksCommand(PlayerChatEventArgs args)
         {
-            if (!ServerCommand.Parse(args.Text).Is(Command.SelectUndrivenTracks))
+            ServerCommand serverCommand = ServerCommand.Parse(args.Text);
+            
+            if (!serverCommand.Is(Command.SelectUndrivenTracks))
                 return false;
 
             if (!LoginHasRight(args.Login, true, Command.SelectUndrivenTracks))
                 return true;
 
-            SelectUndrivenTracks(args.Login);
+            string targetLogin = args.Login;
+
+            if (serverCommand.HasFurtherParts)
+                targetLogin = serverCommand.PartsWithoutMainCommand[0];
+
+            PlayerSettings playerSettings = GetPlayerSettings(targetLogin);
+
+            if (playerSettings == null)
+            {
+                SendNoPlayerWithLoginMessageToLogin(args.Login, targetLogin);
+                return true;
+            }
+
+            SelectUndrivenTracks(args.Login, targetLogin);
 
             return true;
         }
@@ -324,17 +339,20 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
             return true;
         }
 
-        private void SelectUndrivenTracks(string login)
+        private void SelectUndrivenTracks(string operatorLogin, string targetLogin)
         {
-            ThreadPool.QueueUserWorkItem(SelectUndrivenTracks, login);
+            ThreadPool.QueueUserWorkItem(SelectUndrivenTracks, new[] { operatorLogin, targetLogin });
         }
 
         private void SelectUndrivenTracks(object state)
         {
             RunCatchLog(() =>
             {
-                string login = (string)state;
-                HashSet<string> drivenChallengeUIDs = GetDrivenChallengeUIDs(login);
+                string[] parameters = (string[]) state;
+                string operatorLogin = parameters[0];
+                string targetLogin = parameters[1];
+                
+                HashSet<string> drivenChallengeUIDs = GetDrivenChallengeUIDs(targetLogin);
                 List<string> undrivenChallengeFilenames = GetUndrivenChallengeFilenames(drivenChallengeUIDs);
                 GenericResponse<int> chooseNextChallengeListResponse = null;    
 
@@ -347,9 +365,16 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
                 }
 
                 if (chooseNextChallengeListResponse.Value > 0)
-                    SendFormattedMessageToLogin(login, "{[#ServerStyle]}> {[#MessageStyle]}You have not driven {[#HighlightStyle]}{[Amount]}{[#MessageStyle]} track(s). Those tracks will be the next in the track cycle.", "Amount", chooseNextChallengeListResponse.Value.ToString());
+                    SendFormattedMessageToLogin(targetLogin, "{[#ServerStyle]}> {[#MessageStyle]}You have not driven {[#HighlightStyle]}{[Amount]}{[#MessageStyle]} track(s). Those tracks will be the next in the track cycle.", "Amount", chooseNextChallengeListResponse.Value.ToString());
                 else
-                    SendFormattedMessageToLogin(login, "{[#ServerStyle]}> {[#MessageStyle]}You have driven all maps.");
+                    SendFormattedMessageToLogin(targetLogin, "{[#ServerStyle]}> {[#MessageStyle]}You have driven all maps.");
+
+                if (string.Compare(operatorLogin, targetLogin, StringComparison.InvariantCultureIgnoreCase) != 0)
+                {
+                    string targetNickname = GetNickname(targetLogin);
+                    SendFormattedMessageToLogin(operatorLogin, "{[#ServerStyle]}> {[#MessageStyle]}{[TargetNickname]} has not driven {[#HighlightStyle]}{[Amount]}{[#MessageStyle]} track(s). Those tracks will be the next in the track cycle.", "Amount", chooseNextChallengeListResponse.Value.ToString(), "TargetNickname", targetNickname);
+                }
+
             }, "Error in SelectUndrivenTracks Method.", true);
         }
 

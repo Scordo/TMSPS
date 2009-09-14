@@ -203,6 +203,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>UITemplates.resx</DependentUpon>
     </Compile>
+    <Compile Include="PluginSystem\Plugins\Core\HelpSettings.cs" />
     <Compile Include="PluginSystem\Plugins\Dedimania\Communication\AliasTextTool.cs" />
     <Compile Include="PluginSystem\Plugins\Dedimania\Communication\AuthenticateParameters.cs" />
     <Compile Include="PluginSystem\Plugins\Dedimania\Communication\DedimaniaChallengeRaceTimesReply.cs" />
@@ -334,6 +335,7 @@
     <Content Include="Components\log4net.dll" />
     <Content Include="Components\log4net.xml" />
     <Content Include="Resources\ManiaLinkPageLayouts\AdminPlayer\UserView.xml" />
+    <Content Include="Resources\ManiaLinkPageLayouts\Help\Help.xml" />
     <Content Include="Resources\ManiaLinkPageLayouts\LocalRecords\Rating.xml" />
     <Content Include="Resources\ManiaLinkPageLayouts\StaticUI\TMSPSAdvertise.xml" />
     <Content Include="Resources\SQLScripts\Structure\CreationOrder.txt" />
