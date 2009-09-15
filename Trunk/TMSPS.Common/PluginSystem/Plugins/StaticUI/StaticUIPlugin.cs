@@ -65,14 +65,14 @@ namespace TMSPS.Core.PluginSystem.Plugins.StaticUI
 
             if (!connectionLost)
             {
-                SendEmptyManiaLinkPage("StaticUIPanel");
+                SendEmptyManiaLinkPage(Settings.ManiaLinkPageID);
             }
         }
 
         private void Callbacks_EndRace(object sender, EndRaceEventArgs e)
         {
             if (Settings.HidOnFinish)
-                RunCatchLog(() => SendEmptyManiaLinkPage("StaticUIPanel"), "Error in Callbacks_EndRace Method.", true);
+                RunCatchLog(() => SendEmptyManiaLinkPage(Settings.ManiaLinkPageID), "Error in Callbacks_EndRace Method.", true);
         }
 
         private void Callbacks_BeginRace(object sender, BeginRaceEventArgs e)

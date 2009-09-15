@@ -1,4 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <Settings enabled="true" assemblyName="TMSPS.Core" pluginClass="TMSPS.Core.PluginSystem.Plugins.StaticUI.StaticUIPlugin" order="1000">
 	<HidOnFinish>true</HidOnFinish>
+	<ManiaLinkPageID>StaticUIPanel</ManiaLinkPageID>
 </Settings>
