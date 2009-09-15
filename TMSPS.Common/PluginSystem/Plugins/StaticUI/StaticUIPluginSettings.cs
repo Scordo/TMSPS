@@ -10,6 +10,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.StaticUI
         #region Constants
 
         public const bool HIDE_ON_FINISH = true;
+        public const string MANIA_LINK_PAGE_ID = "StaticUIPanel";
 
         #endregion
 
@@ -17,6 +18,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.StaticUI
 
         public bool HidOnFinish { get; protected internal set; }
         public string ManiaLinkPageContent { get; protected internal set; }
+        public string ManiaLinkPageID { get; protected internal set; }
 
 
         #endregion
@@ -33,6 +35,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.StaticUI
                 throw new ConfigurationErrorsException("Could not find root node in file: " + xmlConfigurationFile);
 
             result.HidOnFinish = ReadConfigBool(configDocument.Root, "HidOnFinish", HIDE_ON_FINISH, xmlConfigurationFile);
+            result.ManiaLinkPageID = ReadConfigString(configDocument.Root, "ManiaLinkPageID", MANIA_LINK_PAGE_ID, xmlConfigurationFile);
             string contentFile = Path.Combine(settingsDirectory, "Content.xml");
 
             if (!File.Exists(contentFile))
