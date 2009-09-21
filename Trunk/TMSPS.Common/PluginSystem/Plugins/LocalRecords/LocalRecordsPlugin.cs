@@ -299,6 +299,9 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
             if (!command.Is(Command.GetLocalLogins))
                 return false;
 
+            if (!LoginHasRight(args.Login, true, Command.GetLocalLogins))
+                return true;
+
             DetermineLocalRecords();
 
             StringBuilder msg = new StringBuilder("Local logins: ");
