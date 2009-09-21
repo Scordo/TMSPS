@@ -7,6 +7,17 @@ namespace TMSPS.Core.PluginSystem.Plugins.TMX
 {
     public class TMXInfo
     {
+        #region Constants
+
+        private const string UNITED_INFO_URL_PREFIX = "http://united.tm-exchange.com/apiget.aspx?action=apitrackinfo&id=";
+        private const string FOREVER_INFO_URL_PREFIX = "http://tmnforever.tm-exchange.com/apiget.aspx?action=apitrackinfo&id=";
+
+        private const string UNITED_DOWNLOAD_URL_PREFIX = "http://united.tm-exchange.com/get.aspx?action=trackgbx&id=";
+        private const string FOREVER_DOWNLOAD_URL_PREFIX = "http://tmnforever.tm-exchange.com/get.aspx?action=trackgbx&id=";
+
+        #endregion
+
+
         #region Properties
 
         public bool Erroneous { get { return ErrorMessage != null; } }
@@ -54,22 +65,22 @@ namespace TMSPS.Core.PluginSystem.Plugins.TMX
 
             TMXInfo result = new TMXInfo
             {
-                ID = parts[0],
-                Name = parts[1],
-                UserID = parts[2],
-                Author = parts[3],
-                Uploaded = parts[4],
-                Updated = parts[5],
-                Visible = parts[6].Equals("true", StringComparison.InvariantCultureIgnoreCase),
-                Type = parts[7],
-                Environment = parts[8],
-                Mood = parts[9],
-                Style = parts[10],
-                Routes = parts[11],
-                Length = parts[12],
-                DifficultLevel = parts[13],
-                LBRating = parts[14],
-                Game = parts[15]
+                    ID = parts[0],
+                    Name = parts[1],
+                    UserID = parts[2],
+                    Author = parts[3],
+                    Uploaded = parts[4],
+                    Updated = parts[5],
+                    Visible = parts[6].Equals("true", StringComparison.InvariantCultureIgnoreCase),
+                    Type = parts[7],
+                    Environment = parts[8],
+                    Mood = parts[9],
+                    Style = parts[10],
+                    Routes = parts[11],
+                    Length = parts[12],
+                    DifficultLevel = parts[13],
+                    LBRating = parts[14],
+                    Game = parts[15]
             };
 
             if (parts.Length > 16)
@@ -80,15 +91,13 @@ namespace TMSPS.Core.PluginSystem.Plugins.TMX
 
         public static TMXInfo Retrieve(string id)
         {
-            const string baseUrl = "http://tmnforever.tm-exchange.com/apiget.aspx?action=apitrackinfo&id=";
-            
             using (WebClient webClient = new WebClient())
             {
                 string response = null;
 
                 try
                 {
-                    response = webClient.DownloadString(baseUrl + id);
+                    response = webClient.DownloadString(GetInfoUrl(id));
                 }
                 catch (Exception ex)
                 {
@@ -101,15 +110,13 @@ namespace TMSPS.Core.PluginSystem.Plugins.TMX
 
         public static byte[] DownloadTrack(string id)
         {
-            const string baseUrl = "http://tmnforever.tm-exchange.com/get.aspx?action=trackgbx&id=";
-
             using (WebClient webClient = new WebClient())
             {
                 byte[] data = null;
 
                 try
                 {
-                    data = webClient.DownloadData(baseUrl + id);
+                    data = webClient.DownloadData(GetDownloadUrl(id));
                 }
                 catch (Exception ex)
                 {
@@ -157,5 +164,40 @@ namespace TMSPS.Core.PluginSystem.Plugins.TMX
         }
 
         #endregion
+
+        #region Non Public Methods
+
+        private static string GetDownloadUrl(string trackID)
+        {
+            bool isUnited;
+            trackID = NormalizeTrackID(trackID, out isUnited);
+
+            return string.Concat(isUnited ? UNITED_DOWNLOAD_URL_PREFIX : FOREVER_DOWNLOAD_URL_PREFIX, trackID);
+        }
+
+        private static string GetInfoUrl(string trackID)
+        {
+            bool isUnited;
+            trackID = NormalizeTrackID(trackID, out isUnited);
+
+            return string.Concat(isUnited ? UNITED_INFO_URL_PREFIX : FOREVER_INFO_URL_PREFIX, trackID);
+        }
+
+        private static string NormalizeTrackID(string trackID, out bool isUnited)
+        {
+            if (trackID == null)
+                throw new ArgumentNullException(trackID);
+
+            trackID = trackID.Trim();
+            isUnited = trackID.Trim().EndsWith("u", StringComparison.InvariantCultureIgnoreCase);
+
+            if (isUnited)
+                trackID = trackID.Remove(trackID.Length - 1);
+
+            return trackID;
+        }
+
+        #endregion
+
     }
 }
