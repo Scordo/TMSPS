@@ -56,7 +56,8 @@ namespace TMSPS.Core.SQL
         /// <summary>
         /// Initializes a new instance of the <see cref="SQLBaseAdapter"/> class.
         /// </summary>
-        protected SQLBaseAdapter() : this(null)
+        protected SQLBaseAdapter()
+            : this(null)
         {
 
         }
@@ -65,9 +66,19 @@ namespace TMSPS.Core.SQL
         /// Initializes a new instance of the <see cref="SQLBaseAdapter"/> class.
         /// </summary>
         /// <param name="connectionManager">The connection manager.</param>
-        protected SQLBaseAdapter(ConnectionManager connectionManager) 
+        protected SQLBaseAdapter(ConnectionManager connectionManager)
         {
             _connectionManager = connectionManager;
+        }
+
+        #endregion
+
+        #region Destructor
+
+        ~SQLBaseAdapter()
+        {
+            // Finalizer calls Dispose(false)
+            Dispose(false);
         }
 
         #endregion
@@ -136,12 +147,30 @@ namespace TMSPS.Core.SQL
                 throw new ArgumentNullException("adapter");
 
             if (!(adapter is SQLBaseAdapter))
-                throw new ArgumentException(string.Format("The provided adapter of type '{0}' does not derive from type '{1}'", adapter.GetType().FullName,  typeof(SQLBaseAdapter).FullName));
+                throw new ArgumentException(string.Format("The provided adapter of type '{0}' does not derive from type '{1}'", adapter.GetType().FullName, typeof(SQLBaseAdapter).FullName));
 
-            SQLBaseAdapter sourceAdapter = (SQLBaseAdapter) adapter;
+            SQLBaseAdapter sourceAdapter = (SQLBaseAdapter)adapter;
             ConnectionManager = sourceAdapter.ConnectionManager;
         }
 
+        /// <summary>
+        /// Releases unmanaged and - optionally - managed resources
+        /// </summary>
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!disposing)
+                return;
+
+            // free managed resources
+            if (ConnectionManager != null)
+                ConnectionManager.Dispose();
+        }
         #endregion
     }
 }

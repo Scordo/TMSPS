@@ -20,7 +20,8 @@ namespace TMSPS.SQLite
         /// Initializes a new instance of the <see cref="PositionAdapter"/> class.
         /// </summary>
         /// <param name="connectionManager">The connection manager.</param>
-        public PositionAdapter(ConnectionManager connectionManager) : base(connectionManager)
+        public PositionAdapter(ConnectionManager connectionManager)
+            : base(connectionManager)
         {
         }
 
@@ -50,7 +51,7 @@ namespace TMSPS.SQLite
                                            "FROM (Select PlayerID, Count(OwnPosition) as PositionsCount FROM Position WHERE OwnPosition <= @positionLimit Group by  PlayerID Order by PositionsCount desc) M " +
                                            "INNER JOIN Player P  on P.Id = M.PlayerID LIMIT @top";
 
-            return SqlHelper.ExecuteClassListQuery<PositionStats>(selectStatement, PositionStatsFromDataRow,"positionLimit", (int) positionLimit, "top", (int) top);
+            return SqlHelper.ExecuteClassListQuery<PositionStats>(selectStatement, PositionStatsFromDataRow, "positionLimit", (int)positionLimit, "top", (int)top);
         }
 
         #endregion

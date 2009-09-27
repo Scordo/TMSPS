@@ -20,7 +20,8 @@ namespace TMSPS.SQLite
         /// Initializes a new instance of the <see cref="ChallengeAdapter"/> class.
         /// </summary>
         /// <param name="connectionManager">The connection manager.</param>
-        public ChallengeAdapter(ConnectionManager connectionManager) : base(connectionManager)
+        public ChallengeAdapter(ConnectionManager connectionManager)
+            : base(connectionManager)
         {
         }
 
@@ -154,7 +155,7 @@ namespace TMSPS.SQLite
 
             challengeSerializable.ID = Convert.ToInt32(row["ID"]);
             challengeSerializable.Created = Convert.ToDateTime(row["Created"]);
-            challengeSerializable.LastChanged = row["LastChanged"] == DBNull.Value ? null : (DateTime?) Convert.ToDateTime(row["LastChanged"]);
+            challengeSerializable.LastChanged = row["LastChanged"] == DBNull.Value ? null : (DateTime?)Convert.ToDateTime(row["LastChanged"]);
             challenge.UniqueID = Convert.ToString(row["UniqueID"]);
             challenge.Author = Convert.ToString(row["Author"]);
             challenge.Environment = Convert.ToString(row["Environment"]);

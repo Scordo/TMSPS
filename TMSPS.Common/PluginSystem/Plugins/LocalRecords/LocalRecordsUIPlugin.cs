@@ -28,8 +28,8 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
         protected LocalRecordsUISettings Settings { get; private set; }
         private uint? LocalBestTimeOrScore { get; set; }
         private const string _pbManiaLinkPageID = "PBPanelID";
-        private const string _localRecordManiaLinkPageID = "LocalRecordPanelID"; 
-        private const string _localRecordListManiaLinkPageID = "LocalRecordListPanelID"; 
+        private const string _localRecordManiaLinkPageID = "LocalRecordPanelID";
+        private const string _localRecordListManiaLinkPageID = "LocalRecordListPanelID";
         private RankEntry[] LastRankings { get; set; }
         private TimedVolatileExecutionQueue<RankEntry[]> UpdateListTimer { get; set; }
         private TimedVolatileExecutionQueue<string> UpdateLocalRecordTimer { get; set; }
@@ -38,12 +38,13 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
 
         #region Constructor
 
-        protected LocalRecordsUIPlugin(string pluginDirectory) : base(pluginDirectory)
+        protected LocalRecordsUIPlugin(string pluginDirectory)
+            : base(pluginDirectory)
         {
-            
+
         }
 
-	    #endregion
+        #endregion
 
         #region Methods
 
@@ -132,7 +133,13 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
             {
                 if (Settings.ShowPBUserInterface)
                 {
-                    uint? personalBest = HostPlugin.RecordAdapter.GetBestTime(e.Login, HostPlugin.CurrentChallengeID);
+                    uint? personalBest;
+                    using (IRecordAdapter recordAdapter = HostPlugin.AdapterProvider.GetRecordAdapter())
+                    {
+                        personalBest = recordAdapter.GetBestTime(e.Login, HostPlugin.CurrentChallengeID);
+                    }
+
+
                     SendPBManiaLinkPage(e.Login, personalBest);
                 }
 
@@ -281,7 +288,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
         private bool CheckForSelectUndrivenTracksCommand(PlayerChatEventArgs args)
         {
             ServerCommand serverCommand = ServerCommand.Parse(args.Text);
-            
+
             if (!serverCommand.Is(Command.SelectUndrivenTracks))
                 return false;
 
@@ -325,12 +332,16 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
                 return true;
             }
 
-            Player player = HostPlugin.PlayerAdapter.Deserialize(login);
+            Player player;
+            using (IPlayerAdapter playerAdapter = HostPlugin.AdapterProvider.GetPlayerAdapter())
+            {
+                player = playerAdapter.Deserialize(login);
+            }
 
             if (player == null)
             {
                 SendNoPlayerWithLoginMessageToLogin(args.Login, login);
-                return true; 
+                return true;
             }
 
 
@@ -348,13 +359,13 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
         {
             RunCatchLog(() =>
             {
-                string[] parameters = (string[]) state;
+                string[] parameters = (string[])state;
                 string operatorLogin = parameters[0];
                 string targetLogin = parameters[1];
-                
+
                 HashSet<string> drivenChallengeUIDs = GetDrivenChallengeUIDs(targetLogin);
                 List<string> undrivenChallengeFilenames = GetUndrivenChallengeFilenames(drivenChallengeUIDs);
-                GenericResponse<int> chooseNextChallengeListResponse = null;    
+                GenericResponse<int> chooseNextChallengeListResponse = null;
 
                 if (undrivenChallengeFilenames.Count > 0)
                 {
@@ -395,7 +406,10 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
 
         private HashSet<string> GetDrivenChallengeUIDs(string login)
         {
-            return new HashSet<string>(HostPlugin.ChallengeAdapter.GetDrivenUniqueTrackIDs(login));
+            using (IChallengeAdapter challengeAdapter = HostPlugin.AdapterProvider.GetChallengeAdapter())
+            {
+                return new HashSet<string>(challengeAdapter.GetDrivenUniqueTrackIDs(login));
+            }
         }
 
         private void SendServerRankMessageToLogin(string login)
@@ -410,8 +424,12 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
 
         private void SendServerRankMessageToLogin(object state)
         {
-            string login = (string) state;
-            Ranking ranking = HostPlugin.RankingAdapter.Deserialize_ByLogin(login);
+            string login = (string)state;
+            Ranking ranking;
+            using (IRankingAdapter rankingAdapter = HostPlugin.AdapterProvider.GetRankingAdapter())
+            {
+                ranking = rankingAdapter.Deserialize_ByLogin(login);
+            }
 
             if (ranking != null)
                 SendFormattedMessageToLogin(login, Settings.RankingMessage, "Rank", ranking.CurrentRank.ToString("F0", CultureInfo.InvariantCulture), "Average", ranking.AverageRank.ToString("F1", CultureInfo.InvariantCulture), "Score", ranking.Score.ToString("F1", CultureInfo.InvariantCulture), "Tracks", ranking.RecordsCount.ToString("F0", CultureInfo.InvariantCulture), "TracksCount", ranking.ChallengesCount.ToString("F0", CultureInfo.InvariantCulture));
@@ -420,7 +438,11 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
         private void SendNextServerRankMessageToLogin(object state)
         {
             string login = (string)state;
-            Ranking ranking = HostPlugin.RankingAdapter.GetNextRank(login);
+            Ranking ranking;
+            using (IRankingAdapter rankingAdapter = HostPlugin.AdapterProvider.GetRankingAdapter())
+            {
+                ranking = rankingAdapter.GetNextRank(login);
+            }
 
             if (ranking != null)
                 SendFormattedMessageToLogin(login, Settings.NextRankMessage, "Nickname", StripTMColorsAndFormatting(ranking.Nickname), "Rank", ranking.CurrentRank.ToString("F0", CultureInfo.InvariantCulture), "Average", ranking.AverageRank.ToString("F1", CultureInfo.InvariantCulture), "Score", ranking.Score.ToString("F1", CultureInfo.InvariantCulture), "Tracks", ranking.RecordsCount.ToString("F0", CultureInfo.InvariantCulture), "TracksCount", ranking.ChallengesCount.ToString("F0", CultureInfo.InvariantCulture));
@@ -430,7 +452,11 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
 
         private void SendInfoMessageToLogin(string login)
         {
-            Player player = HostPlugin.PlayerAdapter.Deserialize(login);
+            Player player;
+            using (IPlayerAdapter playerAdapter = HostPlugin.AdapterProvider.GetPlayerAdapter())
+            {
+                player = playerAdapter.Deserialize(login);
+            }
 
             if (player != null)
                 SendFormattedMessageToLogin(login, Settings.InfoMessage, "Wins", player.Wins.ToString(CultureInfo.InvariantCulture), "Played", player.TimePlayed.TotalHours.ToString("F0", CultureInfo.InvariantCulture) + "h", "Created", player.Created.ToShortDateString());
@@ -475,7 +501,12 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
                 uint? personalBest = rank == null ? null : (uint?)rank.TimeOrScore;
 
                 if (!personalBest.HasValue)
-                    personalBest = HostPlugin.RecordAdapter.GetBestTime(playerSettings.Login, HostPlugin.CurrentChallengeID);
+                {
+                    using (IRecordAdapter recordAdapter = HostPlugin.AdapterProvider.GetRecordAdapter())
+                    {
+                        personalBest = recordAdapter.GetBestTime(playerSettings.Login, HostPlugin.CurrentChallengeID);
+                    }
+                }
 
 
                 SendPBManiaLinkPage(playerSettings.Login, personalBest);
