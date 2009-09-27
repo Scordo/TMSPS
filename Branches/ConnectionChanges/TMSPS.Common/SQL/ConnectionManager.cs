@@ -16,7 +16,7 @@ namespace TMSPS.Core.SQL
         private SqlConnection _connection;
         private SqlTransaction _transaction;
         private SqlHelper _sqlHelper;
-    	private readonly bool _closeConnectionAfterCommandProcessing;
+        private readonly bool _closeConnectionAfterCommandProcessing;
 
         #endregion
 
@@ -101,20 +101,31 @@ namespace TMSPS.Core.SQL
         /// <summary>
         /// Initializes a new instance of the <see cref="ConnectionManager"/> class.
         /// </summary>
-        public ConnectionManager() : this(ConfigurationManager.ConnectionStrings["Default"].ConnectionString, true)
+        public ConnectionManager()
+            : this(ConfigurationManager.ConnectionStrings["Default"].ConnectionString, true)
         {
 
         }
 
-		/// <summary>
-		/// Initializes a new instance of the <see cref="ConnectionManager"/> class.
-		/// </summary>
-		/// <param name="connectionString">The connection string.</param>
-		/// <param name="closeConnectionAfterCommandProcessing">if set to <c>true</c> the connection is closed after command processing.</param>
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ConnectionManager"/> class.
+        /// </summary>
+        /// <param name="connectionString">The connection string.</param>
+        /// <param name="closeConnectionAfterCommandProcessing">if set to <c>true</c> the connection is closed after command processing.</param>
         public ConnectionManager(string connectionString, bool closeConnectionAfterCommandProcessing)
         {
             _connectionString = connectionString;
-        	_closeConnectionAfterCommandProcessing = closeConnectionAfterCommandProcessing;
+            _closeConnectionAfterCommandProcessing = closeConnectionAfterCommandProcessing;
+        }
+
+        #endregion
+
+        #region Destructor
+
+        ~ConnectionManager()
+        {
+            // Finalizer calls Dispose(false)
+            Dispose(false);
         }
 
         #endregion
@@ -134,7 +145,7 @@ namespace TMSPS.Core.SQL
                 Connection.Open();
 
             _transaction = Connection.BeginTransaction(IsolationLevel.ReadCommitted);
-            
+
             return false;
         }
 
@@ -202,6 +213,30 @@ namespace TMSPS.Core.SQL
                 RollbackTransaction(bolTransactionExisted);
                 throw;
             }
+        }
+
+        /// <summary>
+        /// Releases unmanaged and - optionally - managed resources
+        /// </summary>
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!disposing)
+                return;
+
+            // free managed resources
+            if (_connection != null)
+                _connection.Dispose();
+        }
+
+        public ConnectionManager Clone()
+        {
+            return new ConnectionManager(ConnectionString, _closeConnectionAfterCommandProcessing);
         }
 
         #endregion

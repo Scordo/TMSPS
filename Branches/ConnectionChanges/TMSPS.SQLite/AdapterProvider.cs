@@ -14,7 +14,8 @@ namespace TMSPS.SQLite
 
         #region Constructor
 
-        public AdapterProvider() : this(null)
+        public AdapterProvider()
+            : this(null)
         {
 
         }
@@ -30,7 +31,7 @@ namespace TMSPS.SQLite
 
         public IChallengeAdapter GetChallengeAdapter()
         {
-            return new ChallengeAdapter(_connectionManager);
+            return new ChallengeAdapter(DetermineConnectionManager(_connectionManager));
         }
 
         public IChallengeAdapter GetChallengeAdapter(IBaseAdapter adapterToCopyContextFrom)
@@ -43,7 +44,7 @@ namespace TMSPS.SQLite
 
         public IPlayerAdapter GetPlayerAdapter()
         {
-            return new PlayerAdapter(_connectionManager);
+            return new PlayerAdapter(DetermineConnectionManager(_connectionManager));
         }
 
         public IPlayerAdapter GetPlayerAdapter(IBaseAdapter adapterToCopyContextFrom)
@@ -56,7 +57,7 @@ namespace TMSPS.SQLite
 
         public IPositionAdapter GetPositionAdapter()
         {
-            return new PositionAdapter(_connectionManager);
+            return new PositionAdapter(DetermineConnectionManager(_connectionManager));
         }
 
         public IPositionAdapter GetPositionAdapter(IBaseAdapter adapterToCopyContextFrom)
@@ -69,7 +70,7 @@ namespace TMSPS.SQLite
 
         public IRankingAdapter GetRankingAdapter()
         {
-            return new RankingAdapter(_connectionManager);
+            return new RankingAdapter(DetermineConnectionManager(_connectionManager));
         }
 
         public IRankingAdapter GetRankingAdapter(IBaseAdapter adapterToCopyContextFrom)
@@ -82,7 +83,7 @@ namespace TMSPS.SQLite
 
         public IRatingAdapter GetRatingAdapter()
         {
-            return new RatingAdapter(_connectionManager);
+            return new RatingAdapter(DetermineConnectionManager(_connectionManager));
         }
 
         public IRatingAdapter GetRatingAdapter(IBaseAdapter adapterToCopyContextFrom)
@@ -95,7 +96,7 @@ namespace TMSPS.SQLite
 
         public IRecordAdapter GetRecordAdapter()
         {
-            return new RecordAdapter(_connectionManager);
+            return new RecordAdapter(DetermineConnectionManager(_connectionManager));
         }
 
         public IRecordAdapter GetRecordAdapter(IBaseAdapter adapterToCopyContextFrom)
@@ -108,7 +109,7 @@ namespace TMSPS.SQLite
 
         public ISessionAdapter GetSessionAdapter()
         {
-            return new SessionAdapter(_connectionManager);
+            return new SessionAdapter(DetermineConnectionManager(_connectionManager));
         }
 
         public ISessionAdapter GetSessionAdapter(IBaseAdapter adapterToCopyContextFrom)
@@ -128,6 +129,15 @@ namespace TMSPS.SQLite
 
             _connectionManager = new ConnectionManager(parameter, false);
         }
+
+        #region Non Public Methods
+
+        public ConnectionManager DetermineConnectionManager(ConnectionManager connectionManager)
+        {
+            return connectionManager == null ? new ConnectionManager() : _connectionManager.Clone();
+        }
+
+        #endregion
 
         #endregion
     }

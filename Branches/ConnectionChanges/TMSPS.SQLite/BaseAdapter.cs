@@ -56,7 +56,8 @@ namespace TMSPS.SQLite
         /// <summary>
         /// Initializes a new instance of the <see cref="BaseAdapter"/> class.
         /// </summary>
-        protected BaseAdapter(): this(null)
+        protected BaseAdapter()
+            : this(null)
         {
 
         }
@@ -72,6 +73,15 @@ namespace TMSPS.SQLite
 
         #endregion
 
+        #region Destructor
+
+        ~BaseAdapter()
+        {
+            // Finalizer calls Dispose(false)
+            Dispose(false);
+        }
+
+        #endregion
 
         #region IBaseAdapter Members
 
@@ -143,6 +153,16 @@ namespace TMSPS.SQLite
             ConnectionManager = sourceAdapter.ConnectionManager;
         }
 
+
+        /// <summary>
+        /// Releases unmanaged and - optionally - managed resources
+        /// </summary>
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
         #endregion
 
         #region Non Public Methods
@@ -157,6 +177,17 @@ namespace TMSPS.SQLite
             return SqlHelper.ExecuteScalar<int?>("Select ID FROM [Challenge] WHERE UniqueID = @UniqueID", "UniqueID", uniqueID);
         }
 
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!disposing)
+                return;
+
+            // free managed resources
+            if (ConnectionManager != null)
+                ConnectionManager.Dispose();
+        }
+
         #endregion
+
     }
 }

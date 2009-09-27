@@ -15,7 +15,7 @@ namespace TMSPS.SQLite
         private readonly string _connectionString;
         private SQLiteConnection _connection;
         private SQLiteTransaction _transaction;
-        
+
         private SqlHelper _sqlHelper;
         private readonly bool _closeConnectionAfterCommandProcessing;
 
@@ -100,7 +100,8 @@ namespace TMSPS.SQLite
         /// <summary>
         /// Initializes a new instance of the <see cref="ConnectionManager"/> class.
         /// </summary>
-        public ConnectionManager() : this(ConfigurationManager.ConnectionStrings["Default"].ConnectionString, true)
+        public ConnectionManager()
+            : this(ConfigurationManager.ConnectionStrings["Default"].ConnectionString, true)
         {
 
         }
@@ -114,6 +115,16 @@ namespace TMSPS.SQLite
         {
             _connectionString = connectionString;
             _closeConnectionAfterCommandProcessing = closeConnectionAfterCommandProcessing;
+        }
+
+        #endregion
+
+        #region Destructor
+
+        ~ConnectionManager()
+        {
+            // Finalizer calls Dispose(false)
+            Dispose(false);
         }
 
         #endregion
@@ -201,6 +212,30 @@ namespace TMSPS.SQLite
                 RollbackTransaction(bolTransactionExisted);
                 throw;
             }
+        }
+
+        /// <summary>
+        /// Releases unmanaged and - optionally - managed resources
+        /// </summary>
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!disposing)
+                return;
+
+            // free managed resources
+            if (_connection != null)
+                _connection.Dispose();
+        }
+
+        public ConnectionManager Clone()
+        {
+            return new ConnectionManager(ConnectionString, _closeConnectionAfterCommandProcessing);
         }
 
         #endregion

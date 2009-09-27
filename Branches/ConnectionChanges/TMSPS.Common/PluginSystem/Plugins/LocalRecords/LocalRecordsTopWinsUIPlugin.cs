@@ -36,10 +36,10 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
         protected LocalRecordsTopWinsUIPlugin(string pluginDirectory)
             : base(pluginDirectory)
         {
-            
+
         }
 
-	    #endregion
+        #endregion
 
         protected override void Init()
         {
@@ -88,8 +88,13 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
         {
             GetAreaSettings(login, (byte)Area.TopWins).CurrentDialogPageIndex = pageIndex;
             uint[] pageIndeces = GetPageIndices(pageIndex, TopWinsSettings.MaxEntriesPerPage);
-            
-            PagedList<IndexedPlayer> players = HostPlugin.PlayerAdapter.DeserializeListByWins((int)pageIndeces[0], (int)pageIndeces[1]);
+            PagedList<IndexedPlayer> players;
+
+            using (IPlayerAdapter playerAdapter = HostPlugin.AdapterProvider.GetPlayerAdapter())
+            {
+                players = playerAdapter.DeserializeListByWins((int)pageIndeces[0], (int)pageIndeces[1]);
+            }
+
             uint maxPage = Convert.ToUInt32(Math.Ceiling((double)players.VirtualCount / TopWinsSettings.MaxEntriesPerPage));
 
             Context.RPCClient.Methods.SendDisplayManialinkPageToLogin(login, GetTopRanksManiaLinkPage(Convert.ToUInt16(pageIndex + 1), maxPage, players), 0, false);
@@ -151,12 +156,12 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
             switch (area)
             {
                 case Area.TopWins:
-                    HandleTopWinsManiaLinkResponse(login, playerID, action);
+                    HandleTopWinsManiaLinkResponse(login, action);
                     break;
             }
         }
 
-        private void HandleTopWinsManiaLinkResponse(string login, int playerID, TMAction action)
+        private void HandleTopWinsManiaLinkResponse(string login, TMAction action)
         {
             if (!action.IsAreaAction)
                 return;
@@ -181,7 +186,12 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
                     SendTopWinsPageToLogin(login, nextPageIndex);
                     break;
                 case PagedDialogActions.DefaultDialogAction.LastPage:
-                    uint topRanksCount = HostPlugin.RankingAdapter.GetRanksCount();
+                    uint topRanksCount;
+                    using (IRankingAdapter rankingAdapter = HostPlugin.AdapterProvider.GetRankingAdapter())
+                    {
+                        topRanksCount = rankingAdapter.GetRanksCount();
+                    }
+
                     ushort lastPageIndex = Convert.ToUInt16(Math.Max(0, Math.Ceiling((double)topRanksCount / TopWinsSettings.MaxEntriesPerPage) - 1));
                     SendTopWinsPageToLogin(login, lastPageIndex);
                     break;

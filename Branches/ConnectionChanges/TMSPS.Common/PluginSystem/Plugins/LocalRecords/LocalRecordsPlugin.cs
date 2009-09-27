@@ -7,126 +7,138 @@ using TMSPS.Core.Communication.EventArguments.Callbacks;
 using TMSPS.Core.Communication.ProxyTypes;
 using TMSPS.Core.Logging;
 using TMSPS.Core.PluginSystem.Configuration;
-using Version=System.Version;
+using Version = System.Version;
 using System.Linq;
 
 namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
 {
-	public class LocalRecordsPlugin : TMSPSPlugin
-	{
-	    #region Properties
+    public class LocalRecordsPlugin : TMSPSPlugin
+    {
+        #region Properties
 
-	    public override Version Version { get { return new Version("1.0.0.0"); } }
-	    public override string Author { get { return "Jens Hofmann"; } }
-	    public override string Name{ get { return "Local Records Plugin"; } }
-	    public override string Description { get { return "Saves records and statistics in a local database."; } }
-	    public override string ShortName { get { return "LocalRecords"; } }
+        public override Version Version { get { return new Version("1.0.0.0"); } }
+        public override string Author { get { return "Jens Hofmann"; } }
+        public override string Name { get { return "Local Records Plugin"; } }
+        public override string Description { get { return "Saves records and statistics in a local database."; } }
+        public override string ShortName { get { return "LocalRecords"; } }
 
-	    public IAdapterProvider AdapterProvider { get; protected set; }
-	    public IChallengeAdapter ChallengeAdapter { get; protected set; }
-	    public IPlayerAdapter PlayerAdapter { get; protected set; }
-	    public IPositionAdapter PositionAdapter { get; protected set; }
-	    public IRecordAdapter RecordAdapter { get; protected set; }
-	    public IRatingAdapter RatingAdapter { get; protected set; }
-	    public ISessionAdapter SessionAdapter { get; protected set; }
-	    public IRankingAdapter RankingAdapter { get; protected set; }
-	    public int CurrentChallengeID { get; protected set; }
-	    public LocalRecordsSettings Settings { get; protected set; }
-	    protected List<ILocalRecordsPluginPlugin> Plugins {get; private set;}
-	    public RankEntry[] LocalRecords { get; private set; }
+        public IAdapterProvider AdapterProvider { get; protected set; }
+        public int CurrentChallengeID { get; protected set; }
+        public LocalRecordsSettings Settings { get; protected set; }
+        protected List<ILocalRecordsPluginPlugin> Plugins { get; private set; }
+        public RankEntry[] LocalRecords { get; private set; }
 
-	    #endregion
+        #endregion
 
-	    #region Events
+        #region Events
 
-	    public event EventHandler<PlayerNewRecordEventArgs> PlayerNewRecord;
-	    public event EventHandler<PlayerWinEventArgs> PlayerWins;
-	    public event EventHandler<PlayerCreatedOrUpdatedEventArgs> PlayerCreatedOrUpdated;
-	    public event EventHandler<ChallengeCreatedOrUpdatedEventArgs> ChallengeCreatedOrUpdated;
-	    public event EventHandler<EventArgs<RankEntry[]>> LocalRecordsDetermined;
-	    public event EventHandler ChallengeChanged;
+        public event EventHandler<PlayerNewRecordEventArgs> PlayerNewRecord;
+        public event EventHandler<PlayerWinEventArgs> PlayerWins;
+        public event EventHandler<PlayerCreatedOrUpdatedEventArgs> PlayerCreatedOrUpdated;
+        public event EventHandler<ChallengeCreatedOrUpdatedEventArgs> ChallengeCreatedOrUpdated;
+        public event EventHandler<EventArgs<RankEntry[]>> LocalRecordsDetermined;
+        public event EventHandler ChallengeChanged;
 
-	    #endregion
+        #endregion
 
         #region Constructor
 
-        protected LocalRecordsPlugin(string pluginDirectory) : base(pluginDirectory)
+        protected LocalRecordsPlugin(string pluginDirectory)
+            : base(pluginDirectory)
         {
-            
+
         }
 
-	    #endregion
+        #endregion
 
-	    #region Methods
+        #region Methods
 
-	    protected override void Init()
-	    {
-	        Settings = LocalRecordsSettings.ReadFromFile(PluginSettingsFilePath);
-	        
-	        try
-	        {
-	            AdapterProvider = AdapterProviderFactory.GetAdapterProvider(Settings);
-	            ChallengeAdapter = AdapterProvider.GetChallengeAdapter();
-	            PlayerAdapter = AdapterProvider.GetPlayerAdapter();
-	            PositionAdapter = AdapterProvider.GetPositionAdapter();
-	            RecordAdapter = AdapterProvider.GetRecordAdapter();
-	            RatingAdapter = AdapterProvider.GetRatingAdapter();
-	            SessionAdapter = AdapterProvider.GetSessionAdapter();
-	            RankingAdapter = AdapterProvider.GetRankingAdapter();
-	        }
-	        catch (Exception ex)
-	        {
-	            Logger.Error("Error initializing AdapterProvider for local records.", ex);
-	            Logger.ErrorToUI(string.Format("An error occured. {0} not started!", Name));
-	            return;
-	        }
+        protected override void Init()
+        {
+            Settings = LocalRecordsSettings.ReadFromFile(PluginSettingsFilePath);
 
-	        List<ChallengeListSingleInfo> challenges = GetChallengeList();
-	        if (challenges == null)
-	            return;
+            try
+            {
+                AdapterProvider = AdapterProviderFactory.GetAdapterProvider(Settings);
+            }
+            catch (Exception ex)
+            {
+                Logger.Error("Error initializing AdapterProvider for local records.", ex);
+                Logger.ErrorToUI(string.Format("An error occured. {0} not started!", Name));
+                return;
+            }
 
-	    	try
-	    	{
-				Logger.InfoToUI("Starting to delete data of missing tracks");
-				int amountOfDeletedTracks = ChallengeAdapter.DeleteTracksNotInProvidedList(challenges.ConvertAll(c => c.UId));
-				Logger.InfoToUI(string.Format("Data of {0} Track(s) has been deleted.", amountOfDeletedTracks));
-	    	}
-	    	catch (Exception ex)
-	    	{
-	    		Logger.ErrorToUI("Couldn't delete data of missing tracks.", ex);
-	    	}
+            List<ChallengeListSingleInfo> challenges = GetChallengeList();
+            if (challenges == null)
+                return;
 
+            try
+            {
+                Logger.InfoToUI("Starting to delete data of missing tracks");
+                int amountOfDeletedTracks;
 
-	        foreach (PlayerSettings playerSettings in Context.PlayerSettings.GetAllAsList())
-	        {
-	            if (!playerSettings.NickName.IsNullOrTimmedEmpty())
-	                PlayerAdapter.CreateOrUpdate(new Player(playerSettings.Login, playerSettings.NickName));
-	        }
+                using (IChallengeAdapter challengeAdapter = AdapterProvider.GetChallengeAdapter())
+                {
+                    amountOfDeletedTracks = challengeAdapter.DeleteTracksNotInProvidedList(challenges.ConvertAll(c => c.UId));
+                }
 
-	        ChallengeInfo currentChallengeInfo = GetCurrentChallengeInfoCached();
-	        if (currentChallengeInfo == null)
-	        {
-	            Logger.ErrorToUI(string.Format("An error occured. {0} not started!", Name));
-	            return;
-	        }
+                Logger.InfoToUI(string.Format("Data of {0} Track(s) has been deleted.", amountOfDeletedTracks));
+            }
+            catch (Exception ex)
+            {
+                Logger.ErrorToUI("Couldn't delete data of missing tracks.", ex);
+            }
 
-	        EnsureChallengeExistsInStorage(currentChallengeInfo);
-	        DetermineLocalRecords();
+            List<PlayerSettings> playerSettingsList = Context.PlayerSettings.GetAllAsList();
 
-	        InitializePlugins();
-	        OnLocalRecordsDetermined(new List<RankEntry>(LocalRecords));
+            if (playerSettingsList.Count > 0)
+            {
+                using (IPlayerAdapter playerAdapter = AdapterProvider.GetPlayerAdapter())
+                {
+                    foreach (PlayerSettings playerSettings in playerSettingsList)
+                    {
+                        if (!playerSettings.NickName.IsNullOrTimmedEmpty())
+                            playerAdapter.CreateOrUpdate(new Player(playerSettings.Login, playerSettings.NickName));
+                    }
+                }
+            }
+
+            ChallengeInfo currentChallengeInfo = GetCurrentChallengeInfoCached();
+            if (currentChallengeInfo == null)
+            {
+                Logger.ErrorToUI(string.Format("An error occured. {0} not started!", Name));
+                return;
+            }
+
+            EnsureChallengeExistsInStorage(currentChallengeInfo);
+            DetermineLocalRecords();
+
+            InitializePlugins();
+            OnLocalRecordsDetermined(new List<RankEntry>(LocalRecords));
 
             Context.RPCClient.Callbacks.BeginRace += Callbacks_BeginRace;
             Context.RPCClient.Callbacks.EndRace += Callbacks_EndRace;
-	        Context.RPCClient.Callbacks.PlayerConnect += Callbacks_PlayerConnect;
-	        Context.RPCClient.Callbacks.PlayerDisconnect += Callbacks_PlayerDisconnect;
-	        Context.RPCClient.Callbacks.PlayerFinish += Callbacks_PlayerFinish;
-	        Context.RPCClient.Callbacks.PlayerChat += Callbacks_PlayerChat;
-	    }
+            Context.RPCClient.Callbacks.PlayerConnect += Callbacks_PlayerConnect;
+            Context.RPCClient.Callbacks.PlayerDisconnect += Callbacks_PlayerDisconnect;
+            Context.RPCClient.Callbacks.PlayerFinish += Callbacks_PlayerFinish;
+            Context.RPCClient.Callbacks.PlayerChat += Callbacks_PlayerChat;
+        }
 
         protected override void Dispose(bool connectionLost)
         {
-            RunCatchLog(() => Context.PlayerSettings.GetAllAsList().ForEach(p => PlayerAdapter.UpdateTimePlayed(p.Login)), "Error updatimg TimePlayed for all players while disposing the plugin.");
+            RunCatchLog(() =>
+            {
+                List<PlayerSettings> playerSettingsList = Context.PlayerSettings.GetAllAsList();
+
+                if (playerSettingsList.Count > 0)
+                {
+                    using (IPlayerAdapter playerAdapter = AdapterProvider.GetPlayerAdapter())
+                    {
+                        Context.PlayerSettings.GetAllAsList().ForEach(p => playerAdapter.UpdateTimePlayed(p.Login));
+                    }
+                }
+
+            }, "Error updatimg TimePlayed for all players while disposing the plugin.");
             DisposePlugins(connectionLost);
 
             // enforce connection close here later
@@ -139,9 +151,9 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
             Context.RPCClient.Callbacks.PlayerChat -= Callbacks_PlayerChat;
         }
 
-	    private void Callbacks_PlayerChat(object sender, PlayerChatEventArgs e)
-	    {
-	        RunCatchLog(()=>
+        private void Callbacks_PlayerChat(object sender, PlayerChatEventArgs e)
+        {
+            RunCatchLog(() =>
             {
                 if (CheckForDeleteCheaterCommand(e))
                     return;
@@ -150,7 +162,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
                     return;
 
             }, "Error in Callbacks_PlayerChat Method.", true);
-	    }
+        }
 
         public override IEnumerable<CommandHelp> CommandHelpList
         {
@@ -162,7 +174,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
                     new CommandHelp(Command.GetLocalLogins, "Gets the logins of all local record holders.", "/t GetLocalLogins", "/t GetLocalLogins"),
                 };
 
-                result.AddRange(Plugins.SelectMany(p => p.CommandHelpList ?? new CommandHelp[]{} ));
+                result.AddRange(Plugins.SelectMany(p => p.CommandHelpList ?? new CommandHelp[] { }));
 
                 return result;
             }
@@ -188,7 +200,13 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
                     // there must be at least 2 players to increase the wins for the first player
                     if (e.Rankings[0].BestTime > 0)
                     {
-                        uint wins = PlayerAdapter.IncreaseWins(e.Rankings[0].Login);
+                        uint wins;
+
+                        using (IPlayerAdapter playerAdapter = AdapterProvider.GetPlayerAdapter())
+                        {
+                            wins = playerAdapter.IncreaseWins(e.Rankings[0].Login);
+                        }
+
                         OnPlayerWins(e.Rankings[0], wins);
                         int maxRank = e.Rankings.Max(playerRank => playerRank.Rank);
 
@@ -197,10 +215,15 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
                             if (playerRank.Rank <= 0)
                                 continue;
 
-                            if (!CheckpointsValid(playerRank.BestCheckpoints))
-                                HandleCheater(playerRank.Login, false);
+                            if (CheckpointsValid(playerRank.BestCheckpoints))
+                            {
+                                using (IPositionAdapter positionAdapter = AdapterProvider.GetPositionAdapter())
+                                {
+                                    positionAdapter.AddPosition(playerRank.Login, e.Challenge.UId, Convert.ToUInt16(playerRank.Rank), Convert.ToUInt16(maxRank));
+                                }
+                            }
                             else
-                                PositionAdapter.AddPosition(playerRank.Login, e.Challenge.UId, Convert.ToUInt16(playerRank.Rank), Convert.ToUInt16(maxRank));
+                                HandleCheater(playerRank.Login, false);
                         }
                     }
                 }
@@ -209,7 +232,13 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
 
         private void Callbacks_PlayerDisconnect(object sender, PlayerDisconnectEventArgs e)
         {
-            RunCatchLog(() => PlayerAdapter.UpdateTimePlayed(e.Login), "Error in Callbacks_PlayerDisconnect Method.", true);
+            RunCatchLog(() =>
+            {
+                using (IPlayerAdapter playerAdapter = AdapterProvider.GetPlayerAdapter())
+                {
+                    playerAdapter.UpdateTimePlayed(e.Login);
+                }
+            }, "Error in Callbacks_PlayerDisconnect Method.", true);
         }
 
         private void Callbacks_PlayerConnect(object sender, PlayerConnectEventArgs e)
@@ -227,7 +256,12 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
                 if (!nickname.IsNullOrTimmedEmpty())
                 {
                     Player player = new Player(e.Login, nickname);
-                    PlayerAdapter.CreateOrUpdate(player);
+
+                    using (IPlayerAdapter playerAdapter = AdapterProvider.GetPlayerAdapter())
+                    {
+                        playerAdapter.CreateOrUpdate(player);
+                    }
+
                     OnPlayerCreatedOrUpdated(player, nickname);
                 }
             }, "Error in Callbacks_PlayerConnect Method.", true);
@@ -250,7 +284,11 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
         {
             Context.RPCClient.Methods.BanAndBlackList(login, "Banned and blacklisted for cheating!", true);
             SendFormattedMessage(Settings.CheaterBannedMessage, "Login", login);
-            PlayerAdapter.RemoveAllStatsForLogin(login);
+
+            using (IPlayerAdapter playerAdapter = AdapterProvider.GetPlayerAdapter())
+            {
+                playerAdapter.RemoveAllStatsForLogin(login);
+            }
 
             if (updateUI)
             {
@@ -259,35 +297,39 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
             }
         }
 
-	    private bool CheckForDeleteCheaterCommand(PlayerChatEventArgs args)
-	    {
+        private bool CheckForDeleteCheaterCommand(PlayerChatEventArgs args)
+        {
             if (args.IsServerMessage || args.Text.IsNullOrTimmedEmpty())
                 return false;
 
-	        ServerCommand command = ServerCommand.Parse(args.Text);
+            ServerCommand command = ServerCommand.Parse(args.Text);
 
-	        if (!command.Is(Command.DeleteCheater) || command.PartsWithoutMainCommand.Count == 0)
-	            return false;
+            if (!command.Is(Command.DeleteCheater) || command.PartsWithoutMainCommand.Count == 0)
+                return false;
 
-	        string login = command.PartsWithoutMainCommand[0];
+            string login = command.PartsWithoutMainCommand[0];
 
             if (!LoginHasRight(args.Login, true, Command.DeleteCheater))
                 return true;
-            
-            if (PlayerAdapter.RemoveAllStatsForLogin(login))
-            {
-                SendFormattedMessageToLogin(args.Login, Settings.CheaterDeletedMessage, "Login", login);
 
-                DetermineLocalRecords();
-                OnLocalRecordsDetermined(new List<RankEntry>(LocalRecords));
-            }
-            else
+            using (IPlayerAdapter playerAdapter = AdapterProvider.GetPlayerAdapter())
             {
-                SendFormattedMessageToLogin(args.Login, Settings.CheaterDeletionFailedMessage, "Login", login);
+                if (playerAdapter.RemoveAllStatsForLogin(login))
+                {
+                    SendFormattedMessageToLogin(args.Login, Settings.CheaterDeletedMessage, "Login", login);
+
+                    DetermineLocalRecords();
+                    OnLocalRecordsDetermined(new List<RankEntry>(LocalRecords));
+                }
+                else
+                {
+                    SendFormattedMessageToLogin(args.Login, Settings.CheaterDeletionFailedMessage, "Login", login);
+                }
             }
- 
-	        return true;
-	    }
+
+
+            return true;
+        }
 
         private bool CheckForListLocalLoginsCommand(PlayerChatEventArgs args)
         {
@@ -318,107 +360,125 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
             return true;
         }
 
-	    private void OnPlayerFinished(object state)
-	    {
-	        object[] stateParams = (object[]) state;
-	        int currentChallengeID = (int) stateParams[0];
+        private void OnPlayerFinished(object state)
+        {
+            object[] stateParams = (object[])state;
+            int currentChallengeID = (int)stateParams[0];
             PlayerFinishEventArgs e = (PlayerFinishEventArgs)stateParams[1];
 
-	        if (e.TimeOrScore > 0)
-	        {
-	            uint? oldPosition, newPosition;
-	            bool newBest;
-                RecordAdapter.CheckAndWriteNewRecord(e.Login, currentChallengeID, e.TimeOrScore, out oldPosition, out newPosition, out newBest);
+            if (e.TimeOrScore > 0)
+            {
+                uint? oldPosition, newPosition;
+                bool newBest;
+                using (IRecordAdapter recordAdapter = AdapterProvider.GetRecordAdapter())
+                {
+                    recordAdapter.CheckAndWriteNewRecord(e.Login, currentChallengeID, e.TimeOrScore, out oldPosition, out newPosition, out newBest);
+                }
 
-	            if (newBest)
-	            {
+                if (newBest)
+                {
                     string nickname = GetNickname(e.Login);
 
                     if (nickname != null && newPosition <= Settings.MaxRecordsToReport && currentChallengeID == CurrentChallengeID)
-	                {
+                    {
                         DetermineLocalRecords();
                         OnPlayerNewRecord(e.Login, nickname, e.TimeOrScore, oldPosition, newPosition);
-	                }
-	            }
+                    }
+                }
 
-                SessionAdapter.AddSession(e.Login, currentChallengeID, Convert.ToUInt32(e.TimeOrScore));
-	        }
-	    }
+                using (ISessionAdapter sessionAdapter = AdapterProvider.GetSessionAdapter())
+                {
+                    sessionAdapter.AddSession(e.Login, currentChallengeID, Convert.ToUInt32(e.TimeOrScore));
+                }
+            }
+        }
 
         private void UpdateRankingForChallenge(object challengeID)
         {
-            RankingAdapter.UpdateForChallenge(Convert.ToString(challengeID));
+            using (IRankingAdapter rankingAdapter = AdapterProvider.GetRankingAdapter())
+            {
+                rankingAdapter.UpdateForChallenge(Convert.ToString(challengeID));
+            }
         }
 
-	    private void EnsureChallengeExistsInStorage(ChallengeListSingleInfo challengeInfo)
-	    {
-	        Challenge challenge = new Challenge(challengeInfo.UId, challengeInfo.Name, challengeInfo.Author, challengeInfo.Environnement);
-	        ChallengeAdapter.IncreaseRaces(challenge);
-	        CurrentChallengeID = challenge.ID.Value;
+        private void EnsureChallengeExistsInStorage(ChallengeListSingleInfo challengeInfo)
+        {
+            Challenge challenge = new Challenge(challengeInfo.UId, challengeInfo.Name, challengeInfo.Author, challengeInfo.Environnement);
 
-	        OnChallengeCreatedOrUpdated(challengeInfo, challenge);
-	    }
+            using (IChallengeAdapter challengeAdapter = AdapterProvider.GetChallengeAdapter())
+            {
+                challengeAdapter.IncreaseRaces(challenge);
+            }
 
-	    private void InitializePlugins()
-	    {
-	        Plugins = Settings.GetPlugins(Logger);
+            CurrentChallengeID = challenge.ID.Value;
 
-	        foreach (ILocalRecordsPluginPlugin plugin in Plugins)
-	        {
-	            plugin.ProvideHostPlugin(this);
-	            plugin.InitPlugin(Context, new ConsoleUILogger("TMSPS", string.Format(" - [{0}]", plugin.ShortName)));
-	        }
-	    }
+            OnChallengeCreatedOrUpdated(challengeInfo, challenge);
+        }
 
-	    private void DetermineLocalRecords()
-	    {
-	        LocalRecords = RecordAdapter.GetTopRecordsForChallenge(CurrentChallengeID, Settings.MaxRecordsToReport).ToArray();
-	        Context.ValueStore.SetOrUpdate(GlobalConstants.LOCAL_RECORDS, LocalRecords.ToArray());
-	        Context.ValueStore.SetOrUpdate(GlobalConstants.FIRST_LOCAL_RECORD_TIMEORSCORE, LocalRecords.Length == 0 ? null : (int?)LocalRecords[0].TimeOrScore);
-	    }
+        private void InitializePlugins()
+        {
+            Plugins = Settings.GetPlugins(Logger);
 
-	    private void DisposePlugins(bool connectionLost)
-	    {
-	        foreach (ILocalRecordsPluginPlugin plugin in Plugins)
-	        {
-	            plugin.DisposePlugin(connectionLost);
-	        }
-	    }
+            foreach (ILocalRecordsPluginPlugin plugin in Plugins)
+            {
+                plugin.ProvideHostPlugin(this);
+                plugin.InitPlugin(Context, new ConsoleUILogger("TMSPS", string.Format(" - [{0}]", plugin.ShortName)));
+            }
+        }
 
-	    protected void OnPlayerNewRecord(string login, string nickname, int timeOrScore, uint? oldPosition, uint? newPosition)
-	    {
-	        if (PlayerNewRecord != null)
+        private void DetermineLocalRecords()
+        {
+            using (IRecordAdapter recordAdapter = AdapterProvider.GetRecordAdapter())
+            {
+                LocalRecords = recordAdapter.GetTopRecordsForChallenge(CurrentChallengeID, Settings.MaxRecordsToReport).ToArray();
+            }
+
+            Context.ValueStore.SetOrUpdate(GlobalConstants.LOCAL_RECORDS, LocalRecords.ToArray());
+            Context.ValueStore.SetOrUpdate(GlobalConstants.FIRST_LOCAL_RECORD_TIMEORSCORE, LocalRecords.Length == 0 ? null : (int?)LocalRecords[0].TimeOrScore);
+        }
+
+        private void DisposePlugins(bool connectionLost)
+        {
+            foreach (ILocalRecordsPluginPlugin plugin in Plugins)
+            {
+                plugin.DisposePlugin(connectionLost);
+            }
+        }
+
+        protected void OnPlayerNewRecord(string login, string nickname, int timeOrScore, uint? oldPosition, uint? newPosition)
+        {
+            if (PlayerNewRecord != null)
                 PlayerNewRecord(this, new PlayerNewRecordEventArgs(login, nickname, timeOrScore, oldPosition, newPosition));
-	    }
+        }
 
-	    protected void OnPlayerWins(PlayerRank rankingInfo, uint wins)
-	    {
-	        if (PlayerWins != null)
-	            PlayerWins(this, new PlayerWinEventArgs(rankingInfo, wins));
-	    }
+        protected void OnPlayerWins(PlayerRank rankingInfo, uint wins)
+        {
+            if (PlayerWins != null)
+                PlayerWins(this, new PlayerWinEventArgs(rankingInfo, wins));
+        }
 
         protected void OnPlayerCreatedOrUpdated(Player player, string nickname)
-	    {
-	        if (PlayerCreatedOrUpdated != null)
+        {
+            if (PlayerCreatedOrUpdated != null)
                 PlayerCreatedOrUpdated(this, new PlayerCreatedOrUpdatedEventArgs(player, nickname));
-	    }
+        }
 
-	    protected void OnChallengeCreatedOrUpdated(ChallengeListSingleInfo challengeInfo, Challenge challenge)
-	    {
-	        if (ChallengeCreatedOrUpdated != null)
-	            ChallengeCreatedOrUpdated(this, new ChallengeCreatedOrUpdatedEventArgs(challengeInfo, challenge));
-	    }
+        protected void OnChallengeCreatedOrUpdated(ChallengeListSingleInfo challengeInfo, Challenge challenge)
+        {
+            if (ChallengeCreatedOrUpdated != null)
+                ChallengeCreatedOrUpdated(this, new ChallengeCreatedOrUpdatedEventArgs(challengeInfo, challenge));
+        }
 
-	    protected void OnLocalRecordsDetermined(List<RankEntry> ranks)
-	    {
-	        if (LocalRecordsDetermined != null)
-	            LocalRecordsDetermined(this, new EventArgs<RankEntry[]>(ranks.ToArray()));
-	    }
+        protected void OnLocalRecordsDetermined(List<RankEntry> ranks)
+        {
+            if (LocalRecordsDetermined != null)
+                LocalRecordsDetermined(this, new EventArgs<RankEntry[]>(ranks.ToArray()));
+        }
 
-	    #endregion
-	}
+        #endregion
+    }
 
-    public class PlayerNewRecordEventArgs: EventArgs
+    public class PlayerNewRecordEventArgs : EventArgs
     {
         #region Properties
 

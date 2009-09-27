@@ -6,8 +6,8 @@ using System.Xml.Linq;
 using TMSPS.Core.Common;
 using TMSPS.Core.ManiaLinking;
 using TMSPS.Core.PluginSystem.Configuration;
-using SettingsBase=TMSPS.Core.Common.SettingsBase;
-using Version=System.Version;
+using SettingsBase = TMSPS.Core.Common.SettingsBase;
+using Version = System.Version;
 
 namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
 {
@@ -31,17 +31,24 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
 
         #region Constructor
 
-        protected RatingUIPlugin(string pluginDirectory) : base(pluginDirectory)
+        protected RatingUIPlugin(string pluginDirectory)
+            : base(pluginDirectory)
         {
-            
+
         }
 
-	    #endregion
+        #endregion
 
         protected override void Init()
         {
             Settings = RatingUIPluginSettings.ReadFromFile(PluginSettingsFilePath);
-            Pair<double?, int> voteInfo = HostPlugin.RatingAdapter.GetAverageVote(HostPlugin.CurrentChallengeID);
+            Pair<double?, int> voteInfo;
+
+            using (IRatingAdapter ratingAdapter = HostPlugin.AdapterProvider.GetRatingAdapter())
+            {
+                voteInfo = ratingAdapter.GetAverageVote(HostPlugin.CurrentChallengeID);
+            }
+
             _lastAverageVoteValue = voteInfo.Value1;
             _lastVotesCount = voteInfo.Value2;
             SendAllVoteManiaLinkPage(_lastAverageVoteValue, _lastVotesCount);
@@ -72,13 +79,24 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
 
             SendAllVoteManiaLinkPageToLogin(e.Login, _lastAverageVoteValue, _lastVotesCount);
 
-            double? voteValue = HostPlugin.RatingAdapter.GetVoteByLogin(e.Login, HostPlugin.CurrentChallengeID);
+            double? voteValue;
+            using (IRatingAdapter ratingAdapter = HostPlugin.AdapterProvider.GetRatingAdapter())
+            {
+                voteValue = ratingAdapter.GetVoteByLogin(e.Login, HostPlugin.CurrentChallengeID);
+            }
+
             SendOwnVoteManiaLinkPageToLogin(e.Login, voteValue);
         }
 
         private void HostPlugin_ChallengeChanged(object sender, EventArgs e)
         {
-            Pair<double?, int> voteInfo = HostPlugin.RatingAdapter.GetAverageVote(HostPlugin.CurrentChallengeID);
+            Pair<double?, int> voteInfo;
+
+            using (IRatingAdapter ratingAdapter = HostPlugin.AdapterProvider.GetRatingAdapter())
+            {
+                voteInfo = ratingAdapter.GetAverageVote(HostPlugin.CurrentChallengeID);
+            }
+
             _lastAverageVoteValue = voteInfo.Value1;
             _lastVotesCount = voteInfo.Value2;
 
@@ -102,7 +120,12 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
 
             if (voteValue.HasValue)
             {
-                Pair<double?, int> voteInfo = HostPlugin.RatingAdapter.Vote(e.Login, HostPlugin.CurrentChallengeID, voteValue.Value);
+                Pair<double?, int> voteInfo;
+
+                using (IRatingAdapter ratingAdapter = HostPlugin.AdapterProvider.GetRatingAdapter())
+                {
+                    voteInfo = ratingAdapter.Vote(e.Login, HostPlugin.CurrentChallengeID, voteValue.Value);
+                }
                 double? averageVote = voteInfo.Value1;
 
                 if (averageVote.HasValue)
@@ -112,10 +135,18 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
 
         private void SendOwnVoteManiaLinkPageToAll(int currentChallengeID)
         {
-            foreach (PlayerSettings playerSettings in Context.PlayerSettings.GetAllAsList())
+            List<PlayerSettings> playerSettingsList = Context.PlayerSettings.GetAllAsList();
+
+            if (playerSettingsList.Count == 0)
+                return;
+
+            using (IRatingAdapter ratingAdapter = HostPlugin.AdapterProvider.GetRatingAdapter())
             {
-                double? voteValue = HostPlugin.RatingAdapter.GetVoteByLogin(playerSettings.Login, currentChallengeID);
-                SendOwnVoteManiaLinkPageToLogin(playerSettings.Login, voteValue);
+                foreach (PlayerSettings playerSettings in playerSettingsList)
+                {
+                    double? voteValue = ratingAdapter.GetVoteByLogin(playerSettings.Login, currentChallengeID);
+                    SendOwnVoteManiaLinkPageToLogin(playerSettings.Login, voteValue);
+                }
             }
         }
 
@@ -136,12 +167,18 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
 
         protected override void OnManiaLinkPageAnswer(string login, int playerID, TMAction action)
         {
-            if (!action.IsAreaAction || action.AreaID != (byte) RatingArea.MainArea)
+            if (!action.IsAreaAction || action.AreaID != (byte)RatingArea.MainArea)
                 return;
 
             byte ownVoteValue = Convert.ToByte(action.AreaActionID - 1);
 
-            Pair<double?, int> voteInfo = HostPlugin.RatingAdapter.Vote(login, HostPlugin.CurrentChallengeID, ownVoteValue);
+            Pair<double?, int> voteInfo;
+
+            using (IRatingAdapter ratingAdapter = HostPlugin.AdapterProvider.GetRatingAdapter())
+            {
+                voteInfo = ratingAdapter.Vote(login, HostPlugin.CurrentChallengeID, ownVoteValue);
+            }
+
             double? averageVote = voteInfo.Value1;
 
             if (averageVote.HasValue)
@@ -153,18 +190,18 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
             if (!voteValue.HasValue)
                 voteValue = -1;
 
-            List<string> replaceValues = new List<string> {"ManiaLinkID", _ownVoteRatingManiaLinkPageID};
+            List<string> replaceValues = new List<string> { "ManiaLinkID", _ownVoteRatingManiaLinkPageID };
             for (int i = 0; i < 9; i++)
             {
                 replaceValues.Add(i.ToString());
                 replaceValues.Add(i <= voteValue ? Settings.ActiveVoteStyle : Settings.InactiveVoteStyle);
             }
 
-            const byte areaID = (byte) RatingArea.MainArea;
+            const byte areaID = (byte)RatingArea.MainArea;
             for (int i = 0; i < 9; i++)
             {
-                replaceValues.Add("A"+i);
-                replaceValues.Add(TMAction.CalculateActionID(ID, areaID, Convert.ToByte(i+1)).ToString());
+                replaceValues.Add("A" + i);
+                replaceValues.Add(TMAction.CalculateActionID(ID, areaID, Convert.ToByte(i + 1)).ToString());
             }
 
             return ReplaceMessagePlaceHolders(Settings.OwnVoteTemplate, replaceValues.ToArray());
@@ -225,7 +262,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
         public string ActiveVoteStyle { get; private set; }
         public string InactiveVoteStyle { get; private set; }
 
-        
+
 
         #endregion
 
@@ -240,11 +277,11 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
 
             return new RatingUIPluginSettings
             {
-               VoteAcceptedMessage = ReadConfigString(configDocument.Root, "VoteAcceptedMessage", VOTE_ACCEPTED_MESSAGE, xmlConfigurationFile),
-               ActiveVoteStyle = ReadConfigString(configDocument.Root, "ActiveVoteStyle", VOTE_ACTIVE_STYLE, xmlConfigurationFile),
-               InactiveVoteStyle = ReadConfigString(configDocument.Root, "InactiveVoteStyle", VOTE_INACTIVE_STYLE, xmlConfigurationFile),
-               OwnVoteTemplate = ReadConfigString(configDocument.Root, "OwnVoteTemplate", xmlConfigurationFile),
-               AllVoteTemplate = ReadConfigString(configDocument.Root, "AllVoteTemplate", xmlConfigurationFile)
+                VoteAcceptedMessage = ReadConfigString(configDocument.Root, "VoteAcceptedMessage", VOTE_ACCEPTED_MESSAGE, xmlConfigurationFile),
+                ActiveVoteStyle = ReadConfigString(configDocument.Root, "ActiveVoteStyle", VOTE_ACTIVE_STYLE, xmlConfigurationFile),
+                InactiveVoteStyle = ReadConfigString(configDocument.Root, "InactiveVoteStyle", VOTE_INACTIVE_STYLE, xmlConfigurationFile),
+                OwnVoteTemplate = ReadConfigString(configDocument.Root, "OwnVoteTemplate", xmlConfigurationFile),
+                AllVoteTemplate = ReadConfigString(configDocument.Root, "AllVoteTemplate", xmlConfigurationFile)
             };
         }
 

@@ -5,7 +5,7 @@ namespace TMSPS.Core.Common
     /// <summary>
     /// The inetrface each adapter should implement
     /// </summary>
-    public interface IBaseAdapter
+    public interface IBaseAdapter : IDisposable
     {
         /// <summary>
         /// Starts a transaction.

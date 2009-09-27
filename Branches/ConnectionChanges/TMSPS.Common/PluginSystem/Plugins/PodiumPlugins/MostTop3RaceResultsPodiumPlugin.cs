@@ -15,12 +15,13 @@ namespace TMSPS.Core.PluginSystem.Plugins.PodiumPlugins
 
         #region Constructor
 
-        protected MostTop3RaceResultsPodiumPlugin(string pluginDirectory) : base(pluginDirectory)
+        protected MostTop3RaceResultsPodiumPlugin(string pluginDirectory)
+            : base(pluginDirectory)
         {
-            
+
         }
 
-	    #endregion
+        #endregion
 
         #region Properties
 
@@ -40,8 +41,8 @@ namespace TMSPS.Core.PluginSystem.Plugins.PodiumPlugins
             Settings = PodiumPluginSettings.ReadFromFile(PluginSettingsFilePath, "Most Top3 Race Results", 8);
             SendEmptyManiaLinkPage(_linkPageID);
 
-			Context.RPCClient.Callbacks.BeginRace += Callbacks_BeginRace;
-			Context.RPCClient.Callbacks.EndRace += Callbacks_EndRace;
+            Context.RPCClient.Callbacks.BeginRace += Callbacks_BeginRace;
+            Context.RPCClient.Callbacks.EndRace += Callbacks_EndRace;
         }
 
         protected override void Dispose(bool connectionLost)
@@ -53,16 +54,21 @@ namespace TMSPS.Core.PluginSystem.Plugins.PodiumPlugins
                 SendEmptyManiaLinkPage(_linkPageID);
         }
 
-		private void Callbacks_BeginRace(object sender, Communication.EventArguments.Callbacks.BeginRaceEventArgs e)
+        private void Callbacks_BeginRace(object sender, Communication.EventArguments.Callbacks.BeginRaceEventArgs e)
         {
             RunCatchLog(() => SendEmptyManiaLinkPage(_linkPageID), "Error in Callbacks_BeginRace Method.", true);
         }
 
-		private void Callbacks_EndRace(object sender, Communication.EventArguments.Callbacks.EndRaceEventArgs e)
+        private void Callbacks_EndRace(object sender, Communication.EventArguments.Callbacks.EndRaceEventArgs e)
         {
             RunCatchLog(() =>
             {
-                List<PodiumPluginUIEntry> entries = HostPlugin.PositionAdapter.DeserializeListByMost(Settings.MaxEntriesToShow, 3).ConvertAll(position => new PodiumPluginUIEntry(position.Amount.ToString("F0", CultureInfo.InvariantCulture), position.Nickname));
+                List<PodiumPluginUIEntry> entries;
+                using (IPositionAdapter positionAdapter = HostPlugin.AdapterProvider.GetPositionAdapter())
+                {
+                    entries = positionAdapter.DeserializeListByMost(Settings.MaxEntriesToShow, 3).ConvertAll(position => new PodiumPluginUIEntry(position.Amount.ToString("F0", CultureInfo.InvariantCulture), position.Nickname));
+                }
+
                 Context.RPCClient.Methods.SendDisplayManialinkPage(PodiumPluginUI.GetRecordListManiaLinkPage(entries, _linkPageID, Settings), 0, false);
             }, "Error in Callbacks_EndRace Method.", true);
         }
