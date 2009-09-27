@@ -156,7 +156,8 @@ namespace TMSPS.Daemon
                 plugin.DisposePlugin(connectionLost);
             }
 
-            HostContext.ShutdownRequested -= HostContext_ShutdownRequested;
+            if (HostContext != null)
+                HostContext.ShutdownRequested -= HostContext_ShutdownRequested;
         }
 
         private void HostContext_ShutdownRequested(object sender, ShutdownRequestedEventArgs e)
