@@ -40,7 +40,7 @@ namespace TMSPS.SQLite
             if (!challengeID.HasValue)
                 return;
 
-            const string insertStatement = "INSERT INTO dbo.Position (PlayerID, ChallengeID, OwnPosition, MaxPosition, Created) VALUES (@PlayerID, @ChallengeID, @Position, @MaxPosition, @Created)";
+            const string insertStatement = "INSERT INTO Position (PlayerID, ChallengeID, OwnPosition, MaxPosition, Created) VALUES (@PlayerID, @ChallengeID, @Position, @MaxPosition, @Created)";
             SqlHelper.ExecuteNonQuery(insertStatement, "PlayerID", playerID.Value, "ChallengeID", challengeID.Value, "Position", (int)position, "MaxPosition", (int)maxPosition, "Created", DateTime.Now);
         }
 

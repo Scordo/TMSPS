@@ -72,6 +72,7 @@ namespace TMSPS.SQLite
 
         #endregion
 
+
         #region IBaseAdapter Members
 
         /// <summary>
@@ -153,10 +154,9 @@ namespace TMSPS.SQLite
 
         protected int? GetChallengeID(string uniqueID)
         {
-            return SqlHelper.ExecuteScalar<int?>("Select ID FROM dbo.Challenge with(nolock) WHERE UniqueID = @UniqueID", "UniqueID", uniqueID);
+            return SqlHelper.ExecuteScalar<int?>("Select ID FROM [Challenge] WHERE UniqueID = @UniqueID", "UniqueID", uniqueID);
         }
 
         #endregion
-
     }
 }
