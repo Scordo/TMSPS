@@ -1,5 +1,0 @@
-﻿<?xml version="1.0" encoding="utf-8" ?>
-<Settings enabled="true" assemblyName="TMSPS.Core" pluginClass="TMSPS.Core.PluginSystem.Plugins.Dedimania.DedimaniaPlugin" order="400">
-	<AuthUrl>http://dedimania.net/RPC4/server.php</AuthUrl>
-	<ReportUrl>http://dedimania.net:8015/Dedimania</ReportUrl>
-</Settings>

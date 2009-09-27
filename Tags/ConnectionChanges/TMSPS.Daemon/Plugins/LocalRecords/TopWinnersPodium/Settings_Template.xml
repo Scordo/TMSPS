@@ -1,7 +1,0 @@
-﻿<?xml version="1.0" encoding="utf-8" ?>
-<Settings enabled="true" assemblyName="TMSPS.Core" pluginClass="TMSPS.Core.PluginSystem.Plugins.PodiumPlugins.TopWinnersPodiumPlugin" order="700">
-	<MaxEntriesToShow>10</MaxEntriesToShow>
-	<Title>Top Winners</Title>
-	<PositionX>-8</PositionX>
-	<StripNickFormatting>false</StripNickFormatting>
-</Settings>

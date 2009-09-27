@@ -1,7 +1,0 @@
-﻿<manialink id="StaticUIPanel">
-	<frame posn="44 39.65 0">
-		<quad sizen="25 7" style="Bgs1InRace" substyle="BgTitle2"/>
-		<label posn="10 -0.5 2" sizen="19.6" halign="center" text="This Server is running" style="TextRaceChat" />
-		<label posn="10 -2.75 2" sizen="19.6 4.5" halign="center" text="TMSPS" style="TextRaceChronoError" url="http://tmsps.codeplex.com" />
-	</frame>
-</manialink>

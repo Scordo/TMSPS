@@ -1,5 +1,0 @@
-﻿<?xml version="1.0" encoding="utf-8" ?>
-<Settings enabled="true" assemblyName="TMSPS.Core" pluginClass="TMSPS.Core.PluginSystem.Plugins.KickUnrankedPlayerPlugin" order="100">
-	<PersonalKickMessage>Unranked players are not welcome at this server.</PersonalKickMessage>
-	<PublicKickMessage>{[#ServerStyle]}>> {[#HighlightStyle]}{[Nickname]} {[#MessageStyle]} got kicked for not having a ranking.</PublicKickMessage>
-</Settings>
