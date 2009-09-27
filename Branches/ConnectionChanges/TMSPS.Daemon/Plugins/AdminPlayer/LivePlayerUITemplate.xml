@@ -1,0 +1,229 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Settings>
+	<FirstEntryTopMargin>-8</FirstEntryTopMargin>
+	<EntryHeight>3</EntryHeight>
+	<MaxEntriesPerPage>15</MaxEntriesPerPage>
+	<IgnoreText>$oIgnore </IgnoreText>
+	<UnIgnoreText>$oUnIgnore </UnIgnoreText>
+	<BanText>$oBan </BanText>
+	<UnBanText>$oUnBan </UnBanText>
+	<AddToBlackListText>$oAdd </AddToBlackListText>
+	<RemoveFromBlackListText>$oRemove </RemoveFromBlackListText>
+	<AddGuestText>$oAdd </AddGuestText>
+	<RemoveGuestText>$oRemove </RemoveGuestText>
+	<SpectatorText>$oSpec </SpectatorText>
+	<ForceSpectatorText>$oForce </ForceSpectatorText>
+	
+	<Templates>
+		<EntryTemplate>
+			<frame posn="0.25 {[Y]} 0.1">
+				<format textsize="2"/>
+				<label posn="0.75 -2 0.1" valign="center" sizen="5 2.5" textsize="2" style="TextRaceChat" text="{[Position]}"/>
+				<label posn="7 -2 0.1" valign="center" sizen="24 2.5" textsize="2" text="{[Nickname]}"/>
+				<label posn="31 -2 0.1" valign="center" sizen="24 2.5" textsize="2" text="{[Login]}"/>
+
+				<format textsize="1"/>
+				<quad posn="58.25 -2.5 0.2" halign="center" valign="center" sizen="6 3" style="Bgs1" substyle="BgList"/>
+				<label posn="58.5 -2.25 0.2" sizen="5 1" halign="center" valign="center" textcolor="FF7F" text="$oWarn " action="{[WarnAction]}"/>
+
+				<quad posn="65 -2.5 0.1" sizen="6 3" halign="center" valign="center" style="Bgs1" substyle="BgList"/>
+				<label posn="65.25 -2.25 0.2" sizen="5 1" halign="center" valign="center" textcolor="DA6F" text="{[IgnoreText]}" action="{[IgnoreAction]}"/>
+
+				<quad posn="71.5 -2.5 0.1" sizen="5 3" halign="center" valign="center" style="Bgs1" substyle="BgList"/>
+				<label posn="71.75 -2.25 0.2" sizen="4 1" halign="center" valign="center" textcolor="B3CF" text="$oKick " action="{[KickAction]}"/>
+
+				<quad posn="77 -2.5 0.1" sizen="4.5 3" halign="center" valign="center" style="Bgs1" substyle="BgList"/>
+				<label posn="77.25 -2.25 0.2" sizen="3.5 1" halign="center" valign="center" textcolor="E31F" text="{[BanText]}" action="{[BanAction]}"/>
+
+				<quad posn="82.5 -2.5 0.1" sizen="5.5 3" halign="center" valign="center" style="Bgs1" substyle="BgList"/>
+				<label posn="82.75 -2.25 0.2" sizen="4.5 1" halign="center" valign="center" textcolor="C14F" text="{[BlackListText]}" action="{[BlackListAction]}"/>
+
+				<quad posn="89 -2.5 0.1" sizen="6 3" halign="center" valign="center" style="Bgs1" substyle="BgList"/>
+				<label posn="89.25 -2.25 0.2" sizen="5 1" halign="center" valign="center" textcolor="4D4F" text="{[GuestText]}" action="{[GuestAction]}"/>
+
+				<quad posn="95.5 -2.5 0.1" sizen="5 3" halign="center" valign="center" style="Bgs1" substyle="BgList"/>
+				<label posn="95.75 -2.25 0.2" sizen="4 1" halign="center" valign="center" textcolor="4AEF" text="{[SpectatorText]}" action="{[SpectatorAction]}"/>
+			</frame>
+		</EntryTemplate>
+
+		<SinglePageTemplate>
+			<manialink id="{[ManiaLinkID]}">
+				<frame posn="-50 34 2">
+
+					<quad posn="0 0 0" sizen="100 65" style="Bgs1" substyle="BgWindow1"/>
+
+					<!-- Header Row -->
+					<frame posn="0.25 -0.25 0.1">
+						<quad posn="0 0 0" sizen="99.4 4" style="Bgs1" substyle="BgTitle3_2"/>
+						<quad posn="0.4 -0.65 0.1" sizen="3 3" style="Icons64x64_1" substyle="IconPlayers"/>
+						<label posn="4 -1 0.1" sizen="70 3" style="TextRaceChat" text="Manage Online Players"/>
+						<quad posn="96.35 -0.6 0.1" sizen="3 3" style="Icons64x64_1" substyle="QuitRace" action="{[CloseActionID]}"/>
+					</frame>
+
+					<frame posn="0.25 -4.8 0.1">
+						<quad posn="0 0 0" sizen="99.4 55" style="Bgs1" substyle="BgTitle3"/>
+
+						<label posn="0.75 -1 0.1" style="TextRaceChat" text="ID"/>
+						<label posn="7 -1 0.1" style="TextRaceChat" text="Nickname "/>
+						<label posn="31 -1 0.1" style="TextRaceChat" text="Login "/>
+						<label posn="56 -1 0.1" style="TextRaceChat" text="Warn "/>
+						<label posn="62.75 -1 0.1" style="TextRaceChat" text="Ignore "/>
+						<label posn="69.75 -1 0.1" style="TextRaceChat" text="Kick "/>
+						<label posn="75.5 -1 0.1" style="TextRaceChat" text="Ban "/>
+						<label posn="80.5 -1 0.1" style="TextRaceChat" text="Black "/>
+						<label posn="86.5 -1 0.1" style="TextRaceChat" text="Guest "/>
+						<label posn="93.5 -1 0.1" style="TextRaceChat" text="Spec "/>
+					</frame>
+
+					<PlayerPlaceHolder />
+
+					<frame posn="0.25 -60.5 0.1">
+						<quad posn="0 0 0" sizen="99.4 4" style="Bgs1" substyle="BgTitle3_2"/>
+						<quad posn="0.4 -0.65 0.1" sizen="3 3" style="Icons64x64_1" substyle="StarGold"/>
+						<quad posn="30.4 -0.65 0.1" sizen="3 3" style="Icons64x64_1" substyle="StarGold"/>
+
+						<label posn="48.25 -1.8 0.1" sizen="30 3" style="TextRaceChat" text="Page: 1/1" halign="center" valign="center"/>
+
+						<quad posn="66.1 -0.65 0.1" sizen="3 3" style="Icons64x64_1" substyle="StarGold"/>
+						<quad posn="96.1 -0.65 0.1" sizen="3 3" style="Icons64x64_1" substyle="StarGold"/>
+					</frame>
+				</frame>
+			</manialink>
+		</SinglePageTemplate>
+
+		<FirstPageTemplate>
+			<manialink id="{[ManiaLinkID]}">
+				<frame posn="-50 34 2">
+
+					<quad posn="0 0 0" sizen="100 65" style="Bgs1" substyle="BgWindow1"/>
+
+					<!-- Header Row -->
+					<frame posn="0.25 -0.25 0.1">
+						<quad posn="0 0 0" sizen="99.4 4" style="Bgs1" substyle="BgTitle3_2"/>
+						<quad posn="0.4 -0.65 0.1" sizen="3 3" style="Icons64x64_1" substyle="IconPlayers"/>
+						<label posn="4 -1 0.1" sizen="70 3" style="TextRaceChat" text="Manage Online Players"/>
+						<quad posn="96.35 -0.6 0.1" sizen="3 3" style="Icons64x64_1" substyle="QuitRace" action="{[CloseActionID]}"/>
+					</frame>
+
+					<frame posn="0.25 -4.8 0.1">
+						<quad posn="0 0 0" sizen="99.4 55" style="Bgs1" substyle="BgTitle3"/>
+
+						<label posn="0.75 -1 0.1" style="TextRaceChat" text="ID"/>
+						<label posn="7 -1 0.1" style="TextRaceChat" text="Nickname "/>
+						<label posn="31 -1 0.1" style="TextRaceChat" text="Login "/>
+						<label posn="56 -1 0.1" style="TextRaceChat" text="Warn "/>
+						<label posn="62.75 -1 0.1" style="TextRaceChat" text="Ignore "/>
+						<label posn="69.75 -1 0.1" style="TextRaceChat" text="Kick "/>
+						<label posn="75.5 -1 0.1" style="TextRaceChat" text="Ban "/>
+						<label posn="80.5 -1 0.1" style="TextRaceChat" text="Black "/>
+						<label posn="86.5 -1 0.1" style="TextRaceChat" text="Guest "/>
+						<label posn="93.5 -1 0.1" style="TextRaceChat" text="Spec "/>
+					</frame>
+
+					<PlayerPlaceHolder />
+
+					<frame posn="0.25 -60.5 0.1">
+						<quad posn="0 0 0" sizen="99.4 4" style="Bgs1" substyle="BgTitle3_2"/>
+						<quad posn="0.4 -0.65 0.1" sizen="3 3" style="Icons64x64_1" substyle="StarGold"/>
+						<quad posn="30.4 -0.65 0.1" sizen="3 3" style="Icons64x64_1" substyle="StarGold"/>
+
+						<label posn="48.25 -1.8 0.1" sizen="30 3" style="TextRaceChat" text="Page: 1/{[MaxPage]}" halign="center" valign="center"/>
+
+						<quad posn="66.1 -0.65 0.1" sizen="3 3" style="Icons64x64_1" substyle="ArrowNext" action="{[NextPageActionID]}"/>
+						<quad posn="96.1 -0.65 0.1" sizen="3 3" style="Icons64x64_1" substyle="ArrowLast" action="{[LastPageActionID]}"/>
+					</frame>
+				</frame>
+			</manialink>
+		</FirstPageTemplate>
+
+		<MiddlePageTemplate>
+			<manialink id="{[ManiaLinkID]}">
+				<frame posn="-50 34 2">
+
+					<quad posn="0 0 0" sizen="100 65" style="Bgs1" substyle="BgWindow1"/>
+
+					<!-- Header Row -->
+					<frame posn="0.25 -0.25 0.1">
+						<quad posn="0 0 0" sizen="99.4 4" style="Bgs1" substyle="BgTitle3_2"/>
+						<quad posn="0.4 -0.65 0.1" sizen="3 3" style="Icons64x64_1" substyle="IconPlayers"/>
+						<label posn="4 -1 0.1" sizen="70 3" style="TextRaceChat" text="Manage Online Players"/>
+						<quad posn="96.35 -0.6 0.1" sizen="3 3" style="Icons64x64_1" substyle="QuitRace" action="{[CloseActionID]}"/>
+					</frame>
+
+					<frame posn="0.25 -4.8 0.1">
+						<quad posn="0 0 0" sizen="99.4 55" style="Bgs1" substyle="BgTitle3"/>
+
+						<label posn="0.75 -1 0.1" style="TextRaceChat" text="ID"/>
+						<label posn="7 -1 0.1" style="TextRaceChat" text="Nickname "/>
+						<label posn="31 -1 0.1" style="TextRaceChat" text="Login "/>
+						<label posn="56 -1 0.1" style="TextRaceChat" text="Warn "/>
+						<label posn="62.75 -1 0.1" style="TextRaceChat" text="Ignore "/>
+						<label posn="69.75 -1 0.1" style="TextRaceChat" text="Kick "/>
+						<label posn="75.5 -1 0.1" style="TextRaceChat" text="Ban "/>
+						<label posn="80.5 -1 0.1" style="TextRaceChat" text="Black "/>
+						<label posn="86.5 -1 0.1" style="TextRaceChat" text="Guest "/>
+						<label posn="93.5 -1 0.1" style="TextRaceChat" text="Spec "/>
+					</frame>
+
+					<PlayerPlaceHolder />
+
+					<frame posn="0.25 -60.5 0.1">
+						<quad posn="0 0 0" sizen="99.4 4" style="Bgs1" substyle="BgTitle3_2"/>
+						<quad posn="0.4 -0.65 0.1" sizen="3 3" style="Icons64x64_1" substyle="ArrowFirst" action="{[FirstPageActionID]}"/>
+						<quad posn="30.4 -0.65 0.1" sizen="3 3" style="Icons64x64_1" substyle="ArrowPrev" action="{[PrevPageActionID]}"/>
+
+						<label posn="48.25 -1.8 0.1" sizen="30 3" style="TextRaceChat" text="Page: {[CurrentPage]}/{[MaxPage]}" halign="center" valign="center"/>
+
+						<quad posn="66.1 -0.65 0.1" sizen="3 3" style="Icons64x64_1" substyle="ArrowNext" action="{[NextPageActionID]}"/>
+						<quad posn="96.1 -0.65 0.1" sizen="3 3" style="Icons64x64_1" substyle="ArrowLast" action="{[LastPageActionID]}"/>
+					</frame>
+				</frame>
+			</manialink>
+		</MiddlePageTemplate>
+
+		<LastPageTemplate>
+			<manialink id="{[ManiaLinkID]}">
+				<frame posn="-50 34 2">
+
+					<quad posn="0 0 0" sizen="100 65" style="Bgs1" substyle="BgWindow1"/>
+
+					<!-- Header Row -->
+					<frame posn="0.25 -0.25 0.1">
+						<quad posn="0 0 0" sizen="99.4 4" style="Bgs1" substyle="BgTitle3_2"/>
+						<quad posn="0.4 -0.65 0.1" sizen="3 3" style="Icons64x64_1" substyle="IconPlayers"/>
+						<label posn="4 -1 0.1" sizen="70 3" style="TextRaceChat" text="Manage Online Players"/>
+						<quad posn="96.35 -0.6 0.1" sizen="3 3" style="Icons64x64_1" substyle="QuitRace" action="{[CloseActionID]}"/>
+					</frame>
+
+					<frame posn="0.25 -4.8 0.1">
+						<quad posn="0 0 0" sizen="99.4 55" style="Bgs1" substyle="BgTitle3"/>
+
+						<label posn="0.75 -1 0.1" style="TextRaceChat" text="ID"/>
+						<label posn="7 -1 0.1" style="TextRaceChat" text="Nickname "/>
+						<label posn="31 -1 0.1" style="TextRaceChat" text="Login "/>
+						<label posn="56 -1 0.1" style="TextRaceChat" text="Warn "/>
+						<label posn="62.75 -1 0.1" style="TextRaceChat" text="Ignore "/>
+						<label posn="69.75 -1 0.1" style="TextRaceChat" text="Kick "/>
+						<label posn="75.5 -1 0.1" style="TextRaceChat" text="Ban "/>
+						<label posn="80.5 -1 0.1" style="TextRaceChat" text="Black "/>
+						<label posn="86.5 -1 0.1" style="TextRaceChat" text="Guest "/>
+						<label posn="93.5 -1 0.1" style="TextRaceChat" text="Spec "/>
+					</frame>
+
+					<PlayerPlaceHolder />
+
+					<frame posn="0.25 -60.5 0.1">
+						<quad posn="0 0 0" sizen="99.4 4" style="Bgs1" substyle="BgTitle3_2"/>
+						<quad posn="0.4 -0.65 0.1" sizen="3 3" style="Icons64x64_1" substyle="ArrowFirst" action="{[FirstPageActionID]}"/>
+						<quad posn="30.4 -0.65 0.1" sizen="3 3" style="Icons64x64_1" substyle="ArrowPrev" action="{[PrevPageActionID]}"/>
+
+						<label posn="48.25 -1.8 0.1" sizen="30 3" style="TextRaceChat" text="Page: {[CurrentPage]}/{[MaxPage]}" halign="center" valign="center"/>
+
+						<quad posn="66.1 -0.65 0.1" sizen="3 3" style="Icons64x64_1" substyle="StarGold" />
+						<quad posn="96.1 -0.65 0.1" sizen="3 3" style="Icons64x64_1" substyle="StarGold" />
+					</frame>
+				</frame>
+			</manialink>
+		</LastPageTemplate>
+	</Templates>
+</Settings>

@@ -1,0 +1,7 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Settings enabled="true" assemblyName="TMSPS.Core" pluginClass="TMSPS.Core.PluginSystem.Plugins.LiveRanking.LiveRankingPlugin" order="300">
+	<MaxRecordsToShow>11</MaxRecordsToShow>
+	<UpdateIntervalInSeconds>2</UpdateIntervalInSeconds>
+	<StripNickFormatting>false</StripNickFormatting>
+	<StaticModeStartLimit>40</StaticModeStartLimit>
+</Settings>

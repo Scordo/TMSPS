@@ -1,0 +1,15 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Settings enabled="true" assemblyName="TMSPS.Core" pluginClass="TMSPS.Core.PluginSystem.Plugins.ChatBotPlugin" order="600">
+	<Botname>$w$f00[Chat-Doll] $z</Botname>
+	<Phrases>
+		<Phrase values="doll|chat-doll" answer="Talking to me?" />
+		<Phrase wisper="true" values="help" answer="Commands are: /lastseen, /summary, /rank, /ranks, /info, /nextrank, /pm. Type help_command for more info to the command. Example: help_lastseen" />
+		<Phrase wisper="true" values="help_lastseen" answer="This command is used to see when a driver was last online. Usage: /lastseen &lt;login&gt; - Example: /lastseen scordo" />
+		<Phrase wisper="true" values="help_summary" answer="This command shows a list of the top record holders. Usage: /summary - Example: /summary" />
+		<Phrase wisper="true" values="help_rank" answer="This command shows information about your rank and driven challenges. Usage: /rank - Example: /rank" />
+		<Phrase wisper="true" values="help_ranks" answer="This command shows a list of all ranks ordered ascending. Usage: /ranks - Example: /ranks" />
+		<Phrase wisper="true" values="help_info" answer="This command shows information about you. Usage: /info - Example: /info" />
+		<Phrase wisper="true" values="help_nextrank" answer="This command shows information about the next rank. Usage: /nextrank - Example: /nextrank" />
+		<Phrase wisper="true" values="help_pm" answer="This command is used to send private messages to another player. Usage: /pm &lt;login&gt; &lt;message&gt; - Example: /pm scordo hello!" />
+	</Phrases>
+</Settings>
