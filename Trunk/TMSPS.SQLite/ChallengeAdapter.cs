@@ -117,12 +117,12 @@ namespace TMSPS.SQLite
             if (!challengeID.HasValue)
                 return;
 
-            SqlHelper.ExecuteNonQuery("DELETE [Session] WHERE ChallengeId = @challengeID", "@challengeID", challengeID.Value);
-            SqlHelper.ExecuteNonQuery("DELETE [Record] WHERE ChallengeId = @challengeID", "@challengeID", challengeID.Value);
-            SqlHelper.ExecuteNonQuery("DELETE [Rating] WHERE ChallengeId = @challengeID", "@challengeID", challengeID.Value);
-            SqlHelper.ExecuteNonQuery("DELETE [Ranking] WHERE ChallengeId = @challengeID", "@challengeID", challengeID.Value);
-            SqlHelper.ExecuteNonQuery("DELETE [Position] WHERE ChallengeId = @challengeID", "@challengeID", challengeID.Value);
-            SqlHelper.ExecuteNonQuery("DELETE [Challenge] WHERE ID = @challengeID", "@challengeID", challengeID.Value);
+            SqlHelper.ExecuteNonQuery("DELETE FROM [Session] WHERE ChallengeId = @challengeID", "@challengeID", challengeID.Value);
+            SqlHelper.ExecuteNonQuery("DELETE FROM [Record] WHERE ChallengeId = @challengeID", "@challengeID", challengeID.Value);
+            SqlHelper.ExecuteNonQuery("DELETE FROM [Rating] WHERE ChallengeId = @challengeID", "@challengeID", challengeID.Value);
+            SqlHelper.ExecuteNonQuery("DELETE FROM [Ranking] WHERE ChallengeId = @challengeID", "@challengeID", challengeID.Value);
+            SqlHelper.ExecuteNonQuery("DELETE FROM [Position] WHERE ChallengeId = @challengeID", "@challengeID", challengeID.Value);
+            SqlHelper.ExecuteNonQuery("DELETE FROM [Challenge] WHERE ID = @challengeID", "@challengeID", challengeID.Value);
         }
 
         public List<string> GetDrivenUniqueTrackIDs(string login)
