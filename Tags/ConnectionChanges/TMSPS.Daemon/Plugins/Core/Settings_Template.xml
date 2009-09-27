@@ -1,0 +1,84 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Settings assemblyName="TMSPS.Core" pluginClass="TMSPS.Core.PluginSystem.Plugins.TMSPSCorePlugin">
+	<EnableJoinMessage>true</EnableJoinMessage>
+	<JoinMessage>{[#ServerStyle]}>> {[#MessageStyle]}New Player: {[#HighlightStyle]}{[Nickname]}{[#MessageStyle]} Nation: {[#HighlightStyle]}{[Nation]}{[#MessageStyle]} Ladder: {[#HighlightStyle]}{[Ladder]}</JoinMessage>
+	<EnableLeaveMessage>true</EnableLeaveMessage>
+	<LeaveMessage>{[#ServerStyle]}>> {[#HighlightStyle]}{[Nickname]}{[#MessageStyle]} has left the game.</LeaveMessage>
+	<KickMessage>{[#ServerStyle]}>> {[#HighlightStyle]}{[KickingNickname]}{[#MessageStyle]} kicked {[#HighlightStyle]}{[KickedNickname]}.</KickMessage>
+	<BanMessage>{[#ServerStyle]}>> {[#HighlightStyle]}{[BanningNickname]}{[#MessageStyle]} banned {[#HighlightStyle]}{[BannedNickname]}.</BanMessage>
+	<IgnoreMessage>{[#ServerStyle]}>> {[#HighlightStyle]}{[IgnoringNickname]}{[#MessageStyle]} added {[#HighlightStyle]}{[IgnoredNickname]}{[#MessageStyle]} to ignore list.</IgnoreMessage>
+	<AddGuestMessage>{[#ServerStyle]}>> {[#HighlightStyle]}{[AdminNickname]}{[#MessageStyle]} added {[#HighlightStyle]}{[GuestNickname]}{[#MessageStyle]} to guest list.</AddGuestMessage>
+	<BlackListMessage>{[#ServerStyle=""]}>> {[#HighlightStyle]}{[BlackListingNickname]}{[#MessageStyle]} blacklists {[#HighlightStyle]}{[BlackListedNickname]}.</BlackListMessage>
+	<TrackListFile>tracklist.txt</TrackListFile>
+	<SaveGhostReplayOfTop>0</SaveGhostReplayOfTop>
+	<EnableDedimaniaBlackListSync>true</EnableDedimaniaBlackListSync>
+	<DedimaniaBlackListSyncInterval>60</DedimaniaBlackListSyncInterval> <!-- in minutes -->
+	<DedimaniaBlackListUrl>http://www.gamers.org/tmf/dedimania_blacklist.txt</DedimaniaBlackListUrl>
+	<PublicWarnMessage>{[#ServerStyle]}>> {[#HighlightStyle]}{[WarningNickname]}{[#MessageStyle]} warned {[#HighlightStyle]}{[WarnedNickname]}.</PublicWarnMessage>
+	<WarnTimeout>15</WarnTimeout>
+	<LoginMissingMessage>{[#ServerStyle]}> {[#ErrorStyle]}There is no player with login {[#HighlightStyle]}{[Login]}.</LoginMissingMessage>
+	<WisperTargetMessage>{[Nickname]}$z {[#MessageStyle]}wispers:$z {[Message]}</WisperTargetMessage>
+	<WisperSourceMessage>{[#MessageStyle]}Wisper to $z{[Nickname]}$z{[#MessageStyle]} :$z {[Message]}</WisperSourceMessage>
+
+	<!--Flatfile Nickname resolver-->
+	
+	<NicknameResolver>
+		<Assembly>TMSPS.Core</Assembly>
+		<Class>TMSPS.Core.Common.FlatFileNicknameResolver</Class>
+		<Config filePath="users.cfg" />
+	</NicknameResolver>
+
+	<!--
+	
+	MS SQL Database usage for Nickname-Resolver
+	
+	<NicknameResolver>
+		<Assembly>TMSPS.Core</Assembly>
+		<Class>TMSPS.Core.Common.SqlNicknameResolver</Class>
+		<Config connectionString="server=ServerAddress,Port;database=DatabaseName;uid=Username;pwd=Password;MultipleActiveResultSets=True" />
+	</NicknameResolver>
+	-->
+	
+	<!--
+	
+	SQLite Database usage for Nickname-Resolver
+	
+	<NicknameResolver>
+		<Assembly>TMSPS.SQLite</Assembly>
+		<Class>TMSPS.SQLite.SQLiteNicknameResolver</Class>
+		<Config connectionString="Data Source=TMSPS.sqlite;Pooling=true;FailIfMissing=true" />
+	</NicknameResolver>
+	
+	-->
+
+	<WarnManiaLinkPageContent>
+		<manialink id="WarnPanel">
+			<frame posn="-40 34 0">
+				<quad posn="0 0 0" sizen="80 65" style="Bgs1" substyle="BgWindow1"/>
+
+				<!-- Header Row -->
+				<frame posn="0.25 -0.25 0.1">
+					<quad posn="0 0 0" sizen="79.4 4" style="Bgs1" substyle="BgTitle3_2"/>
+					<quad posn="0.4 -0.65 0.1" sizen="3 3" style="BgRaceScore2" substyle="Tv"/>
+					<label posn="4 -1 0.1" sizen="70 3" style="TextRaceChat" text="! W A R N I N G !"/>
+				</frame>
+
+				<frame posn="1 -4.8 0.1">
+					<label autonewline="1" posn="39 0 0" sizen="76 4" textsize="4" halign="center">{[#ErrorStyle]}This is an administrative warning</label>
+
+					<label autonewline="1" posn="1 -6 0" sizen="76 50" textsize="4">
+						{[#MessageStyle]}Whatever you wrote is against our server's policy.
+						Not respecting other players, or using offensive language might result in a kick, or ban the next time.
+
+						Possible causes:
+						- bad words
+						- player offense
+						- wrong language
+					</label>
+
+					<label autonewline="1" posn="39 -55 0" sizen="76 4" textsize="4" halign="center">{[#ErrorStyle]}The server administrators.</label>
+				</frame>
+			</frame>
+		</manialink>
+	</WarnManiaLinkPageContent>
+</Settings>

@@ -1,0 +1,7 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Settings enabled="true" assemblyName="TMSPS.Core" pluginClass="TMSPS.Core.PluginSystem.Plugins.PodiumPlugins.TopRankingsPodiumPlugin" order="500">
+	<MaxEntriesToShow>10</MaxEntriesToShow>
+	<Title>Top Ranks</Title>
+	<PositionX>-38</PositionX>
+	<StripNickFormatting>false</StripNickFormatting>
+</Settings>

@@ -1,0 +1,167 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Settings>
+	<FirstEntryTopMargin>-1</FirstEntryTopMargin>
+	<EntryHeight>13.5</EntryHeight>
+	<MaxEntriesPerPage>4</MaxEntriesPerPage>
+
+	<Templates>
+		<EntryTemplate>
+			<frame posn="0 {[Y]} 0">
+				<quad posn="0 0 0" sizen="98 12.5" style="Bgs1" substyle="BgCardBuddy" />
+				<label posn="2 -1 0.1" style="TextRaceChat" text="$o{[CommandName]}"/>
+
+				<label posn="2 -4 0.1" sizen="6 2" textsize="1" textcolor="000F" text="Description:"/>
+				<label posn="8.5 -4 0.1" sizen="88 2" textsize="1" text="{[Description]}"/>
+
+				<label posn="2 -6 0.1" sizen="6 2" textsize="1" textcolor="000F" text="Usage:"/>
+				<label posn="8.5 -6 0.1" sizen="88 2" textsize="1" text="{[Usage]}"/>
+
+				<label posn="2 -8 0.1" sizen="6 2" textsize="1" textcolor="000F" text="Usage-Example:"/>
+				<label posn="8.5 -8 0.1" sizen="88 2" textsize="1" text="{[UsageExample]}"/>
+
+				<label posn="2 -10 0.1" sizen="6 2" textsize="1" textcolor="000F" text="Aliases:"/>
+				<label posn="8.5 -10 0.1" sizen="88 2" textsize="1" text="{[Aliases]}"/>
+			</frame>
+		</EntryTemplate>
+
+		<SinglePageTemplate>
+			<manialink id="{[ManiaLinkID]}">
+				<frame posn="-50 34 2">
+
+					<quad posn="0 0 0" sizen="100 65" style="Bgs1" substyle="BgWindow1"/>
+
+					<!-- Header Row -->
+					<frame posn="0.25 -0.25 0.1">
+						<quad posn="0 0 0" sizen="99.4 4" style="Bgs1" substyle="BgTitle3_2"/>
+						<quad posn="0.4 -0.65 0.1" sizen="3 3" style="Icons64x64_1" substyle="TrackInfo"/>
+						<label posn="4 -1 0.1" sizen="70 3" style="TextRaceChat" text="Help"/>
+						<quad posn="96.35 -0.6 0.1" sizen="3 3" style="Icons64x64_1" substyle="QuitRace" action="{[CloseActionID]}"/>
+					</frame>
+
+					<frame posn="0.25 -4.8 0.1">
+						<quad posn="0 0 0" sizen="99.4 55" style="Bgs1" substyle="BgTitle3"/>
+						<frame posn="0.5 0 0.1">
+							<HelpPlaceHolder />
+						</frame>
+					</frame>
+
+					<frame posn="0.25 -60.5 0.1">
+						<quad posn="0 0 0" sizen="99.4 4" style="Bgs1" substyle="BgTitle3_2"/>
+						<quad posn="0.4 -0.65 0.1" sizen="3 3" style="Icons64x64_1" substyle="StarGold"/>
+						<quad posn="30.4 -0.65 0.1" sizen="3 3" style="Icons64x64_1" substyle="StarGold"/>
+
+						<label posn="48.25 -1.8 0.1" sizen="30 3" style="TextRaceChat" text="Page: 1/1" halign="center" valign="center"/>
+
+						<quad posn="66.1 -0.65 0.1" sizen="3 3" style="Icons64x64_1" substyle="StarGold"/>
+						<quad posn="96.1 -0.65 0.1" sizen="3 3" style="Icons64x64_1" substyle="StarGold"/>
+					</frame>
+				</frame>
+			</manialink>
+		</SinglePageTemplate>
+
+		<FirstPageTemplate>
+			<manialink id="{[ManiaLinkID]}">
+				<frame posn="-50 34 2">
+
+					<quad posn="0 0 0" sizen="100 65" style="Bgs1" substyle="BgWindow1"/>
+
+					<!-- Header Row -->
+					<frame posn="0.25 -0.25 0.1">
+						<quad posn="0 0 0" sizen="99.4 4" style="Bgs1" substyle="BgTitle3_2"/>
+						<quad posn="0.4 -0.65 0.1" sizen="3 3" style="Icons64x64_1" substyle="TrackInfo"/>
+						<label posn="4 -1 0.1" sizen="70 3" style="TextRaceChat" text="Help"/>
+						<quad posn="96.35 -0.6 0.1" sizen="3 3" style="Icons64x64_1" substyle="QuitRace" action="{[CloseActionID]}"/>
+					</frame>
+
+					<frame posn="0.25 -4.8 0.1">
+						<quad posn="0 0 0" sizen="99.4 55" style="Bgs1" substyle="BgTitle3"/>
+						<frame posn="0.5 0 0.1">
+							<HelpPlaceHolder />
+						</frame>
+					</frame>
+
+					<frame posn="0.25 -60.5 0.1">
+						<quad posn="0 0 0" sizen="99.4 4" style="Bgs1" substyle="BgTitle3_2"/>
+						<quad posn="0.4 -0.65 0.1" sizen="3 3" style="Icons64x64_1" substyle="StarGold"/>
+						<quad posn="30.4 -0.65 0.1" sizen="3 3" style="Icons64x64_1" substyle="StarGold"/>
+
+						<label posn="48.25 -1.8 0.1" sizen="30 3" style="TextRaceChat" text="Page: 1/{[MaxPage]}" halign="center" valign="center"/>
+
+						<quad posn="66.1 -0.65 0.1" sizen="3 3" style="Icons64x64_1" substyle="ArrowNext" action="{[NextPageActionID]}"/>
+						<quad posn="96.1 -0.65 0.1" sizen="3 3" style="Icons64x64_1" substyle="ArrowLast" action="{[LastPageActionID]}"/>
+					</frame>
+				</frame>
+			</manialink>
+		</FirstPageTemplate>
+
+		<MiddlePageTemplate>
+			<manialink id="{[ManiaLinkID]}">
+				<frame posn="-50 34 2">
+
+					<quad posn="0 0 0" sizen="100 65" style="Bgs1" substyle="BgWindow1"/>
+
+					<!-- Header Row -->
+					<frame posn="0.25 -0.25 0.1">
+						<quad posn="0 0 0" sizen="99.4 4" style="Bgs1" substyle="BgTitle3_2"/>
+						<quad posn="0.4 -0.65 0.1" sizen="3 3" style="Icons64x64_1" substyle="TrackInfo"/>
+						<label posn="4 -1 0.1" sizen="70 3" style="TextRaceChat" text="Help"/>
+						<quad posn="96.35 -0.6 0.1" sizen="3 3" style="Icons64x64_1" substyle="QuitRace" action="{[CloseActionID]}"/>
+					</frame>
+
+					<frame posn="0.25 -4.8 0.1">
+						<quad posn="0 0 0" sizen="99.4 55" style="Bgs1" substyle="BgTitle3"/>
+						<frame posn="0.5 0 0.1">
+							<HelpPlaceHolder />
+						</frame>	
+					</frame>
+
+					<frame posn="0.25 -60.5 0.1">
+						<quad posn="0 0 0" sizen="99.4 4" style="Bgs1" substyle="BgTitle3_2"/>
+						<quad posn="0.4 -0.65 0.1" sizen="3 3" style="Icons64x64_1" substyle="ArrowFirst" action="{[FirstPageActionID]}"/>
+						<quad posn="30.4 -0.65 0.1" sizen="3 3" style="Icons64x64_1" substyle="ArrowPrev" action="{[PrevPageActionID]}"/>
+
+						<label posn="48.25 -1.8 0.1" sizen="30 3" style="TextRaceChat" text="Page: {[CurrentPage]}/{[MaxPage]}" halign="center" valign="center"/>
+
+						<quad posn="66.1 -0.65 0.1" sizen="3 3" style="Icons64x64_1" substyle="ArrowNext" action="{[NextPageActionID]}"/>
+						<quad posn="96.1 -0.65 0.1" sizen="3 3" style="Icons64x64_1" substyle="ArrowLast" action="{[LastPageActionID]}"/>
+					</frame>
+				</frame>
+			</manialink>
+		</MiddlePageTemplate>
+
+		<LastPageTemplate>
+			<manialink id="{[ManiaLinkID]}">
+				<frame posn="-50 34 2">
+
+					<quad posn="0 0 0" sizen="100 65" style="Bgs1" substyle="BgWindow1"/>
+
+					<!-- Header Row -->
+					<frame posn="0.25 -0.25 0.1">
+						<quad posn="0 0 0" sizen="99.4 4" style="Bgs1" substyle="BgTitle3_2"/>
+						<quad posn="0.4 -0.65 0.1" sizen="3 3" style="Icons64x64_1" substyle="TrackInfo"/>
+						<label posn="4 -1 0.1" sizen="70 3" style="TextRaceChat" text="Help"/>
+						<quad posn="96.35 -0.6 0.1" sizen="3 3" style="Icons64x64_1" substyle="QuitRace" action="{[CloseActionID]}"/>
+					</frame>
+
+					<frame posn="0.25 -4.8 0.1">
+						<quad posn="0 0 0" sizen="99.4 55" style="Bgs1" substyle="BgTitle3"/>
+						<frame posn="0.5 0 0.1">
+							<HelpPlaceHolder />
+						</frame>
+					</frame>
+
+					<frame posn="0.25 -60.5 0.1">
+						<quad posn="0 0 0" sizen="99.4 4" style="Bgs1" substyle="BgTitle3_2"/>
+						<quad posn="0.4 -0.65 0.1" sizen="3 3" style="Icons64x64_1" substyle="ArrowFirst" action="{[FirstPageActionID]}"/>
+						<quad posn="30.4 -0.65 0.1" sizen="3 3" style="Icons64x64_1" substyle="ArrowPrev" action="{[PrevPageActionID]}"/>
+
+						<label posn="48.25 -1.8 0.1" sizen="30 3" style="TextRaceChat" text="Page: {[CurrentPage]}/{[MaxPage]}" halign="center" valign="center"/>
+
+						<quad posn="66.1 -0.65 0.1" sizen="3 3" style="Icons64x64_1" substyle="StarGold" />
+						<quad posn="96.1 -0.65 0.1" sizen="3 3" style="Icons64x64_1" substyle="StarGold" />
+					</frame>
+				</frame>
+			</manialink>
+		</LastPageTemplate>
+	</Templates>
+</Settings>

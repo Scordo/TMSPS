@@ -1,0 +1,8 @@
+﻿<manialink id="{[ManiaLinkID]}">
+	<frame posn="53.5 -33 0">
+		<quad sizen="10.5 2.2"/>
+		<format textsize="2"/>
+		<label posn="4.1 0.0 2" halign="right" text="PB:"/>
+		<label posn="4.6 0.0 2" halign="left" text="{[PB]}" />
+	</frame>
+</manialink>

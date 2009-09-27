@@ -1,0 +1,31 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" DefaultTargets="Release">
+	<PropertyGroup>
+		<TargetPath>C:\Releases\TMSPS.Web.ServiceController</TargetPath>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<!--<BinFiles Include="" />-->
+		<WebFiles Include="..\*.aspx;..\*.ascx;web.config;..\**\*.dll" Exclude="..\obj\**\*.*" />
+	</ItemGroup>
+
+	<Target Name="Release">
+		<Message Text="Creating Release..."/>
+
+		<Message Text="Compiling Release..."/>
+		<CallTarget Targets="Build"/>
+
+		<Message Text="Copying Release..."/>
+		<CallTarget Targets="CopyFiles"/>
+	</Target>
+
+	<Target Name="Build">
+		<MSBuild Projects="..\TMSPS.Web.ServiceController.csproj" Properties="Configuration=Release"/>
+	</Target>
+
+	<Target Name="CopyFiles">
+		<RemoveDir Directories="$(TargetPath)" ContinueOnError="true"/>
+		
+		<!--<Copy SourceFiles="@(BinFiles)" DestinationFolder="$(TargetPath)\bin"/>-->
+		<Copy SourceFiles="@(WebFiles)" DestinationFolder="$(TargetPath)\%(RecursiveDir)"/>
+	</Target>
+</Project>
