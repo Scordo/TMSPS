@@ -84,6 +84,16 @@ namespace TMSPS.Core.Common
         Wisper,
         [CommandName("Help", "Hilfe")]
         Help,
+        [CommandName("CreateBattle")]
+        CreateBattle,
+        [CommandName("JoinBattle")]
+        JoinBattle,
+        [CommandName("LeaveBattle")]
+        LeaveBattle,
+        [CommandName("StartBattle")]
+        StartBattle,
+        [CommandName("StopBattle")]
+        StopBattle,
     }
 
     public static class CommandExtensions

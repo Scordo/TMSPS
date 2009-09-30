@@ -203,6 +203,10 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>UITemplates.resx</DependentUpon>
     </Compile>
+    <Compile Include="PluginSystem\Plugins\Competition\Competition.cs" />
+    <Compile Include="PluginSystem\Plugins\Competition\CompetitionList.cs" />
+    <Compile Include="PluginSystem\Plugins\Competition\CompetitionPlugin.cs" />
+    <Compile Include="PluginSystem\Plugins\Competition\Competitor.cs" />
     <Compile Include="PluginSystem\Plugins\Core\HelpSettings.cs" />
     <Compile Include="PluginSystem\Plugins\Dedimania\Communication\AliasTextTool.cs" />
     <Compile Include="PluginSystem\Plugins\Dedimania\Communication\AuthenticateParameters.cs" />
