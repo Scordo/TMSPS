@@ -81,6 +81,8 @@ namespace TMSPS.Core.PluginSystem.Plugins.Competition
                 return;
             }
 
+            competition.Leave(e.Login);
+
             SendFormattedMessageToLogins(competition.Competitors.ConvertAll(c => c.Login).Where(l => l != e.Login).ToArray(), "{[#ServerStyle]}>{[#MessageStyle]} ${[Nickname]}$z{[#MessageStyle]} left the competition, because of leaving the server.", "Nickname", GetNickname(e.Login, true));
         }
 
