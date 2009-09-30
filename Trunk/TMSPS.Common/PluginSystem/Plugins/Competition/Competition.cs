@@ -59,14 +59,14 @@ namespace TMSPS.Core.PluginSystem.Plugins.Competition
 
         public void UpdateWithEndRaceResult(List<PlayerRank> rankings)
         {
-            List<Competitor> orderedCompetitors = new List<Competitor>();
+            List<PlayerRank> orderedCompetitorRanks = new List<PlayerRank>();
             foreach(PlayerRank rank in rankings.OrderBy(r => r.Rank))
             {
                 foreach (Competitor competitor in Competitors)
                 {
                     if (rank.Login == competitor.Login)
                     {
-                        orderedCompetitors.Add(competitor);
+                        orderedCompetitorRanks.Add(rank);
                         break;
                     }
                 }
@@ -74,12 +74,20 @@ namespace TMSPS.Core.PluginSystem.Plugins.Competition
 
             int[] points = new [] {10, 7, 5, 2, 1};
 
-            for (int i = 0; i < orderedCompetitors.Count; i++ )
+            for (int i = 0; i < orderedCompetitorRanks.Count; i++ )
             {
                 if (i >= points.Length)
                     break;
 
-                orderedCompetitors[i].Score += points[i];
+                PlayerRank competitorRank = orderedCompetitorRanks[i];
+                if (competitorRank.BestTime <= 0)
+                    break;
+
+                Competitor competitor = Competitors.Find(c => c.Login == competitorRank.Login);
+                if (competitor == null)
+                    continue;
+
+                competitor.Score += points[i];
             }
             
             DrivenRounds++;
