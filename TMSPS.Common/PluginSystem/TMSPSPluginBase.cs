@@ -370,6 +370,11 @@ namespace TMSPS.Core.PluginSystem
 	        Context.RPCClient.Methods.ChatSendServerMessageToLogin(FormatMessage(message, keyValuePairs), login);
 	    }
 
+        protected void SendFormattedMessageToLogins(string[] logins, string message, params string[] keyValuePairs)
+        {
+            Context.RPCClient.Methods.ChatSendServerMessageToLogins(FormatMessage(message, keyValuePairs), logins);
+        }
+
 	    protected void SendFormattedMessage(string message, params string[] keyValuePairs)
 	    {
 	        Context.RPCClient.Methods.ChatSendServerMessage(FormatMessage(message, keyValuePairs));
