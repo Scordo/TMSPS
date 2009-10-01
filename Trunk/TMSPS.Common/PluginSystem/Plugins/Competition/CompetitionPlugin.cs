@@ -61,7 +61,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.Competition
 
             foreach (Competition competition in RunningCompetitions.GetStartedCompetitions())
             {
-                SendFormattedMessageToLogins(competition.Competitors.ConvertAll(c => c.Login).ToArray(), "{[#ServerStyle]}>{[#MessageStyle]} Competition's current ranking:\n{[Rankings]}", "Rankings", GetRankingText(competition));
+                SendFormattedMessageToLogins(competition.Competitors.ConvertAll(c => c.Login).ToArray(), "{[#ServerStyle]}>{[#MessageStyle]} Competition's current ranking after {[DR]} of {[RL]}:\n{[Rankings]}", "DR", competition.DrivenRounds.ToString(), "RL", competition.RoundLimit.ToString(), "Rankings", GetRankingText(competition));
             }
         }
 
@@ -82,8 +82,13 @@ namespace TMSPS.Core.PluginSystem.Plugins.Competition
             }
 
             competition.Leave(e.Login);
-
             SendFormattedMessageToLogins(competition.Competitors.ConvertAll(c => c.Login).Where(l => l != e.Login).ToArray(), "{[#ServerStyle]}>{[#MessageStyle]} ${[Nickname]}$z{[#MessageStyle]} left the competition, because of leaving the server.", "Nickname", GetNickname(e.Login, true));
+
+            if (competition.Competitors.Count == 1)
+            {
+                SendFormattedMessageToLogin(competition.Leader, "{[#ServerStyle]}>{[#MessageStyle]} All competitors have left the competition. Competition was stopped.");
+                RunningCompetitions.Remove(competition);
+            }
         }
 
         private void Callbacks_PlayerChat(object sender, Communication.EventArguments.Callbacks.PlayerChatEventArgs e)
@@ -221,12 +226,6 @@ namespace TMSPS.Core.PluginSystem.Plugins.Competition
                 return;
             }
 
-            if (competition.Started)
-            {
-                SendFormattedMessageToLogin(login, "{[#ServerStyle]}>{[#ErrorStyle]} This competition is already running. You can not join a running competition.");
-                return;
-            }
-
             competition.Join(login);
 
             SendFormattedMessageToLogins(competition.Competitors.ConvertAll(c => c.Login).ToArray(), "{[#ServerStyle]}>{[#MessageStyle]} $z{[Nickname]}$z{[#MessageStyle]} joined the competition.", "Nickname", GetNickname(login, true));
@@ -250,6 +249,12 @@ namespace TMSPS.Core.PluginSystem.Plugins.Competition
 
             competition.Leave(login);
             SendFormattedMessageToLogins(competition.Competitors.ConvertAll(c => c.Login).ToArray(), "{[#ServerStyle]}>{[#MessageStyle]} ${[Nickname]}$z{[#MessageStyle]} left the competition.", "Nickname", GetNickname(login, true));
+
+            if (competition.Competitors.Count == 1)
+            {
+                SendFormattedMessageToLogin(competition.Leader, "{[#ServerStyle]}>{[#MessageStyle]} All competitors have left the competition. Competition was stopped.");
+                RunningCompetitions.Remove(competition);
+            }
         }
 
         private void HandleStopBattleCommand(string login, ServerCommand command)
