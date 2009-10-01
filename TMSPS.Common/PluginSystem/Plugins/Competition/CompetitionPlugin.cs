@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Text.RegularExpressions;
 using TMSPS.Core.Common;
 using System.Linq;
 
@@ -61,7 +62,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.Competition
 
             foreach (Competition competition in RunningCompetitions.GetStartedCompetitions())
             {
-                SendFormattedMessageToLogins(competition.Competitors.ConvertAll(c => c.Login).ToArray(), "{[#ServerStyle]}>{[#MessageStyle]} Competition's current ranking after {[DR]} of {[RL]}:\n{[Rankings]}", "DR", competition.DrivenRounds.ToString(), "RL", competition.RoundLimit.ToString(), "Rankings", GetRankingText(competition));
+                SendFormattedMessageToLogins(competition.Competitors.ConvertAll(c => c.Login).ToArray(), "{[#ServerStyle]}>{[#MessageStyle]} Competition's current ranking after {[DR]} of {[RL]} rounds:\n{[Rankings]}", "DR", competition.DrivenRounds.ToString(), "RL", competition.RoundLimit.ToString(), "Rankings", GetRankingText(competition));
             }
         }
 
@@ -82,7 +83,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.Competition
             }
 
             competition.Leave(e.Login);
-            SendFormattedMessageToLogins(competition.Competitors.ConvertAll(c => c.Login).Where(l => l != e.Login).ToArray(), "{[#ServerStyle]}>{[#MessageStyle]} ${[Nickname]}$z{[#MessageStyle]} left the competition, because of leaving the server.", "Nickname", GetNickname(e.Login, true));
+            SendFormattedMessageToLogins(competition.Competitors.ConvertAll(c => c.Login).Where(l => l != e.Login).ToArray(), "{[#ServerStyle]}>{[#MessageStyle]} $z{[Nickname]}$z{[#MessageStyle]} left the competition, because of leaving the server.", "Nickname", GetNickname(e.Login, true));
 
             if (competition.Competitors.Count == 1)
             {
@@ -114,7 +115,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.Competition
                 currentRank++;
             }
 
-            return result.ToString();
+            return result.ToString().TrimEnd();
         }
 
         private void HandleCommand(string login, ServerCommand command)
@@ -148,6 +149,12 @@ namespace TMSPS.Core.PluginSystem.Plugins.Competition
                 HandleStopBattleCommand(login, command);
                 return;
             }
+
+            if (command.Is(Command.ShowBattles))
+            {
+                HandleShowBattlesCommand(login, command);
+                return;
+            }
         }
 
         private void HandleCreateBattleCommand(string login, ServerCommand command)
@@ -158,16 +165,32 @@ namespace TMSPS.Core.PluginSystem.Plugins.Competition
                 return;
             }
 
-            int roundLimit;
-            if (!(command.HasFurtherParts && int.TryParse(command.PartsWithoutMainCommand[0], out roundLimit)))
-                roundLimit = 5;
+            int roundLimit = 5;
+            string password = null;
+            if (command.PartsWithoutMainCommand.Count > 1)
+            {
+                bool isNumber = Regex.IsMatch(command.PartsWithoutMainCommand[0], @"\d+", RegexOptions.Singleline);
+                password = command.PartsWithoutMainCommand.Count > 1 ? command.PartsWithoutMainCommand[1] : null;
 
-            if (roundLimit <= 0)
-                roundLimit = 5;
+                if (isNumber)
+                {
+                    if (!(int.TryParse(command.PartsWithoutMainCommand[0], out roundLimit)))
+                        roundLimit = 5;
 
-            Competition competition = new Competition(login, roundLimit);
+                    if (roundLimit <= 0)
+                        roundLimit = 5;
+                }
+                else
+                {
+                    password = command.PartsWithoutMainCommand[0];
+                }
+            }
+
+            Competition competition = new Competition(login, roundLimit, password);
             RunningCompetitions.Add(competition);
-            SendFormattedMessageToLogin(login, "{[#ServerStyle]}>{[#MessageStyle]} Competition with name {[#HighlightStyle]}{[CompetitionName]}{[#MessageStyle]} which lasts {[#HighlightStyle]}{[Rounds]}{[#MessageStyle]} rounds was created.", "CompetitionName", competition.Name, "Rounds", roundLimit.ToString());
+
+            string passwordSentencePostfix = (password == null) ? string.Empty : " with password {[#HighlightStyle]}" + password;
+            SendFormattedMessageToLogin(login, "{[#ServerStyle]}>{[#MessageStyle]} Competition with name {[#HighlightStyle]}{[CompetitionName]}{[#MessageStyle]} which lasts {[#HighlightStyle]}{[Rounds]}{[#MessageStyle]} rounds was created" + passwordSentencePostfix+ ".", "CompetitionName", competition.Name, "Rounds", roundLimit.ToString());
         }
 
         private void HandleStartBattleCommand(string login, ServerCommand command)
@@ -226,6 +249,23 @@ namespace TMSPS.Core.PluginSystem.Plugins.Competition
                 return;
             }
 
+            if (competition.IsPasswordProtected)
+            {
+                if (command.PartsWithoutMainCommand.Count < 2)
+                {
+                    SendFormattedMessageToLogin(login, "{[#ServerStyle]}>{[#ErrorStyle]} The competition you want to join is password protected but you did not provide the join-password.");
+                    return;
+                }
+
+                string joinPassword = command.PartsWithoutMainCommand[1];
+
+                if (string.Compare(competition.Password, joinPassword, StringComparison.InvariantCultureIgnoreCase) != 0)
+                {
+                    SendFormattedMessageToLogin(login, "{[#ServerStyle]}>{[#ErrorStyle]} The password for joining the competition is wrong.");
+                    return;
+                }
+            }
+
             competition.Join(login);
 
             SendFormattedMessageToLogins(competition.Competitors.ConvertAll(c => c.Login).ToArray(), "{[#ServerStyle]}>{[#MessageStyle]} $z{[Nickname]}$z{[#MessageStyle]} joined the competition.", "Nickname", GetNickname(login, true));
@@ -248,7 +288,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.Competition
             }
 
             competition.Leave(login);
-            SendFormattedMessageToLogins(competition.Competitors.ConvertAll(c => c.Login).ToArray(), "{[#ServerStyle]}>{[#MessageStyle]} ${[Nickname]}$z{[#MessageStyle]} left the competition.", "Nickname", GetNickname(login, true));
+            SendFormattedMessageToLogins(competition.Competitors.ConvertAll(c => c.Login).ToArray(), "{[#ServerStyle]}>{[#MessageStyle]} $z{[Nickname]}$z{[#MessageStyle]} left the competition.", "Nickname", GetNickname(login, true));
 
             if (competition.Competitors.Count == 1)
             {
@@ -267,12 +307,32 @@ namespace TMSPS.Core.PluginSystem.Plugins.Competition
                 return;
             }
 
-            SendFormattedMessageToLogins(competition.Competitors.ConvertAll(c => c.Login).ToArray(), "{[#ServerStyle]}>{[#MessageStyle]} ${[Nickname]}$z{[#MessageStyle]} has stopped the competition.", "Nickname", GetNickname(login, true));
+            SendFormattedMessageToLogins(competition.Competitors.ConvertAll(c => c.Login).ToArray(), "{[#ServerStyle]}>{[#MessageStyle]} $z{[Nickname]}$z{[#MessageStyle]} has stopped the competition.", "Nickname", GetNickname(login, true));
 
             if (competition.Started && competition.Competitors.Count > 1)
                 SendFormattedMessageToLogins(competition.Competitors.ConvertAll(c => c.Login).ToArray(), "{[#ServerStyle]}>{[#MessageStyle]} Competition is over here are the rankings:\n{[Rankings]}", "Rankings", GetRankingText(competition));
 
             RunningCompetitions.Remove(competition);
+        }
+
+        private void HandleShowBattlesCommand(string login, ServerCommand command)
+        {
+            if (RunningCompetitions.Count == 0)
+                SendFormattedMessageToLogin(login, "{[#ServerStyle]}>{[#MessageStyle]} Currently there are no competitions!");
+            else
+                SendFormattedMessageToLogin(login, "{[#ServerStyle]}>{[#MessageStyle]} Current competitions:\n$z{[Competitions]}", "Competitions", GetCompetitionListString());
+        }
+
+        private string GetCompetitionListString()
+        {
+            StringBuilder result = new StringBuilder();
+
+            foreach (Competition competition in RunningCompetitions)
+            {
+                result.AppendFormat("- {0} [State:{1}] [Players:{2}] [Rounds:{3}/{4}] [Password:{5}]\n", competition.Name, competition.Started ? "running" : "idle", competition.Competitors.Count, competition.DrivenRounds, competition.RoundLimit, competition.IsPasswordProtected ? "yes" : "no");
+            }
+
+            return result.ToString().TrimEnd();
         }
 
         public override IEnumerable<CommandHelp> CommandHelpList
@@ -281,11 +341,12 @@ namespace TMSPS.Core.PluginSystem.Plugins.Competition
             {
                 return new[]
                 {
-                    new CommandHelp(Command.CreateBattle, "Creates a competition lasting X rounds.", "/CreateBattle <RoundLimit>", "/CreateBattle 5"),
-                    new CommandHelp(Command.JoinBattle, "Joins a battle with the specified name. When creating a battle the login of the creator is used as the name of the competition.", "/JoinBattle <CompetitionName>", "/JoinBattle scordo"),
+                    new CommandHelp(Command.CreateBattle, "Creates a competition. The RoundLimit-Parameter is optional as well as the JoinPassword for protecting the competition join.", "/CreateBattle [<RoundLimit>] [<JoinPassword>]", "'/CreateBattle 5' or '/CreateBattle TestPassword' or '/CreateBattle 5 TestPassword'"),
+                    new CommandHelp(Command.JoinBattle, "Joins a battle with the specified name and the optional join password. When creating a battle the login of the creator is used as the name of the competition.", "/JoinBattle <CompetitionName> [<Password>]", "'/JoinBattle scordo' or '/JoinBattle scordo JoinPassword'"),
                     new CommandHelp(Command.LeaveBattle, "This command is used to leave the competition you're currently taking part in.", "/LeaveBattle", "/LeaveBattle"),
                     new CommandHelp(Command.StartBattle, "Starts the created competition. From now on score is counted for rankings. Joining the competition is no longer possible.", "/StartBattle", "/StartBattle"),
                     new CommandHelp(Command.StopBattle, "Stops the current competition.", "/StopBattle", "/StopBattle"),
+                    new CommandHelp(Command.ShowBattles, "Shows a list of all created battles.", "/ShowBattles", "/ShowBattles"),
                 };
             }
         }
