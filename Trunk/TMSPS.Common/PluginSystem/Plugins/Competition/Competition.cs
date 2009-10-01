@@ -14,9 +14,12 @@ namespace TMSPS.Core.PluginSystem.Plugins.Competition
         public int RoundLimit { get; private set; }
         public int DrivenRounds { get; private set; }
         public bool Finished { get { return DrivenRounds >= RoundLimit; } }
+        public string Password { get; private set; }
+        public bool IsPasswordProtected { get { return Password != null; } }
 
-        public Competition(string leader, int roundLimit)
+        public Competition(string leader, int roundLimit, string password)
         {
+            Password = password;
             RoundLimit = roundLimit;
             DrivenRounds = 0;
             Name = leader;
@@ -35,9 +38,6 @@ namespace TMSPS.Core.PluginSystem.Plugins.Competition
 
         public void Join(string login)
         {
-            if (Started)
-                throw new InvalidOperationException("Joining a running competition is not allowed");
-
             if (IsTakenPart(login))
                 throw new InvalidOperationException(string.Format("{0} is already taking part in this competition", login));
 

@@ -94,6 +94,8 @@ namespace TMSPS.Core.Common
         StartBattle,
         [CommandName("StopBattle")]
         StopBattle,
+        [CommandName("ShowBattles")]
+        ShowBattles,
     }
 
     public static class CommandExtensions
