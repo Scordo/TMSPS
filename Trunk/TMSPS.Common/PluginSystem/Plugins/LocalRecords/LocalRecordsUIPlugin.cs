@@ -97,7 +97,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
                     new CommandHelp(Command.NextRank, "Shows information about the player with the next rank.", "/nsr", "/nsr"),
                     new CommandHelp(Command.Info, "Shows information about your wins, amount of time played and the date you first joined this server.", "/info", "/info"),
                     new CommandHelp(Command.LastSeen, "Shows information about when the player with the specified login was last online.", "/seen <login>", "/seen scordo"),
-                    new CommandHelp(Command.SelectUndrivenTracks, "Selects all the tracks you have no record on and inserts them immediately after the current track.", "/selectundriventracks", "/selectundriventracks"),
+                    new CommandHelp(Command.SelectUndrivenTracks, "Selects all the tracks you have no record on and inserts them immediately after the current track.", "/t selectundriventracks", "/t selectundriventracks"),
                 };
             }
         }
