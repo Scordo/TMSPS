@@ -73,12 +73,26 @@ namespace TMSPS.Core.PluginSystem.Plugins.Competition
             if (competition == null)
                 return;
 
-            if (string.Compare(competition.Leader, e.Login, StringComparison.InvariantCultureIgnoreCase) == 0)
+            if (competition.IsLeader(e.Login))
             {
-                if (competition.Competitors.Count > 1)
-                    SendFormattedMessageToLogins(competition.Competitors.ConvertAll(c => c.Login).Where(l => l != e.Login).ToArray(), "{[#ServerStyle]}>{[#ErrorStyle]} The leader of the competition left the game competition is stopped.");    
+                if (competition.Competitors.Count <= 1)
+                {
+                    RunningCompetitions.Remove(competition);
+                    return;
+                }
 
-                RunningCompetitions.Remove(competition);
+                SendFormattedMessageToLogins(competition.Competitors.ConvertAll(c => c.Login).ToArray(), "{[#ServerStyle]}>{[#MessageStyle]} $z{[Nickname]}$z{[#MessageStyle]} left the competition.", "Nickname", GetNickname(e.Login, true));
+
+                if (competition.Competitors.Count == 2)
+                {
+                    SendFormattedMessageToLogin(competition.Competitors.Where(c => c.Login != competition.Leader).Select(c => c.Login).First(), "{[#ServerStyle]}>{[#MessageStyle]} All competitors have left the competition. Competition was stopped.");
+                    RunningCompetitions.Remove(competition);
+                    return;
+                }
+
+                string newLeader = competition.SelectNewLeader();
+                SendFormattedMessageToLogins(competition.Competitors.Select(c => c.Login).ToArray(), "{[#ServerStyle]}>{[#MessageStyle]} $z{[Nickname]}$z is now the leader of the competition. The new competition name is {[#HighlightStyle]}{[Login]}{[#MessageStyle]}.", "Nickname", GetNickname(newLeader, true), "Login", newLeader);
+
                 return;
             }
 
@@ -128,7 +142,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.Competition
 
             if (command.Is(Command.StartBattle))
             {
-                HandleStartBattleCommand(login, command);
+                HandleStartBattleCommand(login);
                 return;
             }
 
@@ -140,19 +154,19 @@ namespace TMSPS.Core.PluginSystem.Plugins.Competition
 
             if (command.Is(Command.LeaveBattle))
             {
-                HandleLeaveBattleCommand(login, command);
+                HandleLeaveBattleCommand(login);
                 return;
             }
 
             if (command.Is(Command.StopBattle))
             {
-                HandleStopBattleCommand(login, command);
+                HandleStopBattleCommand(login);
                 return;
             }
 
             if (command.Is(Command.ShowBattles))
             {
-                HandleShowBattlesCommand(login, command);
+                HandleShowBattlesCommand(login);
                 return;
             }
         }
@@ -167,7 +181,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.Competition
 
             int roundLimit = 5;
             string password = null;
-            if (command.PartsWithoutMainCommand.Count > 1)
+            if (command.PartsWithoutMainCommand.Count > 0)
             {
                 bool isNumber = Regex.IsMatch(command.PartsWithoutMainCommand[0], @"\d+", RegexOptions.Singleline);
                 password = command.PartsWithoutMainCommand.Count > 1 ? command.PartsWithoutMainCommand[1] : null;
@@ -193,7 +207,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.Competition
             SendFormattedMessageToLogin(login, "{[#ServerStyle]}>{[#MessageStyle]} Competition with name {[#HighlightStyle]}{[CompetitionName]}{[#MessageStyle]} which lasts {[#HighlightStyle]}{[Rounds]}{[#MessageStyle]} rounds was created" + passwordSentencePostfix+ ".", "CompetitionName", competition.Name, "Rounds", roundLimit.ToString());
         }
 
-        private void HandleStartBattleCommand(string login, ServerCommand command)
+        private void HandleStartBattleCommand(string login)
         {
             Competition competition = RunningCompetitions.GetCompetitionByLogin(login);
 
@@ -203,7 +217,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.Competition
                 return;
             }
 
-            if (string.Compare(competition.Leader, login, StringComparison.InvariantCultureIgnoreCase) != 0)
+            if (!competition.IsLeader(login))
             {
                 SendFormattedMessageToLogin(login, "{[#ServerStyle]}>{[#ErrorStyle]} You're not the leader of the competition your taken part.");
                 return;
@@ -271,7 +285,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.Competition
             SendFormattedMessageToLogins(competition.Competitors.ConvertAll(c => c.Login).ToArray(), "{[#ServerStyle]}>{[#MessageStyle]} $z{[Nickname]}$z{[#MessageStyle]} joined the competition.", "Nickname", GetNickname(login, true));
         }
 
-        private void HandleLeaveBattleCommand(string login, ServerCommand command)
+        private void HandleLeaveBattleCommand(string login)
         {
             Competition competition = RunningCompetitions.GetCompetitionByLogin(login);
 
@@ -281,9 +295,27 @@ namespace TMSPS.Core.PluginSystem.Plugins.Competition
                 return;
             }
 
-            if (string.Compare(competition.Leader, login, StringComparison.InvariantCultureIgnoreCase) == 0)
+            if (competition.IsLeader(login))
             {
-                SendFormattedMessageToLogin(login, "{[#ServerStyle]}>{[#ErrorStyle]} You're not allowed to leave the competition as a leader. Use {[#HighlightStyle]}/StopBattle {[#ErrorStyle]}to stop the battle.");
+                if (competition.Competitors.Count == 1)
+                {
+                    SendFormattedMessageToLogin(login, "{[#ServerStyle]}>{[#MessageStyle]} Competition was stopped.");
+                    RunningCompetitions.Remove(competition);
+                    return;
+                }
+
+                SendFormattedMessageToLogins(competition.Competitors.ConvertAll(c => c.Login).ToArray(), "{[#ServerStyle]}>{[#MessageStyle]} $z{[Nickname]}$z{[#MessageStyle]} left the competition.", "Nickname", GetNickname(login, true));
+
+                if (competition.Competitors.Count == 2)
+                {
+                    SendFormattedMessageToLogin(competition.Competitors.Where(c => c.Login != competition.Leader).Select(c => c.Login).First(), "{[#ServerStyle]}>{[#MessageStyle]} All competitors have left the competition. Competition was stopped.");
+                    RunningCompetitions.Remove(competition);
+                    return;
+                }
+
+                string newLeader = competition.SelectNewLeader();
+
+                SendFormattedMessageToLogins(competition.Competitors.Select(c => c.Login).ToArray(), "{[#ServerStyle]}>{[#MessageStyle]} $z{[Nickname]}$z is now the leader of the competition. The new competition name is {[#HighlightStyle]}{[Login]}{[#MessageStyle]}.", "Nickname", GetNickname(newLeader, true), "Login", newLeader);
                 return;
             }
 
@@ -297,11 +329,11 @@ namespace TMSPS.Core.PluginSystem.Plugins.Competition
             }
         }
 
-        private void HandleStopBattleCommand(string login, ServerCommand command)
+        private void HandleStopBattleCommand(string login)
         {
             Competition competition = RunningCompetitions.GetCompetitionByLogin(login);
 
-            if (competition == null || string.Compare(competition.Leader, login, StringComparison.InvariantCultureIgnoreCase) != 0)
+            if (competition == null || !competition.IsLeader(login))
             {
                 SendFormattedMessageToLogin(login, "{[#ServerStyle]}>{[#ErrorStyle]} You're not the leader of the competition your taken part. So you cant stop the competition.");
                 return;
@@ -315,7 +347,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.Competition
             RunningCompetitions.Remove(competition);
         }
 
-        private void HandleShowBattlesCommand(string login, ServerCommand command)
+        private void HandleShowBattlesCommand(string login)
         {
             if (RunningCompetitions.Count == 0)
                 SendFormattedMessageToLogin(login, "{[#ServerStyle]}>{[#MessageStyle]} Currently there are no competitions!");

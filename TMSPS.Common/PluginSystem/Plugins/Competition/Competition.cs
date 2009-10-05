@@ -93,9 +93,28 @@ namespace TMSPS.Core.PluginSystem.Plugins.Competition
             DrivenRounds++;
         }
 
+        public string SelectNewLeader()
+        {
+            if (Competitors.Count < 2)
+                throw new InvalidOperationException("Selecting a new leader is not possible when Competition has less than 2 competitors");
+
+            Competitors.RemoveAll(c => c.Login == Leader);
+            string newLeader = Competitors.Select(c => c.Login).First();
+
+            Leader = newLeader;
+            Name = newLeader;
+
+            return newLeader;
+        }
+
         public IEnumerable<Competitor> GetRanking()
         {
             return Competitors.OrderByDescending(c => c.Score);
+        }
+
+        public bool IsLeader(string login)
+        {
+            return string.Compare(Leader, login, StringComparison.InvariantCultureIgnoreCase) == 0;
         }
     }
 }
