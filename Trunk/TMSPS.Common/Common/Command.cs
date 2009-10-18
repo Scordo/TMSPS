@@ -96,6 +96,10 @@ namespace TMSPS.Core.Common
         StopBattle,
         [CommandName("ShowBattles")]
         ShowBattles,
+        [CommandName("RES", "RESTART")]
+        ProRestart,
+        [CommandName("NORES", "NORESTART")]
+        ConRestart,
     }
 
     public static class CommandExtensions
