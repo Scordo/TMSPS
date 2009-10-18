@@ -172,6 +172,8 @@
     <Content Include="Plugins\NameProtectionBot\Settings.xml" />
     <Content Include="Plugins\NameProtectionBot\Settings_Template.xml" />
     <Content Include="Plugins\LocalRecords\TopRankingsPodium\Settings_Template.xml" />
+    <Content Include="Plugins\Restart\Settings.xml" />
+    <Content Include="Plugins\Restart\Settings_Template.xml" />
     <Content Include="Plugins\Spectators\Settings.xml" />
     <Content Include="Plugins\Spectators\Settings_Template.xml" />
     <Content Include="Plugins\StaticUI\Content.xml" />
