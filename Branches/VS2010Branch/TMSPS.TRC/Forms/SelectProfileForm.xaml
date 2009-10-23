@@ -1,0 +1,31 @@
+﻿<Wpf:TRCBaseWindow x:Class="TMSPS.TRC.Forms.SelectProfileForm"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:Wpf="clr-namespace:TMSPS.TRC.BL.Wpf"
+    Title="Please select a profile" Width="300" MinHeight="155" WindowStyle="ToolWindow" WindowStartupLocation="CenterScreen" SizeToContent="Height" KeyUp="TRCBaseWindow_KeyUp">
+    <StackPanel>
+
+        <Grid Margin="10,10,10,0">
+            <Grid.RowDefinitions>
+                <RowDefinition MaxHeight="23" />
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition MaxWidth="30" Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <ComboBox Grid.Row="0" Grid.Column="0" Name="ProfileComboBox" VerticalAlignment="Stretch"  HorizontalAlignment="Stretch" SelectionChanged="ProfileComboBox_SelectionChanged" />
+            
+            <Button Grid.Row="0" Grid.Column="1" Name="DeleteProfileButton" MinWidth="23" VerticalAlignment="Stretch" HorizontalAlignment="Right" IsEnabled="False" Click="DeleteProfileButton_Click">
+                <Button.Content>
+                    <TextBlock Foreground="Red" FontWeight="ExtraBold">X</TextBlock>
+                </Button.Content>
+            </Button>
+        </Grid>
+        
+        <Expander Margin="10,10,10,0" Header="Password" Name="PasswordExpander" HorizontalAlignment="Stretch" VerticalAlignment="Top" >
+            <PasswordBox HorizontalAlignment="Stretch" Name="PasswordTextBox" Margin="0,5,0,0"  />
+        </Expander>
+        <Button Height="34" MinWidth="100" MaxWidth="250" Margin="10,10,10,10" Name="SelectButton" VerticalAlignment="Top" HorizontalAlignment="Center" Content="Select" Click="SelectButton_Click" IsEnabled="False" IsDefault="True" />
+    </StackPanel>
+</Wpf:TRCBaseWindow>

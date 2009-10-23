@@ -1,0 +1,240 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.30729</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{F20F9943-0645-409D-88A8-E606A9FDC0B1}</ProjectGuid>
+    <OutputType>Exe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>TMSPS.Daemon</RootNamespace>
+    <AssemblyName>TMSPS.Daemon</AssemblyName>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <StartupObject>
+    </StartupObject>
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+    <FileUpgradeFlags>0</FileUpgradeFlags>
+    <OldToolsVersion>3.5</OldToolsVersion>
+    <PublishUrl>publish\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="log4net, Version=1.2.10.0, Culture=neutral, PublicKeyToken=1b44e1d426115821, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\TMSPS.Common\Components\log4net.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.configuration" />
+    <Reference Include="System.Configuration.Install" />
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Management" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml.Linq">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data.DataSetExtensions">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data" />
+    <Reference Include="System.ServiceProcess" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="MainDaemon.cs" />
+    <Compile Include="MainService.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="MainService.Designer.cs">
+      <DependentUpon>MainService.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Program.cs" />
+    <Compile Include="ProjectInstaller.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="ProjectInstaller.Designer.cs">
+      <DependentUpon>ProjectInstaller.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+    <None Include="App_Template.config" />
+    <None Include="Postbuild.targets" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\TMSPS.Common\TMSPS.Core.csproj">
+      <Project>{07AB0407-3EB7-4DA1-B3C6-DE074A7760C7}</Project>
+      <Name>TMSPS.Core</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="MessageConstants.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MessageConstants_template.xml" />
+    <Content Include="MessageStyles_template.xml" />
+    <Content Include="Credentials.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Credentials_Template.xml" />
+    <Content Include="MessageStyles.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Plugins\AdminPlayer\BanListUITemplate.xml" />
+    <Content Include="Plugins\AdminPlayer\BlackListUITemplate.xml" />
+    <Content Include="Plugins\AdminPlayer\IgnoreListUITemplate.xml" />
+    <Content Include="Plugins\AdminPlayer\GuestListUITemplate.xml" />
+    <Content Include="Plugins\AdminPlayer\LivePlayerUITemplate.xml" />
+    <Content Include="Plugins\AdminPlayer\Settings.xml" />
+    <Content Include="Plugins\AdminPlayer\Settings_Template.xml" />
+    <Content Include="Plugins\ChatBot\Settings.xml" />
+    <Content Include="Plugins\ChatBot\Settings_Template.xml" />
+    <Content Include="Plugins\CheckPoints\Settings_Template.xml" />
+    <Content Include="Plugins\CheckPoints\Settings.xml" />
+    <Content Include="Plugins\Clock\ClockTemplate.xml" />
+    <Content Include="Plugins\Clock\Settings.xml" />
+    <Content Include="Plugins\Clock\Settings_Template.xml" />
+    <Content Include="Plugins\Competition\Settings.xml" />
+    <Content Include="Plugins\Competition\Settings_Template.xml" />
+    <Content Include="Plugins\Core\HelpTemplate.xml" />
+    <Content Include="Plugins\Core\Settings.xml" />
+    <Content Include="Plugins\Core\Settings_Template.xml" />
+    <Content Include="Plugins\Dedimania\DedimaniaUI\DedimaniaRecordListTemplate.xml" />
+    <Content Include="Plugins\Dedimania\DedimaniaUI\DediPanelTemplate.xml" />
+    <Content Include="Plugins\Dedimania\DedimaniaUI\Settings.xml" />
+    <Content Include="Plugins\Dedimania\DedimaniaUI\Settings_Template.xml" />
+    <Content Include="Plugins\Dedimania\Settings_Template.xml" />
+    <Content Include="Plugins\Dedimania\Settings.xml" />
+    <Content Include="Plugins\Donation\Settings.xml" />
+    <Content Include="Plugins\Donation\Settings_Template.xml" />
+    <Content Include="Plugins\IdleKick\Settings.xml" />
+    <Content Include="Plugins\IdleKick\Settings_Template.xml" />
+    <Content Include="Plugins\KickUnrankedPlayers\Settings.xml" />
+    <Content Include="Plugins\KickUnrankedPlayers\Settings_Template.xml" />
+    <Content Include="Plugins\LiveRanking\LiveRankingListTemplate.xml" />
+    <Content Include="Plugins\LiveRanking\Settings.xml" />
+    <Content Include="Plugins\LiveRanking\Settings_Template.xml" />
+    <Content Include="Plugins\LocalRecords\PlayerStatsUI\Settings.xml" />
+    <Content Include="Plugins\LocalRecords\PlayerStatsUI\Settings_Template.xml" />
+    <Content Include="Plugins\LocalRecords\TopRanksUI\Settings.xml" />
+    <Content Include="Plugins\LocalRecords\TopRanksUI\Settings_Template.xml" />
+    <Content Include="Plugins\LocalRecords\TopRanksUI\TopRanksTemplate_Template.xml" />
+    <Content Include="Plugins\LocalRecords\TopRanksUI\TopRanksTemplate.xml" />
+    <Content Include="Plugins\LocalRecords\HoursPlayedPodium\EntryListTemplate.xml" />
+    <Content Include="Plugins\LocalRecords\HoursPlayedPodium\Settings.xml" />
+    <Content Include="Plugins\LocalRecords\HoursPlayedPodium\Settings_Template.xml" />
+    <Content Include="Plugins\LocalRecords\LocalRecordsUI\LocalRecordsListTemplate.xml" />
+    <Content Include="Plugins\LocalRecords\LocalRecordsUI\LocalRecordPanelTemplate.xml" />
+    <Content Include="Plugins\LocalRecords\LocalRecordsUI\PBPanelTemplate.xml" />
+    <Content Include="Plugins\LocalRecords\LocalRecordsUI\Settings.xml" />
+    <Content Include="Plugins\LocalRecords\LocalRecordsUI\Settings_Template.xml" />
+    <Content Include="Plugins\LocalRecords\PlayerStatsUI\TopRecordsTemplate.xml" />
+    <Content Include="Plugins\LocalRecords\MostTop3RaceResultsPodium\EntryListTemplate.xml" />
+    <Content Include="Plugins\LocalRecords\MostTop3RaceResultsPodium\Settings.xml" />
+    <Content Include="Plugins\LocalRecords\MostTop3RaceResultsPodium\Settings_Template.xml" />
+    <Content Include="Plugins\LocalRecords\MostTop3RecordsPodium\EntryListTemplate.xml" />
+    <Content Include="Plugins\LocalRecords\MostTop3RecordsPodium\Settings.xml" />
+    <Content Include="Plugins\LocalRecords\MostTop3RecordsPodium\Settings_Template.xml" />
+    <Content Include="Plugins\LocalRecords\RatingUI\Settings.xml" />
+    <Content Include="Plugins\LocalRecords\RatingUI\Settings_Template.xml" />
+    <Content Include="Plugins\LocalRecords\Settings.xml" />
+    <Content Include="Plugins\LocalRecords\Settings_Template.xml" />
+    <Content Include="Plugins\LocalRecords\TopRankingsPodium\EntryListTemplate.xml" />
+    <Content Include="Plugins\LocalRecords\TopRankingsPodium\Settings.xml" />
+    <Content Include="Plugins\LocalRecords\TopWinnersPodium\EntryListTemplate.xml" />
+    <Content Include="Plugins\LocalRecords\TopWinnersPodium\Settings.xml" />
+    <Content Include="Plugins\LocalRecords\TopWinnersPodium\Settings_Template.xml" />
+    <Content Include="Plugins\LocalRecords\TopWinsUI\Settings.xml" />
+    <Content Include="Plugins\LocalRecords\TopWinsUI\Settings_Template.xml" />
+    <Content Include="Plugins\LocalRecords\TopWinsUI\TopWinsTemplate.xml" />
+    <Content Include="Plugins\LocalRecords\TopWinsUI\TopWinsTemplate_Template.xml" />
+    <Content Include="Plugins\NameProtectionBot\Settings.xml" />
+    <Content Include="Plugins\NameProtectionBot\Settings_Template.xml" />
+    <Content Include="Plugins\LocalRecords\TopRankingsPodium\Settings_Template.xml" />
+    <Content Include="Plugins\Restart\Settings.xml" />
+    <Content Include="Plugins\Restart\Settings_Template.xml" />
+    <Content Include="Plugins\Spectators\Settings.xml" />
+    <Content Include="Plugins\Spectators\Settings_Template.xml" />
+    <Content Include="Plugins\StaticUI\Content.xml" />
+    <Content Include="Plugins\StaticUI\Settings.xml" />
+    <Content Include="Plugins\StaticUI\Settings_Template.xml" />
+    <Content Include="Plugins\TMX\Settings.xml" />
+    <Content Include="Plugins\TMX\Settings_Template.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="ProjectInstaller.resx">
+      <DependentUpon>ProjectInstaller.cs</DependentUpon>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1 Client Profile</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.VisualBasic.PowerPacks.10.0">
+      <Visible>False</Visible>
+      <ProductName>Microsoft Visual Basic PowerPacks 10.0</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Windows.Installer.3.1">
+      <Visible>False</Visible>
+      <ProductName>Windows Installer 3.1</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+  <Import Project="$(MSBuildProjectDirectory)\PostBuild.targets" />
+</Project>

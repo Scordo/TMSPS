@@ -1,0 +1,476 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.30729</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{07AB0407-3EB7-4DA1-B3C6-DE074A7760C7}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>TMSPS.Core</RootNamespace>
+    <AssemblyName>TMSPS.Core</AssemblyName>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <OldToolsVersion>3.5</OldToolsVersion>
+    <UpgradeBackupLocation />
+    <PublishUrl>publish\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="CookComputing.XmlRpcV2, Version=2.4.0.0, Culture=neutral, PublicKeyToken=a7d6e17aa302004d, processorArchitecture=MSIL" />
+    <Reference Include="log4net, Version=1.2.10.0, Culture=neutral, PublicKeyToken=1b44e1d426115821, processorArchitecture=MSIL" />
+    <Reference Include="System" />
+    <Reference Include="System.configuration" />
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml.Linq">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data.DataSetExtensions">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Common\BlackListReader.cs" />
+    <Compile Include="Common\CommandHelp.cs" />
+    <Compile Include="Common\CommandInfo.cs" />
+    <Compile Include="Common\Command.cs" />
+    <Compile Include="Common\ComparerFactory.cs" />
+    <Compile Include="Common\EventArgs.cs" />
+    <Compile Include="Common\FlatFileNicknameResolver.cs" />
+    <Compile Include="Common\GlobalConstants.cs" />
+    <Compile Include="Common\IBaseAdapter.cs" />
+    <Compile Include="Common\INicknameResolver.cs" />
+    <Compile Include="Common\NicknameResolverBase.cs" />
+    <Compile Include="Common\NicknameResolverCacheEntry.cs" />
+    <Compile Include="Common\NicknameResolverFactory.cs" />
+    <Compile Include="Common\NotifyPropertyChanged.cs" />
+    <Compile Include="Common\Pair.cs" />
+    <Compile Include="Common\PlayerFlags.cs" />
+    <Compile Include="Common\ReadOnlyDictionary.cs" />
+    <Compile Include="Common\Right.cs" />
+    <Compile Include="Common\SettingsBase.cs" />
+    <Compile Include="Common\PlayerSpectatorStatus.cs" />
+    <Compile Include="Common\SqlNicknameResolver.cs" />
+    <Compile Include="Common\StackTraceHelper.cs" />
+    <Compile Include="Common\TimedVolatileExecutionQueue.cs" />
+    <Compile Include="Communication\EventArguments\Callbacks\BeginChallengeEventArgs.cs" />
+    <Compile Include="Communication\EventArguments\Callbacks\EndChallengeEventArgs.cs" />
+    <Compile Include="Communication\ProxyTypes\ForceSpectatorState.cs" />
+    <Compile Include="Communication\ProxyTypes\GameMode.cs" />
+    <Compile Include="Communication\ProxyTypes\LadderServerLimits.cs" />
+    <Compile Include="Communication\ProxyTypes\StartServerParameters.cs" />
+    <Compile Include="Logging\ConsoleUILogger.cs" />
+    <Compile Include="Logging\CoreLogger.cs" />
+    <Compile Include="Common\IDump.cs" />
+    <Compile Include="Logging\ILogger.cs" />
+    <Compile Include="Logging\IUILogger.cs" />
+    <Compile Include="Common\Util.cs" />
+    <Compile Include="Communication\AsyncSocketMethodHelper.cs" />
+    <Compile Include="Communication\Callbacks.cs" />
+    <Compile Include="Communication\EventArguments\Callbacks\BeginRaceEventArgs.cs" />
+    <Compile Include="Communication\EventArguments\Callbacks\BillUpdatedEventArgs.cs" />
+    <Compile Include="Communication\EventArguments\Callbacks\ChallengeListModifiedeventArgs.cs" />
+    <Compile Include="Communication\EventArguments\Callbacks\EchoEventArgs.cs" />
+    <Compile Include="Communication\EventArguments\Callbacks\EndRaceEventArgs.cs" />
+    <Compile Include="Communication\EventArguments\Callbacks\ManualFlowControlTransitionEventArgs.cs" />
+    <Compile Include="Communication\EventArguments\Callbacks\PlayerChatEventArgs.cs" />
+    <Compile Include="Communication\EventArguments\Callbacks\PlayerCheckpointEventArgs.cs" />
+    <Compile Include="Communication\EventArguments\Callbacks\PlayerConnectEventArgs.cs" />
+    <Compile Include="Communication\EventArguments\Callbacks\PlayerDisconnectEventArgs.cs" />
+    <Compile Include="Communication\EventArguments\Callbacks\PlayerFinishEventArgs.cs" />
+    <Compile Include="Communication\EventArguments\Callbacks\PlayerIncoherenceEventArgs.cs" />
+    <Compile Include="Communication\EventArguments\Callbacks\PlayerInfoChangedEventArgs.cs" />
+    <Compile Include="Communication\EventArguments\Callbacks\PlayerManialinkPageAnswerEventArgs.cs" />
+    <Compile Include="Communication\EventArguments\Callbacks\StatusChangedEventArgs.cs" />
+    <Compile Include="Communication\EventArguments\Callbacks\TunnelDataReceivedEventArgs.cs" />
+    <Compile Include="Communication\EventArguments\EventArgsBase.cs" />
+    <Compile Include="Communication\EventArguments\FaultResponseEventArgs.cs" />
+    <Compile Include="Communication\ProxyTypes\Avatar.cs" />
+    <Compile Include="Communication\ProxyTypes\BanEntry.cs" />
+    <Compile Include="Communication\ProxyTypes\BillState.cs" />
+    <Compile Include="Communication\ProxyTypes\CallVote.cs" />
+    <Compile Include="Communication\ProxyTypes\CallVoteRatio.cs" />
+    <Compile Include="Communication\ProxyTypes\ChallengeInfo.cs" />
+    <Compile Include="Communication\ProxyTypes\ChallengeListSingleInfo.cs" />
+    <Compile Include="Communication\ProxyTypes\CNPair.cs" />
+    <Compile Include="Communication\ProxyTypes\DetailedPlayerInfo.cs" />
+    <Compile Include="Communication\ProxyTypes\ForcedMod.cs" />
+    <Compile Include="Communication\ProxyTypes\ForcedMusic.cs" />
+    <Compile Include="Communication\ProxyTypes\ForcedSkin.cs" />
+    <Compile Include="Communication\ProxyTypes\GameInfo.cs" />
+    <Compile Include="Communication\ProxyTypes\GameInfos.cs" />
+    <Compile Include="Communication\ResponseHandling\GenericListResponse.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Communication\ResponseHandling\GenericResponse.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Communication\ProxyTypes\LanguageDependentText.cs" />
+    <Compile Include="Communication\ProxyTypes\Login.cs" />
+    <Compile Include="Communication\ProxyTypes\ManiaLinkAnswer.cs" />
+    <Compile Include="Communication\ProxyTypes\Mod.cs" />
+    <Compile Include="Communication\ProxyTypes\NetworkStatus.cs" />
+    <Compile Include="Communication\ProxyTypes\PlayerNetInfo.cs" />
+    <Compile Include="Communication\ProxyTypes\PlayerRank.cs" />
+    <Compile Include="Communication\ProxyTypes\ForcedScore.cs" />
+    <Compile Include="Communication\ProxyTypes\ServerOptions.cs" />
+    <Compile Include="Communication\ProxyTypes\LadderStats.cs" />
+    <Compile Include="Communication\ProxyTypes\PlayerInfoBase.cs" />
+    <Compile Include="Communication\ProxyTypes\PlayerInfo.cs" />
+    <Compile Include="Communication\ProxyTypes\PlayerRanking.cs" />
+    <Compile Include="Communication\ProxyTypes\ServerStatus.cs" />
+    <Compile Include="Communication\ProxyTypes\Skin.cs" />
+    <Compile Include="Communication\ProxyTypes\SkinDetails.cs" />
+    <Compile Include="Communication\ProxyTypes\SystemInfo.cs" />
+    <Compile Include="Communication\ProxyTypes\Version.cs" />
+    <Compile Include="Communication\EventArguments\SocketErrorEventArgs.cs" />
+    <Compile Include="Communication\Methods.cs" />
+    <Compile Include="Communication\ResponseHandling\ResponseBase.cs" />
+    <Compile Include="Communication\ResponseHandling\FaultResponse.cs" />
+    <Compile Include="Communication\ResponseHandling\RPCParamAttribute.cs" />
+    <Compile Include="Communication\ResponseHandling\RPCParamInfo.cs" />
+    <Compile Include="Communication\RPCCommand.cs" />
+    <Compile Include="Communication\SocketAsyncEventArgsUserToken.cs" />
+    <Compile Include="Communication\TrackManiaCallback.cs" />
+    <Compile Include="Communication\TrackManiaMethod.cs" />
+    <Compile Include="Communication\TrackManiaRPCClient.cs" />
+    <Compile Include="Logging\LogMode.cs" />
+    <Compile Include="ManiaLinking\TMAction.cs" />
+    <Compile Include="PluginSystem\ConfigSettingsConfigurationSection.cs" />
+    <Compile Include="PluginSystem\ConfigurationElementCollection.cs" />
+    <Compile Include="PluginSystem\Configuration\Credentials.cs" />
+    <Compile Include="PluginSystem\Configuration\CredentialsReader.cs" />
+    <Compile Include="Common\Instancer.cs" />
+    <Compile Include="PluginSystem\Configuration\ManiaLinkPageHashStore.cs" />
+    <Compile Include="PluginSystem\Configuration\PagedUIDialogSettingsBase.cs" />
+    <Compile Include="PluginSystem\Configuration\PluginAreaSettings.cs" />
+    <Compile Include="PluginSystem\Configuration\PluginAreaSettingsStore.cs" />
+    <Compile Include="PluginSystem\Configuration\PluginConfigEntry.cs" />
+    <Compile Include="PluginSystem\Configuration\PluginConfigEntryCollection.cs" />
+    <Compile Include="PluginSystem\Configuration\PluginSettings.cs" />
+    <Compile Include="PluginSystem\Configuration\PluginSettingsStore.cs" />
+    <Compile Include="PluginSystem\Configuration\PlayerSettings.cs" />
+    <Compile Include="PluginSystem\Configuration\PlayerSettingsStore.cs" />
+    <Compile Include="PluginSystem\ITMSPSPlugin.cs" />
+    <Compile Include="PluginSystem\ITMSPSPluginBase.cs" />
+    <Compile Include="PluginSystem\ITMSPSPluginPlugin.cs" />
+    <Compile Include="PluginSystem\MessageStyles.cs" />
+    <Compile Include="PluginSystem\PagedDialogActions.cs" />
+    <Compile Include="PluginSystem\PluginHostContext.cs" />
+    <Compile Include="PluginSystem\Plugins\AdminPlayer\AdminPlayerPlugin.cs" />
+    <Compile Include="PluginSystem\Plugins\AdminPlayer\AdminPlayerPlugin_GuestList.cs" />
+    <Compile Include="PluginSystem\Plugins\AdminPlayer\AdminPlayerPlugin_IgnoreList.cs" />
+    <Compile Include="PluginSystem\Plugins\AdminPlayer\AdminPlayerPlugin_BanList.cs" />
+    <Compile Include="PluginSystem\Plugins\AdminPlayer\AdminPlayerPlugin_BlackList.cs" />
+    <Compile Include="PluginSystem\Plugins\AdminPlayer\AdminPlayerPlugin_LivePlayerList.cs" />
+    <Compile Include="PluginSystem\Plugins\AdminPlayer\LivePlayerUIDialogSettings.cs" />
+    <Compile Include="PluginSystem\Plugins\AdminPlayer\UITemplates.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>UITemplates.resx</DependentUpon>
+    </Compile>
+    <Compile Include="PluginSystem\Plugins\ChatBotPlugin.cs" />
+    <Compile Include="PluginSystem\Plugins\CheckPoints\CheckPointsPlugin.cs" />
+    <Compile Include="PluginSystem\Plugins\CheckPoints\CheckPointsSettings.cs" />
+    <Compile Include="PluginSystem\Plugins\Clock\ClockPlugin.cs" />
+    <Compile Include="PluginSystem\Plugins\Clock\ClockPluginSettings.cs" />
+    <Compile Include="PluginSystem\Plugins\Clock\UITemplates.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>UITemplates.resx</DependentUpon>
+    </Compile>
+    <Compile Include="PluginSystem\Plugins\Competition\Competition.cs" />
+    <Compile Include="PluginSystem\Plugins\Competition\CompetitionList.cs" />
+    <Compile Include="PluginSystem\Plugins\Competition\CompetitionPlugin.cs" />
+    <Compile Include="PluginSystem\Plugins\Competition\Competitor.cs" />
+    <Compile Include="PluginSystem\Plugins\Core\HelpSettings.cs" />
+    <Compile Include="PluginSystem\Plugins\Dedimania\Communication\AliasTextTool.cs" />
+    <Compile Include="PluginSystem\Plugins\Dedimania\Communication\AuthenticateParameters.cs" />
+    <Compile Include="PluginSystem\Plugins\Dedimania\Communication\DedimaniaChallengeRaceTimesReply.cs" />
+    <Compile Include="PluginSystem\Plugins\Dedimania\Communication\DedimaniaClient.cs" />
+    <Compile Include="PluginSystem\Plugins\Dedimania\Communication\DedimaniaCurrentChallengeReply.cs" />
+    <Compile Include="PluginSystem\Plugins\Dedimania\Communication\DedimaniaPlayerArriveReply.cs" />
+    <Compile Include="PluginSystem\Plugins\Dedimania\Communication\DedimaniaPlayerInfo.cs" />
+    <Compile Include="PluginSystem\Plugins\Dedimania\Communication\DedimaniaPlayerLeaveReply.cs" />
+    <Compile Include="PluginSystem\Plugins\Dedimania\Communication\DedimaniaRecord.cs" />
+    <Compile Include="PluginSystem\Plugins\Dedimania\Communication\DedimaniaRecordNew.cs" />
+    <Compile Include="PluginSystem\Plugins\Dedimania\Communication\DedimaniaServerInfo.cs" />
+    <Compile Include="PluginSystem\Plugins\Dedimania\Communication\DedimaniaTime.cs" />
+    <Compile Include="PluginSystem\Plugins\Dedimania\Communication\DedimaniaVersionInfoReply.cs" />
+    <Compile Include="PluginSystem\Plugins\Dedimania\Communication\DedimaniaWarningsAndTTRElement.cs" />
+    <Compile Include="PluginSystem\Plugins\Dedimania\Communication\DedimaniaWarningsAndTTRReply.cs" />
+    <Compile Include="PluginSystem\Plugins\Dedimania\Communication\FaultInfo.cs" />
+    <Compile Include="PluginSystem\Plugins\Dedimania\Communication\MultiCallResult.cs" />
+    <Compile Include="PluginSystem\Plugins\Dedimania\Communication\OptionValueTool.cs" />
+    <Compile Include="PluginSystem\Plugins\Dedimania\Communication\PlayerArriveParameters.cs" />
+    <Compile Include="PluginSystem\Plugins\Dedimania\DedimaniaPlugin.cs" />
+    <Compile Include="PluginSystem\Plugins\Dedimania\DedimaniaPluginPlugin.cs" />
+    <Compile Include="PluginSystem\Plugins\Dedimania\DedimaniaRanking.cs" />
+    <Compile Include="PluginSystem\Plugins\Dedimania\DedimaniaSettings.cs" />
+    <Compile Include="PluginSystem\Plugins\Dedimania\DedimaniaUIPlugin.cs" />
+    <Compile Include="PluginSystem\Plugins\Dedimania\DedimaniaUISettings.cs" />
+    <Compile Include="PluginSystem\Plugins\Dedimania\IDedimaniaPluginPlugin.cs" />
+    <Compile Include="PluginSystem\Plugins\Dedimania\UITemplates.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>UITemplates.resx</DependentUpon>
+    </Compile>
+    <Compile Include="PluginSystem\Plugins\Donation\DonationPlugin.cs" />
+    <Compile Include="PluginSystem\Plugins\Donation\DonationPluginSettings.cs" />
+    <Compile Include="PluginSystem\Plugins\IdleKick\IdleKickMode.cs" />
+    <Compile Include="PluginSystem\Plugins\IdleKick\IdleKickPlugin.cs" />
+    <Compile Include="PluginSystem\Plugins\IdleKick\IdleKickPluginSettings.cs" />
+    <Compile Include="PluginSystem\Plugins\KickUnrankedPlayerPlugin.cs" />
+    <Compile Include="PluginSystem\Plugins\LiveRanking\LiveRankingPlugin.cs" />
+    <Compile Include="PluginSystem\Plugins\LiveRanking\LiveRankingsSettings.cs" />
+    <Compile Include="PluginSystem\Plugins\LiveRanking\UITemplates.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>UITemplates.resx</DependentUpon>
+    </Compile>
+    <Compile Include="PluginSystem\Plugins\LocalRecords\ILocalRecordsPluginPlugin.cs" />
+    <Compile Include="PluginSystem\Plugins\LocalRecords\LocalRecordsPlayerStatsUIPlugin.cs" />
+    <Compile Include="PluginSystem\Plugins\LocalRecords\LocalRecordsPluginPlugin.cs" />
+    <Compile Include="PluginSystem\Plugins\LocalRecords\LocalRecordsTopRanksUIPlugin.cs" />
+    <Compile Include="PluginSystem\Plugins\LocalRecords\LocalRecordsTopWinsUIPlugin.cs" />
+    <Compile Include="PluginSystem\Plugins\LocalRecords\LocalRecordsUIPlugin.cs" />
+    <Compile Include="PluginSystem\Plugins\LocalRecords\LocalRecordsUISettings.cs" />
+    <Compile Include="PluginSystem\Configuration\PagedUIDialogSettings.cs" />
+    <Compile Include="PluginSystem\Plugins\LocalRecords\RankEntry.cs" />
+    <Compile Include="PluginSystem\Plugins\LocalRecords\RatingUIPlugin.cs" />
+    <Compile Include="PluginSystem\Plugins\LocalRecords\TopRankingEntry.cs" />
+    <Compile Include="PluginSystem\Plugins\LocalRecords\UITemplates.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>UITemplates.resx</DependentUpon>
+    </Compile>
+    <Compile Include="PluginSystem\Plugins\PodiumPlugins\HoursPlayedPodiumPlugin.cs" />
+    <Compile Include="PluginSystem\Plugins\PodiumPlugins\MostTop3RaceResultsPodiumPlugin.cs" />
+    <Compile Include="PluginSystem\Plugins\PodiumPlugins\MostTop3RecordsPodiumPlugin.cs" />
+    <Compile Include="PluginSystem\Plugins\PodiumPlugins\PodiumPluginSettings.cs" />
+    <Compile Include="PluginSystem\Plugins\PodiumPlugins\PodiumPluginUI.cs" />
+    <Compile Include="PluginSystem\Plugins\PodiumPlugins\TopRankingsPodiumPlugin.cs" />
+    <Compile Include="PluginSystem\Plugins\PodiumPlugins\TopWinnersPodiumPlugin.cs" />
+    <Compile Include="PluginSystem\Plugins\PodiumPlugins\UITemplates.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>UITemplates.resx</DependentUpon>
+    </Compile>
+    <Compile Include="PluginSystem\Plugins\Restart\RestartPlugin.cs" />
+    <Compile Include="PluginSystem\Plugins\SpectatorsPlugin.cs" />
+    <Compile Include="PluginSystem\Plugins\LocalRecords\AdapterProviderFactory.cs" />
+    <Compile Include="PluginSystem\Plugins\LocalRecords\Challenge.cs" />
+    <Compile Include="PluginSystem\Plugins\LocalRecords\IAdapterProvider.cs" />
+    <Compile Include="PluginSystem\Plugins\LocalRecords\IChallengeAdapter.cs" />
+    <Compile Include="PluginSystem\Plugins\LocalRecords\IPlayerAdapter.cs" />
+    <Compile Include="PluginSystem\Plugins\LocalRecords\IPositionAdapter.cs" />
+    <Compile Include="PluginSystem\Plugins\LocalRecords\IRankingAdapter.cs" />
+    <Compile Include="PluginSystem\Plugins\LocalRecords\IRatingAdapter.cs" />
+    <Compile Include="PluginSystem\Plugins\LocalRecords\IRecordAdapter.cs" />
+    <Compile Include="PluginSystem\Plugins\LocalRecords\ISessionAdapter.cs" />
+    <Compile Include="PluginSystem\Plugins\LocalRecords\LocalRecordsPlugin.cs" />
+    <Compile Include="PluginSystem\Plugins\LocalRecords\LocalRecordsSettings.cs" />
+    <Compile Include="PluginSystem\Plugins\LocalRecords\SQL\AdapterProvider.cs" />
+    <Compile Include="PluginSystem\Plugins\LocalRecords\Player.cs" />
+    <Compile Include="PluginSystem\Plugins\LocalRecords\Position.cs" />
+    <Compile Include="PluginSystem\Plugins\LocalRecords\Ranking.cs" />
+    <Compile Include="PluginSystem\Plugins\LocalRecords\Rating.cs" />
+    <Compile Include="PluginSystem\Plugins\LocalRecords\Record.cs" />
+    <Compile Include="PluginSystem\Plugins\LocalRecords\Session.cs" />
+    <Compile Include="PluginSystem\Plugins\LocalRecords\SQL\ChallengeAdapter.cs" />
+    <Compile Include="PluginSystem\Plugins\LocalRecords\SQL\PlayerAdapter.cs" />
+    <Compile Include="PluginSystem\Plugins\LocalRecords\SQL\PositionAdapter.cs" />
+    <Compile Include="PluginSystem\Plugins\LocalRecords\SQL\RankingAdapter.cs" />
+    <Compile Include="PluginSystem\Plugins\LocalRecords\SQL\RatingAdapter.cs" />
+    <Compile Include="PluginSystem\Plugins\LocalRecords\SQL\RecordAdapter.cs" />
+    <Compile Include="PluginSystem\Plugins\LocalRecords\SQL\SessionAdapter.cs" />
+    <Compile Include="PluginSystem\Plugins\NameProtectionBotPlugin.cs" />
+    <Compile Include="PluginSystem\Plugins\StaticUI\StaticUIPlugin.cs" />
+    <Compile Include="PluginSystem\Plugins\StaticUI\StaticUIPluginSettings.cs" />
+    <Compile Include="PluginSystem\Plugins\TMSPSCorePlugin.cs" />
+    <Compile Include="PluginSystem\Plugins\TMSPSCorePluginSettings.cs" />
+    <Compile Include="PluginSystem\Plugins\TMSPSCorePlugin_CommandHandling.cs" />
+    <Compile Include="PluginSystem\Plugins\TMX\TMXInfo.cs" />
+    <Compile Include="PluginSystem\Plugins\TMX\TMXPlugin.cs" />
+    <Compile Include="PluginSystem\ServerCommand.cs" />
+    <Compile Include="PluginSystem\MessageConstants.cs" />
+    <Compile Include="PluginSystem\ServerInfo.cs" />
+    <Compile Include="PluginSystem\TMSPSPlugin.cs" />
+    <Compile Include="PluginSystem\TMSPSPluginBase.cs" />
+    <Compile Include="PluginSystem\TMSPSPluginBase_Communication.cs" />
+    <Compile Include="PluginSystem\TMSPSPluginPlugin.cs" />
+    <Compile Include="PluginSystem\ValueStore.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SQL\PagedList.cs" />
+    <Compile Include="SQL\SQLBaseAdapter.cs" />
+    <Compile Include="SQL\ConnectionManager.cs" />
+    <Compile Include="SQL\SqlHelper.cs" />
+    <Compile Include="SQL\SqlHelper_Class.cs" />
+    <Compile Include="SQL\SqlHelper_ClassList.cs" />
+    <Compile Include="SQL\SqlHelper_ClassList_Parameterized.cs" />
+    <Compile Include="SQL\SqlHelper_Class_Parameterized.cs" />
+    <Compile Include="TypeExtensions\ExtensionMethods.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Components\CookComputing.XmlRpcV2.dll" />
+    <Content Include="Components\log4net.dll" />
+    <Content Include="Components\log4net.xml" />
+    <Content Include="Resources\ManiaLinkPageLayouts\AdminPlayer\UserView.xml" />
+    <Content Include="Resources\ManiaLinkPageLayouts\Help\Help.xml" />
+    <Content Include="Resources\ManiaLinkPageLayouts\LocalRecords\Rating.xml" />
+    <Content Include="Resources\ManiaLinkPageLayouts\StaticUI\TMSPSAdvertise.xml" />
+    <Content Include="Resources\SQLScripts\Structure\CreationOrder.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\SQLScripts\StoredProcedures\Challenge\Challenge_Create.sql" />
+    <None Include="Resources\SQLScripts\StoredProcedures\Challenge\Challenge_Delete.sql" />
+    <None Include="Resources\SQLScripts\StoredProcedures\Challenge\Challenge_Deserialize_ByID.sql" />
+    <None Include="Resources\SQLScripts\StoredProcedures\Challenge\Challenge_Deserialize_ByUniqueID.sql" />
+    <None Include="Resources\SQLScripts\StoredProcedures\Challenge\Challenge_GetAllUniqueTrackIDs.sql" />
+    <None Include="Resources\SQLScripts\StoredProcedures\Challenge\Challenge_GetDrivenUniqueTrackIDs_ByLogin.sql" />
+    <None Include="Resources\SQLScripts\StoredProcedures\Challenge\Challenge_IncreaseRaces_ByChallenge.sql" />
+    <None Include="Resources\SQLScripts\StoredProcedures\Challenge\Challenge_IncreaseRaces_ByID.sql" />
+    <None Include="Resources\SQLScripts\StoredProcedures\Challenge\Challenge_IncreaseRaces_ByUniqueID.sql" />
+    <None Include="Resources\SQLScripts\StoredProcedures\Player\Player_CreateOrUpdate.sql" />
+    <None Include="Resources\SQLScripts\StoredProcedures\Player\Player_Deserialize.sql" />
+    <None Include="Resources\SQLScripts\StoredProcedures\Player\Player_DeserializeList.sql" />
+    <None Include="Resources\SQLScripts\StoredProcedures\Player\Player_DeserializeList_Paged_ByWins.sql" />
+    <None Include="Resources\SQLScripts\StoredProcedures\Player\Player_IncreaseWins.sql" />
+    <None Include="Resources\SQLScripts\StoredProcedures\Player\Player_RemoveAllStatsForLogin.sql" />
+    <None Include="Resources\SQLScripts\StoredProcedures\Player\Player_UpdateTimePlayed.sql" />
+    <None Include="Resources\SQLScripts\StoredProcedures\Position\Position_Add.sql" />
+    <None Include="Resources\SQLScripts\StoredProcedures\Position\Position_Deserialize_List_ByMost.sql" />
+    <None Include="Resources\SQLScripts\StoredProcedures\Ranking\Ranking_Deserialize_ByLogin.sql" />
+    <None Include="Resources\SQLScripts\StoredProcedures\Ranking\Ranking_Deserialize_ByRank.sql" />
+    <None Include="Resources\SQLScripts\StoredProcedures\Ranking\Ranking_Deserialize_List.sql" />
+    <None Include="Resources\SQLScripts\StoredProcedures\Ranking\Ranking_Deserialize_List_ByMost.sql" />
+    <None Include="Resources\SQLScripts\StoredProcedures\Ranking\Ranking_Deserialize_PagedList.sql" />
+    <None Include="Resources\SQLScripts\StoredProcedures\Ranking\Ranking_GetAmountOfRank.sql" />
+    <None Include="Resources\SQLScripts\StoredProcedures\Ranking\Ranking_GetNextRank.sql" />
+    <None Include="Resources\SQLScripts\StoredProcedures\Ranking\Ranking_GetRanksCount.sql" />
+    <None Include="Resources\SQLScripts\StoredProcedures\Ranking\Ranking_GetTopRankings.sql" />
+    <None Include="Resources\SQLScripts\StoredProcedures\Ranking\Ranking_GetTopRankingsCount.sql" />
+    <None Include="Resources\SQLScripts\StoredProcedures\Ranking\Ranking_ReCreateAll.sql" />
+    <None Include="Resources\SQLScripts\StoredProcedures\Ranking\Ranking_ReCreateRanks.sql" />
+    <None Include="Resources\SQLScripts\StoredProcedures\Ranking\Ranking_UpdateForChallenge.sql" />
+    <None Include="Resources\SQLScripts\StoredProcedures\Ranking\Ranking_UpdateForChallenge_ByChallengeUID.sql" />
+    <None Include="Resources\SQLScripts\StoredProcedures\Rating\Rating_GetAverageVote.sql" />
+    <None Include="Resources\SQLScripts\StoredProcedures\Rating\Rating_GetVoteByLogin.sql" />
+    <None Include="Resources\SQLScripts\StoredProcedures\Rating\Rating_Vote.sql" />
+    <None Include="Resources\SQLScripts\StoredProcedures\Record\Record_DeleteFalseRecords.sql" />
+    <None Include="Resources\SQLScripts\StoredProcedures\Record\Record_GetBest.sql" />
+    <None Include="Resources\SQLScripts\StoredProcedures\Record\Record_GetTopRecords.sql" />
+    <None Include="Resources\SQLScripts\StoredProcedures\Record\Record_RestoreFromSessionData.sql" />
+    <None Include="Resources\SQLScripts\StoredProcedures\Record\Record_TryInsertOrUpdate.sql" />
+    <None Include="Resources\SQLScripts\StoredProcedures\Session\Session_Add.sql" />
+    <None Include="Resources\SQLScripts\Structure\Challenge.sql" />
+    <None Include="Resources\SQLScripts\Structure\Player.sql" />
+    <None Include="Resources\SQLScripts\Structure\Position.sql" />
+    <None Include="Resources\SQLScripts\Structure\Rank.sql" />
+    <None Include="Resources\SQLScripts\Structure\Ranking.sql" />
+    <None Include="Resources\SQLScripts\Structure\Rating.sql" />
+    <None Include="Resources\SQLScripts\Structure\Record.sql" />
+    <None Include="Resources\SQLScripts\Structure\Session.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="PluginSystem\Plugins\AdminPlayer\UITemplates.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>UITemplates.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="PluginSystem\Plugins\Clock\UITemplates.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>UITemplates.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="PluginSystem\Plugins\Dedimania\UITemplates.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>UITemplates.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="PluginSystem\Plugins\LiveRanking\UITemplates.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>UITemplates.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="PluginSystem\Plugins\LocalRecords\UITemplates.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>UITemplates.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="PluginSystem\Plugins\PodiumPlugins\UITemplates.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>UITemplates.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1 Client Profile</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.VisualBasic.PowerPacks.10.0">
+      <Visible>False</Visible>
+      <ProductName>Microsoft Visual Basic PowerPacks 10.0</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Windows.Installer.3.1">
+      <Visible>False</Visible>
+      <ProductName>Windows Installer 3.1</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
