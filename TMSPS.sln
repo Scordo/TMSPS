@@ -1,6 +1,13 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 10.00
-# Visual Studio 2008
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{FCBB4885-DD33-412F-B591-FDDC2CA85458}"
+	ProjectSection(SolutionItems) = preProject
+		DeveloperDocumentation.docx = DeveloperDocumentation.docx
+		LocalTestRun.testrunconfig = LocalTestRun.testrunconfig
+		TMSPS.vsmdi = TMSPS.vsmdi
+	EndProjectSection
+EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TMSPS.Daemon", "TMSPS.Daemon\TMSPS.Daemon.csproj", "{F20F9943-0645-409D-88A8-E606A9FDC0B1}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TMSPS.Core", "TMSPS.Common\TMSPS.Core.csproj", "{07AB0407-3EB7-4DA1-B3C6-DE074A7760C7}"
@@ -8,13 +15,6 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TMSPS.TestClient", "TMSPS.TestClient\TMSPS.TestClient.csproj", "{D4484EE3-0BE1-4A2A-BC05-9F63170E0B3F}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TMSPS.UnitTests", "TMSPS.UnitTests\TMSPS.UnitTests.csproj", "{AC12E80A-4482-404D-B4E2-C1FC6BE50755}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{FCBB4885-DD33-412F-B591-FDDC2CA85458}"
-	ProjectSection(SolutionItems) = preProject
-		DeveloperDocumentation.docx = DeveloperDocumentation.docx
-		LocalTestRun.testrunconfig = LocalTestRun.testrunconfig
-		TMSPS.vsmdi = TMSPS.vsmdi
-	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TMSPS.TRC", "TMSPS.TRC\TMSPS.TRC.csproj", "{5BC967F9-1554-47C0-B5EC-08D65CC821A1}"
 EndProject
