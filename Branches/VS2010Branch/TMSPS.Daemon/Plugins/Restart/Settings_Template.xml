@@ -1,2 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
-<Settings enabled="true" assemblyName="TMSPS.Core" pluginClass="TMSPS.Core.PluginSystem.Plugins.Restart.RestartPlugin" order="800"/>
+<Settings enabled="true" assemblyName="TMSPS.Core" pluginClass="TMSPS.Core.PluginSystem.Plugins.Restart.RestartPlugin" order="800">
+	<NoRestartPlayerLimit>20</NoRestartPlayerLimit>
+	<NoRestartVotesRatio>0.25</NoRestartVotesRatio>
+	<SimpleRestartVoteRatio>1.0</SimpleRestartVoteRatio>
+	<AdvancedRestartVoteRatio>0.5</AdvancedRestartVoteRatio>
+	<FinishDelay>12000</FinishDelay>
+</Settings>

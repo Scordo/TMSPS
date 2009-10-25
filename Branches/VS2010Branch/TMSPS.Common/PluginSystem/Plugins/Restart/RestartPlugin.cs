@@ -27,11 +27,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.Restart
         private HashSet<string> ConRestartLogins { get; set; }
         private HashSet<string> ProRestartCommands { get; set; }
         private HashSet<string> ConRestartCommands { get; set; }
-        private ushort NoRestartPlayerLimit {get { return 20;} }
-        private double NoRestartVotesRatio { get { return 0.2; } } // no restart if 20% of the player actively voted against a restart
-        private double SimpleRestartVoteRatio { get { return 1; } } // when 100% of the players voted for a restart, the restart is done
-        private double AdvancedRestartVoteRatio { get { return 0.5; } } // when 50% of the players voted for a restart, the restart is done. Negative votes are substracted from the positive votes. If the percentage of the resulting percentage is larger or equal than 50% the vote succeeds.
-        private ushort FinishDelay { get { return 12000; } } // check 12 seconds after race has finished for the result
+        private RestartPluginSettings Settings { get; set; }
 
         #endregion
 
@@ -50,6 +46,8 @@ namespace TMSPS.Core.PluginSystem.Plugins.Restart
 
         protected override void Init()
         {
+            Settings = RestartPluginSettings.ReadFromFile(PluginSettingsFilePath);
+
             Context.RPCClient.Callbacks.BeginRace += Callbacks_BeginRace;
             Context.RPCClient.Callbacks.EndRace += Callbacks_EndRace;
             Context.RPCClient.Callbacks.PlayerChat += Callbacks_PlayerChat;
@@ -73,27 +71,27 @@ namespace TMSPS.Core.PluginSystem.Plugins.Restart
                 if (PlayersCount == 0)
                     return;
 
-                Thread.Sleep(FinishDelay);
+                Thread.Sleep(Settings.FinishDelay);
 
                 double currentProRestartVoteRatio = (double)ProRestartLogins.Count / PlayersCount;
                 double currentConRestartVoteRatio = (double)ConRestartLogins.Count / PlayersCount;
 
-                if (ProRestartLogins.Count > 0 && PlayersCount >= NoRestartPlayerLimit)
+                if (ProRestartLogins.Count > 0 && Settings.NoRestartPlayerLimit > 0 && PlayersCount >= Settings.NoRestartPlayerLimit)
                 {
-                    SendFormattedMessage("{[#ServerStyle]}>>{[#MessageStyle]} No restart is done because with more or equal than {[PlayerLimit]} no restart is allowed.", "PlayerLimit", NoRestartPlayerLimit.ToString());
+                    SendFormattedMessage("{[#ServerStyle]}>>{[#MessageStyle]} No restart is done because with more or equal than {[PlayerLimit]} no restart is allowed.", "PlayerLimit", Settings.NoRestartPlayerLimit.ToString());
                     return;
                 }
 
-                if (ProRestartLogins.Count > 0 && NoRestartVotesRatio > 0 && currentConRestartVoteRatio >= NoRestartVotesRatio)
+                if (ProRestartLogins.Count > 0 && Settings.NoRestartVotesRatio > 0 && currentConRestartVoteRatio >= Settings.NoRestartVotesRatio)
                 {
-                    string configuredNoVoteRatio = (NoRestartVotesRatio * 100).ToString("F1");
+                    string configuredNoVoteRatio = (Settings.NoRestartVotesRatio * 100).ToString("F1");
                     string currentNoVoteRatio = (currentConRestartVoteRatio * 100).ToString("F1");
 
                     SendFormattedMessage("{[#ServerStyle]}>>{[#MessageStyle]} No restart is done because {[CurrentNoRestartVoteRatio]}% of the players voted against a restart ({[ConfiguredNoRestartVoteRatio]}% is the limit).", "CurrentNoRestartVoteRatio", currentNoVoteRatio, "ConfiguredNoRestartVoteRatio", configuredNoVoteRatio);
                     return;
                 }
 
-                if (SimpleRestartVoteRatio > 0 && currentProRestartVoteRatio >= SimpleRestartVoteRatio)
+                if (Settings.SimpleRestartVoteRatio > 0 && currentProRestartVoteRatio >= Settings.SimpleRestartVoteRatio)
                 {
                     RestartTrack();
                     return;
@@ -101,17 +99,17 @@ namespace TMSPS.Core.PluginSystem.Plugins.Restart
 
                 double effectiveRestartVoteRatio = currentProRestartVoteRatio - currentConRestartVoteRatio;
 
-                if (ProRestartLogins.Count > 0 && AdvancedRestartVoteRatio > 0 && effectiveRestartVoteRatio < AdvancedRestartVoteRatio)
+                if (ProRestartLogins.Count > 0 && Settings.AdvancedRestartVoteRatio > 0 && effectiveRestartVoteRatio < Settings.AdvancedRestartVoteRatio)
                 {
                     string proRestart = (currentProRestartVoteRatio * 100).ToString("F1");
                     string conRestart = (currentConRestartVoteRatio * 100).ToString("F1");
-                    string limit = (AdvancedRestartVoteRatio * 100).ToString("F1");
+                    string limit = (Settings.AdvancedRestartVoteRatio * 100).ToString("F1");
 
                     SendFormattedMessage("{[#ServerStyle]}>>{[#MessageStyle]} No restart is done because {[ConRestart]}% of the players voted against a restart and only {[ProRestart]}% of the players voted for a restart (Pro versus con percentages must be larger or equal to {[Limit]}%).", "ConRestart", conRestart, "ProRestart", proRestart, "Limit", limit);
                     return;
                 }
 
-                if (AdvancedRestartVoteRatio > 0 && effectiveRestartVoteRatio >= AdvancedRestartVoteRatio)
+                if (Settings.AdvancedRestartVoteRatio > 0 && effectiveRestartVoteRatio >= Settings.AdvancedRestartVoteRatio)
                     RestartTrack();
 
             }, "Error in CheckForRestart Method.", true);
