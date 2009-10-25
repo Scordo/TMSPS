@@ -21,6 +21,16 @@ namespace TMSPS.Core.Common
             return ReadConfigValue(parentElement, elementName, defaultValue, defaultValue != null, configFile, s => s.HasElements ? s.InnerXML() : s.Value);
         }
 
+        public static ushort ReadConfigUShort(XContainer parentElement, string elementName, string configFile)
+        {
+            return ReadConfigUShort(parentElement, elementName, null, configFile);
+        }
+
+        public static ushort ReadConfigUShort(XContainer parentElement, string elementName, ushort? defaultValue, string configFile)
+        {
+            return ReadConfigValue(parentElement, elementName, defaultValue.HasValue ? defaultValue.Value : (ushort) 0, defaultValue.HasValue, configFile, s => ushort.Parse(s.Value, Culture));
+        }
+
         public static uint ReadConfigUInt(XContainer parentElement, string elementName, string configFile)
         {
             return ReadConfigUInt(parentElement, elementName, null, configFile);
