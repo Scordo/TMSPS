@@ -17,6 +17,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.Restart
         public const double SIMPLE_RESTART_VOTE_RATIO = 1; // when 100% of the players voted for a restart, the restart is done
         public const double ADVANCED_RESTART_VOTE_RATIO = 0.5; // when 50% of the players voted for a restart, the restart is done. Negative votes are substracted from the positive votes. If the percentage of the resulting percentage is larger or equal than 50% the vote succeeds.
         public const ushort FINISH_DLAY = 12000; // check 12 seconds after race has finished for the result
+        public const ushort RESTART_LIMIT = 0; // set the default restart limit to unlimited
         
         #endregion
 
@@ -27,6 +28,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.Restart
         public double SimpleRestartVoteRatio { get; private set; }
         public double AdvancedRestartVoteRatio { get; private set; }
         public ushort FinishDelay { get; private set; }
+        public ushort RestartLimit { get; private set; }
 
         #endregion
 
@@ -44,6 +46,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.Restart
             result.SimpleRestartVoteRatio = ReadConfigDouble(configDocument.Root, "SimpleRestartVoteRatio", SIMPLE_RESTART_VOTE_RATIO, xmlConfigurationFile);
             result.AdvancedRestartVoteRatio = ReadConfigDouble(configDocument.Root, "AdvancedRestartVoteRatio", ADVANCED_RESTART_VOTE_RATIO, xmlConfigurationFile);
             result.FinishDelay = ReadConfigUShort(configDocument.Root, "FinishDelay", FINISH_DLAY, xmlConfigurationFile);
+            result.RestartLimit = ReadConfigUShort(configDocument.Root, "RestartLimit", RESTART_LIMIT, xmlConfigurationFile);
 
             return result;
         }

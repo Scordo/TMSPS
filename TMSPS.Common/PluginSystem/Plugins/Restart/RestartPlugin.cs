@@ -28,6 +28,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.Restart
         private HashSet<string> ProRestartCommands { get; set; }
         private HashSet<string> ConRestartCommands { get; set; }
         private RestartPluginSettings Settings { get; set; }
+        private ushort AmountOfRestarts { get; set; }
 
         #endregion
 
@@ -47,6 +48,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.Restart
         protected override void Init()
         {
             Settings = RestartPluginSettings.ReadFromFile(PluginSettingsFilePath);
+            AmountOfRestarts = 0;
 
             Context.RPCClient.Callbacks.BeginRace += Callbacks_BeginRace;
             Context.RPCClient.Callbacks.EndRace += Callbacks_EndRace;
@@ -79,6 +81,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.Restart
                 if (ProRestartLogins.Count > 0 && Settings.NoRestartPlayerLimit > 0 && PlayersCount >= Settings.NoRestartPlayerLimit)
                 {
                     SendFormattedMessage("{[#ServerStyle]}>>{[#MessageStyle]} No restart is done because with more or equal than {[PlayerLimit]} no restart is allowed.", "PlayerLimit", Settings.NoRestartPlayerLimit.ToString());
+                    AmountOfRestarts = 0;
                     return;
                 }
 
@@ -88,6 +91,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.Restart
                     string currentNoVoteRatio = (currentConRestartVoteRatio * 100).ToString("F1");
 
                     SendFormattedMessage("{[#ServerStyle]}>>{[#MessageStyle]} No restart is done because {[CurrentNoRestartVoteRatio]}% of the players voted against a restart ({[ConfiguredNoRestartVoteRatio]}% is the limit).", "CurrentNoRestartVoteRatio", currentNoVoteRatio, "ConfiguredNoRestartVoteRatio", configuredNoVoteRatio);
+                    AmountOfRestarts = 0;
                     return;
                 }
 
@@ -106,6 +110,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.Restart
                     string limit = (Settings.AdvancedRestartVoteRatio * 100).ToString("F1");
 
                     SendFormattedMessage("{[#ServerStyle]}>>{[#MessageStyle]} No restart is done because {[ConRestart]}% of the players voted against a restart and only {[ProRestart]}% of the players voted for a restart (Pro versus con percentages must be larger or equal to {[Limit]}%).", "ConRestart", conRestart, "ProRestart", proRestart, "Limit", limit);
+                    AmountOfRestarts = 0;
                     return;
                 }
 
@@ -127,6 +132,12 @@ namespace TMSPS.Core.PluginSystem.Plugins.Restart
                 ServerCommand command = ServerCommand.Parse(e.Text);
                 if (ProRestartCommands.Contains(text) || command.Is(Command.ProRestart))
                 {
+                    if (Settings.RestartLimit > 0 && AmountOfRestarts >= Settings.RestartLimit)
+                    {
+                        SendFormattedMessageToLogin(e.Login, "{[#ServerStyle]}>{[#ErrorStyle]} Voting is disabled for this track because only {[Restarts]} restart(s) is/are allowed.");
+                        return;
+                    }
+
                     if (ConsiderLogin(e.Login, true))
                     {
                         SendFormattedMessageToLogin(e.Login, "{[#ServerStyle]}>{[#MessageStyle]} Your vote for track restart was considered.");
@@ -136,10 +147,19 @@ namespace TMSPS.Core.PluginSystem.Plugins.Restart
                     return;
                 }
 
-                if ((ConRestartCommands.Contains(text) || command.Is(Command.ConRestart)) && ConsiderLogin(e.Login, false))
+                if ((ConRestartCommands.Contains(text) || command.Is(Command.ConRestart)))
                 {
-                    SendFormattedMessageToLogin(e.Login, "{[#ServerStyle]}>{[#MessageStyle]} Your vote against track restart was considered.");
-                    SendStatisticsToLogin(e.Login);
+                    if (Settings.RestartLimit > 0 && AmountOfRestarts >= Settings.RestartLimit)
+                    {
+                        SendFormattedMessageToLogin(e.Login, "{[#ServerStyle]}>{[#ErrorStyle]} Voting is disabled for this track because only {[Restarts]} restart(s) is/are allowed.");
+                        return;
+                    }
+
+                    if (ConsiderLogin(e.Login, false))
+                    {
+                        SendFormattedMessageToLogin(e.Login, "{[#ServerStyle]}>{[#MessageStyle]} Your vote against track restart was considered.");
+                        SendStatisticsToLogin(e.Login);
+                    }
                 }
             }, "Error in PlayerChat Callback.", true);
         }
@@ -163,7 +183,12 @@ namespace TMSPS.Core.PluginSystem.Plugins.Restart
             GenericResponse<bool> restartResponse = Context.RPCClient.Methods.RestartChallenge();
 
             if (restartResponse.Value)
+            {
                 SendFormattedMessage("{[#ServerStyle]}>>{[#MessageStyle]} Restarting current challenge due to player votes.");
+                AmountOfRestarts++;
+            }
+            else
+                AmountOfRestarts = 0;
         }
 
         protected override void Dispose(bool connectionLost)
