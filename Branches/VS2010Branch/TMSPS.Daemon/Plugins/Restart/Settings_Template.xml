@@ -5,4 +5,5 @@
 	<SimpleRestartVoteRatio>1.0</SimpleRestartVoteRatio>
 	<AdvancedRestartVoteRatio>0.5</AdvancedRestartVoteRatio>
 	<FinishDelay>12000</FinishDelay>
+  <RestartLimit>1</RestartLimit>
 </Settings>
