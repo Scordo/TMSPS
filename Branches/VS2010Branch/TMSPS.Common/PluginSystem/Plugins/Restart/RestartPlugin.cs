@@ -116,7 +116,8 @@ namespace TMSPS.Core.PluginSystem.Plugins.Restart
 
                 if (Settings.AdvancedRestartVoteRatio > 0 && effectiveRestartVoteRatio >= Settings.AdvancedRestartVoteRatio)
                     RestartTrack();
-
+                else
+                    AmountOfRestarts = 0;
             }, "Error in CheckForRestart Method.", true);
         }
 
@@ -134,7 +135,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.Restart
                 {
                     if (Settings.RestartLimit > 0 && AmountOfRestarts >= Settings.RestartLimit)
                     {
-                        SendFormattedMessageToLogin(e.Login, "{[#ServerStyle]}>{[#ErrorStyle]} Voting is disabled for this track because only {[Restarts]} restart(s) is/are allowed.");
+                        SendFormattedMessageToLogin(e.Login, "{[#ServerStyle]}>{[#ErrorStyle]} Voting is disabled for this track because only {[Restarts]} restart(s) is/are allowed.", "Restarts", Settings.RestartLimit.ToString());
                         return;
                     }
 
@@ -151,7 +152,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.Restart
                 {
                     if (Settings.RestartLimit > 0 && AmountOfRestarts >= Settings.RestartLimit)
                     {
-                        SendFormattedMessageToLogin(e.Login, "{[#ServerStyle]}>{[#ErrorStyle]} Voting is disabled for this track because only {[Restarts]} restart(s) is/are allowed.");
+                        SendFormattedMessageToLogin(e.Login, "{[#ServerStyle]}>{[#ErrorStyle]} Voting is disabled for this track because only {[Restarts]} restart(s) is/are allowed.", "Restarts", Settings.RestartLimit.ToString());
                         return;
                     }
 
