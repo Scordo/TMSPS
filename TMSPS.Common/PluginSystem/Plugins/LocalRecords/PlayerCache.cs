@@ -119,6 +119,36 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
             return bolAdded;
         }
 
+        public void AddRange(IEnumerable<PlayerEntity> players, bool allowUpdate = false)
+        {
+            if (players == null)
+                throw new ArgumentNullException("players");
+
+            bool bolAdded = false;
+            AccessLock(() =>
+            {
+                foreach (PlayerEntity player in players)
+                {
+                    if (!player.Id.HasValue)
+                        throw new InvalidOperationException("Provided player does not have an id!");
+
+                    if (player.Login.IsNullOrTimmedEmpty())
+                        throw new InvalidOperationException("Provided player does not have a login!");
+
+                    if (_idsPlayersDictionary.ContainsKey(player.Id.Value) && !allowUpdate)
+                    {
+                        _lastAccessDictionary[player.Id.Value] = DateTime.Now;
+                        continue;
+                    }
+
+                    AddPlayerInternal(player);
+                    EnsureCapacityLimit();
+
+                    bolAdded = true;
+                }
+            });
+        }
+
         public PlayerEntity EnsureExists(string login, string nickname)
         {
             if (login.IsNullOrTimmedEmpty())

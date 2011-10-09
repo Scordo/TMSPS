@@ -49,6 +49,9 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords.Repositories
                     session.Save(player);
                     session.Flush();
                 });
+
+                PlayerCache.Add(player, true);
+
                 return player;
             }
 
@@ -63,6 +66,8 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords.Repositories
                     session.Flush();
                 });
             }
+
+            PlayerCache.Add(player, true);
 
             return player;
         }
@@ -83,6 +88,8 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords.Repositories
                 session.Flush();
             });
 
+            PlayerCache.Add(player, true);
+
             return (uint)player.Wins;
         }
 
@@ -92,12 +99,15 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords.Repositories
                 throw new ArgumentNullException("player");
 
             player.LastTimePlayedChanged = dateTime;
+            player.LastChanged = dateTime;
             
             UseSession(session =>
             {
                 session.Update(player);
                 session.Flush();
             });
+
+            PlayerCache.Add(player, true);
         }
 
         ulong IPlayerRepository.UpdateTimePlayed(string login)
@@ -117,6 +127,8 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords.Repositories
                 session.Update(player);
                 session.Flush();
             });
+
+            PlayerCache.Add(player, true);
 
             return (ulong)player.TimePlayed;
         }
@@ -141,6 +153,8 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords.Repositories
 
                 result = new List<PlayerEntity>(query.Take((int)top));
             });
+
+            PlayerCache.AddRange(result, true);
 
             return result;
         }
@@ -186,6 +200,8 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords.Repositories
                 result = session.Query<PlayerEntity>().Where(p => p.Login.Equals(login)).FirstOrDefault();
             });
 
+            PlayerCache.Add(result, true);
+
             return result;
         }
 
@@ -197,6 +213,8 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords.Repositories
             {
                 result = session.Query<PlayerEntity>().Where(p => p.Id == id).FirstOrDefault();
             });
+
+            PlayerCache.Add(result, true);
 
             return result;
         }
@@ -218,6 +236,8 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords.Repositories
 
                 result = new PagedList<PlayerEntity>(query) { StartIndex = startIndex.Value, VirtualCount = session.Query<PlayerEntity>().Count() };        
             });
+
+            PlayerCache.AddRange(result, true);
 
             return result;
         }
