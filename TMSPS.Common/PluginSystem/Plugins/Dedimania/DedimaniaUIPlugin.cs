@@ -154,7 +154,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.Dedimania
                         string maniaLinkPageContent = GetRecordListManiaLinkPage(rankings, playerSettings.Login);
                         string hash = maniaLinkPageContent.ToHash();
 
-                        if (playerSettings.ManiaLinkPageHashStore.Get(_dedimaniaRecordListManiaLinkPageID) == hash)
+                        if (playerSettings.ManiaLinkPageHashStore.Get(_dedimaniaRecordListManiaLinkPageID) == hash && !Settings.HideRecordListUIOnFinish)
                             continue;
                         
                         SetManiaLinkPageHash(playerSettings.Login, _dedimaniaRecordListManiaLinkPageID, hash);
