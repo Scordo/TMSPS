@@ -44,6 +44,9 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords.Repositories
                 result = session.Query<ChallengeEntity>().Where(c => c.UniqueId.Equals(uid)).FirstOrDefault();
             });
 
+            if (result != null)
+                ChallengeCache.Add(result, true);
+
             return result;
         }
 
@@ -59,18 +62,22 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords.Repositories
                 if (loadedChallenge == null)
                 {
                     challenge.Races++;
-                    session.Update(challenge);
+                    session.Save(challenge);
                 }
                 else
                 {
                     loadedChallenge.Races++;
                     loadedChallenge.LastChanged = DateTime.Now;
+                    session.Update(loadedChallenge);
                 }
 
                 session.Flush();
             });
 
-            return loadedChallenge ?? challenge;
+            ChallengeEntity result = loadedChallenge ?? challenge;
+            ChallengeCache.Add(result, true);
+
+            return result;
         }
 
         int IChallengeRepository.DeleteTracksNotInProvidedList(List<string> uniqueTrackIDs)

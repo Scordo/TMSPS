@@ -7,6 +7,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords.Repositories
     public abstract class RepositoryBase : IRepositoryBase
     {
         protected PlayerCache PlayerCache { get { return PlayerCache.Instance; } }
+        protected ChallengeCache ChallengeCache { get { return ChallengeCache.Instance; } }
         private ISession Session { get; set; }
 
         protected RepositoryBase() : this(null)

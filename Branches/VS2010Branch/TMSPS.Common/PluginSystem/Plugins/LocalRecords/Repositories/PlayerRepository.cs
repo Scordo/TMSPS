@@ -200,7 +200,8 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords.Repositories
                 result = session.Query<PlayerEntity>().Where(p => p.Login.Equals(login)).FirstOrDefault();
             });
 
-            PlayerCache.Add(result, true);
+            if (result != null)
+                PlayerCache.Add(result, true);
 
             return result;
         }
@@ -214,7 +215,8 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords.Repositories
                 result = session.Query<PlayerEntity>().Where(p => p.Id == id).FirstOrDefault();
             });
 
-            PlayerCache.Add(result, true);
+            if (result != null)
+                PlayerCache.Add(result, true);
 
             return result;
         }
