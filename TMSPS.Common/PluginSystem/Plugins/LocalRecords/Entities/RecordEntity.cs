@@ -10,6 +10,6 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords.Entities
         public virtual int ChallengeId { get; set; }
         public virtual ChallengeEntity Challenge { get; private set; }
         public virtual int TimeOrScore { get; set; }
-        public virtual DateTime? Created { get; private set; }
+        public virtual DateTime? Created { get; set; }
     }
 }
