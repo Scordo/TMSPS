@@ -86,10 +86,10 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
         {
             GetAreaSettings(login, (byte)Area.TopRanks).CurrentDialogPageIndex = pageIndex;
             uint[] pageIndeces = GetPageIndices(pageIndex, TopRanksSettings.MaxEntriesPerPage);
-            uint topRanksCount = HostPlugin.RankingAdapter.GetRanksCount();
+            uint topRanksCount = HostPlugin.ServerRankRepository.GetRanksCount();
             uint maxPage = Convert.ToUInt32(Math.Ceiling((double)topRanksCount / TopRanksSettings.MaxEntriesPerPage));
 
-            IEnumerable<Ranking> rankings = HostPlugin.RankingAdapter.Deserialize_PagedList(pageIndeces[0], pageIndeces[1]);
+            IEnumerable<Ranking> rankings = HostPlugin.ServerRankRepository.GetList(pageIndeces[0], pageIndeces[1]);
             Context.RPCClient.Methods.SendDisplayManialinkPageToLogin(login, GetTopRanksManiaLinkPage(Convert.ToUInt16(pageIndex + 1), maxPage, rankings), 0, false);
         }
 
@@ -181,7 +181,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
                     SendTopRanksPageToLogin(login, nextPageIndex);
                     break;
                 case PagedDialogActions.DefaultDialogAction.LastPage:
-                    uint topRanksCount = HostPlugin.RankingAdapter.GetRanksCount();
+                    uint topRanksCount = HostPlugin.ServerRankRepository.GetRanksCount();
                     ushort lastPageIndex = Convert.ToUInt16(Math.Max(0, Math.Ceiling((double)topRanksCount / TopRanksSettings.MaxEntriesPerPage) - 1));
                     SendTopRanksPageToLogin(login, lastPageIndex);
                     break;

@@ -7,6 +7,9 @@ using TMSPS.Core.Communication.EventArguments.Callbacks;
 using TMSPS.Core.Communication.ProxyTypes;
 using TMSPS.Core.Logging;
 using TMSPS.Core.PluginSystem.Configuration;
+using TMSPS.Core.PluginSystem.Plugins.LocalRecords.Entities;
+using TMSPS.Core.PluginSystem.Plugins.LocalRecords.Repositories;
+using TMSPS.Core.PluginSystem.Plugins.LocalRecords.Repositories.Interfaces;
 using Version=System.Version;
 using System.Linq;
 
@@ -22,14 +25,14 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
 	    public override string Description { get { return "Saves records and statistics in a local database."; } }
 	    public override string ShortName { get { return "LocalRecords"; } }
 
-	    public IAdapterProvider AdapterProvider { get; protected set; }
-	    public IChallengeAdapter ChallengeAdapter { get; protected set; }
-	    public IPlayerAdapter PlayerAdapter { get; protected set; }
-	    public IPositionAdapter PositionAdapter { get; protected set; }
-	    public IRecordAdapter RecordAdapter { get; protected set; }
-	    public IRatingAdapter RatingAdapter { get; protected set; }
-	    public ISessionAdapter SessionAdapter { get; protected set; }
-	    public IRankingAdapter RankingAdapter { get; protected set; }
+	    public IChallengeRepository ChallengeRepository { get; protected set; }
+	    public IPlayerRepository PlayerRepository { get; protected set; }
+	    public IRaceResultRepository RaceResultRepository { get; protected set; }
+	    public IRecordRepository RecordRepository { get; protected set; }
+	    public IRatingRepository RatingRepository { get; protected set; }
+	    public ILaptResultRepository LapResultRepository { get; protected set; }
+        public IChallengeRankRepository ChallengeRankRepository { get; protected set; }
+	    public IServerRankRepository ServerRankRepository { get; protected set; }
 	    public int CurrentChallengeID { get; protected set; }
 	    public LocalRecordsSettings Settings { get; protected set; }
 	    protected List<ILocalRecordsPluginPlugin> Plugins {get; private set;}
@@ -62,17 +65,20 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
 	    protected override void Init()
 	    {
 	        Settings = LocalRecordsSettings.ReadFromFile(PluginSettingsFilePath);
-	        
+	        RepositoryFactory.Init(Settings.DatabaseType, Settings.DatabaseConnectionString);
+
 	        try
 	        {
-	            AdapterProvider = AdapterProviderFactory.GetAdapterProvider(Settings);
-	            ChallengeAdapter = AdapterProvider.GetChallengeAdapter();
-	            PlayerAdapter = AdapterProvider.GetPlayerAdapter();
-	            PositionAdapter = AdapterProvider.GetPositionAdapter();
-	            RecordAdapter = AdapterProvider.GetRecordAdapter();
-	            RatingAdapter = AdapterProvider.GetRatingAdapter();
-	            SessionAdapter = AdapterProvider.GetSessionAdapter();
-	            RankingAdapter = AdapterProvider.GetRankingAdapter();
+                ChallengeRepository = RepositoryFactory.Get<IChallengeRepository>();
+	            PlayerRepository = RepositoryFactory.Get<IPlayerRepository>();
+                RaceResultRepository = RepositoryFactory.Get<IRaceResultRepository>();
+                RecordRepository = RepositoryFactory.Get<IRecordRepository>();
+                RatingRepository = RepositoryFactory.Get<IRatingRepository>();
+                LapResultRepository = RepositoryFactory.Get<ILaptResultRepository>();
+                ChallengeRankRepository = RepositoryFactory.Get<IChallengeRankRepository>();
+                ServerRankRepository = RepositoryFactory.Get<IServerRankRepository>();
+                PlayerCache.Init(10000);
+                ChallengeCache.Init();
 	        }
 	        catch (Exception ex)
 	        {
@@ -88,7 +94,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
 	    	try
 	    	{
 				Logger.InfoToUI("Starting to delete data of missing tracks");
-				int amountOfDeletedTracks = ChallengeAdapter.DeleteTracksNotInProvidedList(challenges.ConvertAll(c => c.UId));
+				int amountOfDeletedTracks = ChallengeRepository.DeleteTracksNotInProvidedList(challenges.ConvertAll(c => c.UId));
 				Logger.InfoToUI(string.Format("Data of {0} Track(s) has been deleted.", amountOfDeletedTracks));
 	    	}
 	    	catch (Exception ex)
@@ -100,7 +106,10 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
 	        foreach (PlayerSettings playerSettings in Context.PlayerSettings.GetAllAsList())
 	        {
 	            if (!playerSettings.NickName.IsNullOrTimmedEmpty())
-	                PlayerAdapter.CreateOrUpdate(new Player(playerSettings.Login, playerSettings.NickName));
+	            {
+	                PlayerEntity player = PlayerCache.Instance.EnsureExists(playerSettings.Login, playerSettings.NickName);
+                    PlayerRepository.SetLastTimePlayedChanged(player, DateTime.Now);
+	            }
 	        }
 
 	        ChallengeInfo currentChallengeInfo = GetCurrentChallengeInfoCached();
@@ -126,7 +135,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
 
         protected override void Dispose(bool connectionLost)
         {
-            RunCatchLog(() => Context.PlayerSettings.GetAllAsList().ForEach(p => PlayerAdapter.UpdateTimePlayed(p.Login)), "Error updatimg TimePlayed for all players while disposing the plugin.");
+            RunCatchLog(() => Context.PlayerSettings.GetAllAsList().ForEach(p => PlayerRepository.UpdateTimePlayed(p.Login)), "Error updatimg TimePlayed for all players while disposing the plugin.");
             DisposePlugins(connectionLost);
 
             // enforce connection close here later
@@ -180,7 +189,10 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
                 if (e.Rankings.Count > 0)
                 {
                     // this may take a while, so run it async on the thread pool
-                    ThreadPool.QueueUserWorkItem(UpdateRankingForChallenge, e.Challenge.UId);
+                    ThreadPool.QueueUserWorkItem(UpdateRankingForChallenge, ChallengeCache.Instance.Get(e.Challenge.UId).Id.Value);
+
+                    // this may take a while, so run it async on the thread pool
+                    ThreadPool.QueueUserWorkItem(s => ServerRankRepository.ReCreateRanks());
                 }
 
                 if (e.Rankings.Count > 1)
@@ -188,7 +200,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
                     // there must be at least 2 players to increase the wins for the first player
                     if (e.Rankings[0].BestTime > 0)
                     {
-                        uint wins = PlayerAdapter.IncreaseWins(e.Rankings[0].Login);
+                        uint wins = PlayerRepository.IncreaseWins(e.Rankings[0].Login);
                         OnPlayerWins(e.Rankings[0], wins);
                         int maxRank = e.Rankings.Max(playerRank => playerRank.Rank);
 
@@ -200,7 +212,10 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
                             if (!CheckpointsValid(playerRank.BestCheckpoints))
                                 HandleCheater(playerRank.Login, false);
                             else
-                                PositionAdapter.AddPosition(playerRank.Login, e.Challenge.UId, Convert.ToUInt16(playerRank.Rank), Convert.ToUInt16(maxRank));
+                            {
+                                int challengeId = ChallengeCache.Instance.Get(e.Challenge.UId).Id.Value;
+                                RaceResultRepository.AddResult(new RaceResultEntity { PlayerId = playerRank.PlayerId, ChallengeId = challengeId, Position = Convert.ToInt16(playerRank.Rank), PlayersCount = Convert.ToInt16(maxRank) });
+                            }
                         }
                     }
                 }
@@ -209,7 +224,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
 
         private void Callbacks_PlayerDisconnect(object sender, PlayerDisconnectEventArgs e)
         {
-            RunCatchLog(() => PlayerAdapter.UpdateTimePlayed(e.Login), "Error in Callbacks_PlayerDisconnect Method.", true);
+            RunCatchLog(() => PlayerRepository.UpdateTimePlayed(e.Login), "Error in Callbacks_PlayerDisconnect Method.", true);
         }
 
         private void Callbacks_PlayerConnect(object sender, PlayerConnectEventArgs e)
@@ -226,9 +241,10 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
 
                 if (!nickname.IsNullOrTimmedEmpty())
                 {
-                    Player player = new Player(e.Login, nickname);
-                    PlayerAdapter.CreateOrUpdate(player);
-                    OnPlayerCreatedOrUpdated(player, nickname);
+                    PlayerEntity player = PlayerCache.Instance.EnsureExists(e.Login, nickname);
+                    PlayerRepository.SetLastTimePlayedChanged(player, DateTime.Now);
+
+                    OnPlayerCreatedOrUpdated(Player.FromPlayerEntity(player), nickname);
                 }
             }, "Error in Callbacks_PlayerConnect Method.", true);
         }
@@ -250,7 +266,8 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
         {
             Context.RPCClient.Methods.BanAndBlackList(login, "Banned and blacklisted for cheating!", true);
             SendFormattedMessage(Settings.CheaterBannedMessage, "Login", login);
-            PlayerAdapter.RemoveAllStatsForLogin(login);
+            
+            PlayerRepository.DeleteData(login);
 
             if (updateUI)
             {
@@ -273,8 +290,8 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
 
             if (!LoginHasRight(args.Login, true, Command.DeleteCheater))
                 return true;
-            
-            if (PlayerAdapter.RemoveAllStatsForLogin(login))
+
+            if (PlayerRepository.DeleteData(login))
             {
                 SendFormattedMessageToLogin(args.Login, Settings.CheaterDeletedMessage, "Login", login);
 
@@ -326,35 +343,35 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
 
 	        if (e.TimeOrScore > 0)
 	        {
-	            uint? oldPosition, newPosition;
-	            bool newBest;
-                RecordAdapter.CheckAndWriteNewRecord(e.Login, currentChallengeID, e.TimeOrScore, out oldPosition, out newPosition, out newBest);
+                RecordState recordState = RecordRepository.CheckAndWriteNewRecord(e.Login, currentChallengeID, e.TimeOrScore);
 
-	            if (newBest)
+                if (recordState.Improved)
 	            {
                     string nickname = GetNickname(e.Login);
 
-                    if (nickname != null && newPosition <= Settings.MaxRecordsToReport && currentChallengeID == CurrentChallengeID)
+                    if (nickname != null && recordState.CurrentPosition <= Settings.MaxRecordsToReport && currentChallengeID == CurrentChallengeID)
 	                {
                         DetermineLocalRecords();
-                        OnPlayerNewRecord(e.Login, nickname, e.TimeOrScore, oldPosition, newPosition);
+                        OnPlayerNewRecord(e.Login, nickname, e.TimeOrScore, recordState.PrevPosition, recordState.CurrentPosition);
 	                }
 	            }
 
-                SessionAdapter.AddSession(e.Login, currentChallengeID, Convert.ToUInt32(e.TimeOrScore));
+	            int playerId = PlayerCache.Instance.Get(e.Login).Id.Value;
+                LapResultRepository.AddLapResult(new LapResultEntity { PlayerId = playerId, ChallengeId = currentChallengeID, TimeOrScore = e.TimeOrScore });
 	        }
 	    }
 
         private void UpdateRankingForChallenge(object challengeID)
         {
-            RankingAdapter.UpdateForChallenge(Convert.ToString(challengeID));
+            ChallengeRankRepository.RecreateForChallenge((int) challengeID);
         }
 
 	    private void EnsureChallengeExistsInStorage(ChallengeListSingleInfo challengeInfo)
 	    {
-	        Challenge challenge = new Challenge(challengeInfo.UId, challengeInfo.Name, challengeInfo.Author, challengeInfo.Environnement);
-	        ChallengeAdapter.IncreaseRaces(challenge);
-	        CurrentChallengeID = challenge.ID.Value;
+            ChallengeEntity challenge = new ChallengeEntity{UniqueId = challengeInfo.UId, Name = challengeInfo.Name, Author = challengeInfo.Author, Environment = challengeInfo.Environnement};
+            challenge = ChallengeRepository.IncreaseRaces(challenge);
+	        CurrentChallengeID = challenge.Id.Value;
+	        ChallengeCache.Instance.Add(challenge);
 
 	        OnChallengeCreatedOrUpdated(challengeInfo, challenge);
 	    }
@@ -372,7 +389,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
 
 	    private void DetermineLocalRecords()
 	    {
-	        LocalRecords = RecordAdapter.GetTopRecordsForChallenge(CurrentChallengeID, Settings.MaxRecordsToReport).ToArray();
+	        LocalRecords = RecordRepository.GetTopRecordsForChallenge(CurrentChallengeID, Settings.MaxRecordsToReport).ToArray();
 	        Context.ValueStore.SetOrUpdate(GlobalConstants.LOCAL_RECORDS, LocalRecords.ToArray());
 	        Context.ValueStore.SetOrUpdate(GlobalConstants.FIRST_LOCAL_RECORD_TIMEORSCORE, LocalRecords.Length == 0 ? null : (int?)LocalRecords[0].TimeOrScore);
 	    }
@@ -403,7 +420,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
                 PlayerCreatedOrUpdated(this, new PlayerCreatedOrUpdatedEventArgs(player, nickname));
 	    }
 
-	    protected void OnChallengeCreatedOrUpdated(ChallengeListSingleInfo challengeInfo, Challenge challenge)
+	    protected void OnChallengeCreatedOrUpdated(ChallengeListSingleInfo challengeInfo, ChallengeEntity challenge)
 	    {
 	        if (ChallengeCreatedOrUpdated != null)
 	            ChallengeCreatedOrUpdated(this, new ChallengeCreatedOrUpdatedEventArgs(challengeInfo, challenge));
@@ -489,13 +506,13 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
         #region Properties
 
         public ChallengeListSingleInfo ChallengeInfo { get; private set; }
-        public Challenge Challenge { get; private set; }
+        public ChallengeEntity Challenge { get; private set; }
 
         #endregion
 
         #region Constructor
 
-        public ChallengeCreatedOrUpdatedEventArgs(ChallengeListSingleInfo challengeInfo, Challenge challenge)
+        public ChallengeCreatedOrUpdatedEventArgs(ChallengeListSingleInfo challengeInfo, ChallengeEntity challenge)
         {
             ChallengeInfo = challengeInfo;
             Challenge = challenge;

@@ -6,6 +6,7 @@ using System.Configuration;
 using TMSPS.Core.Common;
 using TMSPS.Core.Logging;
 using TMSPS.Core.PluginSystem.Configuration;
+using TMSPS.Core.PluginSystem.Plugins.LocalRecords.Repositories;
 using SettingsBase=TMSPS.Core.Common.SettingsBase;
 
 namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
@@ -23,9 +24,8 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
 
 	    #region Properties
 
-	    public string ProviderAssemblyLocation { get; private set; }
-	    public string ProviderClass { get; private set; }
-	    public string ProviderParameter { get; private set; }
+	    public DatabaseType DatabaseType { get; private set; }
+	    public string DatabaseConnectionString { get; private set; }
         public uint MaxRecordsToReport { get; private set; }
 
         public string CheaterDeletedMessage { get; private set; }
@@ -53,37 +53,45 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
 	        if (configDocument.Root == null)
 	            throw new ConfigurationErrorsException("Could not find root node in file: " + xmlConfigurationFile);
 
-	        XElement providerSettingsElement = configDocument.Root.Element("ProviderSettings");
+            XElement databaseSettingsElement = configDocument.Root.Element("DatabaseSettings");
 
-	        if (providerSettingsElement == null)
-	            throw new ConfigurationErrorsException("Could not find ProviderSettings node in file: " + xmlConfigurationFile);
+	        if (databaseSettingsElement == null)
+                throw new ConfigurationErrorsException("Could not find DatabaseSettings node in file: " + xmlConfigurationFile);
 
-	        XElement assemblyElement = providerSettingsElement.Element("Assembly");
+            XElement databaseTypeElement = databaseSettingsElement.Element("DatabaseType");
 
-	        if (assemblyElement == null)
-	            throw new ConfigurationErrorsException("Could not find Assembly node in file: " + xmlConfigurationFile);
+	        if (databaseTypeElement == null)
+                throw new ConfigurationErrorsException("Could not find DatabaseType node in file: " + xmlConfigurationFile);
 
-	        if (assemblyElement.Value.IsNullOrTimmedEmpty())
-	            throw new ConfigurationErrorsException("Assembly node is empty in file: " + xmlConfigurationFile);
+	        if (databaseTypeElement.Value.IsNullOrTimmedEmpty())
+                throw new ConfigurationErrorsException("DatabaseType node is empty in file: " + xmlConfigurationFile);
 
-	        result.ProviderAssemblyLocation = assemblyElement.Value.Trim();
+            DatabaseType databaseType;
 
-	        XElement providerElement = providerSettingsElement.Element("Provider");
+	        try
+	        {
+                databaseType = (DatabaseType)Enum.Parse(typeof(DatabaseType), databaseTypeElement.Value.Trim(), true);
 
-	        if (providerElement == null)
-	            throw new ConfigurationErrorsException("Could not find Provider node in file: " + xmlConfigurationFile);
+                if (!Enum.IsDefined(typeof(DatabaseType), databaseType))
+                    throw new ArgumentException();
+	        }
+	        catch (ArgumentException)
+	        {
+	            throw new ConfigurationErrorsException(string.Format("DatabaseType node has an invalid value of '{0}': {1}", databaseTypeElement.Value, xmlConfigurationFile));
+	        }
 
-	        if (providerElement.Value.IsNullOrTimmedEmpty())
-	            throw new ConfigurationErrorsException("Provider node is empty in file: " + xmlConfigurationFile);
+            result.DatabaseType = databaseType;
 
-	        result.ProviderClass = providerElement.Value.Trim();
+            XElement databaseConnectionStringElement = databaseSettingsElement.Element("DatabaseConnectionString");
 
-	        XElement parameterElement = providerSettingsElement.Element("Parameter");
+	        if (databaseConnectionStringElement == null)
+                throw new ConfigurationErrorsException("Could not find DatabaseConnectionString node in file: " + xmlConfigurationFile);
 
-	        if (parameterElement == null)
-	            throw new ConfigurationErrorsException("Could not find Parameter node in file: " + xmlConfigurationFile);
+	        if (databaseConnectionStringElement.Value.IsNullOrTimmedEmpty())
+                throw new ConfigurationErrorsException("DatabaseConnectionString node is empty in file: " + xmlConfigurationFile);
 
-	        result.ProviderParameter = parameterElement.Value.Trim();
+	        result.DatabaseConnectionString = databaseConnectionStringElement.Value.Trim();
+
             result.MaxRecordsToReport = ReadConfigUInt(configDocument.Root, "MaxRecordsToReport", MAX_RECORDS_TO_REPORT, xmlConfigurationFile);
             result.CheaterDeletedMessage = ReadConfigString(configDocument.Root, "CheaterDeletedMessage", CHEATER_DELETED_MSG, xmlConfigurationFile);
             result.CheaterDeletionFailedMessage = ReadConfigString(configDocument.Root, "CheaterDeletionFailedMessage", CHEATER_DELETION_FAILED_MSG, xmlConfigurationFile);
