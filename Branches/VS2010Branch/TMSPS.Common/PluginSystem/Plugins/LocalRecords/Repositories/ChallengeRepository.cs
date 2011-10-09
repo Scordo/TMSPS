@@ -95,7 +95,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords.Repositories
 
                 foreach (string uniqueTrackID in uniqueTrackIDsFromDB)
                 {
-                    DeleteChallenge(session, ChallengeCache.Instance.Get(uniqueTrackID).Id.Value);
+                    DeleteChallenge(session, ChallengeCache.Get(uniqueTrackID).Id.Value);
                 }                   
             });
             

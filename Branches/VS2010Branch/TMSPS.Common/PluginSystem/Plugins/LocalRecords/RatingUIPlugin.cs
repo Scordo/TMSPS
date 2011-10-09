@@ -73,7 +73,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
 
             SendAllVoteManiaLinkPageToLogin(e.Login, _lastAverageVoteValue, _lastVotesCount);
 
-            int playerId = PlayerCache.Instance.Get(e.Login).Id.Value;
+            int playerId = PlayerCache.Get(e.Login).Id.Value;
             RatingEntity rating = HostPlugin.RatingRepository.Get(playerId, HostPlugin.CurrentChallengeID);
             SendOwnVoteManiaLinkPageToLogin(e.Login, rating == null ? (int?) null : rating.Value);
         }
@@ -118,7 +118,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
         {
             foreach (PlayerSettings playerSettings in Context.PlayerSettings.GetAllAsList())
             {
-                int playerId = PlayerCache.Instance.Get(playerSettings.Login).Id.Value;
+                int playerId = PlayerCache.Get(playerSettings.Login).Id.Value;
                 RatingEntity rating = HostPlugin.RatingRepository.Get(playerId, currentChallengeID);
                 SendOwnVoteManiaLinkPageToLogin(playerSettings.Login, rating == null ? (int?) null : rating.Value);
             }
@@ -146,7 +146,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
 
             byte ownVoteValue = Convert.ToByte(action.AreaActionID - 1);
 
-            int playerEntityId = PlayerCache.Instance.Get(login).Id.Value;
+            int playerEntityId = PlayerCache.Get(login).Id.Value;
             HostPlugin.RatingRepository.Rate(playerEntityId, HostPlugin.CurrentChallengeID, ownVoteValue);
             Pair<double?, int> voteInfo = HostPlugin.RatingRepository.Average(HostPlugin.CurrentChallengeID);
             double? averageVote = voteInfo.Value1;

@@ -274,7 +274,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
             if (!ServerCommand.Parse(args.Text).Is(Command.Info))
                 return false;
 
-            int playerId = PlayerCache.Instance.Get(args.Login).Id.Value;
+            int playerId = PlayerCache.Get(args.Login).Id.Value;
             SendInfoMessageToPlayer(playerId);
 
             return true;
@@ -397,7 +397,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
 
         private HashSet<string> GetDrivenChallengeUIDs(string login)
         {
-            return new HashSet<string>(HostPlugin.ChallengeRepository.GetDrivenUniqueTrackIDs(PlayerCache.Instance.Get(login).Id.Value));
+            return new HashSet<string>(HostPlugin.ChallengeRepository.GetDrivenUniqueTrackIDs(PlayerCache.Get(login).Id.Value));
         }
 
         private void SendServerRankMessageToLogin(string login)
@@ -413,7 +413,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
         private void SendServerRankMessageToLogin(object state)
         {
             string login = (string) state;
-            PlayerEntity player = PlayerCache.Instance.Get(login);
+            PlayerEntity player = PlayerCache.Get(login);
             Ranking ranking = HostPlugin.ServerRankRepository.Get(player.Id.Value);
 
             if (ranking != null)
@@ -425,7 +425,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
         private void SendNextServerRankMessageToLogin(object state)
         {
             string login = (string)state;
-            PlayerEntity player = PlayerCache.Instance.Get(login);
+            PlayerEntity player = PlayerCache.Get(login);
             Ranking ranking = HostPlugin.ServerRankRepository.GetNextRank(player.Id.Value);
 
             if (ranking != null)

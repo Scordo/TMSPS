@@ -148,7 +148,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords.Repositories
 
         private Ranking ServerRankEntityToRanking(ServerRankEntity serverRank)
         {
-            PlayerEntity player = PlayerCache.Instance.Get(serverRank.PlayerId);
+            PlayerEntity player = PlayerCache.Get(serverRank.PlayerId);
 
             return new Ranking
             {
