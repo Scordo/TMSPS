@@ -3,6 +3,7 @@ using System.Globalization;
 using TMSPS.Core.Common;
 using TMSPS.Core.Communication.ProxyTypes;
 using TMSPS.Core.Communication.ResponseHandling;
+using TMSPS.Core.Logging;
 using TMSPS.Core.PluginSystem.Configuration;
 using BillState=TMSPS.Core.Communication.EventArguments.Callbacks.BillState;
 using Version=System.Version;
@@ -21,6 +22,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.Donation
         private DonationPluginSettings Settings { get; set; }
         private bool InitializationAborted { get; set; }
         private Dictionary<int, DonationInfo> BillDictionary { get; set; }
+        protected List<IDonationPluginPlugin> Plugins { get; private set; }
 
         #endregion
 
@@ -53,6 +55,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.Donation
             }
 
             InitializationAborted = false;
+            InitializePlugins();
             BillDictionary = new Dictionary<int, DonationInfo>();
             Context.RPCClient.Callbacks.PlayerChat += Callbacks_PlayerChat;
             Context.RPCClient.Callbacks.BillUpdated += Callbacks_BillUpdated;
@@ -63,8 +66,26 @@ namespace TMSPS.Core.PluginSystem.Plugins.Donation
             if (InitializationAborted)
                 return;
 
+            DisposePlugins(connectionLost);
+
             Context.RPCClient.Callbacks.PlayerChat -= Callbacks_PlayerChat;
             Context.RPCClient.Callbacks.BillUpdated -= Callbacks_BillUpdated;
+        }
+
+        private void InitializePlugins()
+        {
+            Plugins = Settings.GetPlugins(Logger);
+
+            foreach (IDonationPluginPlugin plugin in Plugins)
+            {
+                plugin.ProvideHostPlugin(this);
+                plugin.InitPlugin(Context, new ConsoleUILogger("TMSPS", string.Format(" - [{0}]", plugin.ShortName)));
+            }
+        }
+
+        private void DisposePlugins(bool connectionLost)
+        {
+            Plugins.ForEach(plugin => plugin.DisposePlugin(connectionLost));
         }
 
         public override IEnumerable<CommandHelp> CommandHelpList
@@ -92,42 +113,48 @@ namespace TMSPS.Core.PluginSystem.Plugins.Donation
                 if (!int.TryParse(command.PartsWithoutMainCommand[0], NumberStyles.None, CultureInfo.InvariantCulture,  out coppers) || coppers <= 0)
                     return;
 
-                if (coppers < Settings.MinDonationValue)
-                {
-                    SendFormattedMessageToLogin(e.Login, Settings.DonationToSmallMessage, "Coppers", Settings.MinDonationValue.ToString(CultureInfo.InvariantCulture));
-                    return;
-                }
-
-                PlayerSettings playerSettings = GetPlayerSettings(e.Login);
-
-                bool isUnitedAccount = playerSettings.IsUnitedAccount;
-
-                if (!playerSettings.DetailMode.HasDetailedPlayerInfo())
-                {
-                    DetailedPlayerInfo playerInfo = GetDetailedPlayerInfo(e.Login);
-
-                    if (playerInfo != null)
-                        isUnitedAccount = playerInfo.IsUnitedAccount;
-                }
-
-                if (!isUnitedAccount)
-                {
-                    SendFormattedMessageToLogin(e.Login, Settings.PlayerHasNoUnitedAccountMessage);
-                    return;
-                }
-
-                GenericResponse<int> billResponse = Context.RPCClient.Methods.SendBill(e.Login, coppers, Settings.DonationHint, Settings.DonationTargetLogin);
-
-                if (billResponse.Erroneous)
-                {
-                    Logger.Warn(string.Format("Error while calling method SendBill: {0}({1})", billResponse.Fault.FaultMessage, billResponse.Fault.FaultCode));
-                    SendFormattedMessageToLogin(e.Login, Settings.DonationErrorMessage, "ErrorMessage", billResponse.Fault.FaultMessage);
-                    return;
-                }
-                
-                BillDictionary[billResponse.Value] = new DonationInfo{Login = e.Login, Coppers = coppers};
+                DonationFrom(e.Login, coppers);
             }, "Error in Callbacks_PlayerChat Method.", true);
         }
+
+        public void DonationFrom(string login, int coppers)
+        {
+            if (coppers < Settings.MinDonationValue)
+            {
+                SendFormattedMessageToLogin(login, Settings.DonationToSmallMessage, "Coppers", Settings.MinDonationValue.ToString(CultureInfo.InvariantCulture));
+                return;
+            }
+
+            PlayerSettings playerSettings = GetPlayerSettings(login);
+
+            bool isUnitedAccount = playerSettings.IsUnitedAccount;
+
+            if (!playerSettings.DetailMode.HasDetailedPlayerInfo())
+            {
+                DetailedPlayerInfo playerInfo = GetDetailedPlayerInfo(login);
+
+                if (playerInfo != null)
+                    isUnitedAccount = playerInfo.IsUnitedAccount;
+            }
+
+            if (!isUnitedAccount)
+            {
+                SendFormattedMessageToLogin(login, Settings.PlayerHasNoUnitedAccountMessage);
+                return;
+            }
+
+            GenericResponse<int> billResponse = Context.RPCClient.Methods.SendBill(login, coppers, Settings.DonationHint, Settings.DonationTargetLogin);
+
+            if (billResponse.Erroneous)
+            {
+                Logger.Warn(string.Format("Error while calling method SendBill: {0}({1})", billResponse.Fault.FaultMessage, billResponse.Fault.FaultCode));
+                SendFormattedMessageToLogin(login, Settings.DonationErrorMessage, "ErrorMessage", billResponse.Fault.FaultMessage);
+                return;
+            }
+
+            BillDictionary[billResponse.Value] = new DonationInfo { Login = login, Coppers = coppers };
+        }
+
 
         private void Callbacks_BillUpdated(object sender, Communication.EventArguments.Callbacks.BillUpdatedEventArgs e)
         {

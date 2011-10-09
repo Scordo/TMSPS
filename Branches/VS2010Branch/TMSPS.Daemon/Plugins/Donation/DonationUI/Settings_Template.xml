@@ -1,0 +1,21 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Settings enabled="true" assemblyName="TMSPS.Core" pluginClass="TMSPS.Core.PluginSystem.Plugins.Donation.DonationUIPlugin" order="1000">
+  <CopperValues>20, 50, 100, 200, 500, 1000, 2000</CopperValues>
+  <DonationPanelTemplate>
+    <manialink id="{[ManiaLinkID]}">
+      <frame posn="11.7 -45.6 0">
+        <quad sizen="40.8 2.5" style="Bgs1InRace" substyle="NavButton"/>
+        <quad posn="1.5 -0.3 2" sizen="2 2" style="Icons128x128_1" substyle="Coppers"/>
+        <label posn="4.4 -0.6 2" textsize="1" textcolor="dddf" text="$ccc$s$oDonate:$fff"/>
+        <format textsize="1" textcolor="ffff"/>
+        <label posn="11 -0.6 2" sizen="2.4 1.5" style="TextRaceChrono" scale="1.25" text="$s$abc{[Coppers1]}C" action="{[DonateAction1]}"/>
+        <label posn="14.5 -0.6 2" sizen="2.4 1.5" style="TextRaceChrono" scale="1.25" text="$s$abc{[Coppers2]}C" action="{[DonateAction2]}"/>
+        <label posn="18 -0.6 2" sizen="3 1.5" style="TextRaceChrono" scale="1.25" text="$s$abc{[Coppers3]}C" action="{[DonateAction3]}"/>
+        <label posn="22 -0.6 2" sizen="3 1.5" style="TextRaceChrono" scale="1.25" text="$s$abc{[Coppers4]}C" action="{[DonateAction4]}"/>
+        <label posn="26 -0.6 2" sizen="3 1.5" style="TextRaceChrono" scale="1.25" text="$s$abc{[Coppers5]}C" action="{[DonateAction5]}"/>
+        <label posn="30 -0.6 2" sizen="4 1.5" style="TextRaceChrono" scale="1.25" text="$s$abc{[Coppers6]}C" action="{[DonateAction6]}"/>
+        <label posn="35 -0.6 2" sizen="4 1.5" style="TextRaceChrono" scale="1.25" text="$s$abc{[Coppers7]}C" action="{[DonateAction7]}"/>
+      </frame>
+    </manialink>
+  </DonationPanelTemplate>
+</Settings>

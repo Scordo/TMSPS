@@ -1,5 +1,10 @@
-﻿using System.Configuration;
+﻿using System.Collections.Generic;
+using System.Configuration;
+using System.IO;
 using System.Xml.Linq;
+using TMSPS.Core.Common;
+using TMSPS.Core.Logging;
+using TMSPS.Core.PluginSystem.Configuration;
 using SettingsBase=TMSPS.Core.Common.SettingsBase;
 
 namespace TMSPS.Core.PluginSystem.Plugins.Donation
@@ -53,6 +58,22 @@ namespace TMSPS.Core.PluginSystem.Plugins.Donation
             result.RefuseMessage = ReadConfigString(configDocument.Root, "RefuseMessage", REFUSE_MSG, xmlConfigurationFile);
             result.DonationErrorMessage = ReadConfigString(configDocument.Root, "DonationErrorMessage", DONATION_ERROR_MSG, xmlConfigurationFile);
             result.DonationThanksMessage = ReadConfigString(configDocument.Root, "DonationThanksMessage", DONATION_THANKSR_MSG, xmlConfigurationFile);
+            result.Plugins = PluginConfigEntryCollection.ReadFromDirectory(Path.GetDirectoryName(xmlConfigurationFile));
+
+            return result;
+        }
+
+        public List<IDonationPluginPlugin> GetPlugins(IUILogger logger)
+        {
+            List<IDonationPluginPlugin> result = new List<IDonationPluginPlugin>();
+
+            foreach (PluginConfigEntry pluginConfigEntry in Plugins.GetEnabledPlugins())
+            {
+                if (logger != null)
+                    logger.Debug(string.Format("Instantiating IDonationPluginPlugin {0}", pluginConfigEntry.PluginClass));
+
+                result.Add(Instancer.GetInstanceOfInterface<IDonationPluginPlugin>(pluginConfigEntry.AssemblyName, pluginConfigEntry.PluginClass, pluginConfigEntry.PluginDirectory));
+            }
 
             return result;
         }
