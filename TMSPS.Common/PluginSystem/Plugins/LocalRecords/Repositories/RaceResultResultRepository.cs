@@ -50,7 +50,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords.Repositories
                                     "from RaceResultEntity " +
                                     "where Position <= :PositionLimit " +
                                     "group by PlayerId " +
-                                    "order by count(*) desc";
+                                    "order by count(*) desc, avg(Position) asc";
 
             UseSession(session =>
             {

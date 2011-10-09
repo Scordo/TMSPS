@@ -214,7 +214,8 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
                             else
                             {
                                 int challengeId = ChallengeCache.Instance.Get(e.Challenge.UId).Id.Value;
-                                RaceResultRepository.AddResult(new RaceResultEntity { PlayerId = playerRank.PlayerId, ChallengeId = challengeId, Position = Convert.ToInt16(playerRank.Rank), PlayersCount = Convert.ToInt16(maxRank) });
+                                int playerId = PlayerCache.Instance.Get(playerRank.Login).Id.Value;
+                                RaceResultRepository.AddResult(new RaceResultEntity { PlayerId = playerId, ChallengeId = challengeId, Position = Convert.ToInt16(playerRank.Rank), PlayersCount = Convert.ToInt16(maxRank) });
                             }
                         }
                     }
