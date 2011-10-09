@@ -13,7 +13,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords.EntityMappings
 
             References(c => c.Player)
                 .Column("PlayerId")
-                .Not.Insert().Not
+                .ReadOnly()
                 .Fetch.Join();
 
             Map(r => r.Rank);

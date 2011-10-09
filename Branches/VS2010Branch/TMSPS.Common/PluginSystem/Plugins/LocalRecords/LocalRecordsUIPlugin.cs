@@ -185,7 +185,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
                         Context.RPCClient.Methods.ChatSendServerMessage(message);
                     }
                 }
-                else if (e.NewPosition > e.OldPosition)
+                else if (e.NewPosition < e.OldPosition)
                 {
                     if (Settings.ShowMessages)
                     {

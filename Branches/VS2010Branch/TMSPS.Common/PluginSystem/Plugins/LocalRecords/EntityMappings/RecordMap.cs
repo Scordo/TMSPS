@@ -11,14 +11,14 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords.EntityMappings
             Map(r => r.PlayerId);
             Map(r => r.ChallengeId);
             Map(r => r.TimeOrScore);
-            Map(r => r.Created).ReadOnly();
+            Map(r => r.Created);
             References(r => r.Player)
                 .Column("PlayerId")
-                .Not.Insert().Not
+                .ReadOnly()
                 .LazyLoad(Laziness.NoProxy);
             References(r => r.Challenge)
                 .Column("ChallengeId")
-                .Not.Insert().Not
+                .ReadOnly()
                 .LazyLoad(Laziness.NoProxy);
             Table("Record");
         }

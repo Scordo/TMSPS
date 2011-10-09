@@ -47,8 +47,8 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords.Repositories
             UseSession(session => 
             {
                 RecordEntity record = session.Query<RecordEntity>().Where(r => r.PlayerId == player.Id && r.ChallengeId == challengeID).FirstOrDefault();
-
                 IChallengeRankRepository challengeRepository = RepositoryFactory.Get<IChallengeRankRepository>(session);
+                
                 if (record != null)
                 {
                     result.PrevTimeOrScore = record.TimeOrScore;
@@ -57,13 +57,17 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords.Repositories
                         return;
 
                     result.PrevPosition = (uint?) challengeRepository.GetChallengeRank(challengeID, player.Id.Value);
+                    record.Created = DateTime.Now;
+                    record.TimeOrScore = timeOrScore;
+                    session.Update(record);
                 }
                 else
                 {
-                    record = new RecordEntity{ChallengeId = challengeID, PlayerId = player.Id.Value, TimeOrScore = timeOrScore};
+                    record = new RecordEntity{ChallengeId = challengeID, PlayerId = player.Id.Value, TimeOrScore = timeOrScore, Created = DateTime.Now};
                     session.Save(record);
-                    session.Flush();
                 }
+
+                session.Flush();
 
                 result.CurrentPosition = (uint) challengeRepository.GetChallengeRank(challengeID, player.Id.Value);
             });
