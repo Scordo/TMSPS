@@ -118,7 +118,8 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
         {
             foreach (PlayerSettings playerSettings in Context.PlayerSettings.GetAllAsList())
             {
-                RatingEntity rating = HostPlugin.RatingRepository.Get(playerSettings.PlayerID, currentChallengeID);
+                int playerId = PlayerCache.Instance.Get(playerSettings.Login).Id.Value;
+                RatingEntity rating = HostPlugin.RatingRepository.Get(playerId, currentChallengeID);
                 SendOwnVoteManiaLinkPageToLogin(playerSettings.Login, rating == null ? (int?) null : rating.Value);
             }
         }
