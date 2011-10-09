@@ -107,7 +107,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
 	        {
 	            if (!playerSettings.NickName.IsNullOrTimmedEmpty())
 	            {
-	                PlayerEntity player = PlayerCache.Instance.EnsureExists(playerSettings.Login, playerSettings.NickName);
+	                PlayerEntity player = PlayerCache.EnsureExists(playerSettings.Login, playerSettings.NickName);
                     PlayerRepository.SetLastTimePlayedChanged(player, DateTime.Now);
 	            }
 	        }
@@ -189,7 +189,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
                 if (e.Rankings.Count > 0)
                 {
                     // this may take a while, so run it async on the thread pool
-                    ThreadPool.QueueUserWorkItem(UpdateRankingForChallenge, ChallengeCache.Instance.Get(e.Challenge.UId).Id.Value);
+                    ThreadPool.QueueUserWorkItem(UpdateRankingForChallenge, ChallengeCache.Get(e.Challenge.UId).Id.Value);
 
                     // this may take a while, so run it async on the thread pool
                     ThreadPool.QueueUserWorkItem(s => ServerRankRepository.ReCreateRanks());
@@ -213,8 +213,8 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
                                 HandleCheater(playerRank.Login, false);
                             else
                             {
-                                int challengeId = ChallengeCache.Instance.Get(e.Challenge.UId).Id.Value;
-                                int playerId = PlayerCache.Instance.Get(playerRank.Login).Id.Value;
+                                int challengeId = ChallengeCache.Get(e.Challenge.UId).Id.Value;
+                                int playerId = PlayerCache.Get(playerRank.Login).Id.Value;
                                 RaceResultRepository.AddResult(new RaceResultEntity { PlayerId = playerId, ChallengeId = challengeId, Position = Convert.ToInt16(playerRank.Rank), PlayersCount = Convert.ToInt16(maxRank) });
                             }
                         }
@@ -242,7 +242,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
 
                 if (!nickname.IsNullOrTimmedEmpty())
                 {
-                    PlayerEntity player = PlayerCache.Instance.EnsureExists(e.Login, nickname);
+                    PlayerEntity player = PlayerCache.EnsureExists(e.Login, nickname);
                     PlayerRepository.SetLastTimePlayedChanged(player, DateTime.Now);
 
                     OnPlayerCreatedOrUpdated(Player.FromPlayerEntity(player), nickname);
@@ -357,7 +357,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
 	                }
 	            }
 
-	            int playerId = PlayerCache.Instance.Get(e.Login).Id.Value;
+	            int playerId = PlayerCache.Get(e.Login).Id.Value;
                 LapResultRepository.AddLapResult(new LapResultEntity { PlayerId = playerId, ChallengeId = currentChallengeID, TimeOrScore = e.TimeOrScore });
 	        }
 	    }
@@ -372,7 +372,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
             ChallengeEntity challenge = new ChallengeEntity{UniqueId = challengeInfo.UId, Name = challengeInfo.Name, Author = challengeInfo.Author, Environment = challengeInfo.Environnement};
             challenge = ChallengeRepository.IncreaseRaces(challenge);
 	        CurrentChallengeID = challenge.Id.Value;
-	        ChallengeCache.Instance.Add(challenge);
+	        ChallengeCache.Add(challenge);
 
 	        OnChallengeCreatedOrUpdated(challengeInfo, challenge);
 	    }

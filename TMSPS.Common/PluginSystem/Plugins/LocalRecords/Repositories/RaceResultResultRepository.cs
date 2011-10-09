@@ -58,7 +58,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords.Repositories
                 positionStats = list.ConvertAll(r => new PositionStats { PlayerId = Convert.ToInt32(r[0]), Amount = Convert.ToUInt32(r[1]) });
             });
 
-            positionStats.ForEach(r => r.Nickname = PlayerCache.Instance.Get(r.PlayerId).Nickname);
+            positionStats.ForEach(r => r.Nickname = PlayerCache.Get(r.PlayerId).Nickname);
 
             return positionStats;
         }

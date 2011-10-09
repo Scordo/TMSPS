@@ -10,6 +10,7 @@ using TMSPS.Core.Logging;
 using System.Linq;
 using TMSPS.Core.ManiaLinking;
 using TMSPS.Core.PluginSystem.Configuration;
+using TMSPS.Core.PluginSystem.Plugins.LocalRecords;
 
 namespace TMSPS.Core.PluginSystem
 {
@@ -44,8 +45,10 @@ namespace TMSPS.Core.PluginSystem
         public virtual string PluginDirectory { get; protected set;  }
         public string PluginSettingsFilePath { get { return Path.Combine(PluginDirectory, "Settings.xml"); } }
         public virtual IEnumerable<CommandHelp> CommandHelpList { get { return null; }}
+        protected PlayerCache PlayerCache { get { return PlayerCache.Instance; } }
+        protected ChallengeCache ChallengeCache { get { return ChallengeCache.Instance; } }
 
-		#endregion
+	    #endregion
 
 	    #region Constructor
 

@@ -129,7 +129,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords.Repositories
                                    .Select((r, i) =>
                                     {
                                         r.Position = (uint) (startIndex + i + 1);
-                                        PlayerEntity playerEntity = PlayerCache.Instance.Get(Convert.ToInt32(r.Login));
+                                        PlayerEntity playerEntity = PlayerCache.Get(Convert.ToInt32(r.Login));
                                         r.Nickname = playerEntity.Nickname;
                                         r.Login = playerEntity.Login;
                                         return r;
@@ -157,7 +157,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords.Repositories
                 rankStats = list.ConvertAll(r => new RankingStats { PlayerID = Convert.ToInt32(r[0]), Amount = Convert.ToUInt32(r[1]) });
             });
 
-            rankStats.ForEach(r => r.Nickname = PlayerCache.Instance.Get(r.PlayerID).Nickname);
+            rankStats.ForEach(r => r.Nickname = PlayerCache.Get(r.PlayerID).Nickname);
 
             return rankStats;
         }

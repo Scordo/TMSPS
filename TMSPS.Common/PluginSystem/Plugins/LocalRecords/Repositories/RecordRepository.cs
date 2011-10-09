@@ -37,7 +37,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords.Repositories
 
         RecordState IRecordRepository.CheckAndWriteNewRecord(string login, int challengeID, int timeOrScore)
         {
-            PlayerEntity player = PlayerCache.Instance.Get(login);
+            PlayerEntity player = PlayerCache.Get(login);
 
             if (player == null)
                 throw new ArgumentException(string.Format("Login '{0}' does not exists in db", login), "login");
@@ -97,7 +97,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords.Repositories
 
         uint? IRecordRepository.GetBestTime(string login, int challengeID)
         {
-            PlayerEntity player = PlayerCache.Instance.Get(login);
+            PlayerEntity player = PlayerCache.Get(login);
 
             if (player == null)
                 return null;
