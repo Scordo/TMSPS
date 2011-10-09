@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -10,7 +10,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>TMSPS.Core</RootNamespace>
     <AssemblyName>TMSPS.Core</AssemblyName>
-    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <SccProjectName>SAK</SccProjectName>
     <SccLocalPath>SAK</SccLocalPath>
@@ -56,23 +56,47 @@
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="CookComputing.XmlRpcV2, Version=2.4.0.0, Culture=neutral, PublicKeyToken=a7d6e17aa302004d, processorArchitecture=MSIL" />
-    <Reference Include="log4net, Version=1.2.10.0, Culture=neutral, PublicKeyToken=1b44e1d426115821, processorArchitecture=MSIL" />
-    <Reference Include="System" />
-    <Reference Include="System.configuration" />
-    <Reference Include="System.Core">
-      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    <Reference Include="System">
     </Reference>
-    <Reference Include="System.Drawing" />
-    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Core">
+    </Reference>
+    <Reference Include="System.Drawing">
+    </Reference>
+    <Reference Include="System.Windows.Forms">
+    </Reference>
     <Reference Include="System.Xml.Linq">
-      <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
     <Reference Include="System.Data.DataSetExtensions">
-      <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
-    <Reference Include="System.Data" />
-    <Reference Include="System.Xml" />
+    <Reference Include="System.Data">
+    </Reference>
+    <Reference Include="System.Xml">
+    </Reference>
+    <Reference Include="System.Configuration">
+    </Reference>
+    <Reference Include="log4net, Version=1.2.10.0, Culture=neutral, PublicKeyToken=1b44e1d426115821">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>Components\log4net.dll</HintPath>
+    </Reference>
+    <Reference Include="NHibernate.ByteCode.Castle, Version=3.1.0.4000, Culture=neutral, PublicKeyToken=aa95f207798dfdb4">
+      <HintPath>Components\NHibernate\NHibernate.ByteCode.Castle.dll</HintPath>
+    </Reference>
+    <Reference Include="NHibernate, Version=3.1.0.4000, Culture=neutral, PublicKeyToken=aa95f207798dfdb4">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>Components\NHibernate\NHibernate.dll</HintPath>
+    </Reference>
+    <Reference Include="Iesi.Collections, Version=1.0.1.0, Culture=neutral, PublicKeyToken=aa95f207798dfdb4">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>Components\NHibernate\Iesi.Collections.dll</HintPath>
+    </Reference>
+    <Reference Include="CookComputing.XmlRpcV2, Version=2.4.0.0, Culture=neutral, PublicKeyToken=a7d6e17aa302004d">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>Components\CookComputing.XmlRpcV2.dll</HintPath>
+    </Reference>
+    <Reference Include="FluentNHibernate, Version=1.2.0.712, Culture=neutral, PublicKeyToken=8aa435e3cb308880">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>Components\NHibernate\FluentNHibernate.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Common\BlackListReader.cs" />
@@ -83,19 +107,19 @@
     <Compile Include="Common\EventArgs.cs" />
     <Compile Include="Common\FlatFileNicknameResolver.cs" />
     <Compile Include="Common\GlobalConstants.cs" />
-    <Compile Include="Common\IBaseAdapter.cs" />
     <Compile Include="Common\INicknameResolver.cs" />
     <Compile Include="Common\NicknameResolverBase.cs" />
     <Compile Include="Common\NicknameResolverCacheEntry.cs" />
     <Compile Include="Common\NicknameResolverFactory.cs" />
     <Compile Include="Common\NotifyPropertyChanged.cs" />
+    <Compile Include="Common\PagedList.cs" />
     <Compile Include="Common\Pair.cs" />
     <Compile Include="Common\PlayerFlags.cs" />
     <Compile Include="Common\ReadOnlyDictionary.cs" />
     <Compile Include="Common\Right.cs" />
     <Compile Include="Common\SettingsBase.cs" />
     <Compile Include="Common\PlayerSpectatorStatus.cs" />
-    <Compile Include="Common\SqlNicknameResolver.cs" />
+    <Compile Include="PluginSystem\Plugins\LocalRecords\LocalRecordsNicknameResolver.cs" />
     <Compile Include="Common\StackTraceHelper.cs" />
     <Compile Include="Common\TimedVolatileExecutionQueue.cs" />
     <Compile Include="Communication\EventArguments\Callbacks\BeginChallengeEventArgs.cs" />
@@ -104,6 +128,43 @@
     <Compile Include="Communication\ProxyTypes\GameMode.cs" />
     <Compile Include="Communication\ProxyTypes\LadderServerLimits.cs" />
     <Compile Include="Communication\ProxyTypes\StartServerParameters.cs" />
+    <Compile Include="PluginSystem\Plugins\LocalRecords\ChallengeCache.cs" />
+    <Compile Include="PluginSystem\Plugins\LocalRecords\Entities\ChallengeEntity.cs" />
+    <Compile Include="PluginSystem\Plugins\LocalRecords\Entities\ChallengeRankEntity.cs" />
+    <Compile Include="PluginSystem\Plugins\LocalRecords\Entities\LapResultEntity.cs" />
+    <Compile Include="PluginSystem\Plugins\LocalRecords\Entities\PlayerEntity.cs" />
+    <Compile Include="PluginSystem\Plugins\LocalRecords\Entities\RaceResult.cs" />
+    <Compile Include="PluginSystem\Plugins\LocalRecords\Entities\Rating.cs" />
+    <Compile Include="PluginSystem\Plugins\LocalRecords\Entities\RecordEntity.cs" />
+    <Compile Include="PluginSystem\Plugins\LocalRecords\Entities\ServerRankEntity.cs" />
+    <Compile Include="PluginSystem\Plugins\LocalRecords\EntityMappings\ChallengeEntityMap.cs" />
+    <Compile Include="PluginSystem\Plugins\LocalRecords\EntityMappings\ChallengeRankMap.cs" />
+    <Compile Include="PluginSystem\Plugins\LocalRecords\EntityMappings\LapResultMap.cs" />
+    <Compile Include="PluginSystem\Plugins\LocalRecords\EntityMappings\PlayerEntityMap.cs" />
+    <Compile Include="PluginSystem\Plugins\LocalRecords\EntityMappings\RaceResultMap.cs" />
+    <Compile Include="PluginSystem\Plugins\LocalRecords\EntityMappings\RatingMap.cs" />
+    <Compile Include="PluginSystem\Plugins\LocalRecords\EntityMappings\RecordMap.cs" />
+    <Compile Include="PluginSystem\Plugins\LocalRecords\EntityMappings\ServerRankMap.cs" />
+    <Compile Include="PluginSystem\Plugins\LocalRecords\PlayerCache.cs" />
+    <Compile Include="PluginSystem\Plugins\LocalRecords\PlayerSortOrder.cs" />
+    <Compile Include="PluginSystem\Plugins\LocalRecords\PositionStats.cs" />
+    <Compile Include="PluginSystem\Plugins\LocalRecords\RecordState.cs" />
+    <Compile Include="PluginSystem\Plugins\LocalRecords\Repositories\ChallengeRankRepository.cs" />
+    <Compile Include="PluginSystem\Plugins\LocalRecords\Repositories\ChallengeRepository.cs" />
+    <Compile Include="PluginSystem\Plugins\LocalRecords\Repositories\Interfaces\IChallengeRankRepository.cs" />
+    <Compile Include="PluginSystem\Plugins\LocalRecords\Repositories\Interfaces\IServerRankRepository.cs" />
+    <Compile Include="PluginSystem\Plugins\LocalRecords\Repositories\RatingRepository.cs" />
+    <Compile Include="PluginSystem\Plugins\LocalRecords\Repositories\Interfaces\IRatingRepository.cs" />
+    <Compile Include="PluginSystem\Plugins\LocalRecords\Repositories\RaceResultResultRepository.cs" />
+    <Compile Include="PluginSystem\Plugins\LocalRecords\Repositories\Interfaces\IRaceResultRepository.cs" />
+    <Compile Include="PluginSystem\Plugins\LocalRecords\Repositories\RecordRepository.cs" />
+    <Compile Include="PluginSystem\Plugins\LocalRecords\Repositories\Interfaces\IRecordRepository.cs" />
+    <Compile Include="PluginSystem\Plugins\LocalRecords\Repositories\LapResultRepository.cs" />
+    <Compile Include="PluginSystem\Plugins\LocalRecords\Repositories\Interfaces\IChallengeRepository.cs" />
+    <Compile Include="PluginSystem\Plugins\LocalRecords\Repositories\Interfaces\ILaptResultRepository.cs" />
+    <Compile Include="PluginSystem\Plugins\LocalRecords\Repositories\Interfaces\IPlayerRepository.cs" />
+    <Compile Include="PluginSystem\Plugins\LocalRecords\Repositories\Interfaces\IRepositoryBase.cs" />
+    <Compile Include="PluginSystem\Plugins\LocalRecords\Repositories\PlayerRepository.cs" />
     <Compile Include="Logging\ConsoleUILogger.cs" />
     <Compile Include="Logging\CoreLogger.cs" />
     <Compile Include="Common\IDump.cs" />
@@ -283,6 +344,9 @@
     <Compile Include="PluginSystem\Configuration\PagedUIDialogSettings.cs" />
     <Compile Include="PluginSystem\Plugins\LocalRecords\RankEntry.cs" />
     <Compile Include="PluginSystem\Plugins\LocalRecords\RatingUIPlugin.cs" />
+    <Compile Include="PluginSystem\Plugins\LocalRecords\Repositories\RepositoryBase.cs" />
+    <Compile Include="PluginSystem\Plugins\LocalRecords\Repositories\RepositoryFactory.cs" />
+    <Compile Include="PluginSystem\Plugins\LocalRecords\Repositories\ServerRankRepository.cs" />
     <Compile Include="PluginSystem\Plugins\LocalRecords\TopRankingEntry.cs" />
     <Compile Include="PluginSystem\Plugins\LocalRecords\UITemplates.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -304,32 +368,10 @@
     <Compile Include="PluginSystem\Plugins\Restart\RestartPlugin.cs" />
     <Compile Include="PluginSystem\Plugins\Restart\RestartPluginSettings.cs" />
     <Compile Include="PluginSystem\Plugins\SpectatorsPlugin.cs" />
-    <Compile Include="PluginSystem\Plugins\LocalRecords\AdapterProviderFactory.cs" />
-    <Compile Include="PluginSystem\Plugins\LocalRecords\Challenge.cs" />
-    <Compile Include="PluginSystem\Plugins\LocalRecords\IAdapterProvider.cs" />
-    <Compile Include="PluginSystem\Plugins\LocalRecords\IChallengeAdapter.cs" />
-    <Compile Include="PluginSystem\Plugins\LocalRecords\IPlayerAdapter.cs" />
-    <Compile Include="PluginSystem\Plugins\LocalRecords\IPositionAdapter.cs" />
-    <Compile Include="PluginSystem\Plugins\LocalRecords\IRankingAdapter.cs" />
-    <Compile Include="PluginSystem\Plugins\LocalRecords\IRatingAdapter.cs" />
-    <Compile Include="PluginSystem\Plugins\LocalRecords\IRecordAdapter.cs" />
-    <Compile Include="PluginSystem\Plugins\LocalRecords\ISessionAdapter.cs" />
     <Compile Include="PluginSystem\Plugins\LocalRecords\LocalRecordsPlugin.cs" />
     <Compile Include="PluginSystem\Plugins\LocalRecords\LocalRecordsSettings.cs" />
-    <Compile Include="PluginSystem\Plugins\LocalRecords\SQL\AdapterProvider.cs" />
     <Compile Include="PluginSystem\Plugins\LocalRecords\Player.cs" />
-    <Compile Include="PluginSystem\Plugins\LocalRecords\Position.cs" />
     <Compile Include="PluginSystem\Plugins\LocalRecords\Ranking.cs" />
-    <Compile Include="PluginSystem\Plugins\LocalRecords\Rating.cs" />
-    <Compile Include="PluginSystem\Plugins\LocalRecords\Record.cs" />
-    <Compile Include="PluginSystem\Plugins\LocalRecords\Session.cs" />
-    <Compile Include="PluginSystem\Plugins\LocalRecords\SQL\ChallengeAdapter.cs" />
-    <Compile Include="PluginSystem\Plugins\LocalRecords\SQL\PlayerAdapter.cs" />
-    <Compile Include="PluginSystem\Plugins\LocalRecords\SQL\PositionAdapter.cs" />
-    <Compile Include="PluginSystem\Plugins\LocalRecords\SQL\RankingAdapter.cs" />
-    <Compile Include="PluginSystem\Plugins\LocalRecords\SQL\RatingAdapter.cs" />
-    <Compile Include="PluginSystem\Plugins\LocalRecords\SQL\RecordAdapter.cs" />
-    <Compile Include="PluginSystem\Plugins\LocalRecords\SQL\SessionAdapter.cs" />
     <Compile Include="PluginSystem\Plugins\NameProtectionBotPlugin.cs" />
     <Compile Include="PluginSystem\Plugins\StaticUI\StaticUIPlugin.cs" />
     <Compile Include="PluginSystem\Plugins\StaticUI\StaticUIPluginSettings.cs" />
@@ -347,20 +389,28 @@
     <Compile Include="PluginSystem\TMSPSPluginPlugin.cs" />
     <Compile Include="PluginSystem\ValueStore.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SQL\PagedList.cs" />
-    <Compile Include="SQL\SQLBaseAdapter.cs" />
-    <Compile Include="SQL\ConnectionManager.cs" />
-    <Compile Include="SQL\SqlHelper.cs" />
-    <Compile Include="SQL\SqlHelper_Class.cs" />
-    <Compile Include="SQL\SqlHelper_ClassList.cs" />
-    <Compile Include="SQL\SqlHelper_ClassList_Parameterized.cs" />
-    <Compile Include="SQL\SqlHelper_Class_Parameterized.cs" />
     <Compile Include="TypeExtensions\ExtensionMethods.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Components\CookComputing.XmlRpcV2.dll" />
     <Content Include="Components\log4net.dll" />
     <Content Include="Components\log4net.xml" />
+    <Content Include="Components\NHibernate\Antlr3.Runtime.dll" />
+    <Content Include="Components\NHibernate\Castle.Core.dll" />
+    <Content Include="Components\NHibernate\Castle.Core.xml" />
+    <Content Include="Components\NHibernate\FluentNHibernate.dll" />
+    <Content Include="Components\NHibernate\FluentNHibernate.pdb" />
+    <Content Include="Components\NHibernate\FluentNHibernate.XML" />
+    <Content Include="Components\NHibernate\Iesi.Collections.dll" />
+    <Content Include="Components\NHibernate\Iesi.Collections.pdb" />
+    <Content Include="Components\NHibernate\Iesi.Collections.xml" />
+    <Content Include="Components\NHibernate\NHibernate.ByteCode.Castle.dll" />
+    <Content Include="Components\NHibernate\NHibernate.ByteCode.Castle.pdb" />
+    <Content Include="Components\NHibernate\NHibernate.ByteCode.Castle.xml" />
+    <Content Include="Components\NHibernate\NHibernate.dll" />
+    <Content Include="Components\NHibernate\NHibernate.pdb" />
+    <Content Include="Components\NHibernate\NHibernate.xml" />
+    <Content Include="Components\NHibernate\Remotion.Data.Linq.dll" />
     <Content Include="Resources\ManiaLinkPageLayouts\AdminPlayer\UserView.xml" />
     <Content Include="Resources\ManiaLinkPageLayouts\Help\Help.xml" />
     <Content Include="Resources\ManiaLinkPageLayouts\LocalRecords\Rating.xml" />
@@ -368,6 +418,12 @@
     <Content Include="Resources\SQLScripts\Structure\CreationOrder.txt" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Components\NHibernate\nhibernate-configuration.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Components\NHibernate\nhibernate-mapping.xsd">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="Resources\SQLScripts\StoredProcedures\Challenge\Challenge_Create.sql" />
     <None Include="Resources\SQLScripts\StoredProcedures\Challenge\Challenge_Delete.sql" />
     <None Include="Resources\SQLScripts\StoredProcedures\Challenge\Challenge_Deserialize_ByID.sql" />

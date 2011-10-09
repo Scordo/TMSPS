@@ -16,6 +16,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
         public const string WIN_MESSAGE = "{[#ServerStyle]}> {[#RecordStyle]}Congratulations, you've won your {[#RankStyle]}{[Wins]}{[#RecordStyle]}. race!";
         public const string RANKING_MESSAGE = "{[#ServerStyle]}> {[#RecordStyle]}Your server rank is {[#HighlightStyle]}{[Rank]}{[#RecordStyle]}, Average: {[#HighlightStyle]}{[Average]}{[#RecordStyle]}, Score: {[#HighlightStyle]}{[Score]}{[#RecordStyle]}, Tracks {[#HighlightStyle]}{[Tracks]}{[#RecordStyle]}/{[#HighlightStyle]}{[TracksCount]}";
         public const string NO_BETTER_RANK_MESSAGE = "{[#ServerStyle]}> {[#RecordStyle]}There is no better rank than yours.";
+        public const string NO_RANK_MESSAGE = "{[#ServerStyle]}>{[#RecordStyle]} You dont have a rank.";
         public const string LAST_SEEN_MESSAGE = "{[#ServerStyle]}>> {[#HighlightStyle]}{[Nickname]}$z{[#MessageStyle]} was last seen: {[#HighlightStyle]}{[LastSeen]}.";
         public const string PLAYER_ON_SERVER_MESSAGE = "{[#ServerStyle]}>> {[#HighlightStyle]}{[Nickname]}$z{[#MessageStyle]} is currently playing here.";
         public const string NEXT_RANK_MESSAGE = "{[#ServerStyle]}> {[#RecordStyle]}The next rank is owned by {[#HighlightStyle]}{[Nickname]}{[#RecordStyle]} with rank {[#HighlightStyle]}{[Rank]}{[#RecordStyle]}, Average: {[#HighlightStyle]}{[Average]}{[#RecordStyle]}, Score: {[#HighlightStyle]}{[Score]}{[#RecordStyle]}, Tracks {[#HighlightStyle]}{[Tracks]}{[#RecordStyle]}/{[#HighlightStyle]}{[TracksCount]}";
@@ -58,6 +59,8 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
         public string InfoMessage { get; private set; }
         public string RankingMessage { get; private set; }
         public string NextRankMessage { get; private set; }
+
+        public string NoRankMessage { get; private set; }
         public string NoBetterRankMessage { get; private set; }
         public string LastSeenMessage { get; private set; }
         public string PlayerOnServerMessage { get; private set; }
@@ -76,6 +79,8 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
         public string RecordListTop3RecordTemplate { get; private set; }
         public string RecordListRecordTemplate { get; private set; }
         public string RecordListRecordHighlightTemplate { get; private set; }
+
+
 
         #endregion
 
@@ -105,6 +110,8 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
             result.RankingMessage = ReadConfigString(configDocument.Root, "RankingMessage", RANKING_MESSAGE, xmlConfigurationFile);
             result.NextRankMessage = ReadConfigString(configDocument.Root, "NextRankMessage", NEXT_RANK_MESSAGE, xmlConfigurationFile);
             result.NoBetterRankMessage = ReadConfigString(configDocument.Root, "NoBetterRankMessage", NO_BETTER_RANK_MESSAGE, xmlConfigurationFile);
+            result.NoRankMessage = ReadConfigString(configDocument.Root, "NoRankMessage", NO_RANK_MESSAGE, xmlConfigurationFile);
+            
             result.NoticeDelayInSeconds = ReadConfigUInt(configDocument.Root, "NoticeDelayInSeconds", NOTICE_DELAY_IN_SECONDS, xmlConfigurationFile);
             result.StripNickFormatting = ReadConfigBool(configDocument.Root, "StripNickFormatting", STRIP_NICK_FORMATTING, xmlConfigurationFile);
             result.UpdateInterval = ReadConfigUInt(configDocument.Root, "UpdateInterval", UPDATE_INTERVAL, xmlConfigurationFile);

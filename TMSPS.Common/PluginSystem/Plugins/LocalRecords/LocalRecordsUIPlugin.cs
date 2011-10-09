@@ -11,6 +11,7 @@ using TMSPS.Core.Communication.EventArguments.Callbacks;
 using TMSPS.Core.Communication.ProxyTypes;
 using TMSPS.Core.Communication.ResponseHandling;
 using TMSPS.Core.PluginSystem.Configuration;
+using TMSPS.Core.PluginSystem.Plugins.LocalRecords.Entities;
 using Version = System.Version;
 
 namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
@@ -132,7 +133,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
             {
                 if (Settings.ShowPBUserInterface)
                 {
-                    uint? personalBest = HostPlugin.RecordAdapter.GetBestTime(e.Login, HostPlugin.CurrentChallengeID);
+                    uint? personalBest = HostPlugin.RecordRepository.GetBestTime(e.Login, HostPlugin.CurrentChallengeID);
                     SendPBManiaLinkPage(e.Login, personalBest);
                 }
 
@@ -273,7 +274,8 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
             if (!ServerCommand.Parse(args.Text).Is(Command.Info))
                 return false;
 
-            SendInfoMessageToLogin(args.Login);
+            int playerId = PlayerCache.Instance.Get(args.Login).Id.Value;
+            SendInfoMessageToPlayer(playerId);
 
             return true;
         }
@@ -325,7 +327,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
                 return true;
             }
 
-            Player player = HostPlugin.PlayerAdapter.Deserialize(login);
+            PlayerEntity player = HostPlugin.PlayerRepository.Get(login);
 
             if (player == null)
             {
@@ -395,7 +397,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
 
         private HashSet<string> GetDrivenChallengeUIDs(string login)
         {
-            return new HashSet<string>(HostPlugin.ChallengeAdapter.GetDrivenUniqueTrackIDs(login));
+            return new HashSet<string>(HostPlugin.ChallengeRepository.GetDrivenUniqueTrackIDs(PlayerCache.Instance.Get(login).Id.Value));
         }
 
         private void SendServerRankMessageToLogin(string login)
@@ -411,16 +413,20 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
         private void SendServerRankMessageToLogin(object state)
         {
             string login = (string) state;
-            Ranking ranking = HostPlugin.RankingAdapter.Deserialize_ByLogin(login);
+            PlayerEntity player = PlayerCache.Instance.Get(login);
+            Ranking ranking = HostPlugin.ServerRankRepository.Get(player.Id.Value);
 
             if (ranking != null)
                 SendFormattedMessageToLogin(login, Settings.RankingMessage, "Rank", ranking.CurrentRank.ToString("F0", CultureInfo.InvariantCulture), "Average", ranking.AverageRank.ToString("F1", CultureInfo.InvariantCulture), "Score", ranking.Score.ToString("F1", CultureInfo.InvariantCulture), "Tracks", ranking.RecordsCount.ToString("F0", CultureInfo.InvariantCulture), "TracksCount", ranking.ChallengesCount.ToString("F0", CultureInfo.InvariantCulture));
+            else
+                SendFormattedMessageToLogin(login, Settings.NoRankMessage);
         }
 
         private void SendNextServerRankMessageToLogin(object state)
         {
             string login = (string)state;
-            Ranking ranking = HostPlugin.RankingAdapter.GetNextRank(login);
+            PlayerEntity player = PlayerCache.Instance.Get(login);
+            Ranking ranking = HostPlugin.ServerRankRepository.GetNextRank(player.Id.Value);
 
             if (ranking != null)
                 SendFormattedMessageToLogin(login, Settings.NextRankMessage, "Nickname", StripTMColorsAndFormatting(ranking.Nickname), "Rank", ranking.CurrentRank.ToString("F0", CultureInfo.InvariantCulture), "Average", ranking.AverageRank.ToString("F1", CultureInfo.InvariantCulture), "Score", ranking.Score.ToString("F1", CultureInfo.InvariantCulture), "Tracks", ranking.RecordsCount.ToString("F0", CultureInfo.InvariantCulture), "TracksCount", ranking.ChallengesCount.ToString("F0", CultureInfo.InvariantCulture));
@@ -428,12 +434,12 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
                 SendFormattedMessageToLogin(login, Settings.NoBetterRankMessage);
         }
 
-        private void SendInfoMessageToLogin(string login)
+        private void SendInfoMessageToPlayer(int playerId)
         {
-            Player player = HostPlugin.PlayerAdapter.Deserialize(login);
+            Player player = Player.FromPlayerEntity(HostPlugin.PlayerRepository.Get(playerId));
 
             if (player != null)
-                SendFormattedMessageToLogin(login, Settings.InfoMessage, "Wins", player.Wins.ToString(CultureInfo.InvariantCulture), "Played", player.TimePlayed.TotalHours.ToString("F0", CultureInfo.InvariantCulture) + "h", "Created", player.Created.ToShortDateString());
+                SendFormattedMessageToLogin(player.Login, Settings.InfoMessage, "Wins", player.Wins.ToString(CultureInfo.InvariantCulture), "Played", player.TimePlayed.TotalHours.ToString("F0", CultureInfo.InvariantCulture) + "h", "Created", player.Created.ToShortDateString());
         }
 
         private void SendRecordListToAllPlayers(RankEntry[] rankings)
@@ -475,7 +481,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
                 uint? personalBest = rank == null ? null : (uint?)rank.TimeOrScore;
 
                 if (!personalBest.HasValue)
-                    personalBest = HostPlugin.RecordAdapter.GetBestTime(playerSettings.Login, HostPlugin.CurrentChallengeID);
+                    personalBest = HostPlugin.RecordRepository.GetBestTime(playerSettings.Login, HostPlugin.CurrentChallengeID);
 
 
                 SendPBManiaLinkPage(playerSettings.Login, personalBest);

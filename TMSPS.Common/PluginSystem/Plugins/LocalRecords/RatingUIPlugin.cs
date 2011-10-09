@@ -6,6 +6,7 @@ using System.Xml.Linq;
 using TMSPS.Core.Common;
 using TMSPS.Core.ManiaLinking;
 using TMSPS.Core.PluginSystem.Configuration;
+using TMSPS.Core.PluginSystem.Plugins.LocalRecords.Entities;
 using SettingsBase=TMSPS.Core.Common.SettingsBase;
 using Version=System.Version;
 
@@ -41,7 +42,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
         protected override void Init()
         {
             Settings = RatingUIPluginSettings.ReadFromFile(PluginSettingsFilePath);
-            Pair<double?, int> voteInfo = HostPlugin.RatingAdapter.GetAverageVote(HostPlugin.CurrentChallengeID);
+            Pair<double?, int> voteInfo = HostPlugin.RatingRepository.Average(HostPlugin.CurrentChallengeID);
             _lastAverageVoteValue = voteInfo.Value1;
             _lastVotesCount = voteInfo.Value2;
             SendAllVoteManiaLinkPage(_lastAverageVoteValue, _lastVotesCount);
@@ -72,13 +73,14 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
 
             SendAllVoteManiaLinkPageToLogin(e.Login, _lastAverageVoteValue, _lastVotesCount);
 
-            double? voteValue = HostPlugin.RatingAdapter.GetVoteByLogin(e.Login, HostPlugin.CurrentChallengeID);
-            SendOwnVoteManiaLinkPageToLogin(e.Login, voteValue);
+            int playerId = PlayerCache.Instance.Get(e.Login).Id.Value;
+            RatingEntity rating = HostPlugin.RatingRepository.Get(playerId, HostPlugin.CurrentChallengeID);
+            SendOwnVoteManiaLinkPageToLogin(e.Login, rating == null ? (int?) null : rating.Value);
         }
 
         private void HostPlugin_ChallengeChanged(object sender, EventArgs e)
         {
-            Pair<double?, int> voteInfo = HostPlugin.RatingAdapter.GetAverageVote(HostPlugin.CurrentChallengeID);
+            Pair<double?, int> voteInfo = HostPlugin.RatingRepository.Average(HostPlugin.CurrentChallengeID);
             _lastAverageVoteValue = voteInfo.Value1;
             _lastVotesCount = voteInfo.Value2;
 
@@ -102,7 +104,9 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
 
             if (voteValue.HasValue)
             {
-                Pair<double?, int> voteInfo = HostPlugin.RatingAdapter.Vote(e.Login, HostPlugin.CurrentChallengeID, voteValue.Value);
+
+                HostPlugin.RatingRepository.Rate(e.PlayerID, HostPlugin.CurrentChallengeID, voteValue.Value);
+                Pair<double?, int> voteInfo = HostPlugin.RatingRepository.Average(HostPlugin.CurrentChallengeID);
                 double? averageVote = voteInfo.Value1;
 
                 if (averageVote.HasValue)
@@ -114,12 +118,12 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
         {
             foreach (PlayerSettings playerSettings in Context.PlayerSettings.GetAllAsList())
             {
-                double? voteValue = HostPlugin.RatingAdapter.GetVoteByLogin(playerSettings.Login, currentChallengeID);
-                SendOwnVoteManiaLinkPageToLogin(playerSettings.Login, voteValue);
+                RatingEntity rating = HostPlugin.RatingRepository.Get(playerSettings.PlayerID, currentChallengeID);
+                SendOwnVoteManiaLinkPageToLogin(playerSettings.Login, rating == null ? (int?) null : rating.Value);
             }
         }
 
-        private void SendOwnVoteManiaLinkPageToLogin(string login, double? voteValue)
+        private void SendOwnVoteManiaLinkPageToLogin(string login, int? voteValue)
         {
             Context.RPCClient.Methods.SendDisplayManialinkPageToLogin(login, GetOwnVoteManiaLinkPageContent(voteValue), 0, false);
         }
@@ -141,14 +145,16 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
 
             byte ownVoteValue = Convert.ToByte(action.AreaActionID - 1);
 
-            Pair<double?, int> voteInfo = HostPlugin.RatingAdapter.Vote(login, HostPlugin.CurrentChallengeID, ownVoteValue);
+            int playerEntityId = PlayerCache.Instance.Get(login).Id.Value;
+            HostPlugin.RatingRepository.Rate(playerEntityId, HostPlugin.CurrentChallengeID, ownVoteValue);
+            Pair<double?, int> voteInfo = HostPlugin.RatingRepository.Average(HostPlugin.CurrentChallengeID);
             double? averageVote = voteInfo.Value1;
 
             if (averageVote.HasValue)
                 OnPlayerVoted(login, ownVoteValue, averageVote.Value, voteInfo.Value2);
         }
 
-        private string GetOwnVoteManiaLinkPageContent(double? voteValue)
+        private string GetOwnVoteManiaLinkPageContent(int? voteValue)
         {
             if (!voteValue.HasValue)
                 voteValue = -1;

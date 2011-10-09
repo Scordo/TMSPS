@@ -62,7 +62,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.PodiumPlugins
         {
             RunCatchLog(() =>
             {
-                List<PodiumPluginUIEntry> entries = HostPlugin.PositionAdapter.DeserializeListByMost(Settings.MaxEntriesToShow, 3).ConvertAll(position => new PodiumPluginUIEntry(position.Amount.ToString("F0", CultureInfo.InvariantCulture), position.Nickname));
+                List<PodiumPluginUIEntry> entries = HostPlugin.RaceResultRepository.DeserializeListByMost(Settings.MaxEntriesToShow, 3).ConvertAll(position => new PodiumPluginUIEntry(position.Amount.ToString("F0", CultureInfo.InvariantCulture), position.Nickname));
                 Context.RPCClient.Methods.SendDisplayManialinkPage(PodiumPluginUI.GetRecordListManiaLinkPage(entries, _linkPageID, Settings), 0, false);
             }, "Error in Callbacks_EndRace Method.", true);
         }

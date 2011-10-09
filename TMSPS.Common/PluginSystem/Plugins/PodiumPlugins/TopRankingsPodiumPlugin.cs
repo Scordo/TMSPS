@@ -62,7 +62,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.PodiumPlugins
         {
             RunCatchLog(() => 
             {
-                List<PodiumPluginUIEntry> entries = HostPlugin.RankingAdapter.Deserialize_List(Settings.MaxEntriesToShow).ConvertAll(ranking => new PodiumPluginUIEntry(ranking.Score.ToString("F1", CultureInfo.InvariantCulture), ranking.Nickname));
+                List<PodiumPluginUIEntry> entries = HostPlugin.ServerRankRepository.GetList(Settings.MaxEntriesToShow).ConvertAll(ranking => new PodiumPluginUIEntry(ranking.Score.ToString("F1", CultureInfo.InvariantCulture), ranking.Nickname));
                 Context.RPCClient.Methods.SendDisplayManialinkPage(PodiumPluginUI.GetRecordListManiaLinkPage(entries, _linkPageID, Settings), 0, false);
             }, "Error in Callbacks_EndRace Method.", true);
         }

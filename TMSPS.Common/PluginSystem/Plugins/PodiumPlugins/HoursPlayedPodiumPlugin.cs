@@ -62,7 +62,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.PodiumPlugins
         {
             RunCatchLog(() => 
             {
-                List<PodiumPluginUIEntry> entries = HostPlugin.PlayerAdapter.DeserializeList(Settings.MaxEntriesToShow, PlayerSortOrder.TimePlayed, false).ConvertAll(player => new PodiumPluginUIEntry(Math.Floor(player.TimePlayed.TotalHours).ToString("F0", CultureInfo.InvariantCulture) + "h", player.Nickname));
+                List<PodiumPluginUIEntry> entries = HostPlugin.PlayerRepository.GetList(Settings.MaxEntriesToShow, PlayerSortOrder.TimePlayed, false).ConvertAll(Player.FromPlayerEntity).ConvertAll(player => new PodiumPluginUIEntry(Math.Floor(player.TimePlayed.TotalHours).ToString("F0", CultureInfo.InvariantCulture) + "h", player.Nickname));
                 Context.RPCClient.Methods.SendDisplayManialinkPage(PodiumPluginUI.GetRecordListManiaLinkPage(entries, _linkPageID, Settings), 0, false);
             }, "Error in Callbacks_EndRace Method.", true);
         }

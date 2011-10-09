@@ -100,5 +100,16 @@ namespace System
 
             return values.ToArray();
         }
+
+        public static void ForEach<T>(this IEnumerable<T> instances, Action<T, int> action)
+        {
+            int i = 0;
+
+            foreach (T instance in instances)
+            {
+                action(instance, i);
+                i++;
+            }
+        }
     }
 }

@@ -9,7 +9,7 @@ using TMSPS.Core.Common;
 using TMSPS.Core.Communication.EventArguments.Callbacks;
 using TMSPS.Core.ManiaLinking;
 using TMSPS.Core.PluginSystem.Configuration;
-using TMSPS.Core.SQL;
+using TMSPS.Core.PluginSystem.Plugins.LocalRecords.Entities;
 
 namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
 {
@@ -89,14 +89,14 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
             GetAreaSettings(login, (byte)Area.TopWins).CurrentDialogPageIndex = pageIndex;
             uint[] pageIndeces = GetPageIndices(pageIndex, TopWinsSettings.MaxEntriesPerPage);
             
-            PagedList<IndexedPlayer> players = HostPlugin.PlayerAdapter.DeserializeListByWins((int)pageIndeces[0], (int)pageIndeces[1]);
+            PagedList<PlayerEntity> players = HostPlugin.PlayerRepository.GetListByWins((int)pageIndeces[0], (int)pageIndeces[1]);
             uint maxPage = Convert.ToUInt32(Math.Ceiling((double)players.VirtualCount / TopWinsSettings.MaxEntriesPerPage));
 
             Context.RPCClient.Methods.SendDisplayManialinkPageToLogin(login, GetTopRanksManiaLinkPage(Convert.ToUInt16(pageIndex + 1), maxPage, players), 0, false);
         }
 
 
-        private string GetTopRanksManiaLinkPage(uint currentPage, uint maxPage, IEnumerable<IndexedPlayer> topWinners)
+        private string GetTopRanksManiaLinkPage(uint currentPage, uint maxPage, PagedList<PlayerEntity> topWinners)
         {
             string mainTemplateString = TopWinsSettings.SinglePageTemplate;
 
@@ -116,9 +116,10 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
 
             XElement lastInsertedNode = entryPlaceHolder;
 
-            foreach (IndexedPlayer player in topWinners)
+            for (int i = 0; i < topWinners.Count; i++ )
             {
-                XElement currentElement = GetRankingElement(player, currentY);
+                PlayerEntity player = topWinners[i];
+                XElement currentElement = GetRankingElement(player, currentY, topWinners.StartIndex+i+1);
                 lastInsertedNode.AddAfterSelf(currentElement);
                 lastInsertedNode = currentElement;
                 currentY -= TopWinsSettings.EntryHeight;
@@ -129,7 +130,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
             return mainTemplate.ToString();
         }
 
-        private XElement GetRankingElement(IndexedPlayer player, double currentY)
+        private XElement GetRankingElement(PlayerEntity player, double currentY, int rowNumber)
         {
             return XElement.Parse
             (
@@ -137,7 +138,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
                 (
                     TopWinsSettings.EntryTemplate,
                     "Y", currentY.ToString(CultureInfo.InvariantCulture),
-                    "Rank", player.RowNumber.ToString(CultureInfo.InvariantCulture),
+                    "Rank", rowNumber.ToString(CultureInfo.InvariantCulture),
                     "Nickname", SecurityElement.Escape(player.Nickname),
                     "Wins", player.Wins.ToString(CultureInfo.InvariantCulture)
                 )
@@ -181,7 +182,7 @@ namespace TMSPS.Core.PluginSystem.Plugins.LocalRecords
                     SendTopWinsPageToLogin(login, nextPageIndex);
                     break;
                 case PagedDialogActions.DefaultDialogAction.LastPage:
-                    uint topRanksCount = HostPlugin.RankingAdapter.GetRanksCount();
+                    uint topRanksCount = HostPlugin.ServerRankRepository.GetRanksCount();
                     ushort lastPageIndex = Convert.ToUInt16(Math.Max(0, Math.Ceiling((double)topRanksCount / TopWinsSettings.MaxEntriesPerPage) - 1));
                     SendTopWinsPageToLogin(login, lastPageIndex);
                     break;
